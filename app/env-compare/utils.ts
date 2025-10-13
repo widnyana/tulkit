@@ -1,4 +1,4 @@
-import type { EnvEntry, EnvComparisonResult, ParsedEnvFile } from "./types";
+import type { EnvComparisonResult, EnvEntry, ParsedEnvFile } from "./types";
 
 export function parseEnvFile(content: string): ParsedEnvFile {
   const lines = content.split("\n");

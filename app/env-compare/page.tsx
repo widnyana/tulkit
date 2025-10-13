@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { EnvComparisonResult } from "./types";
-import { parseEnvFile, compareEnvFiles } from "./utils";
+import { useState } from "react";
+import type { EnvComparisonResult } from "./types";
+import { compareEnvFiles, parseEnvFile } from "./utils";
 
 export default function EnvComparePage() {
   const [env1, setEnv1] = useState("");
