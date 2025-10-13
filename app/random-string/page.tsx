@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import type { RandomStringOptions, GeneratedString } from "./types";
+import { useState } from "react";
+import type { GeneratedString, RandomStringOptions } from "./types";
 import { generateRandomStrings } from "./utils";
 
 export default function RandomStringPage() {
@@ -119,9 +119,9 @@ export default function RandomStringPage() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <div className="block text-sm font-medium text-gray-700 mb-3">
               Character Types
-            </label>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <label className="flex items-center space-x-2 cursor-pointer">
                 <input
@@ -130,9 +130,7 @@ export default function RandomStringPage() {
                   onChange={(e) => setUseUppercase(e.target.checked)}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700">
-                  Uppercase (A-Z)
-                </span>
+                <span className="text-sm text-gray-700">Uppercase (A-Z)</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -142,9 +140,7 @@ export default function RandomStringPage() {
                   onChange={(e) => setUseLowercase(e.target.checked)}
                   className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-700">
-                  Lowercase (a-z)
-                </span>
+                <span className="text-sm text-gray-700">Lowercase (a-z)</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">

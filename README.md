@@ -8,5 +8,6 @@ Collection of developer utilities and tools.
 
 ## Tools
 
-- **Env Var Comparator** - Compare environment files across different environments to identify differences and missing keys
+- **.env Comparator** - Compare environment files across different environments to identify differences and missing keys
+- **NetPlan** - Plan, validate, and prevent IP address collisions with comprehensive subnet tools.
 - **Random String Generator** - Generate secure random strings with customizable length and character types

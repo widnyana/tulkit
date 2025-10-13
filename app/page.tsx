@@ -1,13 +1,22 @@
 import Link from "next/link";
 
 export default function Home() {
+  const imageUrl =
+    "https://images.unsplash.com/reserve/oIpwxeeSPy1cnwYpqJ1w_Dufer%20Collateral%20test.jpg?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1315";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-8">
-      <div className="max-w-4xl w-full">
+    <div
+      className="min-h-screen flex items-center justify-center p-8 bg-cover bg-center"
+      style={{ backgroundImage: `url(${imageUrl})` }}
+    >
+      <div className="absolute inset-0 bg-dark/10 backdrop-blur-sm"></div>
+
+      <div className="max-w-4xl w-full relative z-10">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-900 mb-4">Tulkit</h1>
-          <p className="text-xl text-gray-600">
-            Stuff you didn’t know you needed, but now can’t live without
+          <h1 className="text-5xl font-bold text-gray-300 mb-4">Tulkit</h1>
+          <p className="text-xl text-white-900 font-medium">
+            because apparently, you *do* need another random tool on the
+            internet. ¯\_(ツ)_/¯
           </p>
         </div>
 
@@ -37,11 +46,43 @@ export default function Home() {
               </span>
             </div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Env Var Comparator
+              .env Comparator
             </h2>
             <p className="text-gray-600 text-sm">
               Compare environment files across different environments to
               identify differences and missing keys
+            </p>
+          </Link>
+
+          <Link
+            href="/ip-planner"
+            className="group bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-200 hover:border-purple-500"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-500 transition-colors">
+                <svg
+                  className="w-6 h-6 text-purple-600 group-hover:text-white transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                  />
+                </svg>
+              </div>
+              <span className="text-purple-500 group-hover:text-purple-700 transition-colors">
+                →
+              </span>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              NetPlan
+            </h2>
+            <p className="text-gray-600 text-sm">
+              Simple IP planning and conflict detection for all your Networks.
             </p>
           </Link>
 
@@ -101,14 +142,24 @@ export default function Home() {
               More Tools Coming
             </h2>
             <p className="text-gray-600 text-sm">
-              Additional developer utilities will be added here
+              Future utilities are currently trapped in the backlog. Please hold
+              for your inevitable convenience.
             </p>
           </div>
         </div>
-        <footer className="text-center mt-12 text-gray-600 text-sm">
+        <footer className="text-center mt-12 text-gray-800 text-sm font-medium relative z-10">
           <p>
-            <span className="font-bold">tulkit</span> — because apparently, you
-            *do* need another random tool on the internet.
+            <span className="font-bold">
+              <a
+                target="_blank"
+                href="https://github.com/widnyana/tulkit"
+                rel="noopener noreferrer"
+              >
+                tulkit
+              </a>
+            </span>{" "}
+            — © 2025 Widnyana. Solving your tiny, annoying problems so you can
+            get back to the big ones.
           </p>
         </footer>
       </div>
