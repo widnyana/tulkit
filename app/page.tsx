@@ -87,6 +87,39 @@ export default function Home() {
           </Link>
 
           <Link
+            href="/ipcalc"
+            className="group bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-200 hover:border-orange-500"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-500 transition-colors">
+                <svg
+                  className="w-6 h-6 text-orange-600 group-hover:text-white transition-colors"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <span className="text-orange-500 group-hover:text-orange-700 transition-colors">
+                →
+              </span>
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              IP Calculator
+            </h2>
+            <p className="text-gray-600 text-sm">
+              Comprehensive IP calculator with subnet/supernet operations and
+              CIDR deaggregation
+            </p>
+          </Link>
+
+          <Link
             href="/random-string"
             className="group bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-200 hover:border-green-500"
           >
