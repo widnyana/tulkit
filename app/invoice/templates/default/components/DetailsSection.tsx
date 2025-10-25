@@ -27,18 +27,31 @@ export const DefaultTemplateDetailsSection = ({
         </Text>
       </View>
       <View style={defaultTemplateStyles.recipientInfo}>
-        <Text style={defaultTemplateStyles.label}>Bill To</Text>
-        <Text style={defaultTemplateStyles.value}>
+        <Text style={[defaultTemplateStyles.label, defaultTemplateStyles.recipientInfoText]}>Bill To</Text>
+        <Text style={[defaultTemplateStyles.value, defaultTemplateStyles.recipientInfoText]}>
           {invoiceData.recipient.name}
         </Text>
-        <Text style={defaultTemplateStyles.value}>
+        <Text style={[defaultTemplateStyles.value, defaultTemplateStyles.recipientInfoText]}>
           {invoiceData.recipient.address}
         </Text>
-        <Text style={{ ...defaultTemplateStyles.value, marginTop: 10 }}>
-          Invoice Date: {new Date(invoiceData.issueDate).toLocaleDateString()}
+        {invoiceData.recipient.email && (
+          <Text style={[defaultTemplateStyles.contactValue, defaultTemplateStyles.recipientInfoText]}>
+            {invoiceData.recipient.email}
+          </Text>
+        )}
+        {invoiceData.recipient.phone && (
+          <Text style={[defaultTemplateStyles.contactValue, defaultTemplateStyles.recipientInfoText]}>
+            {invoiceData.recipient.phone}
+          </Text>
+        )}
+        <Text style={[defaultTemplateStyles.label, defaultTemplateStyles.recipientInfoText, { marginTop: 10 }]}>
+          Invoice Details
         </Text>
-        <Text style={defaultTemplateStyles.value}>
-          Due Date: {new Date(invoiceData.dueDate).toLocaleDateString()}
+        <Text style={[defaultTemplateStyles.value, defaultTemplateStyles.recipientInfoText]}>
+          Date: {new Date(invoiceData.issueDate).toLocaleDateString()}
+        </Text>
+        <Text style={[defaultTemplateStyles.value, defaultTemplateStyles.recipientInfoText]}>
+          Due: {new Date(invoiceData.dueDate).toLocaleDateString()}
         </Text>
       </View>
     </View>

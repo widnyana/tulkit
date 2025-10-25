@@ -24,6 +24,8 @@ export const invoiceSenderSchema = z.object({
 export const invoiceRecipientSchema = z.object({
   name: z.string().min(1, "Name is required"),
   address: z.string().min(1, "Address is required"),
+  email: z.string().email("Invalid email").optional(),
+  phone: z.string().optional(),
 }) satisfies z.ZodSchema<InvoiceRecipient>;
 
 export const invoiceDataSchema = z.object({

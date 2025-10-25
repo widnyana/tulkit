@@ -162,7 +162,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 >
                   <option value="$">$ - US Dollar</option>
                   <option value="€">€ - Euro</option>
-                  <option value="Rp.">Rp - Indonesian Rupiah</option>
+                  <option value="Rp">Rp - Indonesian Rupiah</option>
                   <option value="£">£ - British Pound</option>
                   <option value="¥">¥ - Japanese Yen</option>
                   <option value="₹">₹ - Indian Rupee</option>
@@ -318,6 +318,50 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   {errors.recipient?.address && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.recipient.address.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+            <Controller
+              name="recipient.email"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Email
+                  </label>
+                  <input
+                    {...field}
+                    type="email"
+                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.email ? "border-red-500" : "border-gray-300"}`}
+                    placeholder="client@email.com"
+                  />
+                  {errors.recipient?.email && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.recipient.email.message}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+            <Controller
+              name="recipient.phone"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Phone
+                  </label>
+                  <input
+                    {...field}
+                    type="tel"
+                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.phone ? "border-red-500" : "border-gray-300"}`}
+                    placeholder="Client phone number"
+                  />
+                  {errors.recipient?.phone && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.recipient.phone.message}
                     </p>
                   )}
                 </div>
