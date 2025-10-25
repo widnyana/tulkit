@@ -29,6 +29,7 @@ const defaultInvoiceData: InvoiceData = {
   taxEnabled: false,
   taxRate: 10,
   templateKey: "default",
+  currency: "$",
 };
 
 const InvoicePage = () => {

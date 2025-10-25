@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { PDFViewer } from "@react-pdf/renderer";
-import { InvoiceData } from "../../../../lib/invoice/types";
-import { TEMPLATE_REGISTRY as templates } from "../templates";
+import type { InvoiceData } from "@/lib/invoice/types";
+import type React from "react";
+import { useEffect, useState } from "react";
+import InvoicePDFViewer from "./invoice-pdf-viewer/InvoicePDFViewer";
 
 interface InvoicePDFPreviewProps {
   invoiceData: InvoiceData;
@@ -17,12 +17,6 @@ const InvoicePDFPreview: React.FC<InvoicePDFPreviewProps> = ({
   useEffect(() => {
     setIsClient(true);
   }, []);
-
-  // Memoize the selected template component
-  const SelectedTemplate = useMemo(() => {
-    const templateKey = invoiceData.templateKey as keyof typeof templates;
-    return templates[templateKey]?.component || templates.default.component;
-  }, [invoiceData.templateKey]);
 
   // Check if we have valid data to render
   const hasValidData = invoiceData.sender.name && invoiceData.recipient.name;
@@ -48,9 +42,7 @@ const InvoicePDFPreview: React.FC<InvoicePDFPreviewProps> = ({
 
   return (
     <div className="h-full w-full">
-      <PDFViewer width="100%" height="100%" style={{ border: "none" }}>
-        <SelectedTemplate invoiceData={invoiceData} />
-      </PDFViewer>
+      <InvoicePDFViewer invoiceData={invoiceData} />
     </div>
   );
 };
