@@ -1,6 +1,10 @@
 import { StyleSheet } from "@react-pdf/renderer";
 
-// Template-specific styles for the stripe template
+/**
+ * Stripe-inspired invoice template styles
+ * Design system: Clean, modern, professional
+ * Brand color: Amber/yellow accent (#fbbf24)
+ */
 export const stripeTemplateStyles = StyleSheet.create({
   page: {
     flexDirection: "column",
@@ -10,15 +14,23 @@ export const stripeTemplateStyles = StyleSheet.create({
     fontWeight: 400,
   },
   headerBar: {
-    backgroundColor: "#fbbf24", // Yellow color
-    height: 4,
+    backgroundColor: "#fbbf24", // Stripe-inspired yellow accent
+    height: 5,
     width: "100%",
   },
   content: {
-    paddingLeft: 30,
-    paddingRight: 30,
-    paddingTop: 27,
-    paddingBottom: 27,
+    paddingLeft: 40,
+    paddingRight: 40,
+    paddingTop: 32,
+    paddingBottom: 40,
+  },
+  sectionSeparator: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#f3f4f6",
+    marginVertical: 20,
+  },
+  spacer: {
+    height: 10,
   },
   fontSize8: { fontSize: 8 },
   fontSize9: { fontSize: 9 },
@@ -73,36 +85,42 @@ export const stripeTemplateStyles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#010000",
-    paddingBottom: 6,
-    marginBottom: 4,
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#111827",
+    paddingBottom: 8,
+    marginBottom: 8,
   },
   tableRow: {
     flexDirection: "row",
-    paddingVertical: 4,
+    paddingVertical: 6,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#f3f4f6",
   },
-  colDescription: { flex: 3 },
-  colQty: { flex: 0.8, textAlign: "center" as "center" },
-  colUnitPrice: { flex: 1.2, textAlign: "right" as "right" },
-  colTax: { flex: 0.8, textAlign: "right" as "right" },
-  colAmount: { flex: 1.2, textAlign: "right" as "right" },
-  notesLabel: {
+  descriptionCol: { flex: 3 },
+  narrowCol: { flex: 0.8, textAlign: "center" as "center" },
+  itemNotesContainer: {
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 2,
+    paddingBottom: 4,
+  },
+  itemNotesLabel: {
     fontSize: 8,
     fontStyle: "italic",
     color: "#6b7280",
   },
   dueAmountBox: {
-    backgroundColor: "#f9fafb",
-    padding: 16,
+    backgroundColor: "#fffbeb", // Soft yellow background
+    padding: 10,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    marginVertical: 24,
+    borderWidth: 1.5,
+    borderColor: "#fbbf24", // Matching accent color
+    marginTop: 16,
+    marginBottom: 16,
   },
   totalsSection: {
-    marginTop: 16,
-    paddingTop: 16,
+    marginTop: 20,
+    paddingTop: 20,
     borderTopWidth: 1,
     borderTopColor: "#e5e7eb",
   },
@@ -110,7 +128,7 @@ export const stripeTemplateStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 1,
+    paddingVertical: 4,
   },
   finalTotalRow: {
     flexDirection: "row",

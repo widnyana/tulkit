@@ -18,6 +18,8 @@ export interface InvoiceRecipient {
   address: string;
 }
 
+export type TemplateKey = "default" | "stripe"; // Extend as needed for more templates
+
 export interface InvoiceData {
   sender: InvoiceSender;
   recipient: InvoiceRecipient;
@@ -28,8 +30,7 @@ export interface InvoiceData {
   notes?: string;
   taxEnabled: boolean;
   taxRate: number;
-  templateKey: string;
+  templateKey?: TemplateKey;
   logo?: string; // base64 string
+  currency?: string; // Currency symbol (e.g., "$", "€", "£", "¥", "₹")
 }
-
-export type TemplateKey = "default" | "stripe"; // Extend as needed for more templates

@@ -54,15 +54,23 @@ export const defaultTemplateStyles = StyleSheet.create({
     marginBottom: 5,
   },
   table: {
-    display: "table",
     width: "auto",
     marginBottom: 30,
   },
   tableRow: {
     flexDirection: "row",
   },
-  tableColHeader: {
-    width: "20%",
+  descriptionColHeader: {
+    width: "50%",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: "#000",
+    backgroundColor: "#f0f0f0",
+    padding: 5,
+    textAlign: "left" as "left",
+  },
+  narrowColHeader: {
+    width: "16.66%",
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: "#000",
@@ -70,8 +78,16 @@ export const defaultTemplateStyles = StyleSheet.create({
     padding: 5,
     textAlign: "center" as "center",
   },
-  tableCol: {
-    width: "20%",
+  descriptionCol: {
+    width: "50%",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderColor: "#000",
+    padding: 5,
+    textAlign: "left" as "left",
+  },
+  narrowCol: {
+    width: "16.66%",
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: "#000",
@@ -82,7 +98,14 @@ export const defaultTemplateStyles = StyleSheet.create({
     marginTop: 30,
     fontSize: 12,
   },
-  notesLabel: {
+  itemNotesContainer: {
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 2,
+    paddingBottom: 4,
+    width: "100%",
+  },
+  itemNotesLabel: {
     fontSize: 10,
     fontStyle: "italic",
     paddingLeft: 5,

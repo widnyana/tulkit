@@ -1,5 +1,3 @@
-"use client";
-
 import type { InvoiceData } from "@/lib/invoice/types";
 import { Document, Page, Text, View } from "@react-pdf/renderer";
 import type React from "react";
