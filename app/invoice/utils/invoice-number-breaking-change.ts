@@ -1,7 +1,4 @@
-import { SUPPORTED_LANGUAGES } from "@/app/invoice/schema";
-import { TRANSLATIONS } from "@/app/invoice/schema/translations";
-
-import { z } from "zod";
+import { TRANSLATIONS } from "@/app/invoice/translations";
 
 /**
  * This function handles the breaking change of the invoice number field.
@@ -20,25 +17,9 @@ export function handleInvoiceNumberBreakingChange(json: unknown) {
     typeof json === "object" &&
     json !== null &&
     "invoiceNumber" in json &&
-    typeof json.invoiceNumber === "string" &&
-    "language" in json
+    typeof json.invoiceNumber === "string"
   ) {
-    let lang: keyof typeof TRANSLATIONS;
-
-    const invoiceLanguage = z
-      .enum(SUPPORTED_LANGUAGES)
-      .safeParse(json.language);
-
-    if (!invoiceLanguage.success) {
-      console.error("Invalid invoice language:", invoiceLanguage.error);
-
-      // fallback to default language
-      lang = SUPPORTED_LANGUAGES[0];
-    } else {
-      lang = invoiceLanguage.data;
-    }
-
-    const invoiceNumberLabel = TRANSLATIONS[lang].invoiceNumber;
+    const invoiceNumberLabel = TRANSLATIONS.invoiceNumber;
 
     // Create new object without invoiceNumber and with invoiceNumberObject
     const newJson = {

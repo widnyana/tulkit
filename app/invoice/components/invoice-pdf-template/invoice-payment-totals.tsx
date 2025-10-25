@@ -18,7 +18,7 @@ export function InvoicePaymentTotals({
   styles: typeof PDF_DEFAULT_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
 
   const invoiceTotalInWords = getAmountInWords({
     amount: invoiceData?.total ?? 0,

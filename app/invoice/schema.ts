@@ -149,31 +149,11 @@ export const TEMPLATE_TO_LABEL = {
 export type TemplateLabels =
   (typeof TEMPLATE_TO_LABEL)[keyof typeof TEMPLATE_TO_LABEL];
 
-export const SUPPORTED_LANGUAGES = [
-  "en",
-  "pl",
-  "de",
-  "es",
-  "pt",
-  "ru",
-  "uk",
-  "fr",
-  "it",
-  "nl",
-] as const;
+export const SUPPORTED_LANGUAGES = ["en"] as const;
 export type SupportedLanguages = (typeof SUPPORTED_LANGUAGES)[number];
 
 export const LANGUAGE_TO_LABEL = {
   en: "English",
-  pl: "Polish",
-  de: "German",
-  es: "Spanish",
-  pt: "Portuguese",
-  ru: "Russian",
-  uk: "Ukrainian",
-  fr: "French",
-  it: "Italian",
-  nl: "Dutch",
 } as const satisfies Record<SupportedLanguages, string>;
 
 export const SUPPORTED_DATE_FORMATS = [

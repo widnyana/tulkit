@@ -11,7 +11,7 @@ export function InvoiceSellerBuyerInfo({
   styles: typeof PDF_DEFAULT_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
 
   const swiftBicFieldIsVisible = invoiceData.seller.swiftBicFieldIsVisible;
   const sellerVatNoFieldIsVisible = invoiceData.seller.vatNoFieldIsVisible;

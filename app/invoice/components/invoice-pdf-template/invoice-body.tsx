@@ -32,7 +32,7 @@ export const InvoiceBody = ({
   shouldLocaliseDates?: boolean;
 }) => {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
 
   if (shouldLocaliseDates) {
     dayjs.locale(language);

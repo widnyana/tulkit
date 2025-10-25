@@ -15,7 +15,6 @@ export function StripeFooter({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
 
   const invoiceNumberValue = invoiceData?.invoiceNumberObject?.value;
   const invoiceNumber = `${invoiceNumberValue}`;
@@ -35,11 +34,11 @@ export function StripeFooter({
             </>
           )}
           <Text style={[styles.fontSize8]}>
-            {formattedInvoiceTotal} {t.stripe.due} {paymentDueDate}
+            {formattedInvoiceTotal} due {paymentDueDate}
           </Text>
           <Text style={[styles.fontSize8]}>·</Text>
           <Text style={[styles.fontSize8]}>
-            {t.createdWith}{" "}
+            Created with{" "}
             <Link
               style={[styles.fontSize8, { color: "blue" }]}
               src={PROD_WEBSITE_URL}
@@ -51,7 +50,7 @@ export function StripeFooter({
         <Text
           style={[styles.fontSize8]}
           render={({ pageNumber, totalPages }) =>
-            `${t.stripe.page} ${pageNumber} ${t.stripe.of} ${totalPages}`
+            `Page ${pageNumber} of ${totalPages}`
           }
         />
       </View>

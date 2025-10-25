@@ -13,7 +13,6 @@ export function StripeTotals({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
 
   // Calculate subtotal (sum of all items)
   const subtotal = invoiceData.items.reduce(
@@ -44,7 +43,7 @@ export function StripeTotals({
         <View
           style={[styles.totalRow, styles.borderTop, { paddingVertical: 1.5 }]}
         >
-          <Text style={[styles.fontSize9]}>{t.stripe.subtotal}</Text>
+          <Text style={[styles.fontSize9]}>Subtotal</Text>
           <Text style={[styles.fontSize9, styles.textDark]}>
             {formattedSubtotal}
           </Text>
@@ -108,7 +107,7 @@ export function StripeTotals({
         <View
           style={[styles.totalRow, styles.borderTop, { paddingVertical: 1.5 }]}
         >
-          <Text style={[styles.fontSize9]}>{t.stripe.total}</Text>
+          <Text style={[styles.fontSize9]}>Total</Text>
           <Text style={[styles.fontSize9, styles.textDark]}>
             {/* USD is not needed for the total */}
             {invoiceTotal}
@@ -120,7 +119,7 @@ export function StripeTotals({
           style={[styles.totalRow, styles.borderTop, { paddingVertical: 1.5 }]}
         >
           <Text style={[styles.fontSize9, styles.fontBold, styles.textDark]}>
-            {t.stripe.amountDue}
+            Amount Due
           </Text>
           <Text style={[styles.fontSize9, styles.fontBold, styles.textDark]}>
             {formattedInvoiceTotal}
