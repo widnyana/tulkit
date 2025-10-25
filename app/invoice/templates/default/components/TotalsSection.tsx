@@ -22,28 +22,28 @@ export const DefaultTemplateTotalsSection = ({
   const currency = invoiceData.currency;
 
   return (
-    <View style={styles.totalsSection}>
-      <View style={styles.totalRow}>
-        <Text style={styles.totalLabel}>Subtotal:</Text>
-        <Text style={styles.totalValue}>
+    <View style={styles.totalsTable}>
+      <View style={styles.totalsRow}>
+        <Text style={styles.totalsLabel}>Subtotal:</Text>
+        <Text style={styles.value}>
           {currency}
           {subtotal.toFixed(2)}
         </Text>
       </View>
 
       {invoiceData.taxRate && invoiceData.taxRate > 0 && (
-        <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Tax ({invoiceData.taxRate}%):</Text>
-          <Text style={styles.totalValue}>
+        <View style={styles.totalsRow}>
+          <Text style={styles.totalsLabel}>Tax ({invoiceData.taxRate}%):</Text>
+          <Text style={styles.value}>
             {currency}
             {taxAmount.toFixed(2)}
           </Text>
         </View>
       )}
 
-      <View style={[styles.totalRow, styles.grandTotalRow]}>
-        <Text style={styles.grandTotalLabel}>Total:</Text>
-        <Text style={styles.grandTotalValue}>
+      <View style={styles.totalsLastRow}>
+        <Text style={styles.totalsLabel}>Total:</Text>
+        <Text style={styles.value}>
           {currency}
           {total.toFixed(2)}
         </Text>

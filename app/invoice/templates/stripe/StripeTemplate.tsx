@@ -48,7 +48,7 @@ const StripeTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
 
         {/* Notes section */}
         {invoiceData.notes && (
-          <View style={[s.mt24, { maxWidth: "70%" }]}>
+          <View style={[s.mt20, { maxWidth: "70%" }]}>
             <Text style={[s.label, s.mb6]}>Notes</Text>
             <Text style={s.bodySmall}>{invoiceData.notes}</Text>
           </View>

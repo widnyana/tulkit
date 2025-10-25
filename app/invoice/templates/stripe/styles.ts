@@ -56,6 +56,7 @@ export const stripeTemplateStyles = StyleSheet.create({
   },
 
   // Spacing
+  mb2: { marginBottom: 2 },
   mb4: { marginBottom: 4 },
   mb6: { marginBottom: 6 },
   mb8: { marginBottom: 8 },

@@ -14,7 +14,7 @@ export const DefaultTemplateHeader = ({ invoiceData }: HeaderProps) => {
       )}
       <View style={defaultTemplateStyles.companyInfo}>
         <Text style={defaultTemplateStyles.invoiceTitle}>INVOICE</Text>
-        <Text style={defaultTemplateStyles.value}>
+        <Text style={defaultTemplateStyles.invoiceNumber}>
           #{invoiceData.invoiceNumber}
         </Text>
       </View>
