@@ -115,7 +115,11 @@ export default function BasicCalculator() {
                 value={`${result.netmask} = ${result.netmaskCIDR}`}
               />
               <InfoRow label="Wildcard" value={result.wildcard} />
-              <InfoRow label="CIDR Notation" value={result.cidrNotation} highlight />
+              <InfoRow
+                label="CIDR Notation"
+                value={result.cidrNotation}
+                highlight
+              />
             </div>
 
             <div className="space-y-3">
@@ -132,7 +136,11 @@ export default function BasicCalculator() {
               <InfoRow label="Class" value={result.networkClass} />
               {result.networkType && (
                 <div className="md:col-span-2">
-                  <InfoRow label="Network Type" value={result.networkType} highlight />
+                  <InfoRow
+                    label="Network Type"
+                    value={result.networkType}
+                    highlight
+                  />
                 </div>
               )}
             </div>
@@ -157,9 +165,7 @@ function InfoRow({
       <span className="text-sm font-medium text-gray-600">{label}:</span>
       <span
         className={`text-sm font-mono ${
-          highlight
-            ? "text-blue-600 font-semibold"
-            : "text-gray-900"
+          highlight ? "text-blue-600 font-semibold" : "text-gray-900"
         }`}
       >
         {value}
