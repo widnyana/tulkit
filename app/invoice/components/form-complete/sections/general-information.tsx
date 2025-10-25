@@ -10,11 +10,9 @@ import {
   CURRENCY_SYMBOLS,
   CURRENCY_TO_LABEL,
   type InvoiceData,
-  LANGUAGE_TO_LABEL,
   STRIPE_DEFAULT_DATE_FORMAT,
   SUPPORTED_CURRENCIES,
   SUPPORTED_DATE_FORMATS,
-  SUPPORTED_LANGUAGES,
   SUPPORTED_TEMPLATES,
   TEMPLATE_TO_LABEL,
 } from "@/app/invoice/schema";
@@ -92,9 +90,7 @@ export const GeneralInformation = memo(function GeneralInformation({
   const logo = useWatch({ control, name: "logo" });
   const selectedDateFormat = useWatch({ control, name: "dateFormat" });
 
-  const t = TRANSLATIONS[language];
-  console.info(`t is ${t}`);
-  const defaultInvoiceNumber = `${t.invoiceNumber}:`;
+  const defaultInvoiceNumber = `${TRANSLATIONS.invoiceNumber}:`;
 
   const isDateOfIssueNotToday = !dayjs(dateOfIssue).isSame(dayjs(), "day");
 
@@ -301,61 +297,6 @@ export const GeneralInformation = memo(function GeneralInformation({
           )}
         </div>
       )}
-
-      {/* Language PDF Select */}
-      <div>
-        <Label htmlFor={`language`} className="mb-1">
-          Invoice PDF Language
-        </Label>
-        <Controller
-          name="language"
-          control={control}
-          render={({ field }) => (
-            <SelectNative
-              {...field}
-              id={`language`}
-              className="block"
-              onChange={(e) => {
-                field.onChange(e);
-
-                // Update invoice number when language changes
-                const newLanguage = e.target.value as keyof typeof TRANSLATIONS;
-
-                const newInvoiceNumberLabel =
-                  TRANSLATIONS[newLanguage].invoiceNumber;
-
-                // we need to keep the invoice number suffix (e.g. 1/MM-YYYY) for better user experience, when switching language
-                setValue(
-                  "invoiceNumberObject.label",
-                  `${newInvoiceNumberLabel}:`,
-                );
-                setValue("invoiceNumberObject.value", invoiceNumberValue);
-              }}
-            >
-              {SUPPORTED_LANGUAGES.map((lang) => {
-                const languageName = LANGUAGE_TO_LABEL[lang];
-
-                if (!languageName) {
-                  return null;
-                }
-
-                return (
-                  <option key={lang} value={lang}>
-                    {languageName}
-                  </option>
-                );
-              })}
-            </SelectNative>
-          )}
-        />
-        {errors.language ? (
-          <ErrorMessage>{errors.language.message}</ErrorMessage>
-        ) : (
-          <InputHelperMessage>
-            Select the language of the invoice
-          </InputHelperMessage>
-        )}
-      </div>
 
       {/* Currency Select */}
       <div>

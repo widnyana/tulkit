@@ -12,7 +12,6 @@ export function StripeInvoiceInfo({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
 
   const dateOfIssue = dayjs(invoiceData.dateOfIssue).format(
     invoiceData.dateFormat,
@@ -40,7 +39,7 @@ export function StripeInvoiceInfo({
               { maxWidth: INVOICE_NUMBER_MAX_WIDTH },
             ]}
           >
-            {t.stripe.invoiceNumber}
+            Invoice Number
           </Text>
         </View>
         {/* Invoice number value column */}
@@ -55,7 +54,7 @@ export function StripeInvoiceInfo({
           <Text
             style={[styles.fontSize9, styles.fontMedium, { maxWidth: 120 }]}
           >
-            {t.stripe.dateOfIssue}
+            Date of Issue
           </Text>
         </View>
         {/* Date of issue value column */}
@@ -68,7 +67,7 @@ export function StripeInvoiceInfo({
           <Text
             style={[styles.fontSize9, styles.fontMedium, { maxWidth: 120 }]}
           >
-            {t.stripe.dateDue}
+            Date Due
           </Text>
         </View>
         {/* Date due value column */}

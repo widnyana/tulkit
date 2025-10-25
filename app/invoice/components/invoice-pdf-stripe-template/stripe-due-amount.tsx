@@ -24,7 +24,7 @@ export function StripeDueAmount({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
 
   // Set dayjs locale based on invoice language
   dayjs.locale(language);

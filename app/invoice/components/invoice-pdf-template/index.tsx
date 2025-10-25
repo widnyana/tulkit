@@ -1,4 +1,4 @@
-import { type InvoiceData } from "@/app/invoice/schema";
+import type { InvoiceData } from "@/app/invoice/schema";
 import { STATIC_ASSETS_URL } from "@/config";
 import {
   Document,
@@ -17,10 +17,10 @@ Font.register({
   family: fontFamily,
   fonts: [
     {
-      src: `${STATIC_ASSETS_URL}/open-sans-regular.ttf`,
+      src: `${STATIC_ASSETS_URL}/fonts/open-sans-regular.ttf`,
     },
     {
-      src: `${STATIC_ASSETS_URL}/open-sans-700.ttf`,
+      src: `${STATIC_ASSETS_URL}/fonts/open-sans-700.ttf`,
       fontWeight: 700,
     },
   ],

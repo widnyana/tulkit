@@ -10,7 +10,6 @@ export function StripeInvoiceHeader({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
   const hasLogo = invoiceData.logo && invoiceData.logo.length > 0;
 
   return (
@@ -28,7 +27,7 @@ export function StripeInvoiceHeader({
         >
           <View style={{ flex: 1, alignItems: "flex-start" }}>
             <Text style={[styles.fontSize18, styles.fontBold, styles.textDark]}>
-              {t.stripe.invoice}
+              Invoice
             </Text>
           </View>
           <View style={{ flex: 1, alignItems: "flex-end" }}>
@@ -46,7 +45,7 @@ export function StripeInvoiceHeader({
       ) : (
         // Header with title only
         <Text style={[styles.fontSize18, styles.fontBold, styles.textDark]}>
-          {t.stripe.invoice}
+          Invoice
         </Text>
       )}
     </View>

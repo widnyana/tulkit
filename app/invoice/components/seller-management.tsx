@@ -1,5 +1,22 @@
-import { Pencil, Plus, Trash2 } from "lucide-react";
-import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
+import {
+  type InvoiceData,
+  type SellerData,
+  sellerSchema,
+} from "@/app/invoice/schema";
+import { isLocalStorageAvailable } from "@/lib/check-local-storage";
+import { cn } from "@/lib/utils";
+import { AlertCircleIcon, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useId,
+  useState,
+} from "react";
+import type { UseFormSetValue } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { DEFAULT_SELLER_DATA } from "../constants";
 import { SellerDialog } from "./seller-dialog";
 import {
   AlertDialog,
@@ -10,7 +27,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
@@ -19,211 +35,376 @@ import { CustomTooltip } from "./ui/tooltip";
 
 export const SELLERS_LOCAL_STORAGE_KEY = "TULKIT_INVOICE_PDF_SELLERS";
 
-// Type for seller management
-export interface Seller {
-  id: string;
-  name: string;
-  address: string;
-  email: string;
-  vatNo?: string;
-  accountNumber?: string;
-  swiftBic?: string;
-  notes?: string;
-  vatNoFieldIsVisible?: boolean;
-  accountNumberFieldIsVisible?: boolean;
-  swiftBicFieldIsVisible?: boolean;
-  notesFieldIsVisible?: boolean;
-}
-
-// Default seller data
-const DEFAULT_SELLER: Seller = {
-  id: "default-seller",
-  name: "",
-  address: "",
-  email: "",
-  vatNo: "",
-  accountNumber: "",
-  swiftBic: "",
-  notes: "",
-  vatNoFieldIsVisible: true,
-  accountNumberFieldIsVisible: true,
-  swiftBicFieldIsVisible: false,
-  notesFieldIsVisible: false,
-};
-
 interface SellerManagementProps {
-  sellers: Seller[];
-  setSellers: Dispatch<SetStateAction<Seller[]>>;
+  setValue: UseFormSetValue<InvoiceData>;
+  invoiceData: InvoiceData;
   selectedSellerId: string;
-  setSelectedSellerId: (id: string) => void;
-  onSellerSelect: (seller: Seller) => void;
+  setSelectedSellerId: Dispatch<SetStateAction<string>>;
+  formValues?: Partial<SellerData>;
 }
 
 export function SellerManagement({
-  sellers,
-  setSellers,
+  setValue,
+  invoiceData,
   selectedSellerId,
   setSelectedSellerId,
-  onSellerSelect,
+  formValues,
 }: SellerManagementProps) {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingSeller, setEditingSeller] = useState<Seller | null>(null);
+  const [isSellerDialogOpen, setIsSellerDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  // Initialize with default seller if none exist
+  const [sellersSelectOptions, setSellersSelectOptions] = useState<
+    SellerData[]
+  >([]);
+  // const [selectedSellerIndex, setSelectedSellerIndex] = useState("");
+  const [editingSeller, setEditingSeller] = useState<SellerData | null>(null);
+
+  const sellerSelectId = useId();
+
+  const isEditMode = Boolean(editingSeller);
+
+  // Load sellers from localStorage on component mount
   useEffect(() => {
-    if (sellers.length === 0) {
-      setSellers([DEFAULT_SELLER]);
-      setSelectedSellerId(DEFAULT_SELLER.id);
-    }
-  }, [sellers, setSellers, setSelectedSellerId]);
+    try {
+      const savedSellers = localStorage.getItem(SELLERS_LOCAL_STORAGE_KEY);
+      const parsedSellers: unknown = savedSellers
+        ? JSON.parse(savedSellers)
+        : [];
 
-  const handleAddSeller = (newSeller: Seller) => {
-    setSellers((prev) => {
-      const updated = [...prev, newSeller];
-      setSelectedSellerId(newSeller.id);
-      onSellerSelect(newSeller);
-      return updated;
-    });
-    setIsDialogOpen(false);
-  };
+      // Validate sellers array with Zod
+      const sellersSchema = z.array(sellerSchema);
+      const validationResult = sellersSchema.safeParse(parsedSellers);
 
-  const handleEditSeller = (updatedSeller: Seller) => {
-    setSellers((prev) =>
-      prev.map((s) => (s.id === updatedSeller.id ? updatedSeller : s)),
-    );
-    setIsDialogOpen(false);
-    setEditingSeller(null);
-  };
-
-  const handleDeleteSeller = (id: string) => {
-    setSellers((prev) => {
-      let updated = prev.filter((s) => s.id !== id);
-      if (updated.length === 0) {
-        updated = [DEFAULT_SELLER];
-        setSelectedSellerId(DEFAULT_SELLER.id);
-        onSellerSelect(DEFAULT_SELLER);
-      } else if (id === selectedSellerId) {
-        const newSelected = updated[0];
-        setSelectedSellerId(newSelected.id);
-        onSellerSelect(newSelected);
+      if (!validationResult.success) {
+        console.error("Invalid sellers data:", validationResult.error);
+        return;
       }
-      return updated;
-    });
-  };
 
-  const handleSellerChange = (id: string) => {
-    const seller = sellers.find((s) => s.id === id);
-    if (seller) {
-      setSelectedSellerId(id);
-      onSellerSelect(seller);
+      const selectedSeller = validationResult.data.find(
+        (seller: SellerData) => {
+          return seller?.id === invoiceData?.seller?.id;
+        },
+      );
+
+      setSellersSelectOptions(validationResult.data);
+      setSelectedSellerId(selectedSeller?.id ?? "");
+    } catch (error) {
+      console.error("Failed to load sellers:", error);
+    }
+  }, [invoiceData?.seller?.id, setSelectedSellerId]);
+
+  // Update sellers when a new one is added
+  const handleSellerAdd = (
+    newSeller: SellerData,
+    {
+      shouldApplyNewSellerToInvoice,
+    }: { shouldApplyNewSellerToInvoice: boolean },
+  ) => {
+    try {
+      const newSellerWithId = {
+        ...newSeller,
+        // Generate a unique ID for the new seller (IMPORTANT!) =)
+        id: Date.now().toString(),
+      };
+
+      const newSellers = [...sellersSelectOptions, newSellerWithId];
+
+      // Save to localStorage
+      localStorage.setItem(
+        SELLERS_LOCAL_STORAGE_KEY,
+        JSON.stringify(newSellers),
+      );
+
+      // Update the sellers state
+      setSellersSelectOptions(newSellers);
+
+      // Apply the new seller to the invoice if the user wants to, otherwise just add it to the list and use it later if needed
+      if (shouldApplyNewSellerToInvoice) {
+        setValue("seller", newSellerWithId);
+        setSelectedSellerId(newSellerWithId?.id);
+      }
+
+      toast.success("Seller added successfully", {
+        richColors: true,
+      });
+    } catch (error) {
+      console.error("Failed to add seller:", error);
+
+      toast.error("Failed to add seller", {
+        closeButton: true,
+      });
     }
   };
 
-  const selectedSeller = sellers.find((s) => s.id === selectedSellerId);
+  // Update sellers when edited
+  const handleSellerEdit = (editedSeller: SellerData) => {
+    try {
+      const updatedSellers = sellersSelectOptions.map((seller) =>
+        seller.id === editedSeller.id ? editedSeller : seller,
+      );
+
+      localStorage.setItem(
+        SELLERS_LOCAL_STORAGE_KEY,
+        JSON.stringify(updatedSellers),
+      );
+
+      setSellersSelectOptions(updatedSellers);
+      setValue("seller", editedSeller);
+
+      // end edit mode
+      setEditingSeller(null);
+
+      toast.success("Seller updated successfully", {
+        richColors: true,
+      });
+    } catch (error) {
+      console.error("Failed to edit seller:", error);
+
+      toast.error("Failed to edit seller", {
+        closeButton: true,
+      });
+    }
+  };
+
+  const handleSellerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = event.target.value;
+
+    if (id) {
+      setSelectedSellerId(id);
+      const selectedSeller = sellersSelectOptions.find(
+        (seller) => seller.id === id,
+      );
+
+      if (selectedSeller) {
+        setValue("seller", selectedSeller);
+      }
+    } else {
+      // Clear the seller from the form if the user selects the empty option
+      setSelectedSellerId("");
+      setValue("seller", DEFAULT_SELLER_DATA);
+    }
+  };
+
+  const handleDeleteSeller = () => {
+    try {
+      setSellersSelectOptions((prevSellers) => {
+        const updatedSellers = prevSellers.filter(
+          (seller) => seller.id !== selectedSellerId,
+        );
+
+        localStorage.setItem(
+          SELLERS_LOCAL_STORAGE_KEY,
+          JSON.stringify(updatedSellers),
+        );
+        return updatedSellers;
+      });
+      // Clear the selected seller index
+      setSelectedSellerId("");
+      // Clear the seller from the form if it was selected
+      setValue("seller", DEFAULT_SELLER_DATA);
+
+      // Close the delete dialog
+      setIsDeleteDialogOpen(false);
+
+      toast.success("Seller deleted successfully", {
+        richColors: true,
+      });
+    } catch (error) {
+      console.error("Failed to delete seller:", error);
+
+      toast.error("Failed to delete seller", {
+        closeButton: true,
+      });
+    }
+  };
+
+  const activeSeller = sellersSelectOptions.find(
+    (seller) => seller.id === selectedSellerId,
+  );
 
   return (
-    <div className="mb-4 space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex-1 min-w-[200px]">
-          <Label htmlFor="sellerSelect">Select Seller</Label>
-          <SelectNative
-            id="sellerSelect"
-            value={selectedSellerId}
-            onChange={(e) => handleSellerChange(e.target.value)}
-            className="mt-1 w-full"
-          >
-            {sellers.map((seller) => (
-              <option key={seller.id} value={seller.id}>
-                {seller.name || "Unnamed Seller"}
-              </option>
-            ))}
-          </SelectNative>
-        </div>
-
-        <div className="flex gap-2">
-          <CustomTooltip
-            trigger={
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setEditingSeller(selectedSeller || null);
-                  setIsDialogOpen(true);
-                }}
+    <>
+      <div className="flex flex-col gap-2">
+        {sellersSelectOptions.length > 0 ? (
+          <div className="space-y-1">
+            <div className="flex items-center gap-1">
+              <Label htmlFor={sellerSelectId} className="">
+                Select Seller
+              </Label>
+            </div>
+            <div className="flex gap-2">
+              <SelectNative
+                id={sellerSelectId}
+                className={cn(
+                  "block h-8 max-w-[200px] text-[12px]",
+                  !selectedSellerId && "italic text-gray-700",
+                )}
+                onChange={handleSellerChange}
+                value={selectedSellerId}
+                title={activeSeller?.name}
               >
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit
-              </Button>
-            }
-            content="Edit seller details"
-          />
+                <option value="">No seller selected (default)</option>
+                {sellersSelectOptions.map((seller) => (
+                  <option key={seller.id} value={seller.id}>
+                    {seller.name}
+                  </option>
+                ))}
+              </SelectNative>
 
-          <CustomTooltip
-            trigger={
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setEditingSeller(null);
-                  setIsDialogOpen(true);
-                }}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add
-              </Button>
-            }
-            content="Add new seller"
-          />
-        </div>
+              {selectedSellerId ? (
+                <div className="flex items-center gap-2">
+                  <CustomTooltip
+                    trigger={
+                      <Button
+                        _variant="outline"
+                        _size="sm"
+                        onClick={() => {
+                          if (activeSeller) {
+                            // dismiss any existing toast for better UX
+                            toast.dismiss();
+
+                            setEditingSeller(activeSeller);
+                            setIsSellerDialogOpen(true);
+                          }
+                        }}
+                        className="h-8 px-2"
+                      >
+                        <span className="sr-only">Edit seller</span>
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                    }
+                    content="Edit seller"
+                  />
+                  <CustomTooltip
+                    trigger={
+                      <Button
+                        _variant="destructive"
+                        _size="sm"
+                        onClick={() => {
+                          // dismiss any existing toast for better UX
+                          toast.dismiss();
+
+                          setIsDeleteDialogOpen(true);
+                        }}
+                        className="h-8 px-2"
+                      >
+                        <span className="sr-only">Delete seller</span>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    }
+                    content="Delete seller"
+                  />
+                </div>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
+
+        <CustomTooltip
+          className={cn(!isLocalStorageAvailable && "bg-red-50")}
+          trigger={
+            <Button
+              _variant="outline"
+              _size="sm"
+              onClick={() => {
+                if (isLocalStorageAvailable) {
+                  // dismiss any existing toast for better UX
+                  toast.dismiss();
+
+                  // open seller dialog
+                  setIsSellerDialogOpen(true);
+                } else {
+                  toast.error("Unable to add seller", {
+                    description: (
+                      <>
+                        <p className="text-pretty text-xs leading-relaxed text-red-700">
+                          Local storage is not available in your browser. Please
+                          enable it or try another browser.
+                        </p>
+                      </>
+                    ),
+                  });
+                }
+              }}
+              aria-disabled={!isLocalStorageAvailable} // better UX than 'disabled'
+            >
+              New Seller
+              <Plus className="ml-1 h-3 w-3" />
+            </Button>
+          }
+          content={
+            isLocalStorageAvailable ? (
+              <div className="flex items-center gap-3 p-2">
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-slate-900">
+                    Save Sellers for Quick Access
+                  </p>
+                  <p className="text-pretty text-xs leading-relaxed text-slate-700">
+                    Store multiple sellers to easily reuse their information in
+                    future invoices. All data is saved locally in your browser.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 bg-red-50 p-3">
+                <AlertCircleIcon className="h-5 w-5 flex-shrink-0 fill-red-600 text-white" />
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-red-800">
+                    Storage Not Available
+                  </p>
+                  <p className="text-pretty text-xs leading-relaxed text-red-700">
+                    Local storage is not available in your browser. Please
+                    enable it or try another browser to save seller information.
+                  </p>
+                </div>
+              </div>
+            )
+          }
+        />
       </div>
 
-      {selectedSeller && sellers.length > 1 && (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              type="button"
-              variant="destructive"
-              size="sm"
-              className="w-fit"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Delete Seller
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This action cannot be undone. This will permanently delete the
-                seller information.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => handleDeleteSeller(selectedSeller.id)}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-
       <SellerDialog
-        open={isDialogOpen}
-        onOpenChange={(open) => {
-          if (!open) {
-            setIsDialogOpen(false);
-            setEditingSeller(null);
-          }
+        // we need to rerender the dialog when the editingSeller changes
+        key={editingSeller?.id}
+        isOpen={isSellerDialogOpen}
+        onClose={() => {
+          setIsSellerDialogOpen(false);
+          setEditingSeller(null);
         }}
-        onSave={editingSeller ? handleEditSeller : handleAddSeller}
-        seller={editingSeller || undefined}
+        handleSellerAdd={handleSellerAdd}
+        handleSellerEdit={handleSellerEdit}
+        initialData={editingSeller}
+        isEditMode={isEditMode}
+        formValues={formValues}
       />
-    </div>
+
+      {/* Delete alert seller dialog */}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Seller</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete{" "}
+              <span className="font-bold">
+                &quot;{activeSeller?.name}&quot;
+              </span>{" "}
+              seller? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteSeller}
+              className="bg-red-500 text-red-50 hover:bg-red-500/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

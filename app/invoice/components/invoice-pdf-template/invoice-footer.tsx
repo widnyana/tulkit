@@ -14,7 +14,7 @@ export function InvoiceFooter({
   styles: typeof PDF_DEFAULT_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
 
   const invoiceNumberValue = invoiceData?.invoiceNumberObject?.value;
 

@@ -11,7 +11,7 @@ export function StripeInvoiceHeader({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
   const hasLogo = invoiceData.logo && invoiceData.logo.length > 0;
 
   return (

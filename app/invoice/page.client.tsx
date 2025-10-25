@@ -21,13 +21,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./components/ui/dialog";
-import { CustomTooltip, TooltipProvider } from "./components/ui/tooltip";
+import { TooltipProvider } from "./components/ui/tooltip";
 import { INITIAL_INVOICE_DATA } from "./constants";
 import {
-  type InvoiceData,
   invoiceSchema,
   PDF_DATA_LOCAL_STORAGE_KEY,
   SUPPORTED_TEMPLATES,
+  type InvoiceData,
 } from "./schema";
 import {
   compressInvoiceData,
@@ -142,7 +142,18 @@ export function InvoicePageClient() {
 
   // Handle invoice data changes
   const handleInvoiceDataChange = useCallback((updatedData: InvoiceData) => {
-    setInvoiceDataState(updatedData);
+    // Use functional update to access current state and prevent unnecessary updates
+    setInvoiceDataState((currentData) => {
+      // Deep comparison using JSON.stringify to check if data actually changed
+      // This prevents unnecessary re-renders when the data values are the same
+      if (
+        currentData &&
+        JSON.stringify(currentData) === JSON.stringify(updatedData)
+      ) {
+        return currentData; // Return same reference to prevent re-render
+      }
+      return updatedData;
+    });
 
     // Save to localStorage
     if (isLocalStorageAvailable()) {
@@ -203,22 +214,25 @@ export function InvoicePageClient() {
         </div>
 
         <div className="mb-4 flex gap-2">
-          <InvoicePDFDownloadLink invoiceData={invoiceDataState} />
-          <CustomTooltip
-            content={
+          <InvoicePDFDownloadLink
+            invoiceData={invoiceDataState}
+            errorWhileGeneratingPdfIsShown={errorWhileGeneratingPdfIsShown}
+            setErrorWhileGeneratingPdfIsShown={
+              setErrorWhileGeneratingPdfIsShown
+            }
+          />
+          <Button
+            onClick={handleShareInvoice}
+            disabled={!canShareInvoice}
+            variant="outline"
+            title={
               canShareInvoice
                 ? "Copy shareable link to clipboard"
                 : "Fix validation errors before sharing"
             }
           >
-            <Button
-              onClick={handleShareInvoice}
-              disabled={!canShareInvoice}
-              variant="outline"
-            >
-              Share Invoice
-            </Button>
-          </CustomTooltip>
+            Share Invoice
+          </Button>
         </div>
 
         <InvoiceClientPage

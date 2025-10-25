@@ -28,7 +28,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import type React from "react";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
 import { useDebouncedCallback } from "use-debounce";
@@ -69,6 +69,9 @@ export const InvoiceForm = memo(function InvoiceForm({
   handleInvoiceDataChange,
   setCanShareInvoice,
 }: InvoiceFormProps) {
+  // Track if we're updating from external source to prevent infinite loop
+  const isExternalUpdateRef = useRef(false);
+
   const form = useForm<InvoiceData>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: invoiceData,
@@ -158,17 +161,13 @@ export const InvoiceForm = memo(function InvoiceForm({
   // regenerate pdf on every input change with debounce
   const debouncedRegeneratePdfOnFormChange = useDebouncedCallback(
     (data: InvoiceData) => {
-      // submit form e.g. regenerates pdf and run form validations
-      void handleSubmit(onSubmit)(data as unknown as React.BaseSyntheticEvent);
-
       try {
         const validatedData = invoiceSchema.parse(data);
 
-        const stringifiedData = JSON.stringify(validatedData);
-
-        localStorage.setItem(PDF_DATA_LOCAL_STORAGE_KEY, stringifiedData);
+        // Update invoice data state (regenerates PDF and saves to localStorage)
+        handleInvoiceDataChange(validatedData);
       } catch (error) {
-        console.error("Error saving to local storage:", error);
+        console.error("Error validating data:", error);
       }
     },
     // debounce delay in ms
@@ -178,6 +177,11 @@ export const InvoiceForm = memo(function InvoiceForm({
   // subscribe to form changes to regenerate pdf on every input change
   useEffect(() => {
     const subscription = watch((value) => {
+      // Skip if this change came from external update (parent state change)
+      if (isExternalUpdateRef.current) {
+        isExternalUpdateRef.current = false;
+        return;
+      }
       debouncedRegeneratePdfOnFormChange(value as unknown as InvoiceData);
     });
 

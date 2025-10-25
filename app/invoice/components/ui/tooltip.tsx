@@ -18,7 +18,7 @@ const TooltipTrigger = React.memo(TooltipPrimitive.Trigger);
 
 const TooltipContent = React.memo(
   React.forwardRef<
-    typeof TooltipPrimitive.Content,
+    HTMLDivElement,
     React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content> & {
       showArrow?: boolean;
     }
@@ -44,7 +44,8 @@ const TooltipContent = React.memo(
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
 interface CustomTooltipProps {
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
+  children?: React.ReactNode;
   content: React.ReactNode;
   className?: string;
   side?: "top" | "right" | "bottom" | "left";
@@ -53,44 +54,45 @@ interface CustomTooltipProps {
   showArrow?: boolean;
 }
 
-const CustomTooltip = React.memo(
-  ({
-    trigger,
-    content,
-    className,
-    side = "top",
-    align = "center",
-    delayDuration = 300,
-    showArrow = false,
-  }: CustomTooltipProps) => {
-    // Memoize both trigger and content
-    const memoizedTrigger = React.useMemo(() => trigger, [trigger]);
-    const memoizedContent = React.useMemo(() => content, [content]);
+/**
+ * CustomTooltip - Simple tooltip wrapper using native title attribute.
+ * Avoids Radix UI infinite loop issues with asChild.
+ *
+ * @example
+ * <CustomTooltip content="Click me" trigger={<Button>Click</Button>} />
+ */
+const CustomTooltip = ({
+  trigger,
+  children,
+  content,
+}: CustomTooltipProps) => {
+  const triggerElement = trigger || children;
 
-    return (
-      <Tooltip delayDuration={delayDuration}>
-        <TooltipTrigger asChild>{memoizedTrigger}</TooltipTrigger>
-        {memoizedContent ? (
-          <TooltipContent
-            side={side}
-            align={align}
-            className={cn("px-2 py-1 text-xs", className)}
-            showArrow={showArrow}
-          >
-            {memoizedContent}
-          </TooltipContent>
-        ) : null}
-      </Tooltip>
-    );
-  },
-);
+  // If no content, return trigger as-is
+  if (!content) {
+    return <>{triggerElement}</>;
+  }
+
+  // Clone the trigger element and add title attribute
+  if (React.isValidElement(triggerElement)) {
+    return React.cloneElement(triggerElement, {
+      // @ts-ignore - title is valid on all HTML elements
+      title: typeof content === 'string' ? content : undefined,
+    } as any);
+  }
+
+  // Fallback: wrap in span with title
+  return (
+    <span title={typeof content === 'string' ? content : undefined}>
+      {triggerElement}
+    </span>
+  );
+};
 CustomTooltip.displayName = "CustomTooltip";
 
 export {
-  Tooltip,
+  CustomTooltip, Tooltip,
   TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-  CustomTooltip,
-  TooltipProviderWrapper,
+  TooltipProvider, TooltipProviderWrapper, TooltipTrigger
 };
+
