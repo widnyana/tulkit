@@ -1,9 +1,9 @@
 import { Button } from "@/app/invoice/components/ui/button";
 import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from "@/app/invoice/components/ui/tabs";
 import { CustomTooltip } from "@/app/invoice/components/ui/tooltip";
 import type { InvoiceData } from "@/app/invoice/schema";
@@ -70,7 +70,6 @@ const PdfViewer = ({
     switch (invoiceData.template) {
       case "stripe":
         return <StripeInvoicePdfTemplate invoiceData={invoiceData} />;
-      case "default":
       default:
         return <InvoicePdfTemplate invoiceData={invoiceData} />;
     }
@@ -218,10 +217,10 @@ export function InvoiceClientPage({
           </div>
         </div>
       ) : (
-        // Desktop View
-        <>
-          <div className="col-span-4">
-            <div className="h-[620px] overflow-auto border-b px-3 pl-0 2xl:h-[700px]">
+        // Desktop View - side by side layout
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-5">
+            <div className="h-[620px] overflow-auto border border-gray-200 rounded-lg px-3 pl-0 2xl:h-[700px]">
               <InvoiceForm
                 invoiceData={invoiceDataState}
                 handleInvoiceDataChange={handleInvoiceDataChange}
@@ -229,14 +228,16 @@ export function InvoiceClientPage({
               />
             </div>
           </div>
-          <div className="col-span-8 h-[620px] w-full max-w-full 2xl:h-[700px]">
-            <PdfViewer
-              invoiceData={invoiceDataState}
-              errorWhileGeneratingPdfIsShown={errorWhileGeneratingPdfIsShown}
-              isMobile={false}
-            />
+          <div className="col-span-7 h-[620px] w-full max-w-full 2xl:h-[700px]">
+            <div className="h-full border border-gray-200 rounded-lg overflow-hidden">
+              <PdfViewer
+                invoiceData={invoiceDataState}
+                errorWhileGeneratingPdfIsShown={errorWhileGeneratingPdfIsShown}
+                isMobile={false}
+              />
+            </div>
           </div>
-        </>
+        </div>
       )}
     </>
   );

@@ -3,31 +3,31 @@ import { Button } from "@/app/invoice/components/ui/button";
 import { Plus, Trash2 } from "lucide-react";
 import { memo } from "react";
 import {
-    type Control,
-    Controller,
-    type FieldArrayWithId,
-    type FieldErrors,
-    type UseFieldArrayAppend,
+  type Control,
+  Controller,
+  type FieldArrayWithId,
+  type FieldErrors,
+  type UseFieldArrayAppend,
 } from "react-hook-form";
 
 import { Input } from "@/app/invoice/components/ui/input";
 import { InputHelperMessage } from "@/app/invoice/components/ui/input-helper-message";
 import { Label } from "@/app/invoice/components/ui/label";
 import {
-    MoneyInput,
-    ReadOnlyMoneyInput,
+  MoneyInput,
+  ReadOnlyMoneyInput,
 } from "@/app/invoice/components/ui/money-input";
 import { Switch } from "@/app/invoice/components/ui/switch";
 import { Textarea } from "@/app/invoice/components/ui/textarea";
 import { CustomTooltip } from "@/app/invoice/components/ui/tooltip";
 import type {
-    InvoiceData,
-    SupportedCurrencies,
-    SupportedLanguages,
+  InvoiceData,
+  SupportedCurrencies,
+  SupportedLanguages,
 } from "@/app/invoice/schema";
 import {
-    getAmountInWords,
-    getNumberFractionalPart,
+  getAmountInWords,
+  getNumberFractionalPart,
 } from "@/app/invoice/utils/invoice.utils";
 
 const ErrorMessage = ({ children }: { children: React.ReactNode }) => {

@@ -3,7 +3,6 @@ import type {
   SupportedLanguages,
 } from "@/app/invoice/schema";
 
-
 export function formatCurrency({
   amount,
   currency,
