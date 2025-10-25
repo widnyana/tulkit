@@ -23,7 +23,6 @@ export function StripeItemsTable({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
 
   // Set dayjs locale based on invoice language
   dayjs.locale(language);
@@ -51,21 +50,21 @@ export function StripeItemsTable({
       {/* Table header */}
       <View style={styles.tableHeader}>
         <View style={styles.colDescription}>
-          <Text style={[styles.fontSize8]}>{t.stripe.description}</Text>
+          <Text style={[styles.fontSize8]}>Description</Text>
         </View>
         <View style={styles.colQty}>
-          <Text style={[styles.fontSize8]}>{t.stripe.qty}</Text>
+          <Text style={[styles.fontSize8]}>Qty</Text>
         </View>
         <View style={styles.colUnitPrice}>
-          <Text style={[styles.fontSize8]}>{t.stripe.unitPrice}</Text>
+          <Text style={[styles.fontSize8]}>Unit Price</Text>
         </View>
         {canShowVat ? (
           <View style={styles.colTax}>
-            <Text style={[styles.fontSize8]}>{t.stripe.tax}</Text>
+            <Text style={[styles.fontSize8]}>Tax</Text>
           </View>
         ) : null}
         <View style={styles.colAmount}>
-          <Text style={[styles.fontSize8]}>{t.stripe.amount}</Text>
+          <Text style={[styles.fontSize8]}>Amount</Text>
         </View>
       </View>
 

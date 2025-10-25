@@ -5,7 +5,6 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { CustomTooltip } from "./tooltip";
 
 const Accordion = AccordionPrimitive.Root;
 
@@ -35,12 +34,7 @@ const AccordionTrigger = React.forwardRef<
       {...props}
     >
       {children}
-      <CustomTooltip
-        trigger={
-          <ChevronDown className="h-6 w-6 shrink-0 rounded-full p-1 transition-all duration-200 hover:bg-gray-200" />
-        }
-        content="Expand/Collapse Section"
-      />
+      <ChevronDown className="h-6 w-6 shrink-0 rounded-full p-1 transition-all duration-200 hover:bg-gray-200" />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));

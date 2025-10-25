@@ -13,7 +13,7 @@ export function StripeInvoiceInfo({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
 
   const dateOfIssue = dayjs(invoiceData.dateOfIssue).format(
     invoiceData.dateFormat,

@@ -13,7 +13,7 @@ export function InvoiceVATSummaryTable({
   styles: typeof PDF_DEFAULT_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
 
   const sortedItems = [...(invoiceData?.items ?? [])].sort((a, b) => {
     // Handle cases where either value is a string (NP or OO)

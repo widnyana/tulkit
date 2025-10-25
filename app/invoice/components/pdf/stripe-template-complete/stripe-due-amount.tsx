@@ -23,7 +23,6 @@ export function StripeDueAmount({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
 
   // Set dayjs locale based on invoice language
   dayjs.locale(language);
@@ -38,7 +37,7 @@ export function StripeDueAmount({
   return (
     <View>
       <Text style={[styles.fontSize14, styles.fontBold, styles.mb8]}>
-        {formattedInvoiceTotal} {t.stripe.due} {paymentDueDate}
+        {formattedInvoiceTotal} due {paymentDueDate}
       </Text>
       {hasPayOnlineUrl ? (
         <Link
@@ -49,7 +48,7 @@ export function StripeDueAmount({
             { color: "#635BFF", textDecoration: "underline" },
           ]}
         >
-          {t.stripe.payOnline}
+          Pay Online
         </Link>
       ) : null}
     </View>

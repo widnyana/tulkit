@@ -1,16 +1,28 @@
 "use client";
 
-import { type InvoiceData } from "@/app/invoice/schema";
+import type { InvoiceData } from "@/app/invoice/schema";
+import { formatCurrency } from "@/app/invoice/utils/format-currency";
+import { STATIC_ASSETS_URL } from "@/config";
 import {
   Document,
   Font,
   Page,
   StyleSheet,
+  type Styles,
   Text,
   View,
-  type Styles,
 } from "@react-pdf/renderer/lib/react-pdf.browser";
-
+import dayjs from "dayjs";
+import "dayjs/locale/de";
+import "dayjs/locale/en";
+import "dayjs/locale/es";
+import "dayjs/locale/fr";
+import "dayjs/locale/it";
+import "dayjs/locale/nl";
+import "dayjs/locale/pl";
+import "dayjs/locale/pt";
+import "dayjs/locale/ru";
+import "dayjs/locale/uk";
 import { memo } from "react";
 import { StripeDueAmount } from "./stripe-due-amount";
 import { StripeFooter } from "./stripe-footer";
@@ -19,20 +31,6 @@ import { StripeInvoiceInfo } from "./stripe-invoice-info";
 import { StripeItemsTable } from "./stripe-items-table";
 import { StripeSellerBuyerInfo } from "./stripe-seller-buyer-info";
 import { StripeTotals } from "./stripe-totals";
-import { STATIC_ASSETS_URL } from "@/config";
-import { formatCurrency } from "@/app/invoice/utils/format-currency";
-
-import "dayjs/locale/en";
-import "dayjs/locale/pl";
-import "dayjs/locale/de";
-import "dayjs/locale/es";
-import "dayjs/locale/pt";
-import "dayjs/locale/ru";
-import "dayjs/locale/uk";
-import "dayjs/locale/fr";
-import "dayjs/locale/it";
-import "dayjs/locale/nl";
-import dayjs from "dayjs";
 
 const fontFamily = "Inter";
 
@@ -40,17 +38,17 @@ Font.register({
   family: fontFamily,
   fonts: [
     {
-      src: `${STATIC_ASSETS_URL}/Inter-Regular.ttf`,
+      src: `${STATIC_ASSETS_URL}/fonts/Inter-Regular.ttf`,
       fontWeight: 400,
       fontStyle: "normal",
     },
     {
-      src: `${STATIC_ASSETS_URL}/Inter-Medium.ttf`,
+      src: `${STATIC_ASSETS_URL}/fonts/Inter-Medium.ttf`,
       fontWeight: 500,
       fontStyle: "normal",
     },
     {
-      src: `${STATIC_ASSETS_URL}/Inter-SemiBold.ttf`,
+      src: `${STATIC_ASSETS_URL}/fonts/Inter-SemiBold.ttf`,
       fontWeight: 600,
       fontStyle: "normal",
     },
@@ -207,7 +205,7 @@ export const StripeInvoicePdfTemplate = memo(function StripeInvoicePdfTemplate({
 
   const invoiceNumberValue = invoiceData?.invoiceNumberObject?.value;
   const invoiceNumber = `${invoiceNumberValue}`;
-  const invoiceDocTitle = `Invoice ${invoiceNumber} | Created with https://easyinvoicepdf.com`;
+  const invoiceDocTitle = `Invoice ${invoiceNumber}`;
 
   const formattedInvoiceTotal = formatCurrency({
     amount: invoiceData?.total,

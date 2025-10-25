@@ -14,7 +14,7 @@ export function StripeTotals({
   styles: typeof STRIPE_TEMPLATE_STYLES;
 }) {
   const language = invoiceData.language;
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS;
 
   // Calculate subtotal (sum of all items)
   const subtotal = invoiceData.items.reduce(

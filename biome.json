@@ -24,10 +24,6 @@
       "a11y": {
         "noSvgWithoutTitle": "off"
       }
-    },
-    "domains": {
-      "next": "recommended",
-      "react": "recommended"
     }
   },
   "assist": {
