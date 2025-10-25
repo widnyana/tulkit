@@ -27,7 +27,7 @@ import { Label } from "./ui/label";
 import { SelectNative } from "./ui/select-native";
 import { CustomTooltip } from "./ui/tooltip";
 
-export const BUYERS_LOCAL_STORAGE_KEY = "EASY_INVOICE_PDF_BUYERS";
+export const BUYERS_LOCAL_STORAGE_KEY = "TULKIT_PDF_BUYERS";
 
 interface BuyerManagementProps {
   setValue: UseFormSetValue<InvoiceData>;

@@ -1,13 +1,15 @@
+import { usePDF } from "@react-pdf/renderer";
+import { Download, Loader2 } from "lucide-react";
+import dayjs from "dayjs";
+import { useCallback, useEffect, useMemo } from "react";
+
+import { cn } from "@/lib/utils";
+
 import {
   type InvoiceData,
   LANGUAGE_TO_LABEL,
   type SupportedLanguages,
 } from "@/app/invoice/schema";
-import { cn } from "@/lib/utils";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import dayjs from "dayjs";
-import { Loader2 } from "lucide-react";
-import { useMemo } from "react";
 import { LOADING_BUTTON_TEXT } from "./form-complete";
 import { StripeInvoicePdfTemplate } from "./invoice-pdf-stripe-template";
 import { InvoicePdfTemplate } from "./invoice-pdf-template";
@@ -31,7 +33,12 @@ const ButtonContent = ({
 
   const languageLabel = LANGUAGE_TO_LABEL[language];
 
-  return `Download PDF in ${languageLabel}`;
+  return (
+    <span className="inline-flex items-center">
+      <Download className="mr-2 h-4 w-4" />
+      {`Download PDF in ${languageLabel}`}
+    </span>
+  );
 };
 
 export function InvoicePDFDownloadLink({
@@ -43,54 +50,70 @@ export function InvoicePDFDownloadLink({
   errorWhileGeneratingPdfIsShown: boolean;
   setErrorWhileGeneratingPdfIsShown: (error: boolean) => void;
 }) {
-  // Memoize filename to prevent recalculation
+  // Filename that only changes when language or invoice number changes
   const filename = useMemo(() => {
     const invoiceNumberValue = invoiceData?.invoiceNumberObject?.value;
-
-    // Replace all slashes with dashes (e.g. 01/2025 -> 01-2025)
     const formattedInvoiceNumber = invoiceNumberValue
       ? invoiceNumberValue?.replace(/\//g, "-")
-      : dayjs().format("MM-YYYY"); // Fallback to current month and year if no invoice number
+      : dayjs().format("MM-YYYY");
+    return `invoice-${invoiceData?.language?.toUpperCase()}-${formattedInvoiceNumber}.pdf`;
+  }, [invoiceData?.language, invoiceData?.invoiceNumberObject?.value]);
 
-    const name = `invoice-${invoiceData?.language?.toUpperCase()}-${formattedInvoiceNumber}.pdf`;
+  // Create the document based on template
+  const document = useMemo(() => {
+    return invoiceData.template === "stripe" ? (
+      <StripeInvoicePdfTemplate invoiceData={invoiceData} />
+    ) : (
+      <InvoicePdfTemplate invoiceData={invoiceData} />
+    );
+  }, [invoiceData.template, invoiceData]); // Include invoiceData to ensure updates, but template is primary trigger
 
-    return name;
-  }, [invoiceData?.language, invoiceData?.invoiceNumberObject]);
+  // Use usePDF hook to generate the PDF
+  const [instance, updateInstance] = usePDF({ document });
 
-  // Create a memoized PDF document component that only re-renders when the template changes
-  const MemoizedDocumentComponent = useMemo(() => {
-    return function MemoizedDocument() {
-      switch (invoiceData.template) {
-        case "stripe":
-          return <StripeInvoicePdfTemplate invoiceData={invoiceData} />;
-        default:
-          return <InvoicePdfTemplate invoiceData={invoiceData} />;
-      }
-    };
-  }, [invoiceData.template]); // Only re-create when template changes
+  // Update PDF when document changes
+  useEffect(() => {
+    updateInstance(document);
+  }, [document, updateInstance]);
+
+  // Handle download
+  const handleDownload = useCallback(() => {
+    if (instance.url && typeof window !== "undefined") {
+      const link = window.document.createElement("a");
+      link.href = instance.url;
+      link.download = filename;
+      link.click();
+    }
+  }, [instance.url, filename]);
+
+  // Handle errors
+  useEffect(() => {
+    if (instance.error && !errorWhileGeneratingPdfIsShown) {
+      setErrorWhileGeneratingPdfIsShown(true);
+    }
+  }, [
+    instance.error,
+    errorWhileGeneratingPdfIsShown,
+    setErrorWhileGeneratingPdfIsShown,
+  ]);
 
   return (
-    <PDFDownloadLink
-      document={<MemoizedDocumentComponent />}
-      fileName={filename}
+    <button
+      type="button"
+      onClick={handleDownload}
+      disabled={instance.loading}
       className={cn(
-        "h-[36px] w-full rounded-lg bg-slate-900 px-4 py-2 text-center text-sm font-medium text-slate-50",
+        "h-[36px] rounded-lg bg-slate-900 px-4 py-2 text-center text-sm font-medium text-slate-50 min-w-[210px]",
         "shadow-sm shadow-black/5 outline-offset-2 hover:bg-slate-900/90 active:scale-[98%] active:transition-transform",
         "focus-visible:border-indigo-500 focus-visible:ring focus-visible:ring-indigo-200 focus-visible:ring-opacity-50",
-        "dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90 lg:mb-0 lg:w-[210px]",
+        "dark:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-50/90",
+        instance.loading && "opacity-75 cursor-not-allowed",
       )}
     >
-      {({ loading, error }) => {
-        // Show error state
-        if (error && !errorWhileGeneratingPdfIsShown) {
-          setErrorWhileGeneratingPdfIsShown(true);
-        }
-
-        // Return button content based on loading state
-        return (
-          <ButtonContent isLoading={loading} language={invoiceData.language} />
-        );
-      }}
-    </PDFDownloadLink>
+      <ButtonContent
+        isLoading={instance.loading}
+        language={invoiceData.language}
+      />
+    </button>
   );
 }

@@ -61,11 +61,7 @@ interface CustomTooltipProps {
  * @example
  * <CustomTooltip content="Click me" trigger={<Button>Click</Button>} />
  */
-const CustomTooltip = ({
-  trigger,
-  children,
-  content,
-}: CustomTooltipProps) => {
+const CustomTooltip = ({ trigger, children, content }: CustomTooltipProps) => {
   const triggerElement = trigger || children;
 
   // If no content, return trigger as-is
@@ -77,13 +73,13 @@ const CustomTooltip = ({
   if (React.isValidElement(triggerElement)) {
     return React.cloneElement(triggerElement, {
       // @ts-ignore - title is valid on all HTML elements
-      title: typeof content === 'string' ? content : undefined,
+      title: typeof content === "string" ? content : undefined,
     } as any);
   }
 
   // Fallback: wrap in span with title
   return (
-    <span title={typeof content === 'string' ? content : undefined}>
+    <span title={typeof content === "string" ? content : undefined}>
       {triggerElement}
     </span>
   );
@@ -91,8 +87,10 @@ const CustomTooltip = ({
 CustomTooltip.displayName = "CustomTooltip";
 
 export {
-  CustomTooltip, Tooltip,
+  CustomTooltip,
+  Tooltip,
   TooltipContent,
-  TooltipProvider, TooltipProviderWrapper, TooltipTrigger
+  TooltipProvider,
+  TooltipProviderWrapper,
+  TooltipTrigger,
 };
-

@@ -8,10 +8,10 @@ import { CustomTooltip } from "@/app/invoice/components/ui/tooltip";
 import type { BuyerData, InvoiceData } from "@/app/invoice/schema";
 import { memo, useState } from "react";
 import {
-    type Control,
-    Controller,
-    type FieldErrors,
-    type UseFormSetValue,
+  type Control,
+  Controller,
+  type FieldErrors,
+  type UseFormSetValue,
 } from "react-hook-form";
 
 const ErrorMessage = ({ children }: { children: React.ReactNode }) => {

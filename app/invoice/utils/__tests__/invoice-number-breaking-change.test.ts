@@ -8,7 +8,6 @@ vi.mock("@/lib/umami-analytics-track-event", () => ({
   umamiTrackEvent: vi.fn(),
 }));
 
-
 describe("handleInvoiceNumberBreakingChange", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -54,7 +53,6 @@ describe("handleInvoiceNumberBreakingChange", () => {
           value: "FAKT-001",
         },
       });
-
     });
 
     it("should transform invoiceNumber with German language", () => {
@@ -72,7 +70,6 @@ describe("handleInvoiceNumberBreakingChange", () => {
           value: "RG-2024-001",
         },
       });
-
     });
 
     it("should preserve all other fields when transforming", () => {
@@ -213,7 +210,6 @@ describe("handleInvoiceNumberBreakingChange", () => {
           value: "",
         },
       });
-
     });
 
     it("should return unchanged when input is null", () => {
@@ -238,7 +234,6 @@ describe("handleInvoiceNumberBreakingChange", () => {
       expect(handleInvoiceNumberBreakingChange(booleanInput)).toBe(
         booleanInput,
       );
-
     });
 
     it("should return unchanged when input is an array", () => {
@@ -270,7 +265,6 @@ describe("handleInvoiceNumberBreakingChange", () => {
           value: "OLD-001",
         },
       });
-
     });
 
     it("should handle all supported languages correctly", () => {
