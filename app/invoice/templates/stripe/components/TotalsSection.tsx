@@ -6,87 +6,48 @@ interface TotalsSectionProps {
   invoiceData: InvoiceData;
 }
 
+const styles = stripeTemplateStyles;
+
 export const StripeTemplateTotalsSection = ({
   invoiceData,
 }: TotalsSectionProps) => {
-  // Calculate totals
   const subtotal = invoiceData.items.reduce(
-    (sum, item) => sum + item.quantity * item.unitPrice,
+    (sum, item) => sum + item.quantity * item.price,
     0,
   );
-  const taxAmount = invoiceData.taxEnabled
-    ? subtotal * (invoiceData.taxRate / 100)
+  const taxAmount = invoiceData.taxRate
+    ? (subtotal * invoiceData.taxRate) / 100
     : 0;
   const total = subtotal + taxAmount;
+  const currency = invoiceData.currency;
 
   return (
-    <View
-      style={[stripeTemplateStyles.totalsSection, stripeTemplateStyles.mb16]}
-    >
-      <View style={stripeTemplateStyles.totalRow}>
-        <Text
-          style={[
-            stripeTemplateStyles.fontSize10,
-            stripeTemplateStyles.textGray,
-          ]}
-        >
-          Subtotal
-        </Text>
-        <Text
-          style={[
-            stripeTemplateStyles.fontSize10,
-            stripeTemplateStyles.textDark,
-          ]}
-        >
-          ${subtotal.toFixed(2)}
+    <View style={styles.totalsSection}>
+      <View style={styles.totalRow}>
+        <Text style={styles.totalLabel}>Subtotal</Text>
+        <Text style={styles.totalValue}>
+          {currency}
+          {subtotal.toFixed(2)}
         </Text>
       </View>
-      {invoiceData.taxEnabled && (
-        <View style={stripeTemplateStyles.totalRow}>
-          <Text
-            style={[
-              stripeTemplateStyles.fontSize10,
-              stripeTemplateStyles.textGray,
-            ]}
-          >
-            Tax ({invoiceData.taxRate}%)
-          </Text>
-          <Text
-            style={[
-              stripeTemplateStyles.fontSize10,
-              stripeTemplateStyles.textDark,
-            ]}
-          >
-            ${taxAmount.toFixed(2)}
+
+      {invoiceData.taxRate && invoiceData.taxRate > 0 && (
+        <View style={styles.totalRow}>
+          <Text style={styles.totalLabel}>Tax ({invoiceData.taxRate}%)</Text>
+          <Text style={styles.totalValue}>
+            {currency}
+            {taxAmount.toFixed(2)}
           </Text>
         </View>
       )}
-      <View
-        style={[
-          stripeTemplateStyles.totalRow,
-          stripeTemplateStyles.borderTop,
-          { paddingTop: 4 },
-        ]}
-      >
-        <Text
-          style={[
-            stripeTemplateStyles.fontSize12,
-            stripeTemplateStyles.fontBold,
-            stripeTemplateStyles.textDark,
-          ]}
-        >
-          Total
-        </Text>
-        <Text
-          style={[
-            stripeTemplateStyles.fontSize12,
-            stripeTemplateStyles.fontBold,
-            stripeTemplateStyles.textDark,
-          ]}
-        >
-          ${total.toFixed(2)}
+
+      <View style={[styles.totalRow, styles.grandTotalRow]}>
+        <Text style={styles.grandTotalLabel}>Total</Text>
+        <Text style={styles.grandTotalValue}>
+          {currency}
+          {total.toFixed(2)}
         </Text>
       </View>
     </View>
   );
-};
+}

@@ -1,5 +1,5 @@
-import { View, Text } from "@react-pdf/renderer";
-import { InvoiceData } from "../../../../../../../lib/types";
+import type { InvoiceData } from "@/lib/invoice/types";
+import { Text, View } from "@react-pdf/renderer";
 import { stripeTemplateStyles } from "../styles";
 
 interface SellerBuyerInfoProps {
@@ -10,13 +10,20 @@ export const StripeTemplateSellerBuyerInfo = ({
   invoiceData,
 }: SellerBuyerInfoProps) => {
   return (
-    <View style={[stripeTemplateStyles.row, stripeTemplateStyles.mb24]}>
-      <View style={{ flex: 1 }}>
+    <View
+      style={[
+        { flexDirection: "row", justifyContent: "space-between" },
+        stripeTemplateStyles.mb24,
+      ]}
+    >
+      {/* From section - left aligned */}
+      <View style={{ flex: 1, maxWidth: "45%" }}>
         <Text
           style={[
             stripeTemplateStyles.fontSize10,
+            stripeTemplateStyles.fontMedium,
             stripeTemplateStyles.textGray,
-            stripeTemplateStyles.mb4,
+            stripeTemplateStyles.mb2,
           ]}
         >
           From
@@ -24,7 +31,9 @@ export const StripeTemplateSellerBuyerInfo = ({
         <Text
           style={[
             stripeTemplateStyles.fontSize12,
+            stripeTemplateStyles.fontBold,
             stripeTemplateStyles.textDark,
+            stripeTemplateStyles.mb2,
           ]}
         >
           {invoiceData.sender.name}
@@ -33,6 +42,7 @@ export const StripeTemplateSellerBuyerInfo = ({
           style={[
             stripeTemplateStyles.fontSize10,
             stripeTemplateStyles.textDark,
+            { lineHeight: 1.4 },
           ]}
         >
           {invoiceData.sender.address}
@@ -41,6 +51,7 @@ export const StripeTemplateSellerBuyerInfo = ({
           style={[
             stripeTemplateStyles.fontSize10,
             stripeTemplateStyles.textDark,
+            stripeTemplateStyles.mt4,
           ]}
         >
           {invoiceData.sender.email}
@@ -54,12 +65,15 @@ export const StripeTemplateSellerBuyerInfo = ({
           {invoiceData.sender.phone}
         </Text>
       </View>
-      <View style={{ flex: 1 }}>
+
+      {/* Bill To section - right aligned */}
+      <View style={{ flex: 1, maxWidth: "45%", alignItems: "flex-end" }}>
         <Text
           style={[
             stripeTemplateStyles.fontSize10,
+            stripeTemplateStyles.fontMedium,
             stripeTemplateStyles.textGray,
-            stripeTemplateStyles.mb4,
+            stripeTemplateStyles.mb2,
           ]}
         >
           Bill To
@@ -67,7 +81,10 @@ export const StripeTemplateSellerBuyerInfo = ({
         <Text
           style={[
             stripeTemplateStyles.fontSize12,
+            stripeTemplateStyles.fontBold,
             stripeTemplateStyles.textDark,
+            stripeTemplateStyles.mb2,
+            { textAlign: "right" },
           ]}
         >
           {invoiceData.recipient.name}
@@ -76,6 +93,7 @@ export const StripeTemplateSellerBuyerInfo = ({
           style={[
             stripeTemplateStyles.fontSize10,
             stripeTemplateStyles.textDark,
+            { textAlign: "right", lineHeight: 1.0 },
           ]}
         >
           {invoiceData.recipient.address}

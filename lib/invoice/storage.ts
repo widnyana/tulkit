@@ -1,4 +1,4 @@
-import { InvoiceData } from "./types";
+import type { InvoiceData } from "./types";
 
 const INVOICE_STORAGE_KEY = "tulkit_invoice_data";
 
@@ -61,6 +61,7 @@ function isValidInvoiceData(data: any): data is InvoiceData {
     Array.isArray(data.items) &&
     typeof data.taxEnabled === "boolean" &&
     typeof data.taxRate === "number" &&
-    typeof data.templateKey === "string"
+    (typeof data.templateKey === "string" || data.templateKey === undefined) &&
+    (typeof data.currency === "string" || data.currency === undefined)
   );
 }

@@ -5,8 +5,7 @@ import type { InvoiceData } from "@/lib/invoice/types";
 import { invoiceDataSchema } from "@/lib/invoice/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2, Upload, X } from "lucide-react";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -30,7 +29,6 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
   const {
     control,
-    handleSubmit,
     watch,
     setValue,
     formState: { errors },
@@ -109,7 +107,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const addItem = () => {
     append({
       id: Date.now().toString(),
-      description: "",
+      description: "New item",
       quantity: 1,
       unitPrice: 0,
       notes: "",
@@ -122,6 +120,65 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
   return (
     <form className="space-y-6 p-4">
+      {/* Template and Currency Settings */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Template Selector */}
+        <div className="space-y-2">
+          <Controller
+            name="templateKey"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Template
+                </label>
+                <select
+                  {...field}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  value={field.value}
+                >
+                  <option value="default">Default Template</option>
+                  <option value="stripe">Stripe Template</option>
+                </select>
+              </div>
+            )}
+          />
+        </div>
+
+        {/* Currency Symbol */}
+        <div className="space-y-2">
+          <Controller
+            name="currency"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Currency Symbol
+                </label>
+                <select
+                  {...field}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  value={field.value || "$"}
+                >
+                  <option value="$">$ - US Dollar</option>
+                  <option value="€">€ - Euro</option>
+                  <option value="Rp">Rp - Indonesian Rupiah</option>
+                  <option value="£">£ - British Pound</option>
+                  <option value="¥">¥ - Japanese Yen</option>
+                  <option value="₹">₹ - Indian Rupee</option>
+                  <option value="₽">₽ - Russian Ruble</option>
+                  <option value="₩">₩ - South Korean Won</option>
+                  <option value="R$">R$ - Brazilian Real</option>
+                  <option value="A$">A$ - Australian Dollar</option>
+                  <option value="C$">C$ - Canadian Dollar</option>
+                  <option value="CHF">CHF - Swiss Franc</option>
+                  <option value="kr">kr - Swedish Krona</option>
+                </select>
+              </div>
+            )}
+          />
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Sender Information */}
         <div className="space-y-4">
@@ -507,11 +564,14 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             render={({ field }) => (
               <div className="flex items-center">
                 <input
-                  {...field}
                   type="checkbox"
                   checked={field.value}
                   className="h-4 w-4 text-blue-600 rounded"
                   id="taxEnabled"
+                  onChange={(e) => field.onChange(e.target.checked)}
+                  onBlur={field.onBlur}
+                  name={field.name}
+                  ref={field.ref}
                 />
                 <label
                   htmlFor="taxEnabled"
@@ -589,27 +649,6 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 placeholder="Additional notes or terms"
               />
-            </div>
-          )}
-        />
-      </div>
-
-      {/* Template Selector */}
-      <div className="space-y-2">
-        <Controller
-          name="templateKey"
-          control={control}
-          render={({ field }) => (
-            <div>
-              <label className="block text-sm font-medium mb-1">Template</label>
-              <select
-                {...field}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                value={field.value}
-              >
-                <option value="default">Default Template</option>
-                <option value="stripe">Stripe Template</option>
-              </select>
             </div>
           )}
         />

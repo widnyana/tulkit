@@ -1,13 +1,14 @@
 "use client";
 
+import type { InvoiceData } from "@/lib/invoice/types";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Download } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { TEMPLATE_REGISTRY as templates } from "../templates";
+import { DefaultTemplate } from "../templates/default/DefaultTemplate";
+import { StripeTemplate } from "../templates/stripe/StripeTemplate";
 import { Button } from "./ui/button";
-import { InvoiceData } from "@/lib/types";
 
 interface InvoiceDownloadButtonProps {
   invoiceData: InvoiceData;
@@ -17,11 +18,6 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
   invoiceData,
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
-
-  // Memoize the selected template component
-  const SelectedTemplate =
-    templates[invoiceData.templateKey as keyof typeof templates]?.component ||
-    templates.default.component;
 
   // Check if we have valid data to generate
   const hasValidData = invoiceData.sender.name && invoiceData.recipient.name;
@@ -46,18 +42,28 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
   }
 
   return (
-    <div className="p-4">
+    <div className="p-4 border-t bg-gray-50">
       <PDFDownloadLink
-        document={<SelectedTemplate invoiceData={invoiceData} />}
+        key={invoiceData.templateKey || "default"}
+        document={
+          invoiceData.templateKey === "stripe" ? (
+            <StripeTemplate invoiceData={invoiceData} />
+          ) : (
+            <DefaultTemplate invoiceData={invoiceData} />
+          )
+        }
         fileName={`invoice-${invoiceData.invoiceNumber || "untitled"}.pdf`}
-        className="w-full"
+        className="w-full block"
         onClick={handleDownloadStart}
         onError={handleDownloadError}
       >
         {({ loading }) => (
-          <Button disabled={loading || isGenerating} className="w-full">
-            <Download className="w-4 h-4 mr-2" />
-            {loading || isGenerating ? "Generating..." : "Download PDF"}
+          <Button
+            disabled={loading || isGenerating}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-base shadow-sm transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Download className="w-5 h-5 mr-2" />
+            {loading || isGenerating ? "Generating PDF..." : "Download Invoice PDF"}
           </Button>
         )}
       </PDFDownloadLink>

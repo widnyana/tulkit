@@ -1,5 +1,5 @@
-import { View, Text, Image } from "@react-pdf/renderer";
-import { InvoiceData } from "../../../../../../../lib/types";
+import type { InvoiceData } from "@/lib/invoice/types";
+import { Image, Text, View } from "@react-pdf/renderer";
 import { stripeTemplateStyles } from "../styles";
 
 interface HeaderProps {
