@@ -10,14 +10,14 @@ export const StripeTemplateSellerBuyerInfo = ({
   invoiceData,
 }: SellerBuyerInfoProps) => {
   return (
-    <View style={[s.row, s.mb24, { gap: 32 }]}>
+    <View style={[s.spaceBetween, s.mb24]}>
       {/* From section */}
-      <View style={{ flex: 1 }}>
+      <View style={{ width: "45%" }}>
         <Text style={[s.label, s.mb6]}>From</Text>
         <Text style={[s.body, { fontWeight: 600 }, s.mb4]}>
           {invoiceData.sender.name}
         </Text>
-        <Text style={[s.bodySmall, s.mb2]}>
+        <Text style={[s.bodySmall, s.mb4]}>
           {invoiceData.sender.address}
         </Text>
         <Text style={s.bodySmall}>{invoiceData.sender.email}</Text>
@@ -27,12 +27,18 @@ export const StripeTemplateSellerBuyerInfo = ({
       </View>
 
       {/* Bill To section */}
-      <View style={{ flex: 1 }}>
+      <View style={{ width: "45%" }}>
         <Text style={[s.label, s.mb6]}>Bill To</Text>
         <Text style={[s.body, { fontWeight: 600 }, s.mb4]}>
           {invoiceData.recipient.name}
         </Text>
-        <Text style={s.bodySmall}>{invoiceData.recipient.address}</Text>
+        <Text style={[s.bodySmall, s.mb4]}>
+          {invoiceData.recipient.address}
+        </Text>
+        <Text style={s.bodySmall}>{invoiceData.recipient.email}</Text>
+        {invoiceData.recipient.phone && (
+          <Text style={s.bodySmall}>{invoiceData.recipient.phone}</Text>
+        )}
       </View>
     </View>
   );
