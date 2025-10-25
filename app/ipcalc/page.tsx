@@ -90,7 +90,9 @@ export default function IPCalcPage() {
         </div>
 
         <div className="mt-8 bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg text-gray-900 font-semibold mb-3">About This Tool</h3>
+          <h3 className="text-lg text-gray-900 font-semibold mb-3">
+            About This Tool
+          </h3>
           <div className="space-y-2 text-sm text-gray-600">
             <p>
               <strong>Basic Calculator:</strong> Calculate network information
@@ -99,8 +101,8 @@ export default function IPCalcPage() {
             </p>
             <p>
               <strong>Subnet / Supernet:</strong> Generate subnets when
-              increasing the prefix (e.g., /24 to /26) or calculate the
-              supernet when decreasing the prefix (e.g., /24 to /22).
+              increasing the prefix (e.g., /24 to /26) or calculate the supernet
+              when decreasing the prefix (e.g., /24 to /22).
             </p>
             <p>
               <strong>Deaggregator:</strong> Convert an IP address range into

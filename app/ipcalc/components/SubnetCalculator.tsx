@@ -43,11 +43,7 @@ export default function SubnetCalculator() {
 
     if (newCIDRNum > baseCIDR) {
       setMode("subnet");
-      const results = calculateSubnets(
-        baseInfo.network,
-        baseCIDR,
-        newCIDRNum,
-      );
+      const results = calculateSubnets(baseInfo.network, baseCIDR, newCIDRNum);
       if (!results) {
         setError("Failed to calculate subnets");
         return;
