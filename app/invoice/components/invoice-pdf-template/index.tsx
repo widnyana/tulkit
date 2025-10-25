@@ -1,5 +1,5 @@
-import type { InvoiceData } from "@/app/invoice/schema";
 import { STATIC_ASSETS_URL } from "@/config";
+import type { InvoiceData } from "@/lib/invoice/types";
 import {
   Document,
   Font,

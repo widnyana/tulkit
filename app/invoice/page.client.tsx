@@ -1,16 +1,16 @@
 "use client";
 
-import { isLocalStorageAvailable } from "@/lib/check-local-storage";
 import { AlertCircleIcon } from "lucide-react";
 import {
   compressToEncodedURIComponent,
   decompressFromEncodedURIComponent,
 } from "lz-string";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
+
 import { InvoiceClientPage } from "./components/invoice-client";
 import { InvoicePDFDownloadLink } from "./components/invoice-pdf-download-link";
 import { Button } from "./components/ui/button";
@@ -21,21 +21,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./components/ui/dialog";
-import { TooltipProvider } from "./components/ui/tooltip";
+
+import type { InvoiceData } from "@/lib/invoice/types";
 import { INITIAL_INVOICE_DATA } from "./constants";
-import {
-  invoiceSchema,
-  PDF_DATA_LOCAL_STORAGE_KEY,
-  SUPPORTED_TEMPLATES,
-  type InvoiceData,
-} from "./schema";
 import {
   compressInvoiceData,
   decompressInvoiceData,
 } from "./utils/url-compression";
 
 export function InvoicePageClient() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const urlTemplateSearchParam = searchParams.get("template");
@@ -199,7 +193,7 @@ export function InvoicePageClient() {
   }
 
   return (
-    <TooltipProvider>
+    <div>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
@@ -208,62 +202,85 @@ export function InvoicePageClient() {
               Create professional invoices with live PDF preview
             </p>
           </div>
-          <Link href="/">
-            <Button variant="outline">← Back to Toolkit</Button>
-          </Link>
+          <div>
+            <Link
+              href="/"
+              className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Back to Home
+            </Link>
+          </div>
         </div>
-
+      </div>
+      <div className="container mx-auto px-4 py-8">
         <div className="mb-4 flex gap-2">
-          <InvoicePDFDownloadLink
-            invoiceData={invoiceDataState}
+          <div className="mb-4 flex gap-2">
+            <InvoicePDFDownloadLink
+              invoiceData={invoiceDataState}
+              errorWhileGeneratingPdfIsShown={errorWhileGeneratingPdfIsShown}
+              setErrorWhileGeneratingPdfIsShown={
+                setErrorWhileGeneratingPdfIsShown
+              }
+            />
+            <Button
+              onClick={handleShareInvoice}
+              disabled={!canShareInvoice}
+              variant="outline"
+              title={
+                canShareInvoice
+                  ? "Copy shareable link to clipboard"
+                  : "Fix validation errors before sharing"
+              }
+            >
+              Share Invoice
+            </Button>
+          </div>
+
+          <InvoiceClientPage
+            invoiceDataState={invoiceDataState}
+            handleInvoiceDataChange={handleInvoiceDataChange}
+            handleShareInvoice={handleShareInvoice}
+            isMobile={isMobile}
             errorWhileGeneratingPdfIsShown={errorWhileGeneratingPdfIsShown}
             setErrorWhileGeneratingPdfIsShown={
               setErrorWhileGeneratingPdfIsShown
             }
+            setCanShareInvoice={setCanShareInvoice}
+            canShareInvoice={canShareInvoice}
           />
-          <Button
-            onClick={handleShareInvoice}
-            disabled={!canShareInvoice}
-            variant="outline"
-            title={
-              canShareInvoice
-                ? "Copy shareable link to clipboard"
-                : "Fix validation errors before sharing"
-            }
+
+          <Dialog
+            open={errorWhileGeneratingPdfIsShown}
+            onOpenChange={setErrorWhileGeneratingPdfIsShown}
           >
-            Share Invoice
-          </Button>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <AlertCircleIcon className="h-5 w-5 text-red-500" />
+                  PDF Generation Error
+                </DialogTitle>
+                <DialogDescription>
+                  There was an error generating the PDF preview. Please check
+                  your invoice data and try again.
+                </DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
-
-        <InvoiceClientPage
-          invoiceDataState={invoiceDataState}
-          handleInvoiceDataChange={handleInvoiceDataChange}
-          handleShareInvoice={handleShareInvoice}
-          isMobile={isMobile}
-          errorWhileGeneratingPdfIsShown={errorWhileGeneratingPdfIsShown}
-          setErrorWhileGeneratingPdfIsShown={setErrorWhileGeneratingPdfIsShown}
-          setCanShareInvoice={setCanShareInvoice}
-          canShareInvoice={canShareInvoice}
-        />
-
-        <Dialog
-          open={errorWhileGeneratingPdfIsShown}
-          onOpenChange={setErrorWhileGeneratingPdfIsShown}
-        >
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <AlertCircleIcon className="h-5 w-5 text-red-500" />
-                PDF Generation Error
-              </DialogTitle>
-              <DialogDescription>
-                There was an error generating the PDF preview. Please check your
-                invoice data and try again.
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
       </div>
-    </TooltipProvider>
+    </div>
   );
 }
