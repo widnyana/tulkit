@@ -1,41 +1,36 @@
 import type { InvoiceData } from "@/lib/invoice/types";
 import { Text, View } from "@react-pdf/renderer";
-import { stripeTemplateStyles } from "../styles";
+import { stripeTemplateStyles as s } from "../styles";
 
 interface ItemsTableProps {
   invoiceData: InvoiceData;
 }
-const styles = stripeTemplateStyles;
+
 export const StripeTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
   const currency = invoiceData.currency;
 
   return (
-    <View style={styles.itemsTable}>
+    <View style={s.mt20}>
       {/* Table Header */}
-      <View style={styles.tableHeader}>
-        <Text style={[styles.tableHeaderCell, styles.descriptionColumn]}>
-          Description
-        </Text>
-        <Text style={[styles.tableHeaderCell, styles.quantityColumn]}>Qty</Text>
-        <Text style={[styles.tableHeaderCell, styles.amountColumn]}>Amount</Text>
+      <View style={s.tableHeader}>
+        <Text style={[s.label, { flex: 3 }]}>Description</Text>
+        <Text style={[s.label, { flex: 0.8, textAlign: "center" }]}>Qty</Text>
+        <Text style={[s.label, { flex: 1, textAlign: "right" }]}>Amount</Text>
       </View>
 
       {/* Table Rows */}
       {invoiceData.items.map((item, index) => (
-        <View key={index} style={styles.tableRow}>
-          <Text style={[styles.tableCell, styles.descriptionColumn]}>
-            {item.description}
-          </Text>
-          <Text style={[styles.tableCell, styles.quantityColumn]}>
+        <View key={index} style={s.tableRow}>
+          <Text style={[s.tableCell, { flex: 3 }]}>{item.description}</Text>
+          <Text style={[s.tableCellGray, { flex: 0.8, textAlign: "center" }]}>
             {item.quantity}
           </Text>
-          <Text style={[styles.tableCell, styles.amountColumn]}>
+          <Text style={[s.tableCell, { flex: 1, textAlign: "right", fontWeight: 500 }]}>
             {currency}
-            {(item.quantity * item.price).toFixed(2)}
+            {(item.quantity * item.unitPrice).toFixed(2)}
           </Text>
         </View>
       ))}
     </View>
   );
-}
-    
+};

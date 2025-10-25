@@ -162,7 +162,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 >
                   <option value="$">$ - US Dollar</option>
                   <option value="€">€ - Euro</option>
-                  <option value="Rp">Rp - Indonesian Rupiah</option>
+                  <option value="Rp.">Rp - Indonesian Rupiah</option>
                   <option value="£">£ - British Pound</option>
                   <option value="¥">¥ - Japanese Yen</option>
                   <option value="₹">₹ - Indian Rupee</option>
