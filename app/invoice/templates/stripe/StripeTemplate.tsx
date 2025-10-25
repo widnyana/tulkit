@@ -7,11 +7,11 @@ import { StripeTemplateInvoiceDetails } from "./components/InvoiceDetails";
 import { StripeTemplateItemsTable } from "./components/ItemsTable";
 import { StripeTemplateSellerBuyerInfo } from "./components/SellerBuyerInfo";
 import { StripeTemplateTotalsSection } from "./components/TotalsSection";
-import { stripeTemplateStyles } from "./styles";
+import { stripeTemplateStyles as s } from "./styles";
 
 /**
- * Stripe-inspired invoice template
- * Features: Clean design, professional layout, yellow accent bar
+ * Stripe invoice template - Clean minimal design
+ * No borders, no shadows, optimal spacing
  */
 const StripeTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
   invoiceData,
@@ -24,74 +24,44 @@ const StripeTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
       creator="Tulkit Invoice Generator"
       producer="@react-pdf/renderer"
     >
-      <Page size="A4" style={stripeTemplateStyles.page}>
-        {/* Signature yellow accent bar */}
-        <View style={stripeTemplateStyles.headerBar} />
+      <Page size="A4" style={s.page}>
+        {/* Stripe purple accent bar */}
+        <View style={s.headerBar} />
 
-        {/* Main content container */}
-        <View style={stripeTemplateStyles.content}>
-          {/* Header section with logo and company info */}
-          <StripeTemplateHeader invoiceData={invoiceData} />
-          <View style={stripeTemplateStyles.spacer} />
+        {/* Header with logo */}
+        <StripeTemplateHeader invoiceData={invoiceData} />
 
-          {/* Invoice metadata (number, dates) */}
-          <StripeTemplateInvoiceDetails invoiceData={invoiceData} />
-          <View style={stripeTemplateStyles.sectionSeparator} />
+        {/* Invoice metadata */}
+        <StripeTemplateInvoiceDetails invoiceData={invoiceData} />
 
-          {/* Billing information */}
-          <StripeTemplateSellerBuyerInfo invoiceData={invoiceData} />
-          <View style={stripeTemplateStyles.spacer} />
+        {/* Billing information */}
+        <StripeTemplateSellerBuyerInfo invoiceData={invoiceData} />
 
-          {/* Prominent amount due display */}
-          <StripeTemplateDueAmount invoiceData={invoiceData} />
+        {/* Amount due - right aligned */}
+        <StripeTemplateDueAmount invoiceData={invoiceData} />
 
-          {/* Line items table */}
-          <StripeTemplateItemsTable invoiceData={invoiceData} />
-          <View style={stripeTemplateStyles.spacer} />
+        {/* Line items table */}
+        <StripeTemplateItemsTable invoiceData={invoiceData} />
 
-          {/* Summary totals */}
-          <StripeTemplateTotalsSection invoiceData={invoiceData} />
+        {/* Summary totals - right aligned */}
+        <StripeTemplateTotalsSection invoiceData={invoiceData} />
 
-          {/* Additional notes section */}
-          {invoiceData.notes && (
-            <View style={stripeTemplateStyles.mt16}>
-              <Text
-                style={[
-                  stripeTemplateStyles.fontSize9,
-                  stripeTemplateStyles.fontMedium,
-                  stripeTemplateStyles.textDark,
-                  stripeTemplateStyles.mb2,
-                ]}
-              >
-                Notes
-              </Text>
-              <Text
-                style={[
-                  stripeTemplateStyles.fontSize10,
-                  stripeTemplateStyles.textGray,
-                  { lineHeight: 1.0 },
-                ]}
-              >
-                {invoiceData.notes}
-              </Text>
-            </View>
-          )}
-        </View>
+        {/* Notes section */}
+        {invoiceData.notes && (
+          <View style={[s.mt24, { maxWidth: "70%" }]}>
+            <Text style={[s.label, s.mb6]}>Notes</Text>
+            <Text style={s.bodySmall}>{invoiceData.notes}</Text>
+          </View>
+        )}
 
-        {/* Footer with page number */}
-        <View style={stripeTemplateStyles.footer}>
-          <Text
-            style={[
-              stripeTemplateStyles.fontSize9,
-              stripeTemplateStyles.textGray,
-              { textAlign: "center" },
-            ]}
-            render={({ pageNumber, totalPages }) =>
-              `Page ${pageNumber} of ${totalPages}`
-            }
-            fixed
-          />
-        </View>
+        {/* Footer */}
+        <Text
+          style={s.footer}
+          render={({ pageNumber, totalPages }) =>
+            `Page ${pageNumber} of ${totalPages}`
+          }
+          fixed
+        />
       </Page>
     </Document>
   );

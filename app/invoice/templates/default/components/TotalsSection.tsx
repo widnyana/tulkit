@@ -12,7 +12,7 @@ export const DefaultTemplateTotalsSection = ({
   invoiceData,
 }: TotalsSectionProps) => {
   const subtotal = invoiceData.items.reduce(
-    (sum, item) => sum + item.quantity * item.price,
+    (sum, item) => sum + item.quantity * item.unitPrice,
     0,
   );
   const taxAmount = invoiceData.taxRate

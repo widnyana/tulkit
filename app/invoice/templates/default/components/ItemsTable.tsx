@@ -34,11 +34,11 @@ export const DefaultTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
           </Text>
           <Text style={[styles.tableCell, styles.priceColumn]}>
             {currency}
-            {item.price.toFixed(2)}
+            {item.unitPrice.toFixed(2)}
           </Text>
           <Text style={[styles.tableCell, styles.amountColumn]}>
             {currency}
-            {(item.quantity * item.price).toFixed(2)}
+            {(item.quantity * item.unitPrice).toFixed(2)}
           </Text>
         </View>
       ))}

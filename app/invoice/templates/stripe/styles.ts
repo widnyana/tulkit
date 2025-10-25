@@ -1,151 +1,136 @@
 import { StyleSheet } from "@react-pdf/renderer";
 
 /**
- * Stripe-inspired invoice template styles
- * Design system: Clean, modern, professional
- * Brand color: Amber/yellow accent (#fbbf24)
+ * Stripe invoice template - Clean minimal design
+ * Official Stripe colors: #635BFF (purple), #0A2540 (navy), #F6F9FC (light)
  */
 export const stripeTemplateStyles = StyleSheet.create({
   page: {
     flexDirection: "column",
     backgroundColor: "#FFFFFF",
-    padding: 0,
+    padding: 40,
     fontFamily: "Helvetica",
-    fontWeight: 400,
   },
+
+  // Header
   headerBar: {
-    backgroundColor: "#fbbf24", // Stripe-inspired yellow accent
-    height: 5,
-    width: "100%",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#635BFF",
+    height: 3,
   },
-  content: {
-    paddingLeft: 40,
-    paddingRight: 40,
-    paddingTop: 32,
-    paddingBottom: 40,
+
+  // Typography
+  h1: {
+    fontSize: 24,
+    fontWeight: 700,
+    color: "#0A2540",
+    letterSpacing: -0.5,
   },
-  sectionSeparator: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#f3f4f6",
-    marginVertical: 20,
-  },
-  spacer: {
-    height: 10,
-  },
-  fontSize8: { fontSize: 8 },
-  fontSize9: { fontSize: 9 },
-  fontSize10: { fontSize: 10 },
-  fontSize11: { fontSize: 11 },
-  fontSize12: { fontSize: 12 },
-  fontSize14: { fontSize: 14 },
-  fontSize16: { fontSize: 16 },
-  fontSize18: { fontSize: 18 },
-  fontSize24: { fontSize: 24 },
-  fontRegular: {
-    fontFamily: "Helvetica",
-    fontWeight: 400,
-  },
-  fontMedium: {
-    fontFamily: "Helvetica",
-    fontWeight: 500,
-  },
-  fontBold: {
-    fontFamily: "Helvetica",
+  label: {
+    fontSize: 8,
     fontWeight: 600,
+    color: "#8898AA",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
   },
-  textGray: { color: "#6b7280" },
-  textDark: { color: "#111827" },
+  body: {
+    fontSize: 10,
+    color: "#0A2540",
+  },
+  bodySmall: {
+    fontSize: 9,
+    color: "#425466",
+    lineHeight: 1.4,
+  },
+
+  // Layout
   row: {
     flexDirection: "row",
-    alignItems: "center",
   },
   spaceBetween: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
   },
-  mb1: { marginBottom: 1 },
-  mb2: { marginBottom: 2 },
-  mb3: { marginBottom: 3 },
+
+  // Spacing
   mb4: { marginBottom: 4 },
+  mb6: { marginBottom: 6 },
   mb8: { marginBottom: 8 },
   mb12: { marginBottom: 12 },
   mb16: { marginBottom: 16 },
   mb20: { marginBottom: 20 },
   mb24: { marginBottom: 24 },
-  mt2: { marginTop: 2 },
-  mt4: { marginTop: 4 },
   mt8: { marginTop: 8 },
+  mt12: { marginTop: 12 },
   mt16: { marginTop: 16 },
-  mt24: { marginTop: 24 },
-  table: {
-    display: "flex",
-    width: "100%",
-  },
+  mt20: { marginTop: 20 },
+
+  // Table
   tableHeader: {
     flexDirection: "row",
-    borderBottomWidth: 1.5,
-    borderBottomColor: "#111827",
     paddingBottom: 8,
     marginBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E3E8EE",
   },
   tableRow: {
     flexDirection: "row",
-    paddingVertical: 6,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#f3f4f6",
+    paddingVertical: 8,
   },
-  descriptionCol: { flex: 3 },
-  narrowCol: { flex: 0.8, textAlign: "center" as "center" },
-  itemNotesContainer: {
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingTop: 2,
-    paddingBottom: 4,
+  tableCell: {
+    fontSize: 10,
+    color: "#0A2540",
   },
-  itemNotesLabel: {
-    fontSize: 8,
-    fontStyle: "italic",
-    color: "#6b7280",
+  tableCellGray: {
+    fontSize: 10,
+    color: "#425466",
   },
-  dueAmountBox: {
-    backgroundColor: "#fffbeb", // Soft yellow background
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1.5,
-    borderColor: "#fbbf24", // Matching accent color
-    marginTop: 16,
-    marginBottom: 16,
-  },
-  totalsSection: {
-    marginTop: 20,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
-  },
+
+  // Totals
   totalRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     paddingVertical: 4,
   },
-  finalTotalRow: {
+  totalLabel: {
+    fontSize: 10,
+    color: "#425466",
+  },
+  totalValue: {
+    fontSize: 10,
+    color: "#0A2540",
+    fontWeight: 500,
+  },
+  grandTotal: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    paddingTop: 8,
+    marginTop: 8,
+    borderTopWidth: 1.5,
+    borderTopColor: "#0A2540",
   },
-  borderTop: {
-    borderTopWidth: 0.5,
-    borderTopColor: "#e5e7eb",
+  grandTotalLabel: {
+    fontSize: 11,
+    color: "#0A2540",
+    fontWeight: 700,
   },
+  grandTotalValue: {
+    fontSize: 14,
+    color: "#0A2540",
+    fontWeight: 700,
+  },
+
+  // Footer
   footer: {
     position: "absolute",
-    bottom: 20,
-    left: 30,
-    right: 30,
-    paddingTop: 8,
-    borderTopWidth: 0.5,
-    borderTopColor: "#e5e7eb",
+    bottom: 24,
+    left: 40,
+    right: 40,
+    fontSize: 8,
+    color: "#8898AA",
+    textAlign: "center",
   },
 });
