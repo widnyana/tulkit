@@ -122,7 +122,10 @@ export function getNetworkClass(ip: string): string {
 /**
  * Identify special network types (RFC 1918, loopback, etc.)
  */
-export function getNetworkType(network: string, cidr: number): string | undefined {
+export function getNetworkType(
+  network: string,
+  cidr: number,
+): string | undefined {
   const networkInt = ipToInt(network);
 
   const specialNetworks = [
@@ -198,7 +201,7 @@ export function calculateBasicInfo(
   const addressInt = ipToInt(address);
   const maskInt = ipToInt(maskStr);
   const networkInt = (addressInt & maskInt) >>> 0;
-  const wildcardInt = (~maskInt) >>> 0;
+  const wildcardInt = ~maskInt >>> 0;
   const broadcastInt = (networkInt | wildcardInt) >>> 0;
 
   const network = intToIp(networkInt);
@@ -283,7 +286,7 @@ export function calculateSupernet(
   const baseNetworkInt = ipToInt(baseNetwork);
   const maskInt = ~((1 << (32 - newCIDR)) - 1) >>> 0;
   const supernetInt = (baseNetworkInt & maskInt) >>> 0;
-  const wildcardInt = (~maskInt) >>> 0;
+  const wildcardInt = ~maskInt >>> 0;
   const broadcastInt = (supernetInt | wildcardInt) >>> 0;
 
   const hostsNet = calculateUsableHosts(newCIDR);
