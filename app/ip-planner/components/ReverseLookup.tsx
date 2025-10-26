@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import type { SubnetInfo } from "../types";
 import { reverseLookup } from "../utils";
 
@@ -9,6 +9,9 @@ export default function ReverseLookup() {
   const [cidr, setCIDR] = useState(24);
   const [result, setResult] = useState<SubnetInfo | null>(null);
   const [error, setError] = useState<string>("");
+
+  const ipAddressId = useId();
+  const cidrId = useId();
 
   const handleLookup = () => {
     setError("");
@@ -38,13 +41,13 @@ export default function ReverseLookup() {
         <div className="space-y-4">
           <div>
             <label
-              htmlFor="ipAddress"
+              htmlFor={ipAddressId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               IP Address
             </label>
             <input
-              id="ipAddress"
+              id={ipAddressId}
               type="text"
               value={ipAddress}
               onChange={(e) => setIPAddress(e.target.value)}
@@ -55,13 +58,13 @@ export default function ReverseLookup() {
 
           <div>
             <label
-              htmlFor="cidr"
+              htmlFor={cidrId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Subnet CIDR Prefix
             </label>
             <input
-              id="cidr"
+              id={cidrId}
               type="number"
               min="0"
               max="32"

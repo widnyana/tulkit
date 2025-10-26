@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { calculateBasicInfo } from "../utils";
 import type { BasicCalcResult } from "../types";
 
@@ -9,6 +9,9 @@ export default function BasicCalculator() {
   const [netmask, setNetmask] = useState("24");
   const [result, setResult] = useState<BasicCalcResult | null>(null);
   const [error, setError] = useState("");
+
+  const addressId = useId();
+  const netmaskId = useId();
 
   const handleCalculate = () => {
     setError("");
@@ -53,13 +56,13 @@ export default function BasicCalculator() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div className="md:col-span-2">
             <label
-              htmlFor="address"
+              htmlFor={addressId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               IP Address
             </label>
             <input
-              id="address"
+              id={addressId}
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
@@ -71,13 +74,13 @@ export default function BasicCalculator() {
 
           <div>
             <label
-              htmlFor="netmask"
+              htmlFor={netmaskId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Netmask (CIDR or dotted)
             </label>
             <input
-              id="netmask"
+              id={netmaskId}
               type="text"
               value={netmask}
               onChange={(e) => setNetmask(e.target.value)}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import type { VLSMResult } from "../types";
 import { splitVLSM } from "../utils";
 
@@ -9,6 +9,9 @@ export default function VLSMSplitter() {
   const [requiredSizesInput, setRequiredSizesInput] = useState("500, 200, 100");
   const [results, setResults] = useState<VLSMResult[]>([]);
   const [error, setError] = useState<string>("");
+
+  const parentBlockId = useId();
+  const requiredSizesId = useId();
 
   const handleCalculate = () => {
     setError("");
@@ -59,13 +62,13 @@ export default function VLSMSplitter() {
         <div className="space-y-4">
           <div>
             <label
-              htmlFor="parentBlock"
+              htmlFor={parentBlockId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Parent Network Block (CIDR)
             </label>
             <input
-              id="parentBlock"
+              id={parentBlockId}
               type="text"
               value={parentBlock}
               onChange={(e) => setParentBlock(e.target.value)}
@@ -76,13 +79,13 @@ export default function VLSMSplitter() {
 
           <div>
             <label
-              htmlFor="requiredSizes"
+              htmlFor={requiredSizesId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Required Host Counts (comma-separated)
             </label>
             <input
-              id="requiredSizes"
+              id={requiredSizesId}
               type="text"
               value={requiredSizesInput}
               onChange={(e) => setRequiredSizesInput(e.target.value)}
