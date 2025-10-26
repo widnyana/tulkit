@@ -24,9 +24,16 @@ export const StripeTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
       {/* Table Rows - Use stable item.id as key */}
       {invoiceData.items.map((item) => (
         <View key={item.id} style={s.tableRow}>
-          <Text style={[s.tableCell, { flex: 3 }]}>
-            {item.description || ""}
-          </Text>
+          <View style={{ flex: 3 }}>
+            <Text style={s.tableCell}>
+              {item.description || ""}
+            </Text>
+            {item.notes && item.notes.trim().length > 0 && (
+              <Text style={[s.tableCellGray, { fontSize: 8, lineHeight: 1.3, marginTop: 2 }]}>
+                {item.notes}
+              </Text>
+            )}
+          </View>
           <Text style={[s.tableCellGray, { flex: 0.8, textAlign: "center" }]}>
             {item.quantity || 0}
           </Text>
