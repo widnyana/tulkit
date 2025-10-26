@@ -1,21 +1,20 @@
 import { StyleSheet } from "@react-pdf/renderer";
 
-// Enhanced Granite Ledger template styles
-// Granite-inspired color palette with improved visual hierarchy
+// Improved Granite Ledger template styles
 export const graniteTemplateStyles = StyleSheet.create({
   page: {
     padding: 30,
     fontFamily: "Helvetica",
     fontSize: 10,
-    backgroundColor: "#FFFFFF", // Clean white background
+    backgroundColor: "#FFFFFF",
   },
 
-  // Header section with strong granite theme
+  // Enhanced header with better typography and visual weight
   header: {
-    backgroundColor: "#3C4B58", // Deep granite gray
-    padding: 16,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
+    backgroundColor: "#2C3E50", // Deeper granite blue-gray
+    padding: 20,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
     marginBottom: 1,
     flexDirection: "row",
     justifyContent: "space-between",
@@ -23,167 +22,178 @@ export const graniteTemplateStyles = StyleSheet.create({
   },
 
   logo: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
     objectFit: "contain",
-    marginBottom: 6,
+    marginBottom: 8,
   },
 
   headerTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#FFFFFF", // White for contrast against granite
-    marginBottom: 4,
+    color: "#FFFFFF",
+    marginBottom: 6,
     textTransform: "uppercase",
-    letterSpacing: 1,
+    letterSpacing: 1.2,
+    fontFamily: "Helvetica-Bold",
   },
 
   headerInvoiceNumber: {
-    fontSize: 11,
-    color: "#E2E8F0", // Light granite-200 equivalent
+    fontSize: 12,
+    color: "#BDC3C7", // Lighter granite tone
+    marginTop: 4,
+    fontFamily: "Helvetica",
   },
 
-  // Main content container
+  // Enhanced main content container
   container: {
     backgroundColor: "#FFFFFF",
-    borderBottomLeftRadius: 6,
-    borderBottomRightRadius: 6,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
     borderStyle: "solid",
     borderWidth: 1,
-    borderColor: "#D1D5DB", // Consistent granite border
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderBottomWidth: 1,
-    paddingTop: 20,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
+    borderColor: "#BDC3C7", // Subtle granite border
+    paddingTop: 24,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
   },
 
-  // Two-column layout for details with improved spacing
+  // Improved details container with better spacing
   detailsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20,
+    marginBottom: 28,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ECF0F1", // Subtle divider
   },
 
   leftColumn: {
-    width: "48%", // Slightly less than 50% for better visual balance
-    paddingRight: 12,
+    width: "48%",
+    paddingRight: 16,
   },
 
   rightColumn: {
-    width: "48%", // Slightly less than 50% for better visual balance
-    paddingLeft: 12,
+    width: "48%",
+    paddingLeft: 16,
   },
 
-  // Labels and values with improved typography
+  // Enhanced typography for labels and values
   label: {
-    fontSize: 8,
+    fontSize: 9,
     fontWeight: "bold",
-    marginBottom: 4,
+    marginBottom: 6,
     textTransform: "uppercase",
-    color: "#6A7B88", // Medium granite color
-    letterSpacing: 0.7,
+    color: "#7F8C8D", // Medium granite color
+    letterSpacing: 0.8,
+    fontFamily: "Helvetica-Bold",
   },
 
   value: {
-    fontSize: 10,
-    marginBottom: 4,
+    fontSize: 11,
+    marginBottom: 5,
     lineHeight: 1.5,
-    color: "#1F2937", // Dark charcoal for readability
+    color: "#2C3E50", // Dark granite for readability
+    fontFamily: "Helvetica",
   },
 
   contactValue: {
     fontSize: 10,
     marginBottom: 4,
-    lineHeight: 1.5,
-    color: "#1F2937", // Dark charcoal for readability
+    lineHeight: 1.4,
+    color: "#2C3E50",
+    fontFamily: "Helvetica",
   },
 
-  // Table styles with stronger ledger appearance
+  // Enhanced table with better spacing and visual hierarchy
   table: {
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 24,
     borderStyle: "solid",
     borderWidth: 1,
-    borderColor: "#D1D5DB", // Consistent granite border
-    borderRadius: 0, // Sharp corners for ledger feel
+    borderColor: "#BDC3C7",
+    borderRadius: 4,
+    overflow: "hidden",
   },
 
   tableRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#D1D5DB", // Consistent granite border
+    borderBottomColor: "#ECF0F1",
   },
 
   headerRow: {
-    backgroundColor: "#3C4B58", // Deep granite for header
+    backgroundColor: "#2C3E50",
     borderBottomWidth: 1,
-    borderBottomColor: "#D1D5DB", // Consistent granite border
+    borderBottomColor: "#BDC3C7",
   },
 
   descriptionColHeader: {
     width: "50%",
-    padding: 8,
+    padding: 12,
     textAlign: "left" as "left",
     fontWeight: "bold",
-    fontSize: 8,
+    fontSize: 9,
     textTransform: "uppercase",
-    color: "#FFFFFF", // White for contrast against granite
-    letterSpacing: 0.7,
+    color: "#FFFFFF",
+    letterSpacing: 0.8,
+    fontFamily: "Helvetica-Bold",
   },
 
   narrowColHeader: {
     width: "16.66%",
-    padding: 8,
+    padding: 12,
     textAlign: "center" as "center",
     fontWeight: "bold",
-    fontSize: 8,
+    fontSize: 9,
     textTransform: "uppercase",
-    color: "#FFFFFF", // White for contrast against granite
-    letterSpacing: 0.7,
+    color: "#FFFFFF",
+    letterSpacing: 0.8,
+    fontFamily: "Helvetica-Bold",
   },
 
   descriptionCol: {
     width: "50%",
-    padding: 8,
+    padding: 12,
     textAlign: "left" as "left",
     fontSize: 10,
+    fontFamily: "Helvetica",
   },
 
   narrowCol: {
     width: "16.66%",
-    padding: 8,
+    padding: 12,
     textAlign: "center" as "center",
     fontSize: 10,
+    fontFamily: "Helvetica",
   },
 
-  // Enhanced alternating row colors for table
+  // Improved alternating row colors for better readability
   tableRowEven: {
-    backgroundColor: "#F9FAFB", // Very light granite background
+    backgroundColor: "#F8F9FA",
   },
 
   tableRowOdd: {
-    backgroundColor: "#FFFFFF", // White background
+    backgroundColor: "#FFFFFF",
   },
 
-  // Notes and totals container with better balance
+  // Enhanced notes and totals container with better balance
   notesAndTotalsContainer: {
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 24,
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
 
   notes: {
-    padding: 16,
-    backgroundColor: "#F9FAFB", // Very light granite background
-    borderRadius: 0, // Sharp corners for ledger consistency
+    padding: 20,
+    backgroundColor: "#F8F9FA",
+    borderRadius: 4,
     width: "55%",
     marginRight: 16,
     borderStyle: "solid",
     borderWidth: 1,
-    borderColor: "#D1D5DB", // Consistent granite border
+    borderColor: "#ECF0F1",
   },
 
   totals: {
@@ -192,74 +202,83 @@ export const graniteTemplateStyles = StyleSheet.create({
   },
 
   notesLabel: {
-    fontSize: 8,
+    fontSize: 9,
     fontWeight: "bold",
-    marginBottom: 8,
+    marginBottom: 10,
     textTransform: "uppercase",
-    color: "#6A7B88", // Medium granite color
-    letterSpacing: 0.7,
+    color: "#7F8C8D",
+    letterSpacing: 0.8,
+    fontFamily: "Helvetica-Bold",
   },
 
-  // Totals table with granite styling
+  // Enhanced totals table with improved visual hierarchy
   totalsTable: {
     width: "100%",
     borderStyle: "solid",
     borderWidth: 1,
-    borderColor: "#D1D5DB", // Consistent granite border
-    borderRadius: 0, // Sharp corners for ledger consistency
+    borderColor: "#BDC3C7",
+    borderRadius: 4,
+    overflow: "hidden",
   },
 
   totalsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 8,
+    padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#D1D5DB", // Consistent granite border
+    borderBottomColor: "#ECF0F1",
   },
 
   totalsLastRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 8,
-    borderTopWidth: 2,
-    borderTopColor: "#3C4B58", // Deep granite color for emphasis
+    padding: 14,
+    backgroundColor: "#2C3E50", // Deep granite accent
     fontWeight: "bold",
-    fontSize: 11,
+    fontSize: 12,
+    color: "#FFFFFF",
+    fontFamily: "Helvetica-Bold",
   },
 
-  // Accent color for totals
+  // Accent styling for important financial information
   accent: {
-    color: "#3C4B58", // Deep granite color
+    color: "#2C3E50",
+    fontWeight: "bold",
   },
 
   totalsLabel: {
     fontWeight: "bold",
-    color: "#1F2937", // Dark charcoal for readability
+    color: "#2C3E50",
+    fontFamily: "Helvetica-Bold",
   },
 
-  // Footer with granite styling
+  // Enhanced footer with better typography
   footer: {
     position: "absolute",
     bottom: 20,
     left: 40,
     right: 40,
     textAlign: "center" as "center",
-    fontSize: 8,
-    color: "#6A7B88", // Medium granite color
+    fontSize: 9,
+    color: "#7F8C8D",
     borderTopWidth: 1,
-    borderTopColor: "#D1D5DB", // Consistent granite border
-    paddingTop: 8,
+    borderTopColor: "#ECF0F1",
+    paddingTop: 10,
+    fontFamily: "Helvetica",
   },
 
-  // Spacing helpers
+  // Improved spacing helpers
   mb4: { marginBottom: 4 },
   mb8: { marginBottom: 8 },
   mb12: { marginBottom: 12 },
   mb16: { marginBottom: 16 },
   mb20: { marginBottom: 20 },
+  mb24: { marginBottom: 24 },
+  mb28: { marginBottom: 28 },
   mt4: { marginTop: 4 },
   mt8: { marginTop: 8 },
   mt12: { marginTop: 12 },
   mt16: { marginTop: 16 },
   mt20: { marginTop: 20 },
+  mt24: { marginTop: 24 },
 });

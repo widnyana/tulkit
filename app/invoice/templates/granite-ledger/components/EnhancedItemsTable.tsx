@@ -7,9 +7,9 @@ interface GraniteTemplateItemsTableProps {
   invoiceData: InvoiceData;
 }
 
-export const EnhancedGraniteTemplateItemsTable: React.FC<GraniteTemplateItemsTableProps> = ({
-  invoiceData,
-}) => {
+export const EnhancedGraniteTemplateItemsTable: React.FC<
+  GraniteTemplateItemsTableProps
+> = ({ invoiceData }) => {
   // Calculate totals for each item
   const itemsWithTotals = invoiceData.items.map((item) => ({
     ...item,
@@ -17,11 +17,15 @@ export const EnhancedGraniteTemplateItemsTable: React.FC<GraniteTemplateItemsTab
   }));
 
   // Function to render cell with proper borders
-  const renderCellWithBorder = (content: string | number, width: string, isLast = false) => (
+  const renderCellWithBorder = (
+    content: string | number,
+    width: string,
+    isLast = false,
+  ) => (
     <View
       style={[
         graniteTemplateStyles.narrowCol,
-        !isLast && { borderRightWidth: 1, borderRightColor: "#E5E7EB" }
+        !isLast && { borderRightWidth: 1, borderRightColor: "#E5E7EB" },
       ]}
     >
       <Text>{content}</Text>
@@ -31,23 +35,34 @@ export const EnhancedGraniteTemplateItemsTable: React.FC<GraniteTemplateItemsTab
   return (
     <View style={graniteTemplateStyles.table}>
       {/* Table Header */}
-      <View style={[graniteTemplateStyles.tableRow, graniteTemplateStyles.headerRow]}>
-        <View style={[
-          graniteTemplateStyles.descriptionColHeader,
-          { borderRightWidth: 1, borderRightColor: "#E5E7EB" }
-        ]}>
+      <View
+        style={[
+          graniteTemplateStyles.tableRow,
+          graniteTemplateStyles.headerRow,
+        ]}
+      >
+        <View
+          style={[
+            graniteTemplateStyles.descriptionColHeader,
+            { borderRightWidth: 1, borderRightColor: "#E5E7EB" },
+          ]}
+        >
           <Text>Description</Text>
         </View>
-        <View style={[
-          graniteTemplateStyles.narrowColHeader,
-          { borderRightWidth: 1, borderRightColor: "#E5E7EB" }
-        ]}>
+        <View
+          style={[
+            graniteTemplateStyles.narrowColHeader,
+            { borderRightWidth: 1, borderRightColor: "#E5E7EB" },
+          ]}
+        >
           <Text>Quantity</Text>
         </View>
-        <View style={[
-          graniteTemplateStyles.narrowColHeader,
-          { borderRightWidth: 1, borderRightColor: "#E5E7EB" }
-        ]}>
+        <View
+          style={[
+            graniteTemplateStyles.narrowColHeader,
+            { borderRightWidth: 1, borderRightColor: "#E5E7EB" },
+          ]}
+        >
           <Text>Unit Price</Text>
         </View>
         <View style={graniteTemplateStyles.narrowColHeader}>
@@ -57,19 +72,21 @@ export const EnhancedGraniteTemplateItemsTable: React.FC<GraniteTemplateItemsTab
 
       {/* Table Rows */}
       {itemsWithTotals.map((item, index) => (
-        <View 
-          key={item.id} 
+        <View
+          key={item.id}
           style={[
             graniteTemplateStyles.tableRow,
-            index % 2 === 0 
-              ? graniteTemplateStyles.tableRowEven 
-              : graniteTemplateStyles.tableRowOdd
+            index % 2 === 0
+              ? graniteTemplateStyles.tableRowEven
+              : graniteTemplateStyles.tableRowOdd,
           ]}
         >
-          <View style={[
-            graniteTemplateStyles.descriptionCol,
-            { borderRightWidth: 1, borderRightColor: "#E5E7EB" }
-          ]}>
+          <View
+            style={[
+              graniteTemplateStyles.descriptionCol,
+              { borderRightWidth: 1, borderRightColor: "#E5E7EB" },
+            ]}
+          >
             <Text>{item.description}</Text>
             {item.notes && (
               <View style={graniteTemplateStyles.mt4}>
@@ -77,33 +94,39 @@ export const EnhancedGraniteTemplateItemsTable: React.FC<GraniteTemplateItemsTab
               </View>
             )}
           </View>
-          <View style={[
-            graniteTemplateStyles.narrowCol,
-            { borderRightWidth: 1, borderRightColor: "#E5E7EB" }
-          ]}>
+          <View
+            style={[
+              graniteTemplateStyles.narrowCol,
+              { borderRightWidth: 1, borderRightColor: "#E5E7EB" },
+            ]}
+          >
             <Text>
-              {item.quantity.toLocaleString(undefined, { 
-                minimumFractionDigits: 0, 
-                maximumFractionDigits: 2 
+              {item.quantity.toLocaleString(undefined, {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
               })}
             </Text>
           </View>
-          <View style={[
-            graniteTemplateStyles.narrowCol,
-            { borderRightWidth: 1, borderRightColor: "#E5E7EB" }
-          ]}>
+          <View
+            style={[
+              graniteTemplateStyles.narrowCol,
+              { borderRightWidth: 1, borderRightColor: "#E5E7EB" },
+            ]}
+          >
             <Text>
-              {invoiceData.currency}{item.unitPrice.toLocaleString(undefined, { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2 
+              {invoiceData.currency}
+              {item.unitPrice.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </Text>
           </View>
           <View style={graniteTemplateStyles.narrowCol}>
             <Text>
-              {invoiceData.currency}{item.total.toLocaleString(undefined, { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: 2 
+              {invoiceData.currency}
+              {item.total.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
               })}
             </Text>
           </View>
