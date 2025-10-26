@@ -5,6 +5,7 @@ import type { InvoiceData } from "@/lib/invoice/types";
 import { invoiceDataSchema } from "@/lib/invoice/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2, Upload, X } from "lucide-react";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -445,11 +446,14 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
         <div className="flex items-center space-x-4">
           <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
             {logoPreview ? (
-              <img
-                src={logoPreview}
-                alt="Logo preview"
-                className="w-full h-full object-contain rounded-md"
-              />
+              <div className="relative w-full h-full rounded-md overflow-hidden">
+                <Image
+                  src={logoPreview}
+                  alt="Logo preview"
+                  fill
+                  className="object-contain"
+                />
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
                 <Upload className="w-8 h-8 text-gray-400" />
@@ -611,15 +615,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   type="checkbox"
                   checked={field.value}
                   className="h-4 w-4 text-blue-600 rounded"
-                  id="taxEnabled"
                   onChange={(e) => field.onChange(e.target.checked)}
                   onBlur={field.onBlur}
                   name={field.name}
                   ref={field.ref}
                 />
                 <label
-                  htmlFor="taxEnabled"
-                  className="ml-2 text-sm font-medium"
+                  className="ml-2 text-sm font-medium cursor-pointer"
                 >
                   Apply Tax
                 </label>

@@ -16,8 +16,8 @@ export interface InvoiceSender {
 export interface InvoiceRecipient {
   name: string;
   address: string;
-  email:string;
-  phone:string;
+  email?: string;
+  phone?: string;
 }
 
 export type TemplateKey = "default" | "stripe"; // Extend as needed for more templates

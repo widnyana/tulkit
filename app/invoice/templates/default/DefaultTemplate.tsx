@@ -26,7 +26,6 @@ const DefaultTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         {/* Header with logo and invoice title */}
         <DefaultTemplateHeader invoiceData={invoiceData} />
         
-        {/* Invoice details including sender and recipient information */}
         <DefaultTemplateDetailsSection invoiceData={invoiceData} />
         
         {/* Line items table */}
