@@ -40,6 +40,13 @@ const defaultInvoiceData: InvoiceData = {
   currency: "$",
   decimalSeparator: ",",
   thousandSeparator: ".",
+  paymentInfo: {
+    bankName: "",
+    accountNumber: "",
+    routingCode: "",
+    paymentMethods: [],
+    paymentQRCode: "",
+  },
 };
 
 const InvoicePage = () => {
