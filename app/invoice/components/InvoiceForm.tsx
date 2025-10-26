@@ -65,7 +65,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
         } else {
           console.error("Invalid form data, not saving", validated.error);
         }
-      }, 300); // 300ms debounce
+      }, 500); // 300ms debounce
 
       return () => clearTimeout(timeoutId);
     });
@@ -122,62 +122,115 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
   return (
     <form className="space-y-6 p-4">
       {/* Template and Currency Settings */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Template Selector */}
-        <div className="space-y-2">
-          <Controller
-            name="templateKey"
-            control={control}
-            render={({ field }) => (
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Template
-                </label>
-                <select
-                  {...field}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  value={field.value}
-                >
-                  <option value="default">Default Template</option>
-                  <option value="stripe">Stripe Template</option>
-                </select>
-              </div>
-            )}
-          />
-        </div>
+      <div className="border-b border-gray-200 pb-6">
+        <h3 className="text-base font-semibold text-gray-900 mb-4">
+          Template & Currency Settings
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Template Selector */}
+          <div className="space-y-2">
+            <Controller
+              name="templateKey"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Template
+                  </label>
+                  <select
+                    {...field}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    value={field.value}
+                  >
+                    <option value="default">Default Template</option>
+                    <option value="stripe">Stripe Template</option>
+                  </select>
+                </div>
+              )}
+            />
+          </div>
 
-        {/* Currency Symbol */}
-        <div className="space-y-2">
-          <Controller
-            name="currency"
-            control={control}
-            render={({ field }) => (
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Currency Symbol
-                </label>
-                <select
-                  {...field}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                  value={field.value || "$"}
-                >
-                  <option value="$">$ - US Dollar</option>
-                  <option value="€">€ - Euro</option>
-                  <option value="Rp">Rp - Indonesian Rupiah</option>
-                  <option value="£">£ - British Pound</option>
-                  <option value="¥">¥ - Japanese Yen</option>
-                  <option value="₹">₹ - Indian Rupee</option>
-                  <option value="₽">₽ - Russian Ruble</option>
-                  <option value="₩">₩ - South Korean Won</option>
-                  <option value="R$">R$ - Brazilian Real</option>
-                  <option value="A$">A$ - Australian Dollar</option>
-                  <option value="C$">C$ - Canadian Dollar</option>
-                  <option value="CHF">CHF - Swiss Franc</option>
-                  <option value="kr">kr - Swedish Krona</option>
-                </select>
-              </div>
-            )}
-          />
+          {/* Currency Symbol */}
+          <div className="space-y-2">
+            <Controller
+              name="currency"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Currency Symbol
+                  </label>
+                  <select
+                    {...field}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    value={field.value || "$"}
+                  >
+                    <option value="$">$ - US Dollar</option>
+                    <option value="€">€ - Euro</option>
+                    <option value="Rp">Rp - Indonesian Rupiah</option>
+                    <option value="£">£ - British Pound</option>
+                    <option value="¥">¥ - Japanese Yen</option>
+                    <option value="₹">₹ - Indian Rupee</option>
+                    <option value="₽">₽ - Russian Ruble</option>
+                    <option value="₩">₩ - South Korean Won</option>
+                    <option value="R$">R$ - Brazilian Real</option>
+                    <option value="A$">A$ - Australian Dollar</option>
+                    <option value="C$">C$ - Canadian Dollar</option>
+                    <option value="CHF">CHF - Swiss Franc</option>
+                    <option value="kr">kr - Swedish Krona</option>
+                  </select>
+                </div>
+              )}
+            />
+          </div>
+
+          {/* Decimal Separator */}
+          <div className="space-y-2">
+            <Controller
+              name="decimalSeparator"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Decimal Separator
+                  </label>
+                  <select
+                    {...field}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    value={field.value || ","}
+                  >
+                    <option value=",">, (comma)</option>
+                    <option value=".">. (period)</option>
+                  </select>
+                </div>
+              )}
+            />
+          </div>
+
+          {/* Thousand Separator */}
+          <div className="space-y-2">
+            <Controller
+              name="thousandSeparator"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                      Thousand Separator
+                  </label>
+                  <select
+                    {...field}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    value={field.value || "."}
+                  >
+                    <option value=".">. (period)</option>
+                    <option value=",">, (comma)</option>
+                    <option value=" "> (space)</option>
+                    <option value="">None</option>
+                  </select>
+                </div>
+              )}
+            />
+          </div>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -372,110 +425,119 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
         </div>
       </div>
 
-      {/* Invoice Details */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Controller
-          name="invoiceNumber"
-          control={control}
-          render={({ field }) => (
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Invoice Number
-              </label>
-              <input
-                {...field}
-                type="text"
-                className={`w-full px-3 py-2 border rounded-md ${errors.invoiceNumber ? "border-red-500" : "border-gray-300"}`}
-                placeholder="INV-001"
-              />
-              {errors.invoiceNumber && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.invoiceNumber.message}
-                </p>
-              )}
-            </div>
-          )}
-        />
-        <Controller
-          name="issueDate"
-          control={control}
-          render={({ field }) => (
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Issue Date
-              </label>
-              <input
-                {...field}
-                type="date"
-                className={`w-full px-3 py-2 border rounded-md ${errors.issueDate ? "border-red-500" : "border-gray-300"}`}
-              />
-              {errors.issueDate && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.issueDate.message}
-                </p>
-              )}
-            </div>
-          )}
-        />
-        <Controller
-          name="dueDate"
-          control={control}
-          render={({ field }) => (
-            <div>
-              <label className="block text-sm font-medium mb-1">Due Date</label>
-              <input
-                {...field}
-                type="date"
-                className={`w-full px-3 py-2 border rounded-md ${errors.dueDate ? "border-red-500" : "border-gray-300"}`}
-              />
-              {errors.dueDate && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.dueDate.message}
-                </p>
-              )}
-            </div>
-          )}
-        />
-      </div>
+      {/* Invoice Details & Logo */}
+      <div className="border-b border-gray-200 pb-6">
+        <h3 className="text-base font-semibold text-gray-900 mb-4">
+          Invoice Details & Logo
+        </h3>
 
-      {/* Logo Upload */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium mb-1">
-          Company Logo (Optional)
-        </label>
-        <div className="flex items-center space-x-4">
-          <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-            {logoPreview ? (
-              <div className="relative w-full h-full rounded-md overflow-hidden">
-                <Image
-                  src={logoPreview}
-                  alt="Logo preview"
-                  fill
-                  className="object-contain"
+        {/* Invoice Details */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Controller
+            name="invoiceNumber"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Invoice Number
+                </label>
+                <input
+                  {...field}
+                  type="text"
+                  className={`w-full px-3 py-2 border rounded-md ${errors.invoiceNumber ? "border-red-500" : "border-gray-300"}`}
+                  placeholder="INV-001"
                 />
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <Upload className="w-8 h-8 text-gray-400" />
-                <p className="text-sm text-gray-500 mt-2">Upload</p>
+                {errors.invoiceNumber && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.invoiceNumber.message}
+                  </p>
+                )}
               </div>
             )}
-            <input
-              type="file"
-              className="hidden"
-              accept="image/png,image/jpeg"
-              onChange={handleLogoChange}
-            />
+          />
+          <Controller
+            name="issueDate"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Issue Date
+                </label>
+                <input
+                  {...field}
+                  type="date"
+                  className={`w-full px-3 py-2 border rounded-md ${errors.issueDate ? "border-red-500" : "border-gray-300"}`}
+                />
+                {errors.issueDate && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.issueDate.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+          <Controller
+            name="dueDate"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Due Date
+                </label>
+                <input
+                  {...field}
+                  type="date"
+                  className={`w-full px-3 py-2 border rounded-md ${errors.dueDate ? "border-red-500" : "border-gray-300"}`}
+                />
+                {errors.dueDate && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.dueDate.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+        </div>
+
+        {/* Logo Upload */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium mb-1">
+            Company Logo (Optional)
           </label>
-          {logoPreview && (
-            <button
-              type="button"
-              onClick={removeLogo}
-              className="p-2 text-red-500 hover:bg-red-50 rounded-full"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          )}
+          <div className="flex items-center space-x-4">
+            <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              {logoPreview ? (
+                <div className="relative w-full h-full rounded-md overflow-hidden">
+                  <Image
+                    src={logoPreview}
+                    alt="Logo preview"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload className="w-8 h-8 text-gray-400" />
+                  <p className="text-sm text-gray-500 mt-2">Upload</p>
+                </div>
+              )}
+              <input
+                type="file"
+                className="hidden"
+                accept="image/png,image/jpeg"
+                onChange={handleLogoChange}
+              />
+            </label>
+            {logoPreview && (
+              <button
+                type="button"
+                onClick={removeLogo}
+                className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -604,61 +666,64 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Tax Settings */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="flex items-center">
-          <Controller
-            name="taxEnabled"
-            control={control}
-            render={({ field }) => (
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  checked={field.value}
-                  className="h-4 w-4 text-blue-600 rounded"
-                  onChange={(e) => field.onChange(e.target.checked)}
-                  onBlur={field.onBlur}
-                  name={field.name}
-                  ref={field.ref}
-                />
-                <label
-                  className="ml-2 text-sm font-medium cursor-pointer"
-                >
-                  Apply Tax
-                </label>
-              </div>
-            )}
-          />
-        </div>
-        {taxEnabled && (
-          <div>
+      <div className="border-b border-gray-200 pb-6">
+        <h3 className="text-base font-semibold text-gray-900 mb-4">
+          Tax Settings
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center">
             <Controller
-              name="taxRate"
+              name="taxEnabled"
               control={control}
               render={({ field }) => (
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Tax Rate (%)
-                  </label>
+                <div className="flex items-center">
                   <input
-                    {...field}
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    className={`w-full px-3 py-2 border rounded-md ${errors.taxRate ? "border-red-500" : "border-gray-300"}`}
-                    placeholder="Tax rate"
-                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    type="checkbox"
+                    checked={field.value}
+                    className="h-4 w-4 text-blue-600 rounded"
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    onBlur={field.onBlur}
+                    name={field.name}
+                    ref={field.ref}
                   />
-                  {errors.taxRate && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.taxRate.message}
-                    </p>
-                  )}
+                  <label className="ml-2 text-sm font-medium cursor-pointer">
+                    Apply Tax
+                  </label>
                 </div>
               )}
             />
           </div>
-        )}
+          {taxEnabled && (
+            <div>
+              <Controller
+                name="taxRate"
+                control={control}
+                render={({ field }) => (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Tax Rate (%)
+                    </label>
+                    <input
+                      {...field}
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      className={`w-full px-3 py-2 border rounded-md ${errors.taxRate ? "border-red-500" : "border-gray-300"}`}
+                      placeholder="Tax rate"
+                      onChange={(e) => field.onChange(Number(e.target.value))}
+                    />
+                    {errors.taxRate && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.taxRate.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Totals */}
@@ -680,24 +745,26 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Notes */}
-      <div className="space-y-2">
-        <Controller
-          name="notes"
-          control={control}
-          render={({ field }) => (
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                Notes / Terms
-              </label>
-              <textarea
-                {...field}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                placeholder="Additional notes or terms"
-              />
-            </div>
-          )}
-        />
+      <div>
+        <h3 className="text-base font-semibold text-gray-900 mb-4">
+          Notes / Terms
+        </h3>
+        <div className="space-y-2">
+          <Controller
+            name="notes"
+            control={control}
+            render={({ field }) => (
+              <div>
+                <textarea
+                  {...field}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  placeholder="Additional notes or terms"
+                />
+              </div>
+            )}
+          />
+        </div>
       </div>
     </form>
   );

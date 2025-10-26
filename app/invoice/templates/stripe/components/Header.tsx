@@ -14,18 +14,19 @@ export const StripeTemplateHeader = ({ invoiceData }: HeaderProps) => {
       <View>
         <Text style={s.h1}>INVOICE</Text>
       </View>
-      {hasLogo && (
-        <View>
+      {/* Always render logo container to avoid react-pdf reconciliation bugs */}
+      <View style={{ display: hasLogo ? "flex" : "none" }}>
+        {hasLogo && (
           <Image
-            src={invoiceData.logo!}
+            src={invoiceData.logo || ""}
             style={{
               maxWidth: 90,
               maxHeight: 36,
               objectFit: "contain",
             }}
           />
-        </View>
-      )}
+        )}
+      </View>
     </View>
   );
 };

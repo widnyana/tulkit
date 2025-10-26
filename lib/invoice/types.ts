@@ -35,4 +35,6 @@ export interface InvoiceData {
   templateKey?: TemplateKey;
   logo?: string; // base64 string
   currency?: string; // Currency symbol (e.g., "$", "€", "£", "¥", "₹")
+  decimalSeparator?: string; // Default: ","
+  thousandSeparator?: string; // Default: "."
 }
