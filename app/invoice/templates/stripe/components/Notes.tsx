@@ -17,7 +17,7 @@ const StripeTemplateNotes: React.FC<NotesProps> = ({ invoiceData }) => {
   }
 
   return (
-    <View style={s.mt20}>
+    <View>
       <View style={{ maxWidth: "70%" }}>
         <Text style={[s.label, s.mb6]}>Notes</Text>
         <Text style={s.bodySmall}>{invoiceData.notes}</Text>
