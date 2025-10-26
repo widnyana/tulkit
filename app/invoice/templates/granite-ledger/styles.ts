@@ -9,16 +9,15 @@ export const graniteTemplateStyles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
 
-  // Enhanced header with better typography and visual weight
+  // Enhanced header with better typography and visual weight (modernized - no border radius)
   header: {
     backgroundColor: "#2C3E50", // Deeper granite blue-gray
     padding: 20,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    marginBottom: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
 
   logo: {
@@ -45,27 +44,20 @@ export const graniteTemplateStyles = StyleSheet.create({
     fontFamily: "Helvetica",
   },
 
-  // Enhanced main content container
+  // Enhanced main content container (modernized - no border)
   container: {
     backgroundColor: "#FFFFFF",
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#BDC3C7", // Subtle granite border
-    paddingTop: 24,
+    paddingTop: 20, // Reduced from 24 to account for header spacing
     paddingBottom: 24,
     paddingHorizontal: 24,
   },
 
-  // Improved details container with better spacing
+  // Improved details container with better spacing (modernized - using padding instead of border)
   detailsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginBottom: 28,
     paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ECF0F1", // Subtle divider
   },
 
   leftColumn: {
@@ -105,27 +97,20 @@ export const graniteTemplateStyles = StyleSheet.create({
     fontFamily: "Helvetica",
   },
 
-  // Enhanced table with better spacing and visual hierarchy
+  // Enhanced table with better spacing and visual hierarchy (modernized - no border)
   table: {
     width: "100%",
     marginBottom: 24,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#BDC3C7",
     borderRadius: 4,
     overflow: "hidden",
   },
 
   tableRow: {
     flexDirection: "row",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ECF0F1",
   },
 
   headerRow: {
     backgroundColor: "#2C3E50",
-    borderBottomWidth: 1,
-    borderBottomColor: "#BDC3C7",
   },
 
   descriptionColHeader: {
@@ -191,9 +176,6 @@ export const graniteTemplateStyles = StyleSheet.create({
     borderRadius: 4,
     width: "55%",
     marginRight: 16,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#ECF0F1",
   },
 
   totals: {
@@ -211,12 +193,9 @@ export const graniteTemplateStyles = StyleSheet.create({
     fontFamily: "Helvetica-Bold",
   },
 
-  // Enhanced totals table with improved visual hierarchy
+  // Enhanced totals table with improved visual hierarchy (modernized - no border)
   totalsTable: {
     width: "100%",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderColor: "#BDC3C7",
     borderRadius: 4,
     overflow: "hidden",
   },
@@ -225,8 +204,6 @@ export const graniteTemplateStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ECF0F1",
   },
 
   totalsLastRow: {
