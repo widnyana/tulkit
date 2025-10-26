@@ -43,5 +43,19 @@ export const invoiceDataSchema = z.object({
     .max(100, "Tax rate cannot exceed 100%"),
   templateKey: z.enum(["default", "stripe"]).default("default"),
   logo: z.string().optional(),
-  currency: z.string().max(3, "Currency symbol should be 1-3 characters").optional().default("$"),
+  currency: z
+    .string()
+    .max(3, "Currency symbol should be 1-3 characters")
+    .optional()
+    .default("$"),
+  decimalSeparator: z
+    .string()
+    .length(1, "Decimal separator must be 1 character")
+    .optional()
+    .default(","),
+  thousandSeparator: z
+    .string()
+    .length(1, "Thousand separator must be 1 character")
+    .optional()
+    .default("."),
 }) satisfies z.ZodSchema<InvoiceData>;

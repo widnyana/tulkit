@@ -18,8 +18,22 @@ const InvoicePDFPreview: React.FC<InvoicePDFPreviewProps> = ({
     setIsClient(true);
   }, []);
 
-  // Check if we have valid data to render
-  const hasValidData = invoiceData.sender.name && invoiceData.recipient.name;
+  // Enhanced validation to prevent "Eo is not a function" errors
+  const hasValidData =
+    // required sender fields
+    invoiceData.sender?.name?.trim() &&
+    invoiceData.sender?.address?.trim() &&
+    invoiceData.sender?.email?.trim() &&
+    // required recipient fields
+    invoiceData.recipient?.name?.trim() &&
+    invoiceData.recipient?.address?.trim() &&
+    // invoice details
+    invoiceData.invoiceNumber?.trim() &&
+    invoiceData.issueDate?.trim() &&
+    invoiceData.dueDate?.trim() &&
+    // Ensure items array exists and has at least one item
+    Array.isArray(invoiceData.items) &&
+    invoiceData.items.length > 0;
 
   if (!isClient) {
     // Render placeholder during SSR/hydration
