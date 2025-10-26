@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import type { CollisionCheck } from "../types";
 import { detectCollisions } from "../utils";
 
@@ -10,6 +10,9 @@ export default function CollisionDetector() {
   );
   const [newSubnet, setNewSubnet] = useState("10.10.1.128/25");
   const [result, setResult] = useState<CollisionCheck | null>(null);
+
+  const existingSubnetsId = useId();
+  const newSubnetId = useId();
 
   const handleCheck = () => {
     const subnets = existingSubnets
@@ -35,13 +38,13 @@ export default function CollisionDetector() {
         <div className="space-y-4">
           <div>
             <label
-              htmlFor="existingSubnets"
+              htmlFor={existingSubnetsId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Existing Subnets (one per line)
             </label>
             <textarea
-              id="existingSubnets"
+              id={existingSubnetsId}
               value={existingSubnets}
               onChange={(e) => setExistingSubnets(e.target.value)}
               rows={8}
@@ -55,13 +58,13 @@ export default function CollisionDetector() {
 
           <div>
             <label
-              htmlFor="newSubnet"
+              htmlFor={newSubnetId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Proposed New Subnet
             </label>
             <input
-              id="newSubnet"
+              id={newSubnetId}
               type="text"
               value={newSubnet}
               onChange={(e) => setNewSubnet(e.target.value)}

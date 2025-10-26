@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { deaggregate } from "../utils";
 import type { DeaggregationResult } from "../types";
 
@@ -9,6 +9,9 @@ export default function Deaggregator() {
   const [endIP, setEndIP] = useState("");
   const [result, setResult] = useState<DeaggregationResult | null>(null);
   const [error, setError] = useState("");
+
+  const startIPId = useId();
+  const endIPId = useId();
 
   const handleCalculate = () => {
     setError("");
@@ -59,13 +62,13 @@ export default function Deaggregator() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label
-              htmlFor="startIP"
+              htmlFor={startIPId}
               className="block text-sm font-medium text-gray-900 mb-2"
             >
               Start IP Address
             </label>
             <input
-              id="startIP"
+              id={startIPId}
               type="text"
               value={startIP}
               onChange={(e) => setStartIP(e.target.value)}
@@ -77,13 +80,13 @@ export default function Deaggregator() {
 
           <div>
             <label
-              htmlFor="endIP"
+              htmlFor={endIPId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               End IP Address
             </label>
             <input
-              id="endIP"
+              id={endIPId}
               type="text"
               value={endIP}
               onChange={(e) => setEndIP(e.target.value)}
