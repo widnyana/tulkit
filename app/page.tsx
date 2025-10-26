@@ -1,20 +1,14 @@
 import Link from "next/link";
 
 export default function Home() {
-  const imageUrl =
-    "https://images.unsplash.com/reserve/oIpwxeeSPy1cnwYpqJ1w_Dufer%20Collateral%20test.jpg?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1315";
-
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-8 bg-cover bg-center"
-      style={{ backgroundImage: `url(${imageUrl})` }}
-    >
+    <div className="min-h-screen flex items-center justify-center p-8 bg-cover bg-center">
       <div className="absolute inset-0 bg-dark/10 backdrop-blur-sm"></div>
 
       <div className="max-w-4xl w-full relative z-10">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-gray-300 mb-4">Tulkit</h1>
-          <p className="text-xl text-white-900 font-medium">
+          <h1 className="text-5xl font-bold text-black mb-4">Tulkit</h1>
+          <p className="text-xl text-black font-medium">
             because apparently, you *do* need another random tool on the
             internet. ¯\_(ツ)_/¯
           </p>
@@ -28,7 +22,7 @@ export default function Home() {
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-500 transition-colors">
                 <svg
-                  className="w-6 h-6 text-blue-600 group-hover:text-white transition-colors"
+                  className="w-6 h-6 text-blue-600 group-hover:text-black transition-colors"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -61,7 +55,7 @@ export default function Home() {
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-500 transition-colors">
                 <svg
-                  className="w-6 h-6 text-purple-600 group-hover:text-white transition-colors"
+                  className="w-6 h-6 text-purple-600 group-hover:text-black transition-colors"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -93,7 +87,7 @@ export default function Home() {
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-500 transition-colors">
                 <svg
-                  className="w-6 h-6 text-orange-600 group-hover:text-white transition-colors"
+                  className="w-6 h-6 text-orange-600 group-hover:text-black transition-colors"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -126,7 +120,7 @@ export default function Home() {
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-500 transition-colors">
                 <svg
-                  className="w-6 h-6 text-green-600 group-hover:text-white transition-colors"
+                  className="w-6 h-6 text-green-600 group-hover:text-black transition-colors"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -159,7 +153,7 @@ export default function Home() {
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-500 transition-colors">
                 <svg
-                  className="w-6 h-6 text-indigo-600 group-hover:text-white transition-colors"
+                  className="w-6 h-6 text-indigo-600 group-hover:text-black transition-colors"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
