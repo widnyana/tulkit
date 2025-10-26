@@ -20,7 +20,7 @@ const DefaultTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
       title={`Invoice ${invoiceData.invoiceNumber || ""}`}
       author={invoiceData.sender.name || ""}
       subject={`Invoice for ${invoiceData.recipient.name || ""}`}
-      creator="Tulkit Invoice Generator"
+      creator="https://tulkit.widnyana.web.id/invoice"
       producer="@react-pdf/renderer"
     >
       <Page size="A4" style={defaultTemplateStyles.page}>
