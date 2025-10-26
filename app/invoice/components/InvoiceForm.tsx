@@ -143,7 +143,9 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     value={field.value}
                   >
                     <option value="default">Default Template</option>
-                    <option value="stripe">Stripe Template</option>
+                    <option value="apex">Apex</option>
+                    <option value="granite">Granite Ledger</option>
+                    <option value="stripe">Stripe</option>
                   </select>
                 </div>
               )}
@@ -165,19 +167,19 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     value={field.value || "$"}
                   >
-                    <option value="$">$ - US Dollar</option>
-                    <option value="€">€ - Euro</option>
-                    <option value="Rp">Rp - Indonesian Rupiah</option>
-                    <option value="£">£ - British Pound</option>
-                    <option value="¥">¥ - Japanese Yen</option>
-                    <option value="₹">₹ - Indian Rupee</option>
-                    <option value="₽">₽ - Russian Ruble</option>
-                    <option value="₩">₩ - South Korean Won</option>
-                    <option value="R$">R$ - Brazilian Real</option>
-                    <option value="A$">A$ - Australian Dollar</option>
-                    <option value="C$">C$ - Canadian Dollar</option>
-                    <option value="CHF">CHF - Swiss Franc</option>
-                    <option value="kr">kr - Swedish Krona</option>
+                    <option value="€">Euro - €</option>
+                    <option value="$">US Dollar - $</option>
+                    <option value="Rp">Indonesian Rupiah - Rp</option>
+                    <option value="A$">Australian Dollar - A$</option>
+                    <option value="R$">Brazilian Real - R$</option>
+                    <option value="£">British Pound - £</option>
+                    <option value="C$">Canadian Dollar - C$</option>
+                    <option value="₹">Indian Rupee - ₹</option>
+                    <option value="¥">Japanese Yen - ¥</option>
+                    <option value="₽">Russian Ruble - ₽</option>
+                    <option value="₩">South Korean Won - ₩</option>
+                    <option value="kr">Swedish Krona - kr</option>
+                    <option value="CHF">Swiss Franc - CHF</option>
                   </select>
                 </div>
               )}
@@ -723,6 +725,188 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               />
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Payment Information */}
+      <div className="border-b border-gray-200 pb-6">
+        <h3 className="text-base font-semibold text-gray-900 mb-4">
+          Payment Information (Optional)
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          {/* Bank Name */}
+          <div>
+            <Controller
+              name="paymentInfo.bankName"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Bank Name
+                  </label>
+                  <input
+                    {...field}
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="e.g., Chase Bank"
+                  />
+                </div>
+              )}
+            />
+          </div>
+
+          {/* Account Number */}
+          <div>
+            <Controller
+              name="paymentInfo.accountNumber"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Account Number
+                  </label>
+                  <input
+                    {...field}
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="e.g., 1234567890"
+                  />
+                </div>
+              )}
+            />
+          </div>
+
+          {/* Routing/SWIFT Code */}
+          <div>
+            <Controller
+              name="paymentInfo.routingCode"
+              control={control}
+              render={({ field }) => (
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Routing/SWIFT Code
+                  </label>
+                  <input
+                    {...field}
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    placeholder="e.g., CHASUS33"
+                  />
+                </div>
+              )}
+            />
+          </div>
+        </div>
+
+        {/* Payment Methods */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">
+            Accepted Payment Methods
+          </label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {[
+              "Bank Transfer",
+              "Credit Card",
+              "PayPal",
+              "Wire Transfer",
+              "Cash",
+              "Check",
+            ].map((method) => (
+              <Controller
+                key={method}
+                name="paymentInfo.paymentMethods"
+                control={control}
+                render={({ field }) => (
+                  <label className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 text-blue-600 rounded"
+                      checked={field.value?.includes(method) || false}
+                      onChange={(e) => {
+                        const currentMethods = field.value || [];
+                        if (e.target.checked) {
+                          field.onChange([...currentMethods, method]);
+                        } else {
+                          field.onChange(
+                            currentMethods.filter((m) => m !== method),
+                          );
+                        }
+                      }}
+                    />
+                    <span className="text-sm">{method}</span>
+                  </label>
+                )}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Payment QR Code */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium mb-1">
+            Payment QR Code (Optional)
+          </label>
+          <div className="flex items-center space-x-4">
+            <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+              {watch("paymentInfo.paymentQRCode") ? (
+                <div className="relative w-full h-full rounded-md overflow-hidden">
+                  <Image
+                    src={watch("paymentInfo.paymentQRCode") || ""}
+                    alt="QR Code preview"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                  <Upload className="w-8 h-8 text-gray-400" />
+                  <p className="text-sm text-gray-500 mt-2">Upload QR</p>
+                </div>
+              )}
+              <input
+                type="file"
+                className="hidden"
+                accept="image/png,image/jpeg"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+
+                  if (
+                    !file.type.match("image/png") &&
+                    !file.type.match("image/jpeg")
+                  ) {
+                    toast.error("Please upload a PNG or JPEG image");
+                    return;
+                  }
+
+                  if (file.size > 1000 * 1024) {
+                    toast.error("Image size should be less than 1000KB");
+                    return;
+                  }
+
+                  const reader = new FileReader();
+                  reader.onloadend = () => {
+                    const base64String = reader.result as string;
+                    setValue("paymentInfo.paymentQRCode", base64String);
+                    toast.success("QR code uploaded successfully");
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
+            </label>
+            {watch("paymentInfo.paymentQRCode") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setValue("paymentInfo.paymentQRCode", undefined);
+                  toast.success("QR code removed");
+                }}
+                className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

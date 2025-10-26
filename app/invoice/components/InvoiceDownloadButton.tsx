@@ -8,6 +8,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { DefaultTemplate } from "../templates/default/DefaultTemplate";
 import { StripeTemplate } from "../templates/stripe/StripeTemplate";
+import { GraniteTemplate } from "../templates/granite-ledger/GraniteTemplate";
 import { Button } from "./ui/button";
 
 interface InvoiceDownloadButtonProps {
@@ -48,6 +49,8 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
         document={
           invoiceData.templateKey === "stripe" ? (
             <StripeTemplate invoiceData={invoiceData} />
+          ) : invoiceData.templateKey === "granite" ? (
+            <GraniteTemplate invoiceData={invoiceData} />
           ) : (
             <DefaultTemplate invoiceData={invoiceData} />
           )
