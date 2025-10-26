@@ -4,6 +4,7 @@ import type {
   InvoiceItem,
   InvoiceRecipient,
   InvoiceSender,
+  PaymentInformation,
 } from "./types";
 
 export const invoiceItemSchema = z.object({
@@ -28,6 +29,14 @@ export const invoiceRecipientSchema = z.object({
   phone: z.string().optional(),
 }) satisfies z.ZodSchema<InvoiceRecipient>;
 
+export const paymentInformationSchema = z.object({
+  bankName: z.string().optional(),
+  accountNumber: z.string().optional(),
+  routingCode: z.string().optional(),
+  paymentMethods: z.array(z.string()).optional(),
+  paymentQRCode: z.string().optional(),
+}) satisfies z.ZodSchema<PaymentInformation>;
+
 export const invoiceDataSchema = z.object({
   sender: invoiceSenderSchema,
   recipient: invoiceRecipientSchema,
@@ -41,7 +50,9 @@ export const invoiceDataSchema = z.object({
     .number()
     .min(0, "Tax rate must be non-negative")
     .max(100, "Tax rate cannot exceed 100%"),
-  templateKey: z.enum(["default", "stripe"]).default("default"),
+  templateKey: z
+    .enum(["default", "stripe", "apex", "granite"])
+    .default("default"),
   logo: z.string().optional(),
   currency: z
     .string()
@@ -58,4 +69,5 @@ export const invoiceDataSchema = z.object({
     .length(1, "Thousand separator must be 1 character")
     .optional()
     .default("."),
+  paymentInfo: paymentInformationSchema.optional(),
 }) satisfies z.ZodSchema<InvoiceData>;

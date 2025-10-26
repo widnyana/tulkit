@@ -20,7 +20,15 @@ export interface InvoiceRecipient {
   phone?: string;
 }
 
-export type TemplateKey = "default" | "stripe"; // Extend as needed for more templates
+export interface PaymentInformation {
+  bankName?: string;
+  accountNumber?: string;
+  routingCode?: string; // SWIFT/routing number
+  paymentMethods?: string[]; // e.g., ["Bank Transfer", "Credit Card", "PayPal"]
+  paymentQRCode?: string; // base64 image or URL
+}
+
+export type TemplateKey = "default" | "stripe" | "apex" | "granite"; // Extend as needed for more templates
 
 export interface InvoiceData {
   sender: InvoiceSender;
@@ -37,4 +45,5 @@ export interface InvoiceData {
   currency?: string; // Currency symbol (e.g., "$", "€", "£", "¥", "₹")
   decimalSeparator?: string; // Default: ","
   thousandSeparator?: string; // Default: "."
+  paymentInfo?: PaymentInformation;
 }

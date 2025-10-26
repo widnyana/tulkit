@@ -60,6 +60,7 @@ function isValidInvoiceData(data: InvoiceData): data is InvoiceData {
     typeof data.taxEnabled === "boolean" &&
     typeof data.taxRate === "number" &&
     (typeof data.templateKey === "string" || data.templateKey === undefined) &&
-    (typeof data.currency === "string" || data.currency === undefined)
+    (typeof data.currency === "string" || data.currency === undefined) &&
+    (typeof data.paymentInfo === "object" || data.paymentInfo === undefined)
   );
 }
