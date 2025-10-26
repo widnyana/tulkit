@@ -215,7 +215,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               render={({ field }) => (
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                      Thousand Separator
+                    Thousand Separator
                   </label>
                   <select
                     {...field}
