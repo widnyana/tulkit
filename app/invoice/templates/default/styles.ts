@@ -138,6 +138,7 @@ export const defaultTemplateStyles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 20,
     justifyContent: "space-between",
+    alignItems: "flex-start",
   },
   notesLabel: {
     fontSize: 9,
