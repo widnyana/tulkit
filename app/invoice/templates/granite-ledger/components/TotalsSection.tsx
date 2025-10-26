@@ -54,17 +54,8 @@ export const GraniteTemplateTotalsSection: React.FC<
 
       {/* Total - with accent color */}
       <View style={graniteTemplateStyles.totalsLastRow}>
-        <Text
-          style={[
-            graniteTemplateStyles.totalsLabel,
-            graniteTemplateStyles.accent,
-          ]}
-        >
-          Total:
-        </Text>
-        <Text
-          style={[graniteTemplateStyles.value, graniteTemplateStyles.accent]}
-        >
+        <Text style={graniteTemplateStyles.totalsLabel}>Total:</Text>
+        <Text style={graniteTemplateStyles.value}>
           {invoiceData.currency}
           {total.toLocaleString(undefined, {
             minimumFractionDigits: 2,

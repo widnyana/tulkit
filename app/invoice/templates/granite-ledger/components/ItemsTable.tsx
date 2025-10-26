@@ -48,7 +48,9 @@ export const GraniteTemplateItemsTable: React.FC<
             <Text style={graniteTemplateStyles.value}>{item.description}</Text>
             {item.notes && (
               <View style={graniteTemplateStyles.mt4}>
-                <Text style={graniteTemplateStyles.value}>{item.notes}</Text>
+                <Text style={graniteTemplateStyles.contactValue}>
+                  {item.notes}
+                </Text>
               </View>
             )}
           </View>
