@@ -8,11 +8,13 @@
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "**",
-      "!node_modules",
-      "!.next",
-      "!dist",
-      "!build"
+      "app/**/*",
+      "lib/**/*",
+      "package.json",
+      "next.config.ts",
+      "README.md",
+      "postcss.config.mjs",
+      "tsconfig.js"
     ]
   },
   "formatter": {
