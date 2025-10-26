@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useId } from "react";
 import type { EnvComparisonResult } from "./types";
 import { compareEnvFiles, parseEnvFile } from "./utils";
 
@@ -11,6 +11,11 @@ export default function EnvComparePage() {
   const [env1Name, setEnv1Name] = useState("");
   const [env2Name, setEnv2Name] = useState("");
   const [result, setResult] = useState<EnvComparisonResult | null>(null);
+
+  const env1NameId = useId();
+  const env1Id = useId();
+  const env2NameId = useId();
+  const env2Id = useId();
 
   const displayName1 = env1Name.trim() || "Environment 1";
   const displayName2 = env2Name.trim() || "Environment 2";
@@ -69,13 +74,13 @@ export default function EnvComparePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <div>
             <label
-              htmlFor="env1-name"
+              htmlFor={env1NameId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Environment Name
             </label>
             <input
-              id="env1-name"
+              id={env1NameId}
               type="text"
               value={env1Name}
               onChange={(e) => setEnv1Name(e.target.value)}
@@ -83,13 +88,13 @@ export default function EnvComparePage() {
               className="w-full px-4 py-2 mb-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <label
-              htmlFor="env1"
+              htmlFor={env1Id}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Environment Variables
             </label>
             <textarea
-              id="env1"
+              id={env1Id}
               value={env1}
               onChange={(e) => setEnv1(e.target.value)}
               className="w-full h-96 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -99,13 +104,13 @@ export default function EnvComparePage() {
 
           <div>
             <label
-              htmlFor="env2-name"
+              htmlFor={env2NameId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Environment Name
             </label>
             <input
-              id="env2-name"
+              id={env2NameId}
               type="text"
               value={env2Name}
               onChange={(e) => setEnv2Name(e.target.value)}
@@ -113,13 +118,13 @@ export default function EnvComparePage() {
               className="w-full px-4 py-2 mb-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <label
-              htmlFor="env2"
+              htmlFor={env2Id}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Environment Variables
             </label>
             <textarea
-              id="env2"
+              id={env2Id}
               value={env2}
               onChange={(e) => setEnv2(e.target.value)}
               className="w-full h-96 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"

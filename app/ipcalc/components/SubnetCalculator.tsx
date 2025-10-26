@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import {
   calculateBasicInfo,
   calculateSubnets,
@@ -16,6 +16,10 @@ export default function SubnetCalculator() {
   const [supernet, setSupernet] = useState<SupernetResult | null>(null);
   const [error, setError] = useState("");
   const [mode, setMode] = useState<"subnet" | "supernet">("subnet");
+
+  const baseNetworkId = useId();
+  const baseMaskId = useId();
+  const newMaskId = useId();
 
   const handleCalculate = () => {
     setError("");
@@ -82,13 +86,13 @@ export default function SubnetCalculator() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
             <label
-              htmlFor="baseNetwork"
+              htmlFor={baseNetworkId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Base Network
             </label>
             <input
-              id="baseNetwork"
+              id={baseNetworkId}
               type="text"
               value={baseNetwork}
               onChange={(e) => setBaseNetwork(e.target.value)}
@@ -100,13 +104,13 @@ export default function SubnetCalculator() {
 
           <div>
             <label
-              htmlFor="baseMask"
+              htmlFor={baseMaskId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Base Netmask (CIDR)
             </label>
             <input
-              id="baseMask"
+              id={baseMaskId}
               type="text"
               value={baseMask}
               onChange={(e) => setBaseMask(e.target.value)}
@@ -118,13 +122,13 @@ export default function SubnetCalculator() {
 
           <div>
             <label
-              htmlFor="newMask"
+              htmlFor={newMaskId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               New Netmask (CIDR)
             </label>
             <input
-              id="newMask"
+              id={newMaskId}
               type="text"
               value={newMask}
               onChange={(e) => setNewMask(e.target.value)}

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useId } from "react";
 import type { GeneratedString, RandomStringOptions } from "./types";
 import { generateRandomStrings } from "./utils";
 
@@ -13,6 +13,9 @@ export default function RandomStringPage() {
   const [useNumbers, setUseNumbers] = useState(true);
   const [useSymbols, setUseSymbols] = useState(false);
   const [results, setResults] = useState<GeneratedString[]>([]);
+
+  const countId = useId();
+  const lengthId = useId();
 
   const handleGenerate = () => {
     const options: RandomStringOptions = {
@@ -79,13 +82,13 @@ export default function RandomStringPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div>
               <label
-                htmlFor="count"
+                htmlFor={countId}
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 Number of Strings (min: 1, max: 50)
               </label>
               <input
-                id="count"
+                id={countId}
                 type="number"
                 min="1"
                 max="50"
@@ -99,13 +102,13 @@ export default function RandomStringPage() {
 
             <div>
               <label
-                htmlFor="length"
+                htmlFor={lengthId}
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
                 String Length (min: 4, max: 255)
               </label>
               <input
-                id="length"
+                id={lengthId}
                 type="number"
                 min="4"
                 max="255"

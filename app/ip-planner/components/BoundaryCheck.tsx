@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import type { BoundaryCheckResult } from "../types";
 import { suggestSubnetMask } from "../utils";
 
@@ -9,6 +9,9 @@ export default function BoundaryCheck() {
   const [requiredHosts, setRequiredHosts] = useState(50);
   const [result, setResult] = useState<BoundaryCheckResult | null>(null);
   const [error, setError] = useState<string>("");
+
+  const startIPId = useId();
+  const requiredHostsId = useId();
 
   const handleCheck = () => {
     setError("");
@@ -38,13 +41,13 @@ export default function BoundaryCheck() {
         <div className="space-y-4">
           <div>
             <label
-              htmlFor="startIP"
+              htmlFor={startIPId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Starting IP Address
             </label>
             <input
-              id="startIP"
+              id={startIPId}
               type="text"
               value={startIP}
               onChange={(e) => setStartIP(e.target.value)}
@@ -55,13 +58,13 @@ export default function BoundaryCheck() {
 
           <div>
             <label
-              htmlFor="requiredHosts"
+              htmlFor={requiredHostsId}
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Required Number of Hosts
             </label>
             <input
-              id="requiredHosts"
+              id={requiredHostsId}
               type="number"
               min="1"
               value={requiredHosts}
