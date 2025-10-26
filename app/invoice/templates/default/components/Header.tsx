@@ -7,15 +7,23 @@ interface HeaderProps {
 }
 
 export const DefaultTemplateHeader = ({ invoiceData }: HeaderProps) => {
+  const hasLogo = invoiceData.logo && invoiceData.logo.length > 0;
+
   return (
     <View style={defaultTemplateStyles.header}>
-      {invoiceData.logo && (
-        <Image src={invoiceData.logo} style={defaultTemplateStyles.logo} />
-      )}
+      {/* Always render logo container to avoid react-pdf reconciliation bugs */}
+      <View style={{ display: hasLogo ? "flex" : "none" }}>
+        {hasLogo && (
+          <Image
+            src={invoiceData.logo || ""}
+            style={defaultTemplateStyles.logo}
+          />
+        )}
+      </View>
       <View style={defaultTemplateStyles.companyInfo}>
         <Text style={defaultTemplateStyles.invoiceTitle}>INVOICE</Text>
         <Text style={defaultTemplateStyles.invoiceNumber}>
-          #{invoiceData.invoiceNumber}
+          #{invoiceData.invoiceNumber || ""}
         </Text>
       </View>
     </View>

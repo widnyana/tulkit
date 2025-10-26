@@ -14,7 +14,6 @@ export function loadInvoice(): InvoiceData | null {
     }
 
     const parsed = JSON.parse(storedData);
-    // Basic validation to ensure required fields exist
     if (isValidInvoiceData(parsed)) {
       return parsed;
     } else {
@@ -35,7 +34,6 @@ export function saveInvoice(data: InvoiceData): void {
   }
 
   try {
-    // Basic validation before saving
     if (isValidInvoiceData(data)) {
       window.localStorage.setItem(INVOICE_STORAGE_KEY, JSON.stringify(data));
     } else {
@@ -46,8 +44,8 @@ export function saveInvoice(data: InvoiceData): void {
   }
 }
 
-// Basic validation function to check if data has required structure
-function isValidInvoiceData(data: any): data is InvoiceData {
+// validation function to check if data has required structure
+function isValidInvoiceData(data: InvoiceData): data is InvoiceData {
   return (
     data &&
     typeof data === "object" &&

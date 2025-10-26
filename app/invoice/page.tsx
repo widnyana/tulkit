@@ -24,12 +24,22 @@ const defaultInvoiceData: InvoiceData = {
   dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     .toISOString()
     .split("T")[0], // 7 days from now
-  items: [{ id: "1", description: "Initial item", quantity: 1, unitPrice: 0, notes: "" }],
+  items: [
+    {
+      id: "1",
+      description: "Initial item",
+      quantity: 1,
+      unitPrice: 0,
+      notes: "",
+    },
+  ],
   notes: "",
   taxEnabled: false,
   taxRate: 10,
   templateKey: "default",
   currency: "$",
+  decimalSeparator: ",",
+  thousandSeparator: ".",
 };
 
 const InvoicePage = () => {

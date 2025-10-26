@@ -5,12 +5,13 @@ import { StripeTemplateDueAmount } from "./components/DueAmount";
 import { StripeTemplateHeader } from "./components/Header";
 import { StripeTemplateInvoiceDetails } from "./components/InvoiceDetails";
 import { StripeTemplateItemsTable } from "./components/ItemsTable";
+import { StripeTemplateNotes } from "./components/Notes";
 import { StripeTemplateSellerBuyerInfo } from "./components/SellerBuyerInfo";
 import { StripeTemplateTotalsSection } from "./components/TotalsSection";
 import { stripeTemplateStyles as s } from "./styles";
 
 /**
- * Stripe invoice template - Clean minimal design
+ * Stripe invoice template - Minimal design
  * No borders, no shadows, optimal spacing
  */
 const StripeTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
@@ -18,9 +19,9 @@ const StripeTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
 }) => {
   return (
     <Document
-      title={`Invoice ${invoiceData.invoiceNumber}`}
-      author={invoiceData.sender.name}
-      subject={`Invoice for ${invoiceData.recipient.name}`}
+      title={`Invoice ${invoiceData.invoiceNumber || ""}`}
+      author={invoiceData.sender.name || ""}
+      subject={`Invoice for ${invoiceData.recipient.name || ""}`}
       creator="Tulkit Invoice Generator"
       producer="@react-pdf/renderer"
     >
@@ -43,16 +44,15 @@ const StripeTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         {/* Line items table */}
         <StripeTemplateItemsTable invoiceData={invoiceData} />
 
-        {/* Summary totals - right aligned */}
-        <StripeTemplateTotalsSection invoiceData={invoiceData} />
-
-        {/* Notes section */}
-        {invoiceData.notes && (
-          <View style={[s.mt20, { maxWidth: "70%" }]}>
-            <Text style={[s.label, s.mb6]}>Notes</Text>
-            <Text style={s.bodySmall}>{invoiceData.notes}</Text>
+        {/* Summary totals and Notes side by side */}
+        <View style={[s.row, s.mt16]}>
+          <View style={{ flex: 1, marginRight: 20 }}>
+            <StripeTemplateNotes invoiceData={invoiceData} />
           </View>
-        )}
+          <View style={{ width: 240 }}>
+            <StripeTemplateTotalsSection invoiceData={invoiceData} />
+          </View>
+        </View>
 
         {/* Footer */}
         <Text
