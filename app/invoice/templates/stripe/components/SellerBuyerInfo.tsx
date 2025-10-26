@@ -11,7 +11,6 @@ export const StripeTemplateSellerBuyerInfo = ({
 }: SellerBuyerInfoProps) => {
   return (
     <View style={[s.spaceBetween, s.mb24]}>
-
       {/* Bill To section */}
       <View style={{ width: "50%" }}>
         <Text style={[s.label, s.mb6]}>Bill To</Text>
@@ -39,7 +38,6 @@ export const StripeTemplateSellerBuyerInfo = ({
           {invoiceData.recipient.phone || ""}
         </Text>
       </View>
-
 
       {/* From section */}
       <View style={{ width: "50%", alignItems: "flex-end" }}>
