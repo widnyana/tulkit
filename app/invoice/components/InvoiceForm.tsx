@@ -914,30 +914,76 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <input
                 type="file"
                 className="hidden"
-                accept="image/png,image/jpeg"
+                accept="image/*"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
 
-                  if (
-                    !file.type.match("image/png") &&
-                    !file.type.match("image/jpeg")
-                  ) {
-                    toast.error("Please upload a PNG or JPEG image");
+                  // Check if it's an image file
+                  if (!file.type.startsWith("image/")) {
+                    toast.error("Please upload an image file");
                     return;
                   }
 
+                  // Check file size (1MB)
                   if (file.size > 1000 * 1024) {
-                    toast.error("Image size should be less than 1000KB");
+                    toast.error("Image size should be less than 1MB");
                     return;
                   }
 
+                  // Convert any image format to PNG for @react-pdf/renderer compatibility
                   const reader = new FileReader();
-                  reader.onloadend = () => {
-                    const base64String = reader.result as string;
-                    setValue("paymentInfo.paymentQRCode", base64String);
-                    toast.success("QR code uploaded successfully");
+                  reader.onload = (event) => {
+                    const img = new window.Image();
+                    img.onload = () => {
+                      // Create canvas to convert image
+                      const canvas = document.createElement("canvas");
+                      const ctx = canvas.getContext("2d");
+
+                      if (!ctx) {
+                        toast.error("Failed to process QR code");
+                        return;
+                      }
+
+                      // Set canvas size (max 400x400 for QR codes)
+                      const maxSize = 400;
+                      let width = img.width;
+                      let height = img.height;
+
+                      if (width > maxSize || height > maxSize) {
+                        if (width > height) {
+                          height = (height / width) * maxSize;
+                          width = maxSize;
+                        } else {
+                          width = (width / height) * maxSize;
+                          height = maxSize;
+                        }
+                      }
+
+                      canvas.width = width;
+                      canvas.height = height;
+
+                      // Draw image on canvas
+                      ctx.drawImage(img, 0, 0, width, height);
+
+                      // Convert to PNG base64
+                      const pngBase64 = canvas.toDataURL("image/png", 0.9);
+
+                      setValue("paymentInfo.paymentQRCode", pngBase64);
+                      toast.success("QR code uploaded successfully");
+                    };
+
+                    img.onerror = () => {
+                      toast.error("Failed to load QR code. Please try a different file.");
+                    };
+
+                    img.src = event.target?.result as string;
                   };
+
+                  reader.onerror = () => {
+                    toast.error("Failed to read file");
+                  };
+
                   reader.readAsDataURL(file);
                 }}
               />
