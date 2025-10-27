@@ -44,11 +44,14 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
   }
 
   const logoKey = invoiceData.logo ? invoiceData.logo.substring(0, 50) : "no-logo";
+  const qrKey = invoiceData.paymentInfo?.paymentQRCode
+    ? invoiceData.paymentInfo.paymentQRCode.substring(0, 50)
+    : "no-qr";
 
   return (
     <div className="p-4 border-t bg-gray-50">
       <PDFDownloadLink
-        key={`${invoiceData.templateKey || "default"}-${logoKey}`}
+        key={`${invoiceData.templateKey || "default"}-${logoKey}-${qrKey}`}
         document={
           invoiceData.templateKey === "stripe" ? (
             <StripeTemplate invoiceData={invoiceData} />

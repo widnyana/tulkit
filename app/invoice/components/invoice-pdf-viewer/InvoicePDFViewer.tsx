@@ -14,10 +14,13 @@ interface InvoicePDFViewerProps {
 
 const InvoicePDFViewer: React.FC<InvoicePDFViewerProps> = ({ invoiceData }) => {
   const logoKey = invoiceData.logo ? invoiceData.logo.substring(0, 50) : "no-logo";
+  const qrKey = invoiceData.paymentInfo?.paymentQRCode
+    ? invoiceData.paymentInfo.paymentQRCode.substring(0, 50)
+    : "no-qr";
 
   return (
     <PDFViewer
-      key={`${invoiceData.templateKey || "default"}-${logoKey}`}
+      key={`${invoiceData.templateKey || "default"}-${logoKey}-${qrKey}`}
       width="100%"
       height="100%"
       style={{ border: "none" }}
