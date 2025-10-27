@@ -244,6 +244,46 @@ export const graniteTemplateStyles = StyleSheet.create({
     fontFamily: "Helvetica",
   },
 
+  // Payment information section
+  paymentSection: {
+    marginTop: 24,
+    padding: 20,
+    backgroundColor: "#F8F9FA",
+    borderRadius: 4,
+  },
+
+  paymentTitle: {
+    fontSize: 11,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textTransform: "uppercase",
+    color: "#2C3E50",
+    letterSpacing: 0.8,
+    fontFamily: "Helvetica-Bold",
+  },
+
+  paymentRow: {
+    flexDirection: "row",
+    marginBottom: 10,
+  },
+
+  paymentLabel: {
+    fontSize: 9,
+    fontWeight: "bold",
+    width: "35%",
+    color: "#7F8C8D",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    fontFamily: "Helvetica-Bold",
+  },
+
+  paymentValue: {
+    fontSize: 10,
+    flex: 1,
+    color: "#2C3E50",
+    fontFamily: "Helvetica",
+  },
+
   // Improved spacing helpers
   mb4: { marginBottom: 4 },
   mb8: { marginBottom: 8 },

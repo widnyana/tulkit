@@ -14,7 +14,7 @@ export const StripeTemplateTotalsSection = ({
     (sum, item) => sum + (item.quantity || 0) * (item.unitPrice || 0),
     0,
   );
-  const taxAmount = invoiceData.taxRate
+  const taxAmount = invoiceData.taxEnabled
     ? (subtotal * (invoiceData.taxRate || 0)) / 100
     : 0;
   const total = subtotal + taxAmount;
@@ -33,24 +33,16 @@ export const StripeTemplateTotalsSection = ({
           </Text>
         </View>
 
-        {/* Always render tax row to avoid reconciliation bugs */}
-        <View
-          style={[
-            s.totalRow,
-            {
-              display:
-                invoiceData.taxRate && invoiceData.taxRate > 0
-                  ? "flex"
-                  : "none",
-            },
-          ]}
-        >
-          <Text style={s.totalLabel}>Tax ({invoiceData.taxRate || 0}%)</Text>
-          <Text style={s.totalValue}>
-            {currency}
-            {formatNumber(taxAmount, 2, decimalSep, thousandSep)}
-          </Text>
-        </View>
+        {/* Tax row - only render when tax is enabled */}
+        {invoiceData.taxEnabled && (
+          <View style={s.totalRow}>
+            <Text style={s.totalLabel}>Tax ({invoiceData.taxRate || 0}%)</Text>
+            <Text style={s.totalValue}>
+              {currency}
+              {formatNumber(taxAmount, 2, decimalSep, thousandSep)}
+            </Text>
+          </View>
+        )}
 
         <View style={s.grandTotal}>
           <Text style={s.grandTotalLabel}>Total</Text>

@@ -12,13 +12,17 @@ export const StripeTemplateDueAmount = ({ invoiceData }: DueAmountProps) => {
     (sum, item) => sum + (item.quantity || 0) * (item.unitPrice || 0),
     0,
   );
-  const taxAmount = invoiceData.taxRate
+  const taxAmount = invoiceData.taxEnabled
     ? (subtotal * (invoiceData.taxRate || 0)) / 100
     : 0;
   const total = subtotal + taxAmount;
   const currency = invoiceData.currency || "$";
   const decimalSep = invoiceData.decimalSeparator || ",";
   const thousandSep = invoiceData.thousandSeparator || ".";
+
+  console.log(`subtotal: ${subtotal} | taxAmount: ${taxAmount} | total: ${total}`)
+  console.log(`invoiceData.taxRate: ${invoiceData.taxRate}`);
+  console.log(`invoiceData.currency: ${invoiceData.currency}`)
 
   return (
     <View style={[s.spaceBetween, s.mb16]}>

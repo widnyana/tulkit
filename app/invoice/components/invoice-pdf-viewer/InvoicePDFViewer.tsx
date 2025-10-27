@@ -3,6 +3,7 @@
 import type { InvoiceData } from "@/lib/invoice/types";
 import { PDFViewer } from "@react-pdf/renderer";
 import type React from "react";
+import { useMemo } from "react";
 import { ApexTemplate } from "../../templates/apex/ApexTemplate";
 import { DefaultTemplate } from "../../templates/default/DefaultTemplate";
 import { GraniteTemplate } from "../../templates/granite-ledger/GraniteTemplate";
@@ -13,14 +14,44 @@ interface InvoicePDFViewerProps {
 }
 
 const InvoicePDFViewer: React.FC<InvoicePDFViewerProps> = ({ invoiceData }) => {
-  const logoKey = invoiceData.logo ? invoiceData.logo.substring(0, 50) : "no-logo";
-  const qrKey = invoiceData.paymentInfo?.paymentQRCode
-    ? invoiceData.paymentInfo.paymentQRCode.substring(0, 50)
-    : "no-qr";
+  // Generate a key based on critical fields to force remount on changes
+  // This prevents React reconciliation bugs in @react-pdf/renderer
+  const dataKey = useMemo(() => {
+    const parts = [
+      invoiceData.templateKey || "default",
+      invoiceData.invoiceNumber,
+      invoiceData.issueDate,
+      invoiceData.dueDate,
+      invoiceData.logo ? "has-logo" : "no-logo",
+      invoiceData.paymentInfo?.paymentQRCode ? "has-qr" : "no-qr",
+      invoiceData.notes || "no-notes",
+      invoiceData.items.length,
+      invoiceData.taxEnabled ? "tax-on" : "tax-off",
+      invoiceData.taxRate,
+      invoiceData.currency,
+      invoiceData.sender.name,
+      invoiceData.recipient.name,
+    ];
+    return parts.join("-");
+  }, [
+    invoiceData.templateKey,
+    invoiceData.invoiceNumber,
+    invoiceData.issueDate,
+    invoiceData.dueDate,
+    invoiceData.logo,
+    invoiceData.paymentInfo?.paymentQRCode,
+    invoiceData.notes,
+    invoiceData.items.length,
+    invoiceData.taxEnabled,
+    invoiceData.taxRate,
+    invoiceData.currency,
+    invoiceData.sender.name,
+    invoiceData.recipient.name,
+  ]);
 
   return (
     <PDFViewer
-      key={`${invoiceData.templateKey || "default"}-${logoKey}-${qrKey}`}
+      key={dataKey}
       width="100%"
       height="100%"
       style={{ border: "none" }}

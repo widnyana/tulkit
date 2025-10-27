@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tulkit - Developer Utility Toolkit",
+  title: "Tulkit - a Utility Toolkit",
   description:
-    "A collection of developer utilities including env file comparison and more",
+    "A collection of utilities that solves your tiny, annoying problems.",
 };
 
 export default function RootLayout({

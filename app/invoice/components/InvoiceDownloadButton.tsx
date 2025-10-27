@@ -4,7 +4,7 @@ import type { InvoiceData } from "@/lib/invoice/types";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Download } from "lucide-react";
 import type React from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { DefaultTemplate } from "../templates/default/DefaultTemplate";
 import { StripeTemplate } from "../templates/stripe/StripeTemplate";
@@ -34,6 +34,41 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
     toast.error("Failed to generate PDF. Please try again.");
   };
 
+  // Generate a key based on critical fields to force remount on changes
+  // This prevents React reconciliation bugs in @react-pdf/renderer
+  const dataKey = useMemo(() => {
+    const parts = [
+      invoiceData.templateKey || "default",
+      invoiceData.invoiceNumber,
+      invoiceData.issueDate,
+      invoiceData.dueDate,
+      invoiceData.logo ? "has-logo" : "no-logo",
+      invoiceData.paymentInfo?.paymentQRCode ? "has-qr" : "no-qr",
+      invoiceData.notes || "no-notes",
+      invoiceData.items.length,
+      invoiceData.taxEnabled ? "tax-on" : "tax-off",
+      invoiceData.taxRate,
+      invoiceData.currency,
+      invoiceData.sender.name,
+      invoiceData.recipient.name,
+    ];
+    return parts.join("-");
+  }, [
+    invoiceData.templateKey,
+    invoiceData.invoiceNumber,
+    invoiceData.issueDate,
+    invoiceData.dueDate,
+    invoiceData.logo,
+    invoiceData.paymentInfo?.paymentQRCode,
+    invoiceData.notes,
+    invoiceData.items.length,
+    invoiceData.taxEnabled,
+    invoiceData.taxRate,
+    invoiceData.currency,
+    invoiceData.sender.name,
+    invoiceData.recipient.name,
+  ]);
+
   if (!hasValidData) {
     return (
       <Button variant="outline" disabled className="w-full">
@@ -43,15 +78,10 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
     );
   }
 
-  const logoKey = invoiceData.logo ? invoiceData.logo.substring(0, 50) : "no-logo";
-  const qrKey = invoiceData.paymentInfo?.paymentQRCode
-    ? invoiceData.paymentInfo.paymentQRCode.substring(0, 50)
-    : "no-qr";
-
   return (
     <div className="p-4 border-t bg-gray-50">
       <PDFDownloadLink
-        key={`${invoiceData.templateKey || "default"}-${logoKey}-${qrKey}`}
+        key={dataKey}
         document={
           invoiceData.templateKey === "stripe" ? (
             <StripeTemplate invoiceData={invoiceData} />
