@@ -10,10 +10,12 @@ interface GraniteTemplateHeaderProps {
 export const GraniteTemplateHeader: React.FC<GraniteTemplateHeaderProps> = ({
   invoiceData,
 }) => {
+  const hasLogo = invoiceData.logo && invoiceData.logo.length > 0;
+
   return (
     <View style={graniteTemplateStyles.header}>
       <View>
-        {invoiceData.logo && (
+        {hasLogo && (
           <Image src={invoiceData.logo} style={graniteTemplateStyles.logo} />
         )}
         <Text style={graniteTemplateStyles.headerTitle}>
