@@ -77,25 +77,73 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file type
-    if (!file.type.match("image/png") && !file.type.match("image/jpeg")) {
-      toast.error("Please upload a PNG or JPEG image");
+    // Check if it's an image file
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please upload an image file");
       return;
     }
 
-    // Check file size (200KB)
+    // Check file size (2MB)
     if (file.size > 2000 * 1024) {
-      toast.error("Image size should be less than 2000KB");
+      toast.error("Image size should be less than 2MB");
       return;
     }
 
+    // Convert any image format to PNG for @react-pdf/renderer compatibility
     const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64String = reader.result as string;
-      setLogoPreview(base64String);
-      setValue("logo", base64String);
-      toast.success("Logo uploaded successfully");
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        // Create canvas to convert image
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+          toast.error("Failed to process image");
+          return;
+        }
+
+        // Set canvas size to image size (max 800x800 to keep file size reasonable)
+        const maxSize = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxSize || height > maxSize) {
+          if (width > height) {
+            height = (height / width) * maxSize;
+            width = maxSize;
+          } else {
+            width = (width / height) * maxSize;
+            height = maxSize;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw image on canvas
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Convert to PNG base64
+        const pngBase64 = canvas.toDataURL("image/png", 0.9);
+
+        console.log("Logo converted to PNG, length:", pngBase64.length);
+        setLogoPreview(pngBase64);
+        setValue("logo", pngBase64);
+        toast.success("Logo uploaded successfully");
+      };
+
+      img.onerror = () => {
+        toast.error("Failed to load image. Please try a different file.");
+      };
+
+      img.src = event.target?.result as string;
     };
+
+    reader.onerror = () => {
+      toast.error("Failed to read file");
+    };
+
     reader.readAsDataURL(file);
   };
 
@@ -120,7 +168,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
   };
 
   return (
-    <form className="space-y-6 p-4">
+    <form className="space-y-6 p-4 text-gray-900">
       {/* Template and Currency Settings */}
       <div className="border-b border-gray-200 pb-6">
         <h3 className="text-base font-semibold text-gray-900 mb-4">
@@ -134,12 +182,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-gray-700 text-sm font-medium text-gray-900 mb-1">
                     Template
                   </label>
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border text-gray-700  border-gray-300 rounded-md"
                     value={field.value}
                   >
                     <option value="default">Default Template</option>
@@ -159,12 +207,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm text-gray-700 font-medium mb-1">
                     Currency Symbol
                   </label>
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-md"
                     value={field.value || "$"}
                   >
                     <option value="€">Euro - €</option>
@@ -193,7 +241,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 text-gray-700 mb-1">
                     Decimal Separator
                   </label>
                   <select
@@ -216,7 +264,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Thousand Separator
                   </label>
                   <select
@@ -235,7 +283,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 text-gray-900 md:grid-cols-2 gap-6">
         {/* Sender Information */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium">From</h3>
@@ -245,7 +293,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Company Name
                   </label>
                   <input
@@ -267,7 +315,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Address
                   </label>
                   <textarea
@@ -289,7 +337,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Email
                   </label>
                   <input
@@ -311,7 +359,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Phone
                   </label>
                   <input
@@ -340,7 +388,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Client Name
                   </label>
                   <input
@@ -362,7 +410,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Address
                   </label>
                   <textarea
@@ -384,7 +432,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Email
                   </label>
                   <input
@@ -406,7 +454,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Phone
                   </label>
                   <input
@@ -428,7 +476,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Invoice Details & Logo */}
-      <div className="border-b border-gray-200 pb-6">
+      <div className="border-b text-gray-900 border-gray-200 pb-6">
         <h3 className="text-base font-semibold text-gray-900 mb-4">
           Invoice Details & Logo
         </h3>
@@ -440,7 +488,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium text-gray-900 mb-1">
                   Invoice Number
                 </label>
                 <input
@@ -462,7 +510,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium text-gray-900 mb-1">
                   Issue Date
                 </label>
                 <input
@@ -483,7 +531,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="block text-sm font-medium mb-1">
+                <label className="block text-sm font-medium text-gray-900 mb-1">
                   Due Date
                 </label>
                 <input
@@ -503,7 +551,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
         {/* Logo Upload */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium text-gray-900 mb-1">
             Company Logo (Optional)
           </label>
           <div className="flex items-center space-x-4">
@@ -526,7 +574,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <input
                 type="file"
                 className="hidden"
-                accept="image/png,image/jpeg"
+                accept="image/*"
                 onChange={handleLogoChange}
               />
             </label>
@@ -688,7 +736,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     name={field.name}
                     ref={field.ref}
                   />
-                  <label className="ml-2 text-sm font-medium cursor-pointer">
+                  <label className="ml-2 text-sm font-medium text-gray-900 cursor-pointer">
                     Apply Tax
                   </label>
                 </div>
@@ -702,7 +750,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 control={control}
                 render={({ field }) => (
                   <div>
-                    <label className="block text-sm font-medium mb-1">
+                    <label className="block text-sm font-medium text-gray-900 mb-1">
                       Tax Rate (%)
                     </label>
                     <input
@@ -741,7 +789,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Bank Name
                   </label>
                   <input
@@ -762,7 +810,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Account Number
                   </label>
                   <input
@@ -783,7 +831,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium mb-1">
+                  <label className="block text-sm font-medium text-gray-900 mb-1">
                     Routing/SWIFT Code
                   </label>
                   <input
@@ -800,7 +848,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
         {/* Payment Methods */}
         <div className="mb-4">
-          <label className="block text-sm font-medium mb-2">
+          <label className="block text-sm font-medium text-gray-900 mb-2">
             Accepted Payment Methods
           </label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -843,7 +891,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
         {/* Payment QR Code */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-sm font-medium text-gray-900 mb-1">
             Payment QR Code (Optional)
           </label>
           <div className="flex items-center space-x-4">

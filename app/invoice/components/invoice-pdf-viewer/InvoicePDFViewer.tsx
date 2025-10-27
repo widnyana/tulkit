@@ -13,9 +13,11 @@ interface InvoicePDFViewerProps {
 }
 
 const InvoicePDFViewer: React.FC<InvoicePDFViewerProps> = ({ invoiceData }) => {
+  const logoKey = invoiceData.logo ? invoiceData.logo.substring(0, 50) : "no-logo";
+
   return (
     <PDFViewer
-      key={invoiceData.templateKey || "default"}
+      key={`${invoiceData.templateKey || "default"}-${logoKey}`}
       width="100%"
       height="100%"
       style={{ border: "none" }}

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { DefaultTemplate } from "../templates/default/DefaultTemplate";
 import { StripeTemplate } from "../templates/stripe/StripeTemplate";
 import { GraniteTemplate } from "../templates/granite-ledger/GraniteTemplate";
+import { ApexTemplate } from "../templates/apex/ApexTemplate";
 import { Button } from "./ui/button";
 
 interface InvoiceDownloadButtonProps {
@@ -42,15 +43,19 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
     );
   }
 
+  const logoKey = invoiceData.logo ? invoiceData.logo.substring(0, 50) : "no-logo";
+
   return (
     <div className="p-4 border-t bg-gray-50">
       <PDFDownloadLink
-        key={invoiceData.templateKey || "default"}
+        key={`${invoiceData.templateKey || "default"}-${logoKey}`}
         document={
           invoiceData.templateKey === "stripe" ? (
             <StripeTemplate invoiceData={invoiceData} />
           ) : invoiceData.templateKey === "granite" ? (
             <GraniteTemplate invoiceData={invoiceData} />
+          ) : invoiceData.templateKey === "apex" ? (
+            <ApexTemplate invoiceData={invoiceData} />
           ) : (
             <DefaultTemplate invoiceData={invoiceData} />
           )

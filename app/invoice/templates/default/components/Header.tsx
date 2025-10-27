@@ -11,15 +11,14 @@ export const DefaultTemplateHeader = ({ invoiceData }: HeaderProps) => {
 
   return (
     <View style={defaultTemplateStyles.header}>
-      {/* Always render logo container to avoid react-pdf reconciliation bugs */}
-      <View style={{ display: hasLogo ? "flex" : "none" }}>
-        {hasLogo && (
+      {hasLogo && (
+        <View style={{ width: 120 }}>
           <Image
-            src={invoiceData.logo || ""}
+            src={invoiceData.logo}
             style={defaultTemplateStyles.logo}
           />
-        )}
-      </View>
+        </View>
+      )}
       <View style={defaultTemplateStyles.companyInfo}>
         <Text style={defaultTemplateStyles.invoiceTitle}>INVOICE</Text>
         <Text style={defaultTemplateStyles.invoiceNumber}>

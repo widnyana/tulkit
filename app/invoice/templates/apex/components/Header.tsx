@@ -12,18 +12,20 @@ export const ApexTemplateHeader = ({ invoiceData }: HeaderProps) => {
   return (
     <View style={s.headerSection}>
       {/* Logo on left */}
-      <View style={{ flex: 1 }}>
-        {hasLogo && (
+      {hasLogo ? (
+        <View style={{ flex: 1 }}>
           <Image
-            src={invoiceData.logo || ""}
+            src={invoiceData.logo}
             style={{
               maxWidth: 100,
               maxHeight: 50,
               objectFit: "contain",
             }}
           />
-        )}
-      </View>
+        </View>
+      ) : (
+        <View style={{ flex: 1 }} />
+      )}
 
       {/* Invoice title and number on right */}
       <View style={{ alignItems: "flex-end" }}>

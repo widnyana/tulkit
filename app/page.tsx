@@ -7,8 +7,8 @@ export default function Home() {
 
       <div className="max-w-4xl w-full relative z-10">
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold text-black mb-4">Tulkit</h1>
-          <p className="text-xl text-black font-medium">
+          <h1 className="text-5xl font-bold text-gray-400 mb-4">Tulkit</h1>
+          <p className="text-xl text-gray-400 font-medium">
             because apparently, you *do* need another random tool on the
             internet. ¯\_(ツ)_/¯
           </p>
