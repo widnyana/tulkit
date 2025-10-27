@@ -124,6 +124,23 @@ export const stripeTemplateStyles = StyleSheet.create({
     fontWeight: 700,
   },
 
+  // Payment Information (minimal design)
+  paymentSection: {
+    marginTop: 24,
+  },
+  paymentRow: {
+    flexDirection: "row",
+    marginBottom: 8,
+  },
+  paymentLabel: {
+    fontSize: 8,
+    fontWeight: 600,
+    color: "#8898AA",
+    textTransform: "uppercase",
+    letterSpacing: 0.8,
+    width: "35%",
+  },
+
   // Footer
   footer: {
     position: "absolute",

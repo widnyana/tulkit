@@ -16,7 +16,7 @@ export const DefaultTemplateTotalsSection = ({
     (sum, item) => sum + (item.quantity || 0) * (item.unitPrice || 0),
     0,
   );
-  const taxAmount = invoiceData.taxRate
+  const taxAmount = invoiceData.taxEnabled
     ? (subtotal * (invoiceData.taxRate || 0)) / 100
     : 0;
   const total = subtotal + taxAmount;
@@ -40,7 +40,7 @@ export const DefaultTemplateTotalsSection = ({
           styles.totalsRow,
           {
             display:
-              invoiceData.taxRate && invoiceData.taxRate > 0 ? "flex" : "none",
+              invoiceData.taxEnabled && invoiceData.taxRate > 0 ? "flex" : "none",
           },
         ]}
       >

@@ -6,6 +6,7 @@ import { StripeTemplateHeader } from "./components/Header";
 import { StripeTemplateInvoiceDetails } from "./components/InvoiceDetails";
 import { StripeTemplateItemsTable } from "./components/ItemsTable";
 import { StripeTemplateNotes } from "./components/Notes";
+import { StripeTemplatePaymentInfo } from "./components/PaymentInfo";
 import { StripeTemplateSellerBuyerInfo } from "./components/SellerBuyerInfo";
 import { StripeTemplateTotalsSection } from "./components/TotalsSection";
 import { stripeTemplateStyles as s } from "./styles";
@@ -53,6 +54,9 @@ const StripeTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
             <StripeTemplateTotalsSection invoiceData={invoiceData} />
           </View>
         </View>
+
+        {/* Payment Information */}
+        <StripeTemplatePaymentInfo invoiceData={invoiceData} />
 
         {/* Footer */}
         <Text

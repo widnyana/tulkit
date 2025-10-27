@@ -4,6 +4,7 @@ import type React from "react";
 import { GraniteTemplateDetailsSection } from "./components/DetailsSection";
 import { GraniteTemplateHeader } from "./components/Header";
 import { GraniteTemplateItemsTable } from "./components/ItemsTable";
+import { GraniteTemplatePaymentInfo } from "./components/PaymentInfo";
 import { GraniteTemplateTotalsSection } from "./components/TotalsSection";
 import { graniteTemplateStyles } from "./styles";
 
@@ -53,6 +54,9 @@ const GraniteTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
               <GraniteTemplateTotalsSection invoiceData={invoiceData} />
             </View>
           </View>
+
+          {/* Payment Information section */}
+          <GraniteTemplatePaymentInfo invoiceData={invoiceData} />
         </View>
 
         {/* Footer */}
