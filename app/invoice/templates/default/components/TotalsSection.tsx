@@ -40,7 +40,9 @@ export const DefaultTemplateTotalsSection = ({
           styles.totalsRow,
           {
             display:
-              invoiceData.taxEnabled && invoiceData.taxRate > 0 ? "flex" : "none",
+              invoiceData.taxEnabled && invoiceData.taxRate > 0
+                ? "flex"
+                : "none",
           },
         ]}
       >

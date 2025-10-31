@@ -20,9 +20,11 @@ export const StripeTemplateDueAmount = ({ invoiceData }: DueAmountProps) => {
   const decimalSep = invoiceData.decimalSeparator || ",";
   const thousandSep = invoiceData.thousandSeparator || ".";
 
-  console.log(`subtotal: ${subtotal} | taxAmount: ${taxAmount} | total: ${total}`)
+  console.log(
+    `subtotal: ${subtotal} | taxAmount: ${taxAmount} | total: ${total}`,
+  );
   console.log(`invoiceData.taxRate: ${invoiceData.taxRate}`);
-  console.log(`invoiceData.currency: ${invoiceData.currency}`)
+  console.log(`invoiceData.currency: ${invoiceData.currency}`);
 
   return (
     <View style={[s.spaceBetween, s.mb16]}>

@@ -13,10 +13,7 @@ export const DefaultTemplateHeader = ({ invoiceData }: HeaderProps) => {
     <View style={defaultTemplateStyles.header}>
       {hasLogo && (
         <View style={{ width: 120 }}>
-          <Image
-            src={invoiceData.logo}
-            style={defaultTemplateStyles.logo}
-          />
+          <Image src={invoiceData.logo} style={defaultTemplateStyles.logo} />
         </View>
       )}
       <View style={defaultTemplateStyles.companyInfo}>
