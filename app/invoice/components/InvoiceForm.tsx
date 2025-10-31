@@ -974,7 +974,9 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     };
 
                     img.onerror = () => {
-                      toast.error("Failed to load QR code. Please try a different file.");
+                      toast.error(
+                        "Failed to load QR code. Please try a different file.",
+                      );
                     };
 
                     img.src = event.target?.result as string;
