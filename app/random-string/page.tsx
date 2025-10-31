@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useId } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { GeneratedString, RandomStringOptions } from "./types";
 import { generateRandomStrings } from "./utils";
 
@@ -92,10 +93,21 @@ export default function RandomStringPage() {
                 type="number"
                 min="1"
                 max="50"
-                value={count}
-                onChange={(e) =>
-                  setCount(Math.min(50, Math.max(1, Number(e.target.value))))
-                }
+                value={count === 0 ? "" : count}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // Allow empty string for deletion, update state with number
+                  if (val === "") {
+                    setCount(0);
+                  } else {
+                    setCount(Number(val));
+                  }
+                }}
+                onBlur={(e) => {
+                  const val = Number(e.target.value);
+                  if (Number.isNaN(val) || val < 1) setCount(1);
+                  else if (val > 50) setCount(50);
+                }}
                 className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -112,10 +124,21 @@ export default function RandomStringPage() {
                 type="number"
                 min="4"
                 max="255"
-                value={length}
-                onChange={(e) =>
-                  setLength(Math.min(255, Math.max(4, Number(e.target.value))))
-                }
+                value={length === 0 ? "" : length}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  // Allow empty string for deletion, update state with number
+                  if (val === "") {
+                    setLength(0);
+                  } else {
+                    setLength(Number(val));
+                  }
+                }}
+                onBlur={(e) => {
+                  const val = Number(e.target.value);
+                  if (Number.isNaN(val) || val < 4) setLength(4);
+                  else if (val > 255) setLength(255);
+                }}
                 className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -127,41 +150,33 @@ export default function RandomStringPage() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={useUppercase}
-                  onChange={(e) => setUseUppercase(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  onCheckedChange={(checked) => setUseUppercase(checked === true)}
                 />
                 <span className="text-sm text-gray-700">Uppercase (A-Z)</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={useLowercase}
-                  onChange={(e) => setUseLowercase(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  onCheckedChange={(checked) => setUseLowercase(checked === true)}
                 />
                 <span className="text-sm text-gray-700">Lowercase (a-z)</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={useNumbers}
-                  onChange={(e) => setUseNumbers(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  onCheckedChange={(checked) => setUseNumbers(checked === true)}
                 />
                 <span className="text-sm text-gray-700">Numbers (0-9)</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={useSymbols}
-                  onChange={(e) => setUseSymbols(e.target.checked)}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  onCheckedChange={(checked) => setUseSymbols(checked === true)}
                 />
                 <span className="text-sm text-gray-700">Symbols (!@#$)</span>
               </label>
