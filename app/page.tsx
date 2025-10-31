@@ -63,7 +63,7 @@ export default function Home() {
             href="/ipcalc"
             title="IP Calculator"
             description="Comprehensive IP calculator with subnet/supernet operations and CIDR deaggregation"
-            color="orange"
+            color="purple"
             icon={
               <svg
                 fill="none"
