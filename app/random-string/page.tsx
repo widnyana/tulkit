@@ -46,7 +46,7 @@ export default function RandomStringPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <Link
           href="/"
           className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
