@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useRef, useId, useEffect } from "react";
+import { useReducer, useRef, useId, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { QRCodeSVG } from "./components/QRCodeSVG";
@@ -15,12 +15,12 @@ const templates = [
   {
     icon: "🌐",
     label: "My Website",
-    example: "https://yourwebsite.com",
+    example: "https://tulkit.widnyana.web.id/",
   },
   {
     icon: "☎️",
     label: "Call Me",
-    example: "tel:+1-555-0123",
+    example: "tel:+1-234-5678",
   },
   {
     icon: "✉️",
@@ -34,30 +34,97 @@ const templates = [
   },
 ];
 
-export default function QRGeneratorPage() {
-  const [text, setText] = useState("");
-  const [errorLevel, setErrorLevel] = useState<
-    "LOW" | "MEDIUM" | "QUARTILE" | "HIGH"
-  >("MEDIUM");
-  const [filename, setFilename] = useState("qr-code");
-  const [showAdvanced, setShowAdvanced] = useState(false);
-  const [showStyling, setShowStyling] = useState(false);
-  const [includeWatermark, setIncludeWatermark] = useState(true);
+// State type definition
+type ErrorLevel = "LOW" | "MEDIUM" | "QUARTILE" | "HIGH";
 
-  // Styling options
-  const [shapeOptions, setShapeOptions] = useState<ShapeOptions>({
+interface QRState {
+  text: string;
+  errorLevel: ErrorLevel;
+  filename: string;
+  showAdvanced: boolean;
+  showStyling: boolean;
+  includeWatermark: boolean;
+  shapeOptions: ShapeOptions;
+  gradientType: GradientType;
+  colors: string[];
+  logoImage: string;
+  logoSize: number;
+  qrSize: number;
+}
+
+// Action types
+type QRAction =
+  | { type: "SET_TEXT"; payload: string }
+  | { type: "SET_ERROR_LEVEL"; payload: ErrorLevel }
+  | { type: "SET_FILENAME"; payload: string }
+  | { type: "TOGGLE_ADVANCED" }
+  | { type: "TOGGLE_STYLING" }
+  | { type: "SET_WATERMARK"; payload: boolean }
+  | { type: "SET_SHAPE_OPTIONS"; payload: ShapeOptions }
+  | { type: "SET_GRADIENT_TYPE"; payload: GradientType }
+  | { type: "SET_COLORS"; payload: string[] }
+  | { type: "SET_LOGO_IMAGE"; payload: string }
+  | { type: "SET_LOGO_SIZE"; payload: number }
+  | { type: "RESET" };
+
+// Initial state
+const INITIAL_STATE: QRState = {
+  text: "",
+  errorLevel: "MEDIUM",
+  filename: "qr-code",
+  showAdvanced: false,
+  showStyling: false,
+  includeWatermark: true,
+  shapeOptions: {
     shape: "rounded",
     eyePatternShape: "rounded",
     gap: 0,
     eyePatternGap: 0,
-  });
-  const [gradientType, setGradientType] = useState<GradientType>("radial");
-  const [colors, setColors] = useState<string[]>(["#000000"]);
-  const [logoImage, setLogoImage] = useState<string>("");
-  const [logoSize, setLogoSize] = useState<number>(0);
-  const [qrSize] = useState(300);
+  },
+  gradientType: "radial",
+  colors: ["#000000"],
+  logoImage: "",
+  logoSize: 0,
+  qrSize: 512,
+};
+
+// Reducer function
+function qrReducer(state: QRState, action: QRAction): QRState {
+  switch (action.type) {
+    case "SET_TEXT":
+      return { ...state, text: action.payload };
+    case "SET_ERROR_LEVEL":
+      return { ...state, errorLevel: action.payload };
+    case "SET_FILENAME":
+      return { ...state, filename: action.payload };
+    case "TOGGLE_ADVANCED":
+      return { ...state, showAdvanced: !state.showAdvanced };
+    case "TOGGLE_STYLING":
+      return { ...state, showStyling: !state.showStyling };
+    case "SET_WATERMARK":
+      return { ...state, includeWatermark: action.payload };
+    case "SET_SHAPE_OPTIONS":
+      return { ...state, shapeOptions: action.payload };
+    case "SET_GRADIENT_TYPE":
+      return { ...state, gradientType: action.payload };
+    case "SET_COLORS":
+      return { ...state, colors: action.payload };
+    case "SET_LOGO_IMAGE":
+      return { ...state, logoImage: action.payload };
+    case "SET_LOGO_SIZE":
+      return { ...state, logoSize: action.payload };
+    case "RESET":
+      return INITIAL_STATE;
+    default:
+      return state;
+  }
+}
+
+export default function QRGeneratorPage() {
+  const [state, dispatch] = useReducer(qrReducer, INITIAL_STATE);
 
   const svgRef = useRef<SVGSVGElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
   const textId = useId();
   const filenameId = useId();
   const logoUploadId = useId();
@@ -66,33 +133,34 @@ export default function QRGeneratorPage() {
   useEffect(() => {
     console.log(
       "[State Update] includeWatermark changed to:",
-      includeWatermark,
+      state.includeWatermark,
     );
-  }, [includeWatermark]);
+  }, [state.includeWatermark]);
 
   const handleDownload = async () => {
-    console.log("[Download] includeWatermark state:", includeWatermark);
+    console.log("[Download] includeWatermark state:", state.includeWatermark);
     if (svgRef.current) {
       try {
-        await downloadSVGAsPNG(svgRef.current, filename || "qr-code", {
-          includeWatermark,
+        await downloadSVGAsPNG(svgRef.current, state.filename || "qr-code", {
+          includeWatermark: state.includeWatermark,
           watermarkText: "Generated using https://tulkit.widnyana.web.id",
         });
         toast.success("QR code downloaded successfully!");
-      } catch (error) {
+      } catch (_error) {
         toast.error("Failed to download QR code");
       }
     }
   };
 
   const handleClear = () => {
-    setText("");
-    setFilename("qr-code");
-    setLogoImage("");
+    dispatch({ type: "RESET" });
+    if (logoInputRef.current) {
+      logoInputRef.current.value = "";
+    }
   };
 
   const handleTemplateClick = (example: string) => {
-    setText(example);
+    dispatch({ type: "SET_TEXT", payload: example });
   };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,9 +168,12 @@ export default function QRGeneratorPage() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setLogoImage(event.target?.result as string);
-        if (logoSize === 0) {
-          setLogoSize(70); // Default logo size
+        dispatch({
+          type: "SET_LOGO_IMAGE",
+          payload: event.target?.result as string,
+        });
+        if (state.logoSize === 0) {
+          dispatch({ type: "SET_LOGO_SIZE", payload: 70 });
         }
       };
       reader.readAsDataURL(file);
@@ -110,8 +181,8 @@ export default function QRGeneratorPage() {
   };
 
   const charLimit = 200; // Recommended limit for easy scanning
-  const isLong = text.length > charLimit;
-  const isVeryLong = text.length > 500;
+  const isLong = state.text.length > charLimit;
+  const isVeryLong = state.text.length > 500;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -182,13 +253,17 @@ export default function QRGeneratorPage() {
           </label>
           <textarea
             id={textId}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Examples:&#10;• https://yourwebsite.com&#10;• tel:+1-555-0123&#10;• mailto:hello@example.com&#10;• WiFi password, menu, contact info, or any text!"
+            value={state.text}
+            onChange={(e) =>
+              dispatch({ type: "SET_TEXT", payload: e.target.value })
+            }
+            placeholder="Examples:&#10;• https://tulkit.widnyana.web.id/&#10;• tel:+1-555-0123&#10;• mailto:hello@example.com&#10;• WiFi password, menu, contact info, or any text!"
             className="w-full h-32 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <div className="flex items-center justify-between mt-2">
-            <p className="text-xs text-gray-500">{text.length} characters</p>
+            <p className="text-xs text-gray-500">
+              {state.text.length} characters
+            </p>
             {isLong && !isVeryLong && (
               <p className="text-xs text-amber-600">
                 Shorter text scans more reliably
@@ -218,9 +293,11 @@ export default function QRGeneratorPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button
               type="button"
-              onClick={() => setErrorLevel("LOW")}
+              onClick={() =>
+                dispatch({ type: "SET_ERROR_LEVEL", payload: "LOW" })
+              }
               className={`p-4 border-2 rounded-lg text-left transition-all ${
-                errorLevel === "LOW"
+                state.errorLevel === "LOW"
                   ? "border-blue-500 bg-blue-50"
                   : "border-gray-200 hover:border-gray-300"
               }`}
@@ -241,9 +318,11 @@ export default function QRGeneratorPage() {
 
             <button
               type="button"
-              onClick={() => setErrorLevel("MEDIUM")}
+              onClick={() =>
+                dispatch({ type: "SET_ERROR_LEVEL", payload: "MEDIUM" })
+              }
               className={`p-4 border-2 rounded-lg text-left transition-all ${
-                errorLevel === "MEDIUM"
+                state.errorLevel === "MEDIUM"
                   ? "border-blue-500 bg-blue-50"
                   : "border-gray-200 hover:border-gray-300"
               }`}
@@ -266,9 +345,11 @@ export default function QRGeneratorPage() {
 
             <button
               type="button"
-              onClick={() => setErrorLevel("QUARTILE")}
+              onClick={() =>
+                dispatch({ type: "SET_ERROR_LEVEL", payload: "QUARTILE" })
+              }
               className={`p-4 border-2 rounded-lg text-left transition-all ${
-                errorLevel === "QUARTILE"
+                state.errorLevel === "QUARTILE"
                   ? "border-blue-500 bg-blue-50"
                   : "border-gray-200 hover:border-gray-300"
               }`}
@@ -291,9 +372,11 @@ export default function QRGeneratorPage() {
 
             <button
               type="button"
-              onClick={() => setErrorLevel("HIGH")}
+              onClick={() =>
+                dispatch({ type: "SET_ERROR_LEVEL", payload: "HIGH" })
+              }
               className={`p-4 border-2 rounded-lg text-left transition-all ${
-                errorLevel === "HIGH"
+                state.errorLevel === "HIGH"
                   ? "border-blue-500 bg-blue-50"
                   : "border-gray-200 hover:border-gray-300"
               }`}
@@ -320,7 +403,7 @@ export default function QRGeneratorPage() {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
           <button
             type="button"
-            onClick={() => setShowStyling(!showStyling)}
+            onClick={() => dispatch({ type: "TOGGLE_STYLING" })}
             className="flex items-center justify-between w-full text-left"
           >
             <div>
@@ -332,25 +415,33 @@ export default function QRGeneratorPage() {
               </p>
             </div>
             <span className="text-blue-600 font-medium">
-              {showStyling ? "▼ Hide" : "▶ Show"}
+              {state.showStyling ? "▼ Hide" : "▶ Show"}
             </span>
           </button>
 
-          {showStyling && (
+          {state.showStyling && (
             <div className="mt-6 pt-6 border-t border-gray-200">
               <StyleControls
-                shapeOptions={shapeOptions}
-                onShapeOptionsChange={setShapeOptions}
-                gradientType={gradientType}
-                onGradientTypeChange={setGradientType}
-                colors={colors}
-                onColorsChange={setColors}
-                logoSize={logoSize}
-                onLogoSizeChange={setLogoSize}
+                shapeOptions={state.shapeOptions}
+                onShapeOptionsChange={(options) =>
+                  dispatch({ type: "SET_SHAPE_OPTIONS", payload: options })
+                }
+                gradientType={state.gradientType}
+                onGradientTypeChange={(type) =>
+                  dispatch({ type: "SET_GRADIENT_TYPE", payload: type })
+                }
+                colors={state.colors}
+                onColorsChange={(colors) =>
+                  dispatch({ type: "SET_COLORS", payload: colors })
+                }
+                logoSize={state.logoSize}
+                onLogoSizeChange={(size) =>
+                  dispatch({ type: "SET_LOGO_SIZE", payload: size })
+                }
               />
 
               {/* Logo Upload */}
-              {logoSize > 0 && (
+              {state.logoSize > 0 && (
                 <div className="mt-6">
                   <label
                     htmlFor={logoUploadId}
@@ -359,6 +450,7 @@ export default function QRGeneratorPage() {
                     Upload Logo (optional)
                   </label>
                   <input
+                    ref={logoInputRef}
                     id={logoUploadId}
                     type="file"
                     accept="image/*"
@@ -370,12 +462,14 @@ export default function QRGeneratorPage() {
                       file:bg-blue-50 file:text-blue-700
                       hover:file:bg-blue-100"
                   />
-                  {logoImage && (
+                  {state.logoImage && (
                     <div className="mt-2 flex items-center gap-2">
                       <p className="text-sm text-green-600">Logo uploaded</p>
                       <button
                         type="button"
-                        onClick={() => setLogoImage("")}
+                        onClick={() =>
+                          dispatch({ type: "SET_LOGO_IMAGE", payload: "" })
+                        }
                         className="text-sm text-red-600 hover:text-red-700"
                       >
                         Remove
@@ -387,25 +481,28 @@ export default function QRGeneratorPage() {
               {/* Advanced Settings (Collapsed by default) */}
               <button
                 type="button"
-                onClick={() => setShowAdvanced(!showAdvanced)}
+                onClick={() => dispatch({ type: "TOGGLE_ADVANCED" })}
                 className="mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium"
               >
-                {showAdvanced ? "▼ Hide" : "▶ Show"} Advanced Settings
+                {state.showAdvanced ? "▼ Hide" : "▶ Show"} Advanced Settings
               </button>
 
-              {showAdvanced && (
+              {state.showAdvanced && (
                 <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
                   <div>
                     <label className="flex items-center space-x-2 cursor-pointer">
                       <Checkbox
-                        checked={includeWatermark}
+                        checked={state.includeWatermark}
                         onCheckedChange={(checked) => {
                           console.log("[Checkbox] checked value:", checked);
                           console.log(
                             "[Checkbox] converting to boolean:",
                             checked === true,
                           );
-                          setIncludeWatermark(checked === true);
+                          dispatch({
+                            type: "SET_WATERMARK",
+                            payload: checked === true,
+                          });
                         }}
                       />
                       <span className="text-sm font-medium text-gray-700">
@@ -424,7 +521,7 @@ export default function QRGeneratorPage() {
         </div>
 
         {/* Preview & Download */}
-        {text && (
+        {state.text && (
           <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">
@@ -442,14 +539,16 @@ export default function QRGeneratorPage() {
             <div className="flex justify-center p-8 bg-gray-50 border border-gray-200 rounded-lg mb-6">
               <QRCodeSVG
                 ref={svgRef}
-                value={text}
-                size={qrSize}
-                errorLevel={errorLevel}
-                shapeOptions={shapeOptions}
-                gradientType={gradientType}
-                colors={colors}
-                logoImage={logoImage}
-                logoSize={logoSize}
+                value={state.text}
+                size={state.qrSize}
+                errorLevel={state.errorLevel}
+                shapeOptions={state.shapeOptions}
+                gradientType={state.gradientType}
+                colors={state.colors}
+                logoImage={state.logoImage}
+                logoSize={state.logoSize}
+                includeWatermark={state.includeWatermark}
+                watermarkText="Generated using https://tulkit.widnyana.web.id"
               />
             </div>
 
@@ -472,8 +571,10 @@ export default function QRGeneratorPage() {
               <input
                 id={filenameId}
                 type="text"
-                value={filename}
-                onChange={(e) => setFilename(e.target.value)}
+                value={state.filename}
+                onChange={(e) =>
+                  dispatch({ type: "SET_FILENAME", payload: e.target.value })
+                }
                 placeholder="qr-code"
                 className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
@@ -487,7 +588,7 @@ export default function QRGeneratorPage() {
               Download QR Code
             </button>
 
-            {includeWatermark && (
+            {state.includeWatermark && (
               <p className="text-xs text-gray-500 mt-4 text-center">
                 Includes small text: &quot;Generated using
                 https://tulkit.widnyana.web.id&quot;
@@ -497,7 +598,7 @@ export default function QRGeneratorPage() {
         )}
 
         {/* Empty State */}
-        {!text && (
+        {!state.text && (
           <div className="bg-white rounded-lg shadow-lg p-12 border border-gray-200 text-center">
             <svg
               className="w-16 h-16 mx-auto mb-4 text-gray-400"

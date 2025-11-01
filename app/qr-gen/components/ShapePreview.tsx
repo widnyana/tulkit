@@ -4,7 +4,6 @@
 
 "use client";
 
-import React from "react";
 import type { BaseShapeOptions } from "../types";
 
 interface ShapePreviewProps {

@@ -3,7 +3,7 @@
  * Adapted from react-native-qrcode-skia gradient components
  */
 
-import React, { type ReactElement } from "react";
+import type { ReactElement } from "react";
 
 export type GradientType =
   | "radial"
@@ -15,19 +15,17 @@ export type GradientType =
 type GradientProps = {
   gradient: GradientType;
   colors: string[];
-  size: number;
   id: string;
 };
 
 export function generateGradientDef({
   gradient,
   colors,
-  size,
   id,
 }: GradientProps): ReactElement | null {
   const colorStops = colors.map((color, index) => (
     <stop
-      key={index}
+      key={color}
       offset={`${(index / (colors.length - 1)) * 100}%`}
       stopColor={color}
     />
@@ -61,7 +59,7 @@ export function generateGradientDef({
         <radialGradient id={id} cx="50%" cy="50%" r="50%">
           {colors.map((color, index) => (
             <stop
-              key={index}
+              key={color}
               offset={`${(index / colors.length) * 100}%`}
               stopColor={color}
             />
