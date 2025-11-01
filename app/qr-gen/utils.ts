@@ -112,6 +112,9 @@ export async function downloadSVGAsPNG(
   );
   return new Promise((resolve, reject) => {
     try {
+      const svgWidth = parseFloat(svgElement.getAttribute("width") || "0");
+      const svgHeight = parseFloat(svgElement.getAttribute("height") || "0");
+
       // Get SVG data
       const svgData = new XMLSerializer().serializeToString(svgElement);
       const svgBlob = new Blob([svgData], {
@@ -122,13 +125,11 @@ export async function downloadSVGAsPNG(
       // Create image from SVG
       const img = new Image();
       img.onload = () => {
-        // Create canvas
         const canvas = document.createElement("canvas");
-        const svgRect = svgElement.getBoundingClientRect();
-        const watermarkHeight = options?.includeWatermark ? 40 : 0;
+        const padding = 100; // 100px padding as requested
 
-        canvas.width = svgRect.width;
-        canvas.height = svgRect.height + watermarkHeight;
+        canvas.width = svgWidth + padding * 2;
+        canvas.height = svgHeight + padding * 2;
 
         const ctx = canvas.getContext("2d");
         if (!ctx) {
@@ -137,21 +138,19 @@ export async function downloadSVGAsPNG(
           return;
         }
 
-        // Fill white background
         ctx.fillStyle = "#FFFFFF";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw SVG
-        ctx.drawImage(img, 0, 0);
+        ctx.drawImage(img, padding, padding);
 
-        // Add watermark if enabled
         console.log(
           "[downloadSVGAsPNG] Checking watermark condition:",
           options?.includeWatermark,
         );
         if (options?.includeWatermark) {
           console.log("[downloadSVGAsPNG] Drawing watermark!");
-          const watermarkY = svgRect.height + 25;
+          const qrSize = svgWidth;
+          const watermarkY = padding + qrSize + 25;
           ctx.fillStyle = "#666666";
           ctx.font = "12px sans-serif";
           ctx.textAlign = "center";
