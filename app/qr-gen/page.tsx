@@ -218,409 +218,425 @@ export default function QRGeneratorPage() {
           </p>
         </header>
 
-        {/* Quick Start Templates */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Quick Start Templates
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {templates.map((template) => (
-              <button
-                key={template.label}
-                type="button"
-                onClick={() => handleTemplateClick(template.example)}
-                className="flex flex-col items-center gap-2 p-4 bg-gray-50 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
+        {/* 2-Column Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+          {/* Left Column - Input Sections */}
+          <div className="md:col-span-3 space-y-6">
+            {/* Quick Start Templates */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Quick Start Templates
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {templates.map((template) => (
+                  <button
+                    key={template.label}
+                    type="button"
+                    onClick={() => handleTemplateClick(template.example)}
+                    className="flex flex-col items-center gap-2 p-4 bg-gray-50 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                  >
+                    <span className="text-2xl">{template.icon}</span>
+                    <span className="text-sm font-medium text-gray-700">
+                      {template.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Input Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                What do you want to share?
+              </h2>
+              <label
+                htmlFor={textId}
+                className="block text-sm font-medium text-gray-700 mb-2"
               >
-                <span className="text-2xl">{template.icon}</span>
-                <span className="text-sm font-medium text-gray-700">
-                  {template.label}
+                Type or paste your content here
+              </label>
+              <textarea
+                id={textId}
+                value={state.text}
+                onChange={(e) =>
+                  dispatch({ type: "SET_TEXT", payload: e.target.value })
+                }
+                placeholder="Examples:&#10;• https://tulkit.widnyana.web.id/&#10;• tel:+1-555-0123&#10;• mailto:hello@example.com&#10;• WiFi password, menu, contact info, or any text!"
+                className="w-full h-32 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-gray-500">
+                  {state.text.length} characters
+                </p>
+                {isLong && !isVeryLong && (
+                  <p className="text-xs text-amber-600">
+                    Shorter text scans more reliably
+                  </p>
+                )}
+                {isVeryLong && (
+                  <p className="text-xs text-red-600">
+                    Long text may reduce scan reliability
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Quality Settings */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Quality Settings
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Choose error correction level
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() =>
+                    dispatch({ type: "SET_ERROR_LEVEL", payload: "LOW" })
+                  }
+                  className={`p-4 border-2 rounded-lg text-left transition-all ${
+                    state.errorLevel === "LOW"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">📱</span>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900">
+                        Clean Screens
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Perfect for digital displays, social media, websites
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Smallest file size
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    dispatch({ type: "SET_ERROR_LEVEL", payload: "MEDIUM" })
+                  }
+                  className={`p-4 border-2 rounded-lg text-left transition-all ${
+                    state.errorLevel === "MEDIUM"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">📄</span>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900">
+                        Most Uses (Recommended)
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Perfect for printed materials, business cards, flyers
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Works if slightly damaged or dirty
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    dispatch({ type: "SET_ERROR_LEVEL", payload: "QUARTILE" })
+                  }
+                  className={`p-4 border-2 rounded-lg text-left transition-all ${
+                    state.errorLevel === "QUARTILE"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">🏷️</span>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900">
+                        Outdoor/Stickers
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Perfect for stickers, signs, rough surfaces
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Works if scratched, faded, or partially covered
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    dispatch({ type: "SET_ERROR_LEVEL", payload: "HIGH" })
+                  }
+                  className={`p-4 border-2 rounded-lg text-left transition-all ${
+                    state.errorLevel === "HIGH"
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl">🏗️</span>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900">
+                        Harsh Conditions
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Perfect for construction sites, damaged surfaces
+                      </p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Works even if 30% is damaged or covered
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Styling Section */}
+            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+              <button
+                type="button"
+                onClick={() => dispatch({ type: "TOGGLE_STYLING" })}
+                className="flex items-center justify-between w-full text-left"
+              >
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Styling & Customization
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Customize shapes, colors, and add logos
+                  </p>
+                </div>
+                <span className="text-blue-600 font-medium">
+                  {state.showStyling ? "▼ Hide" : "▶ Show"}
                 </span>
               </button>
-            ))}
-          </div>
-        </div>
 
-        {/* Input Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            What do you want to share?
-          </h2>
-          <label
-            htmlFor={textId}
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Type or paste your content here
-          </label>
-          <textarea
-            id={textId}
-            value={state.text}
-            onChange={(e) =>
-              dispatch({ type: "SET_TEXT", payload: e.target.value })
-            }
-            placeholder="Examples:&#10;• https://tulkit.widnyana.web.id/&#10;• tel:+1-555-0123&#10;• mailto:hello@example.com&#10;• WiFi password, menu, contact info, or any text!"
-            className="w-full h-32 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <div className="flex items-center justify-between mt-2">
-            <p className="text-xs text-gray-500">
-              {state.text.length} characters
-            </p>
-            {isLong && !isVeryLong && (
-              <p className="text-xs text-amber-600">
-                Shorter text scans more reliably
-              </p>
-            )}
-            {isVeryLong && (
-              <p className="text-xs text-red-600">
-                Long text may reduce scan reliability
-              </p>
-            )}
-          </div>
-        </div>
+              {state.showStyling && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <StyleControls
+                    shapeOptions={state.shapeOptions}
+                    onShapeOptionsChange={(options) =>
+                      dispatch({ type: "SET_SHAPE_OPTIONS", payload: options })
+                    }
+                    gradientType={state.gradientType}
+                    onGradientTypeChange={(type) =>
+                      dispatch({ type: "SET_GRADIENT_TYPE", payload: type })
+                    }
+                    colors={state.colors}
+                    onColorsChange={(colors) =>
+                      dispatch({ type: "SET_COLORS", payload: colors })
+                    }
+                    logoSize={state.logoSize}
+                    onLogoSizeChange={(size) =>
+                      dispatch({ type: "SET_LOGO_SIZE", payload: size })
+                    }
+                  />
 
-        {/* Quality Settings */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Quality Settings
-              </h2>
-              <p className="text-sm text-gray-500">
-                Choose error correction level
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button
-              type="button"
-              onClick={() =>
-                dispatch({ type: "SET_ERROR_LEVEL", payload: "LOW" })
-              }
-              className={`p-4 border-2 rounded-lg text-left transition-all ${
-                state.errorLevel === "LOW"
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">📱</span>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">Clean Screens</h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Perfect for digital displays, social media, websites
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Smallest file size
-                  </p>
-                </div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                dispatch({ type: "SET_ERROR_LEVEL", payload: "MEDIUM" })
-              }
-              className={`p-4 border-2 rounded-lg text-left transition-all ${
-                state.errorLevel === "MEDIUM"
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">📄</span>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">
-                    Most Uses (Recommended)
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Perfect for printed materials, business cards, flyers
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Works if slightly damaged or dirty
-                  </p>
-                </div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                dispatch({ type: "SET_ERROR_LEVEL", payload: "QUARTILE" })
-              }
-              className={`p-4 border-2 rounded-lg text-left transition-all ${
-                state.errorLevel === "QUARTILE"
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🏷️</span>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">
-                    Outdoor/Stickers
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Perfect for stickers, signs, rough surfaces
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Works if scratched, faded, or partially covered
-                  </p>
-                </div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() =>
-                dispatch({ type: "SET_ERROR_LEVEL", payload: "HIGH" })
-              }
-              className={`p-4 border-2 rounded-lg text-left transition-all ${
-                state.errorLevel === "HIGH"
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">🏗️</span>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">
-                    Harsh Conditions
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Perfect for construction sites, damaged surfaces
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Works even if 30% is damaged or covered
-                  </p>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Styling Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
-          <button
-            type="button"
-            onClick={() => dispatch({ type: "TOGGLE_STYLING" })}
-            className="flex items-center justify-between w-full text-left"
-          >
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">
-                Styling & Customization
-              </h2>
-              <p className="text-sm text-gray-500">
-                Customize shapes, colors, and add logos
-              </p>
-            </div>
-            <span className="text-blue-600 font-medium">
-              {state.showStyling ? "▼ Hide" : "▶ Show"}
-            </span>
-          </button>
-
-          {state.showStyling && (
-            <div className="mt-6 pt-6 border-t border-gray-200">
-              <StyleControls
-                shapeOptions={state.shapeOptions}
-                onShapeOptionsChange={(options) =>
-                  dispatch({ type: "SET_SHAPE_OPTIONS", payload: options })
-                }
-                gradientType={state.gradientType}
-                onGradientTypeChange={(type) =>
-                  dispatch({ type: "SET_GRADIENT_TYPE", payload: type })
-                }
-                colors={state.colors}
-                onColorsChange={(colors) =>
-                  dispatch({ type: "SET_COLORS", payload: colors })
-                }
-                logoSize={state.logoSize}
-                onLogoSizeChange={(size) =>
-                  dispatch({ type: "SET_LOGO_SIZE", payload: size })
-                }
-              />
-
-              {/* Logo Upload */}
-              {state.logoSize > 0 && (
-                <div className="mt-6">
-                  <label
-                    htmlFor={logoUploadId}
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Upload Logo (optional)
-                  </label>
-                  <input
-                    ref={logoInputRef}
-                    id={logoUploadId}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleLogoUpload}
-                    className="block w-full text-sm text-gray-500
+                  {/* Logo Upload */}
+                  {state.logoSize > 0 && (
+                    <div className="mt-6">
+                      <label
+                        htmlFor={logoUploadId}
+                        className="block text-sm font-medium text-gray-700 mb-2"
+                      >
+                        Upload Logo (optional)
+                      </label>
+                      <input
+                        ref={logoInputRef}
+                        id={logoUploadId}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoUpload}
+                        className="block w-full text-sm text-gray-500
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-lg file:border-0
                       file:text-sm file:font-semibold
                       file:bg-blue-50 file:text-blue-700
                       hover:file:bg-blue-100"
-                  />
-                  {state.logoImage && (
-                    <div className="mt-2 flex items-center gap-2">
-                      <p className="text-sm text-green-600">Logo uploaded</p>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          dispatch({ type: "SET_LOGO_IMAGE", payload: "" })
-                        }
-                        className="text-sm text-red-600 hover:text-red-700"
-                      >
-                        Remove
-                      </button>
+                      />
+                      {state.logoImage && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <p className="text-sm text-green-600">
+                            Logo uploaded
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              dispatch({ type: "SET_LOGO_IMAGE", payload: "" })
+                            }
+                            className="text-sm text-red-600 hover:text-red-700"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {/* Advanced Settings (Collapsed by default) */}
+                  <button
+                    type="button"
+                    onClick={() => dispatch({ type: "TOGGLE_ADVANCED" })}
+                    className="mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                  >
+                    {state.showAdvanced ? "▼ Hide" : "▶ Show"} Advanced Settings
+                  </button>
+
+                  {state.showAdvanced && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
+                      <div>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <Checkbox
+                            checked={state.includeWatermark}
+                            onCheckedChange={(checked) => {
+                              console.log("[Checkbox] checked value:", checked);
+                              console.log(
+                                "[Checkbox] converting to boolean:",
+                                checked === true,
+                              );
+                              dispatch({
+                                type: "SET_WATERMARK",
+                                payload: checked === true,
+                              });
+                            }}
+                          />
+                          <span className="text-sm font-medium text-gray-700">
+                            Include watermark
+                          </span>
+                        </label>
+                        <p className="text-xs text-gray-500 mt-1 ml-6">
+                          Adds &quot;Generated using
+                          https://tulkit.widnyana.web.id&quot; below the QR code
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
               )}
-              {/* Advanced Settings (Collapsed by default) */}
-              <button
-                type="button"
-                onClick={() => dispatch({ type: "TOGGLE_ADVANCED" })}
-                className="mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium"
-              >
-                {state.showAdvanced ? "▼ Hide" : "▶ Show"} Advanced Settings
-              </button>
+            </div>
+          </div>
 
-              {state.showAdvanced && (
-                <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
-                  <div>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <Checkbox
-                        checked={state.includeWatermark}
-                        onCheckedChange={(checked) => {
-                          console.log("[Checkbox] checked value:", checked);
-                          console.log(
-                            "[Checkbox] converting to boolean:",
-                            checked === true,
-                          );
-                          dispatch({
-                            type: "SET_WATERMARK",
-                            payload: checked === true,
-                          });
-                        }}
-                      />
-                      <span className="text-sm font-medium text-gray-700">
-                        Include watermark
-                      </span>
-                    </label>
-                    <p className="text-xs text-gray-500 mt-1 ml-6">
-                      Adds &quot;Generated using
-                      https://tulkit.widnyana.web.id&quot; below the QR code
-                    </p>
+          {/* Right Column - Preview */}
+          <div className="md:col-span-2">
+            <div className="sticky top-8">
+              {state.text ? (
+                <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Your QR Code is Ready!
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={handleClear}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors text-sm"
+                    >
+                      Start Over
+                    </button>
                   </div>
+
+                  <div className="flex justify-center p-8 bg-gray-50 border border-gray-200 rounded-lg mb-6">
+                    <QRCodeSVG
+                      ref={svgRef}
+                      value={state.text}
+                      size={state.qrSize}
+                      errorLevel={state.errorLevel}
+                      shapeOptions={state.shapeOptions}
+                      gradientType={state.gradientType}
+                      colors={state.colors}
+                      logoImage={state.logoImage}
+                      logoSize={state.logoSize}
+                      includeWatermark={state.includeWatermark}
+                      watermarkText="Generated using https://tulkit.widnyana.web.id"
+                    />
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <h3 className="font-semibold text-blue-900 mb-2">
+                      Next steps
+                    </h3>
+                    <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                      <li>Download using the button below</li>
+                      <li>Test by scanning with your phone</li>
+                      <li>Use anywhere - print, email, or share online</li>
+                    </ol>
+                  </div>
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor={filenameId}
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Name your file (optional)
+                    </label>
+                    <input
+                      id={filenameId}
+                      type="text"
+                      value={state.filename}
+                      onChange={(e) =>
+                        dispatch({
+                          type: "SET_FILENAME",
+                          payload: e.target.value,
+                        })
+                      }
+                      placeholder="qr-code"
+                      className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleDownload}
+                    className="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors text-lg"
+                  >
+                    Download QR Code
+                  </button>
+
+                  {state.includeWatermark && (
+                    <p className="text-xs text-gray-500 mt-4 text-center">
+                      Includes small text: &quot;Generated using
+                      https://tulkit.widnyana.web.id&quot;
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow-lg p-12 border border-gray-200 text-center">
+                  <svg
+                    className="w-16 h-16 mx-auto mb-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
+                    />
+                  </svg>
+                  <p className="text-gray-600 mb-2 text-lg font-medium">
+                    Pick a template above or type your own content
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Works with websites, phone numbers, emails, and plain text
+                  </p>
                 </div>
               )}
             </div>
-          )}
+          </div>
         </div>
-
-        {/* Preview & Download */}
-        {state.text && (
-          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
-                Your QR Code is Ready!
-              </h2>
-              <button
-                type="button"
-                onClick={handleClear}
-                className="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors text-sm"
-              >
-                Start Over
-              </button>
-            </div>
-
-            <div className="flex justify-center p-8 bg-gray-50 border border-gray-200 rounded-lg mb-6">
-              <QRCodeSVG
-                ref={svgRef}
-                value={state.text}
-                size={state.qrSize}
-                errorLevel={state.errorLevel}
-                shapeOptions={state.shapeOptions}
-                gradientType={state.gradientType}
-                colors={state.colors}
-                logoImage={state.logoImage}
-                logoSize={state.logoSize}
-                includeWatermark={state.includeWatermark}
-                watermarkText="Generated using https://tulkit.widnyana.web.id"
-              />
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <h3 className="font-semibold text-blue-900 mb-2">Next steps</h3>
-              <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-                <li>Download using the button below</li>
-                <li>Test by scanning with your phone</li>
-                <li>Use anywhere - print, email, or share online</li>
-              </ol>
-            </div>
-
-            <div className="mb-4">
-              <label
-                htmlFor={filenameId}
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Name your file (optional)
-              </label>
-              <input
-                id={filenameId}
-                type="text"
-                value={state.filename}
-                onChange={(e) =>
-                  dispatch({ type: "SET_FILENAME", payload: e.target.value })
-                }
-                placeholder="qr-code"
-                className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={handleDownload}
-              className="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors text-lg"
-            >
-              Download QR Code
-            </button>
-
-            {state.includeWatermark && (
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                Includes small text: &quot;Generated using
-                https://tulkit.widnyana.web.id&quot;
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!state.text && (
-          <div className="bg-white rounded-lg shadow-lg p-12 border border-gray-200 text-center">
-            <svg
-              className="w-16 h-16 mx-auto mb-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-              />
-            </svg>
-            <p className="text-gray-600 mb-2 text-lg font-medium">
-              Pick a template above or type your own content
-            </p>
-            <p className="text-sm text-gray-500">
-              Works with websites, phone numbers, emails, and plain text
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
