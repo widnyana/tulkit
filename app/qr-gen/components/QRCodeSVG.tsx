@@ -4,7 +4,7 @@
 
 "use client";
 
-import React, { useMemo, useId, forwardRef } from "react";
+import { useMemo, useId, forwardRef } from "react";
 import { qrcodegen } from "@/lib/qrcodegen";
 import { transformMatrixIntoPath } from "../svg-renderer";
 import type { ShapeOptions } from "../types";
@@ -21,6 +21,8 @@ interface QRCodeSVGProps {
   logoImage?: string;
   logoSize?: number;
   className?: string;
+  includeWatermark?: boolean;
+  watermarkText?: string;
 }
 
 const QRCodeSVGComponent = forwardRef<SVGSVGElement, QRCodeSVGProps>(
@@ -35,12 +37,14 @@ const QRCodeSVGComponent = forwardRef<SVGSVGElement, QRCodeSVGProps>(
       logoImage,
       logoSize = 0,
       className,
+      includeWatermark = false,
+      watermarkText = "Generated using https://tulkit.widnyana.web.id",
     },
     ref,
   ) => {
     const gradientId = useId();
 
-    const { qrMatrix, svgPath } = useMemo(() => {
+    const { svgPath } = useMemo(() => {
       // Map error level to qrcodegen.QrCode.Ecc
       const eccMap = {
         LOW: qrcodegen.QrCode.Ecc.LOW,
@@ -80,30 +84,31 @@ const QRCodeSVGComponent = forwardRef<SVGSVGElement, QRCodeSVGProps>(
       return colors[0] || "#000000";
     }, [gradientType, colors, gradientId]);
 
+    const watermarkHeight = includeWatermark ? 40 : 0;
+    const totalHeight = size + watermarkHeight;
+
     return (
       <svg
         ref={ref}
         width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
+        height={totalHeight}
+        viewBox={`0 0 ${size} ${totalHeight}`}
         className={className}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
-          {gradientType && colors.length > 1 && (
-            <>
-              {generateGradientDef({
-                gradient: gradientType,
-                colors,
-                size,
-                id: gradientId,
-              })}
-            </>
-          )}
+          {gradientType &&
+            colors.length > 1 &&
+            generateGradientDef({
+              gradient: gradientType,
+              colors,
+              size,
+              id: gradientId,
+            })}
         </defs>
 
         {/* White background */}
-        <rect width={size} height={size} fill="#ffffff" />
+        <rect width={size} height={totalHeight} fill="#ffffff" />
 
         {/* QR code path */}
         <path d={svgPath} fill={fillColor} />
@@ -117,6 +122,20 @@ const QRCodeSVGComponent = forwardRef<SVGSVGElement, QRCodeSVGProps>(
             width={logoSize}
             height={logoSize}
           />
+        )}
+
+        {/* Watermark text */}
+        {includeWatermark && (
+          <text
+            x={size / 2}
+            y={size + 25}
+            textAnchor="middle"
+            fill="#666666"
+            fontSize="12"
+            fontFamily="sans-serif"
+          >
+            {watermarkText}
+          </text>
         )}
       </svg>
     );

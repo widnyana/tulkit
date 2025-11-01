@@ -4,7 +4,6 @@
 
 "use client";
 
-import React from "react";
 import type { BaseShapeOptions, ShapeOptions } from "../types";
 import type { GradientType } from "../gradient-utils";
 import { ShapePreview } from "./ShapePreview";
@@ -151,29 +150,6 @@ export function StyleControls({
         </div>
       </div>
 
-      {/* Gradient Type */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
-          Gradient Type
-        </label>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          {gradientTypes.map(({ type, label }) => (
-            <button
-              key={type}
-              type="button"
-              onClick={() => onGradientTypeChange(type)}
-              className={`p-3 border-2 rounded-lg transition-all ${
-                gradientType === type
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <p className="text-sm font-medium">{label}</p>
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Color Picker */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">
@@ -181,7 +157,7 @@ export function StyleControls({
         </label>
         <div className="flex flex-wrap gap-2">
           {colors.map((color, index) => (
-            <div key={index} className="flex items-center gap-2">
+            <div key={color} className="flex items-center gap-2">
               <input
                 type="color"
                 value={color}
@@ -218,6 +194,29 @@ export function StyleControls({
         </div>
       </div>
 
+      {/* Gradient Type */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          Gradient Type
+        </label>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+          {gradientTypes.map(({ type, label }) => (
+            <button
+              key={type}
+              type="button"
+              onClick={() => onGradientTypeChange(type)}
+              className={`p-3 border-2 rounded-lg transition-all ${
+                gradientType === type
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              <p className="text-sm font-medium">{label}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Logo Size */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -226,8 +225,8 @@ export function StyleControls({
         <input
           type="range"
           min="0"
-          max="100"
-          step="10"
+          max="128"
+          step="32"
           value={logoSize}
           onChange={(e) => onLogoSizeChange(Number(e.target.value))}
           className="w-full"
@@ -235,7 +234,7 @@ export function StyleControls({
         <p className="text-xs text-gray-500 mt-1">
           {logoSize === 0
             ? "No logo"
-            : "Reserve space for center logo (upload in main section)"}
+            : "Reserve space for center logo."}
         </p>
       </div>
     </div>
