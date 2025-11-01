@@ -31,6 +31,6 @@ export function formatNumber(
 
   // Combine with decimal part using custom decimal separator
   return decimalPart
-    ? formattedInteger + decimalSeparator + decimalPart
+    ? `${formattedInteger}${decimalSeparator}${decimalPart}`
     : formattedInteger;
 }

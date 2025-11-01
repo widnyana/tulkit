@@ -232,9 +232,7 @@ export function StyleControls({
           className="w-full"
         />
         <p className="text-xs text-gray-500 mt-1">
-          {logoSize === 0
-            ? "No logo"
-            : "Reserve space for center logo."}
+          {logoSize === 0 ? "No logo" : "Reserve space for center logo."}
         </p>
       </div>
     </div>
