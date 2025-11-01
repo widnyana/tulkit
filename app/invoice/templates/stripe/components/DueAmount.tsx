@@ -24,10 +24,14 @@ export const StripeTemplateDueAmount = ({ invoiceData }: DueAmountProps) => {
     `subtotal: ${subtotal} | taxAmount: ${taxAmount} | total: ${total}`,
   );
   console.log(`invoiceData.taxRate: ${invoiceData.taxRate}`);
-  console.log(`invoiceData.currency: ${invoiceData.currency}`);
-
+  console.log(
+    `invoiceData.currency: ${invoiceData.currency} x ${formatNumber(total, 2, decimalSep, thousandSep)}`,
+  );
+  console.log(
+    `ini harusnya yang keluar ${currency} ${formatNumber(total, 2, decimalSep, thousandSep)}`,
+  );
   return (
-    <View style={[s.spaceBetween, s.mb16]}>
+    <View style={[s.spaceBetween, s.mb8]}>
       <View style={{ flex: 1 }} />
       <View style={{ width: 150, alignItems: "flex-end" }}>
         <View
