@@ -152,7 +152,9 @@ export default function RandomStringPage() {
               <label className="flex items-center space-x-2 cursor-pointer">
                 <Checkbox
                   checked={useUppercase}
-                  onCheckedChange={(checked) => setUseUppercase(checked === true)}
+                  onCheckedChange={(checked) =>
+                    setUseUppercase(checked === true)
+                  }
                 />
                 <span className="text-sm text-gray-700">Uppercase (A-Z)</span>
               </label>
@@ -160,7 +162,9 @@ export default function RandomStringPage() {
               <label className="flex items-center space-x-2 cursor-pointer">
                 <Checkbox
                   checked={useLowercase}
-                  onCheckedChange={(checked) => setUseLowercase(checked === true)}
+                  onCheckedChange={(checked) =>
+                    setUseLowercase(checked === true)
+                  }
                 />
                 <span className="text-sm text-gray-700">Lowercase (a-z)</span>
               </label>
