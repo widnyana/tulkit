@@ -19,6 +19,18 @@ export function Preview({ code }: PreviewProps) {
       startOnLoad: false,
       theme: "default",
       securityLevel: "loose",
+      fontSize: 24,
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      themeVariables: {
+        fontSize: "24px",
+        fontWeight: "500",
+        primaryTextColor: "#1f2937",
+        primaryColor: "#6366f1",
+        primaryBorderColor: "#4f46e5",
+        lineColor: "#6b7280",
+        secondaryColor: "#a5b4fc",
+        tertiaryColor: "#e0e7ff",
+      },
     });
   }, []);
 
@@ -61,8 +73,8 @@ export function Preview({ code }: PreviewProps) {
     return () => clearTimeout(timer);
   }, [code]);
 
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 10, 200));
-  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 10, 50));
+  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 25, 500));
+  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 25, 25));
   const handleZoomReset = () => setZoom(100);
 
   return (
