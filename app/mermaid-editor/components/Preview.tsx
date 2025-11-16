@@ -22,17 +22,21 @@ export function Preview({ code }: PreviewProps) {
       startOnLoad: false,
       theme: "default",
       securityLevel: "loose",
-      fontSize: 36,
+      fontSize: 120,
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
       themeVariables: {
-        fontSize: "36px",
-        fontWeight: "600",
+        fontSize: "120px",
+        fontWeight: "700",
         primaryTextColor: "#1e293b",
         primaryColor: "#6366f1",
         primaryBorderColor: "#4f46e5",
         lineColor: "#475569",
         secondaryColor: "#a5b4fc",
         tertiaryColor: "#e0e7ff",
+      },
+      flowchart: {
+        htmlLabels: true,
+        curve: "basis",
       },
     });
   }, []);
