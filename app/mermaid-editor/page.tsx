@@ -29,76 +29,86 @@ export default function MermaidEditorPage() {
   }, [code, mounted]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-[1920px] mx-auto p-8">
-        {/* Header */}
-        <div className="mb-6">
-          <Link
-            href="/"
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-4"
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-7xl mx-auto">
+        <Link
+          href="/"
+          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+        >
+          <svg
+            className="w-5 h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to Home
-          </Link>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Back to Home
+        </Link>
 
+        <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Mermaid Editor</h1>
           <p className="text-gray-600">
             Create and export diagrams using Mermaid syntax. Your work is automatically saved.
           </p>
-        </div>
+        </header>
 
-        {/* Split-screen Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-250px)]">
-          {/* Left Panel - Editor */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-            <MermaidEditor value={code} onChange={setCode} />
+        {/* 2-Column Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+          {/* Left Column - Editor */}
+          <div className="md:col-span-3 space-y-6">
+            <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden h-[calc(100vh-300px)]">
+              <MermaidEditor value={code} onChange={setCode} />
+            </div>
+
+            {/* Help Section */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h2 className="text-sm font-semibold text-blue-900 mb-2">
+                Quick Reference
+              </h2>
+              <div className="text-sm text-blue-800 space-y-1">
+                <p>
+                  <strong>Flowchart:</strong>{" "}
+                  <code className="bg-white px-1 rounded">graph TD; A--&gt;B;</code>
+                </p>
+                <p>
+                  <strong>Sequence:</strong>{" "}
+                  <code className="bg-white px-1 rounded">
+                    sequenceDiagram; Alice-&gt;&gt;Bob: Hello
+                  </code>
+                </p>
+                <p>
+                  <strong>Class:</strong>{" "}
+                  <code className="bg-white px-1 rounded">classDiagram; class Animal</code>
+                </p>
+                <p>
+                  Learn more at{" "}
+                  <a
+                    href="https://mermaid.js.org/intro/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-blue-600"
+                  >
+                    mermaid.js.org
+                  </a>
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Right Panel - Preview */}
-          <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-            <Preview code={code} />
-            <Controls code={code} />
-          </div>
-        </div>
-
-        {/* Help Section */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h2 className="text-sm font-semibold text-blue-900 mb-2">Quick Reference</h2>
-          <div className="text-sm text-blue-800 space-y-1">
-            <p>
-              <strong>Flowchart:</strong> <code className="bg-white px-1 rounded">graph TD; A--&gt;B;</code>
-            </p>
-            <p>
-              <strong>Sequence:</strong>{" "}
-              <code className="bg-white px-1 rounded">sequenceDiagram; Alice-&gt;&gt;Bob: Hello</code>
-            </p>
-            <p>
-              <strong>Class:</strong>{" "}
-              <code className="bg-white px-1 rounded">classDiagram; class Animal</code>
-            </p>
-            <p>
-              Learn more at{" "}
-              <a
-                href="https://mermaid.js.org/intro/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-blue-600"
-              >
-                mermaid.js.org
-              </a>
-            </p>
+          {/* Right Column - Preview */}
+          <div className="md:col-span-2">
+            <div className="sticky top-8">
+              <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden flex flex-col h-[calc(100vh-200px)]">
+                <Preview code={code} />
+                <Controls code={code} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

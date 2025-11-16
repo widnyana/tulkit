@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
 import "prismjs/components/prism-markdown";
@@ -11,6 +12,12 @@ interface EditorProps {
 }
 
 export function MermaidEditor({ value, onChange }: EditorProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const highlightCode = (code: string) => {
     return highlight(code, languages.markdown, "markdown");
   };
@@ -25,25 +32,31 @@ export function MermaidEditor({ value, onChange }: EditorProps) {
       </div>
 
       <div className="flex-1 p-6">
-        <div
-          className="w-full h-full border border-gray-300 rounded-lg overflow-auto
-                     focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent"
-        >
-          <Editor
-            value={value}
-            onValueChange={onChange}
-            highlight={highlightCode}
-            padding={16}
-            placeholder="graph TD&#10;    A[Start] --> B{Is it?}&#10;    B -->|Yes| C[OK]&#10;    B -->|No| D[End]"
-            style={{
-              fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-              fontSize: 14,
-              minHeight: "100%",
-              backgroundColor: "#ffffff",
-            }}
-            textareaClassName="outline-none"
-          />
-        </div>
+        {!mounted ? (
+          <div className="w-full h-full border border-gray-300 rounded-lg p-4 bg-white font-mono text-sm">
+            Loading editor...
+          </div>
+        ) : (
+          <div
+            className="w-full h-full border border-gray-300 rounded-lg overflow-auto
+                       focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent"
+          >
+            <Editor
+              value={value}
+              onValueChange={onChange}
+              highlight={highlightCode}
+              padding={16}
+              placeholder="graph TD&#10;    A[Start] --> B{Is it?}&#10;    B -->|Yes| C[OK]&#10;    B -->|No| D[End]"
+              style={{
+                fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+                fontSize: 14,
+                minHeight: "100%",
+                backgroundColor: "#ffffff",
+              }}
+              textareaClassName="outline-none"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
