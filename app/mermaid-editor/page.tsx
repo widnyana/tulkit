@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Editor } from "./components/Editor";
+import { MermaidEditor } from "./components/Editor";
 import { Preview } from "./components/Preview";
 import { Controls } from "./components/Controls";
 
@@ -63,7 +63,7 @@ export default function MermaidEditorPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-250px)]">
           {/* Left Panel - Editor */}
           <div className="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-            <Editor value={code} onChange={setCode} />
+            <MermaidEditor value={code} onChange={setCode} />
           </div>
 
           {/* Right Panel - Preview */}
