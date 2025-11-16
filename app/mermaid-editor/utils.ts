@@ -1,4 +1,3 @@
-import type { ExportFormat } from "./types";
 
 /**
  * Downloads SVG content as a file
@@ -86,8 +85,19 @@ export async function copyToClipboard(text: string): Promise<void> {
  * Gets the current diagram's SVG element
  */
 export function getDiagramSVG(containerId: string): SVGElement | null {
-  const container = document.getElementById(containerId);
-  if (!container) return null;
+  // Try to get by ID first for backward compatibility
+  const containerById = document.getElementById(containerId);
+  if (containerById) {
+    return containerById.querySelector("svg");
+  }
 
-  return container.querySelector("svg");
+  // If not found by ID, try to find the SVG by other selectors
+  // This handles cases where the container doesn't have a static ID
+  const containerByClass = document.querySelector(".mermaid-preview-container");
+  if (containerByClass) {
+    return containerByClass.querySelector("svg") as SVGElement | null;
+  }
+
+  // Last resort: try to find any SVG in the preview area
+  return document.querySelector(".flex-1.overflow-auto svg");
 }

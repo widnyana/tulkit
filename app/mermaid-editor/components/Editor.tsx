@@ -2,26 +2,50 @@
 
 import { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
-import { highlight } from "prismjs";
+import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
+
+// Define Mermaid language for Prism
+const defineMermaidLanguage = () => {
+  if (!Prism.languages.mermaid) {
+    Prism.languages.mermaid = {
+      comment: {
+        pattern: /%%.*/,
+        greedy: true,
+      },
+      keyword: {
+        pattern:
+          /\b(graph|flowchart|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie|gitGraph|journey|C4Context|mindmap|timeline|sankey|quadrantChart|requirementDiagram|TD|TB|BT|RL|LR|participant|actor|loop|alt|opt|par|and|rect|Note|activate|deactivate|class|state|dateFormat|title|section)\b/,
+        greedy: true,
+      },
+      string: {
+        pattern: /(["'])(?:\\.|(?!\1)[^\\\r\n])*\1/,
+        greedy: true,
+      },
+      operator: {
+        pattern: /(-->|->|---|==|\.\.>|<\.\.|\||\[|\]|\{|\}|\(|\)|:)/,
+        greedy: true,
+      },
+      punctuation: /[{}[\];(),]/,
+    };
+  }
+};
+
+// Use Prism for Mermaid syntax highlighting
+function highlightMermaid(code: string): string {
+  defineMermaidLanguage(); // Ensure the language is defined before highlighting
+  try {
+    return Prism.highlight(code, Prism.languages.mermaid, "mermaid");
+  } catch (e) {
+    // If there's an error, return the code without highlighting
+    console.error("Prism highlighting error:", e);
+    return code;
+  }
+}
 
 interface EditorProps {
   value: string;
   onChange: (value: string) => void;
-}
-
-// Custom Mermaid syntax highlighter
-function highlightMermaid(code: string): string {
-  const keywords = /\b(graph|flowchart|sequenceDiagram|classDiagram|stateDiagram|erDiagram|gantt|pie|gitGraph|journey|C4Context|mindmap|timeline|sankey|quadrantChart|requirementDiagram|TD|TB|BT|RL|LR|participant|actor|loop|alt|opt|par|and|rect|Note|activate|deactivate|class|state|dateFormat|title|section)\b/g;
-  const operators = /(-->|->|---|==|\.\.>|<\.\.|\||\[|\]|\{|\}|\(|\)|:)/g;
-  const strings = /(".*?"|'.*?')/g;
-  const comments = /(%%.*)/g;
-
-  return code
-    .replace(comments, '<span style="color: #6a9955;">$1</span>')
-    .replace(keywords, '<span style="color: #c586c0; font-weight: 600;">$1</span>')
-    .replace(strings, '<span style="color: #ce9178;">$1</span>')
-    .replace(operators, '<span style="color: #d4d4d4;">$1</span>');
 }
 
 export function MermaidEditor({ value, onChange }: EditorProps) {
@@ -34,7 +58,9 @@ export function MermaidEditor({ value, onChange }: EditorProps) {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-indigo-200 px-6 py-4 shrink-0">
-        <label className="text-lg font-semibold text-indigo-900">Mermaid Code</label>
+        <label className="text-lg font-semibold text-indigo-900">
+          Mermaid Code
+        </label>
         <p className="text-sm text-indigo-700 mt-1">
           Write your Mermaid diagram syntax here
         </p>
@@ -54,7 +80,8 @@ export function MermaidEditor({ value, onChange }: EditorProps) {
               padding={16}
               placeholder="graph TD&#10;    A[Start] --> B{Is it?}&#10;    B -->|Yes| C[OK]&#10;    B -->|No| D[End]"
               style={{
-                fontFamily: "'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace",
+                fontFamily:
+                  "'Fira Code', 'JetBrains Mono', 'Cascadia Code', 'Consolas', monospace",
                 fontSize: 15,
                 lineHeight: 1.6,
                 backgroundColor: "#1e1e1e",

@@ -1,7 +1,12 @@
 "use client";
 
 import { toast } from "sonner";
-import { downloadPNG, downloadSVG, copyToClipboard, getDiagramSVG } from "../utils";
+import {
+  downloadPNG,
+  downloadSVG,
+  copyToClipboard,
+  getDiagramSVG,
+} from "../utils";
 
 interface ControlsProps {
   code: string;
@@ -19,6 +24,7 @@ export function Controls({ code }: ControlsProps) {
       downloadPNG(svg);
       toast.success("PNG downloaded successfully");
     } catch (error) {
+      console.error("Failed to download PNG:", error);
       toast.error("Failed to download PNG");
     }
   };
@@ -34,6 +40,7 @@ export function Controls({ code }: ControlsProps) {
       downloadSVG(svg);
       toast.success("SVG downloaded successfully");
     } catch (error) {
+      console.error("Failed to download SVG:", error);
       toast.error("Failed to download SVG");
     }
   };
@@ -48,6 +55,7 @@ export function Controls({ code }: ControlsProps) {
       await copyToClipboard(code);
       toast.success("Code copied to clipboard");
     } catch (error) {
+      console.error("Failed to copy code:", error);
       toast.error("Failed to copy code");
     }
   };
@@ -56,6 +64,7 @@ export function Controls({ code }: ControlsProps) {
     <div className="bg-white border-t border-gray-200 px-6 py-4 shrink-0">
       <div className="flex flex-wrap gap-3">
         <button
+          type="button"
           onClick={handleDownloadPNG}
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium
                      rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2
@@ -78,6 +87,7 @@ export function Controls({ code }: ControlsProps) {
         </button>
 
         <button
+          type="button"
           onClick={handleDownloadSVG}
           className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium
                      rounded-lg hover:bg-green-700 transition-colors focus:outline-none focus:ring-2
@@ -100,6 +110,7 @@ export function Controls({ code }: ControlsProps) {
         </button>
 
         <button
+          type="button"
           onClick={handleCopyCode}
           className="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 text-sm font-medium
                      rounded-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2

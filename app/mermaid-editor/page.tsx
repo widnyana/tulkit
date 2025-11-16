@@ -53,7 +53,9 @@ export default function MermaidEditorPage() {
               Back
             </Link>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Mermaid Editor</h1>
+              <h1 className="text-xl font-bold text-gray-900">
+                Mermaid Editor
+              </h1>
             </div>
           </div>
           <div className="text-xs text-gray-500">Auto-saved</div>
@@ -70,7 +72,9 @@ export default function MermaidEditorPage() {
             <div className="text-xs text-blue-800 flex items-center gap-4 flex-wrap">
               <span>
                 <strong>Flowchart:</strong>{" "}
-                <code className="bg-white px-1 rounded text-[10px]">graph TD; A--&gt;B;</code>
+                <code className="bg-white px-1 rounded text-[10px]">
+                  graph TD; A--&gt;B;
+                </code>
               </span>
               <span>
                 <strong>Sequence:</strong>{" "}

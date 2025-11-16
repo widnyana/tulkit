@@ -22,21 +22,49 @@ export function Preview({ code }: PreviewProps) {
       startOnLoad: false,
       theme: "default",
       securityLevel: "loose",
-      fontSize: 120,
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      fontSize: 16,
+      fontFamily:
+        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
       themeVariables: {
-        fontSize: "120px",
-        fontWeight: "700",
-        primaryTextColor: "#1e293b",
-        primaryColor: "#6366f1",
-        primaryBorderColor: "#4f46e5",
-        lineColor: "#475569",
-        secondaryColor: "#a5b4fc",
-        tertiaryColor: "#e0e7ff",
+        fontSize: "16px",
+        fontWeight: "normal",
+        primaryTextColor: "#374151", // gray-700
+        primaryColor: "#ffffff", // white background
+        primaryBorderColor: "#9ca3af", // gray-400
+        lineColor: "#9ca3af", // gray-400
+        secondaryColor: "#ffffff", // white
+        tertiaryColor: "#ffffff", // white
+        background: "#ffffff",
+        mainBkg: "#ffffff", // node background
+        secondBkg: "#ffffff", // secondary background
+        mainContrastColor: "#000000",
+        // Line width settings
+        strokeWidth: 2, // Base stroke width
+        edgeWidth: 8, // Thick edge/line width for node connections
+        // Flowchart specific
+        nodeBkg: "#ffffff",
+        nodeBorder: "#9ca3af",
+        nodeBorderWidth: 2, // Standard node borders
+        clusterBkg: "#ffffff",
+        clusterBorder: "#9ca3af",
+        clusterBorderWidth: 2, // Standard cluster borders
+        defaultLinkColor: "#9ca3af",
+        titleColor: "#374151",
+        edgeLabelBackground: "#ffffff",
       },
       flowchart: {
         htmlLabels: true,
         curve: "basis",
+        lineThickness: 8, // Thickness of connection lines
+      },
+      sequence: {
+        noteFontSize: 16,
+        noteMargin: 10,
+        messageFontSize: 16,
+      },
+      class: {
+        arrowThickness: 8, // Thickness of arrows/lines in class diagrams
+        edgeThickness: 8, // Thickness of edges
       },
     });
   }, []);
@@ -62,10 +90,51 @@ export function Preview({ code }: PreviewProps) {
 
         if (containerRef.current) {
           containerRef.current.innerHTML = svg;
+
+          // Find the SVG element and ensure it's sized properly
+          const svgElement = containerRef.current.querySelector("svg");
+          if (svgElement) {
+            // Store original dimensions (unused but kept for potential future use)
+            const _originalWidth = svgElement.getAttribute("width");
+            const _originalHeight = svgElement.getAttribute("height");
+
+            // Remove fixed dimensions to allow proper scaling
+            svgElement.removeAttribute("width");
+            svgElement.removeAttribute("height");
+
+            // Apply sizing styles
+            svgElement.style.width = "100%";
+            svgElement.style.height = "auto";
+            svgElement.style.maxWidth = "100%";
+            svgElement.style.display = "block";
+
+            // Create a style element to override stroke widths for connector lines specifically
+            const style = document.createElement("style");
+            style.textContent = `
+              svg g.edgePath path,
+              svg path.edge,
+              svg path.path,
+              svg line.edge,
+              svg g.edgePaths path,
+              svg .edge polygon,
+              svg .edge polyline {
+                stroke-width: 2 !important;  /* More reasonable thickness */
+                stroke: #9ca3af !important;  /* gray-400 */
+              }
+              svg .edge polygon {
+                fill: #9ca3af !important;
+              }
+            `;
+
+            // Add the style to the SVG element
+            svgElement.appendChild(style);
+          }
+
           setError(null);
         }
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Unknown error";
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown error";
         setError({ message: errorMessage });
       } finally {
         setIsRendering(false);
@@ -80,8 +149,8 @@ export function Preview({ code }: PreviewProps) {
     return () => clearTimeout(timer);
   }, [code]);
 
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 25, 500));
-  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 25, 25));
+  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 10, 500));
+  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 10, 25));
   const handleZoomReset = () => {
     setZoom(100);
     setPanOffset({ x: 0, y: 0 });
@@ -116,11 +185,17 @@ export function Preview({ code }: PreviewProps) {
           </div>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleZoomOut}
               className="p-2 text-indigo-700 hover:text-indigo-900 hover:bg-indigo-100 rounded-lg transition-colors shadow-sm"
-              title="Zoom out (25%)"
+              title="Zoom out (10%)"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -133,11 +208,17 @@ export function Preview({ code }: PreviewProps) {
               {zoom}%
             </span>
             <button
+              type="button"
               onClick={handleZoomIn}
               className="p-2 text-indigo-700 hover:text-indigo-900 hover:bg-indigo-100 rounded-lg transition-colors shadow-sm"
-              title="Zoom in (25%)"
+              title="Zoom in (10%)"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -147,6 +228,7 @@ export function Preview({ code }: PreviewProps) {
               </svg>
             </button>
             <button
+              type="button"
               onClick={handleZoomReset}
               className="px-3 py-1.5 text-xs font-semibold text-indigo-700 hover:text-indigo-900 hover:bg-indigo-100 bg-white rounded-lg transition-colors border border-indigo-200 shadow-sm"
               title="Reset view"
@@ -157,13 +239,14 @@ export function Preview({ code }: PreviewProps) {
         </div>
       </div>
 
-      <div
+      <section
+        aria-label="Diagram preview area"
         className="flex-1 overflow-auto bg-gradient-to-br from-gray-50 to-indigo-50"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
+        style={{ cursor: isPanning ? "grabbing" : "grab" }}
       >
         <div
           className="min-h-full flex items-center justify-center p-6"
@@ -187,7 +270,9 @@ export function Preview({ code }: PreviewProps) {
                   />
                 </svg>
                 <div>
-                  <h3 className="text-sm font-semibold text-red-800">Syntax Error</h3>
+                  <h3 className="text-sm font-semibold text-red-800">
+                    Syntax Error
+                  </h3>
                   <p className="text-sm text-red-700 mt-1">{error.message}</p>
                 </div>
               </div>
@@ -216,22 +301,26 @@ export function Preview({ code }: PreviewProps) {
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <p className="text-sm text-indigo-400 font-medium">Start typing to see your diagram</p>
+              <p className="text-sm text-indigo-400 font-medium">
+                Start typing to see your diagram
+              </p>
             </div>
           )}
 
           <div
             ref={containerRef}
-            id="mermaid-preview"
+            className="mermaid-preview-container"
             style={{
               transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoom / 100})`,
               transformOrigin: "center",
-              transition: isPanning ? 'none' : 'transform 0.2s ease-in-out',
-              pointerEvents: 'none',
+              transition: isPanning ? "none" : "transform 0.2s ease-in-out",
+              pointerEvents: "none",
+              width: "100%",
+              height: "100%",
             }}
           />
         </div>
-      </div>
+      </section>
     </div>
   );
 }
