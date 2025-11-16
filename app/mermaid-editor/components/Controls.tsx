@@ -53,7 +53,7 @@ export function Controls({ code }: ControlsProps) {
   };
 
   return (
-    <div className="bg-white border-t border-gray-200 px-6 py-4">
+    <div className="bg-white border-t border-gray-200 px-6 py-4 shrink-0">
       <div className="flex flex-wrap gap-3">
         <button
           onClick={handleDownloadPNG}

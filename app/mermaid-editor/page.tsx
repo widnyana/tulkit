@@ -60,42 +60,40 @@ export default function MermaidEditorPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 min-h-full">
-          {/* Left Column - Editor */}
-          <div className="flex flex-col border-r border-gray-200 bg-white min-h-screen lg:min-h-0">
-            <MermaidEditor value={code} onChange={setCode} />
+      <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        {/* Left Column - Editor */}
+        <div className="flex flex-col flex-1 border-r border-gray-200 bg-white overflow-hidden">
+          <MermaidEditor value={code} onChange={setCode} />
 
-            {/* Help Section - Collapsed at bottom */}
-            <div className="border-t border-gray-200 bg-blue-50 px-4 py-2">
-              <div className="text-xs text-blue-800 flex items-center gap-4 flex-wrap">
-                <span>
-                  <strong>Flowchart:</strong>{" "}
-                  <code className="bg-white px-1 rounded text-[10px]">graph TD; A--&gt;B;</code>
-                </span>
-                <span>
-                  <strong>Sequence:</strong>{" "}
-                  <code className="bg-white px-1 rounded text-[10px]">
-                    sequenceDiagram; Alice-&gt;&gt;Bob: Hello
-                  </code>
-                </span>
-                <a
-                  href="https://mermaid.js.org/intro/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline hover:text-blue-600 ml-auto"
-                >
-                  Docs
-                </a>
-              </div>
+          {/* Help Section - Collapsed at bottom */}
+          <div className="border-t border-gray-200 bg-blue-50 px-4 py-2 shrink-0">
+            <div className="text-xs text-blue-800 flex items-center gap-4 flex-wrap">
+              <span>
+                <strong>Flowchart:</strong>{" "}
+                <code className="bg-white px-1 rounded text-[10px]">graph TD; A--&gt;B;</code>
+              </span>
+              <span>
+                <strong>Sequence:</strong>{" "}
+                <code className="bg-white px-1 rounded text-[10px]">
+                  sequenceDiagram; Alice-&gt;&gt;Bob: Hello
+                </code>
+              </span>
+              <a
+                href="https://mermaid.js.org/intro/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-blue-600 ml-auto"
+              >
+                Docs
+              </a>
             </div>
           </div>
+        </div>
 
-          {/* Right Column - Preview */}
-          <div className="flex flex-col bg-white min-h-screen lg:min-h-0">
-            <Preview code={code} />
-            <Controls code={code} />
-          </div>
+        {/* Right Column - Preview */}
+        <div className="flex flex-col flex-1 bg-white overflow-hidden">
+          <Preview code={code} />
+          <Controls code={code} />
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Editor from "react-simple-code-editor";
 import { highlight, languages } from "prismjs";
-import "prismjs/components/prism-markdown";
+import "prismjs/components/prism-javascript";
 import "prismjs/themes/prism.css";
 
 interface EditorProps {
@@ -19,12 +19,16 @@ export function MermaidEditor({ value, onChange }: EditorProps) {
   }, []);
 
   const highlightCode = (code: string) => {
-    return highlight(code, languages.markdown, "markdown");
+    try {
+      return highlight(code, languages.javascript, "javascript");
+    } catch {
+      return code;
+    }
   };
 
   return (
     <div className="flex flex-col h-full">
-      <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
+      <div className="bg-gray-50 border-b border-gray-200 px-6 py-4 shrink-0">
         <label className="text-lg font-semibold text-gray-900">Mermaid Code</label>
         <p className="text-sm text-gray-600 mt-1">
           Write your Mermaid diagram syntax here
