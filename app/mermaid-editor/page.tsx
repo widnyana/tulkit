@@ -29,86 +29,72 @@ export default function MermaidEditorPage() {
   }, [code, mounted]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <Link
-          href="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-        >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Home
-        </Link>
-
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Mermaid Editor</h1>
-          <p className="text-gray-600">
-            Create and export diagrams using Mermaid syntax. Your work is automatically saved.
-          </p>
-        </header>
-
-        {/* 2-Column Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
-          {/* Left Column - Editor */}
-          <div className="md:col-span-3 space-y-6">
-            <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden h-[calc(100vh-300px)]">
-              <MermaidEditor value={code} onChange={setCode} />
+    <div className="h-screen bg-gray-50 flex flex-col">
+      <div className="px-4 py-3 border-b border-gray-200 bg-white">
+        <div className="flex items-center justify-between max-w-full mx-auto">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                />
+              </svg>
+              Back
+            </Link>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Mermaid Editor</h1>
             </div>
+          </div>
+          <div className="text-xs text-gray-500">Auto-saved</div>
+        </div>
+      </div>
 
-            {/* Help Section */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h2 className="text-sm font-semibold text-blue-900 mb-2">
-                Quick Reference
-              </h2>
-              <div className="text-sm text-blue-800 space-y-1">
-                <p>
+      <div className="flex-1 overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 h-full">
+          {/* Left Column - Editor */}
+          <div className="flex flex-col border-r border-gray-200 bg-white">
+            <MermaidEditor value={code} onChange={setCode} />
+
+            {/* Help Section - Collapsed at bottom */}
+            <div className="border-t border-gray-200 bg-blue-50 px-4 py-2">
+              <div className="text-xs text-blue-800 flex items-center gap-4">
+                <span>
                   <strong>Flowchart:</strong>{" "}
-                  <code className="bg-white px-1 rounded">graph TD; A--&gt;B;</code>
-                </p>
-                <p>
+                  <code className="bg-white px-1 rounded text-[10px]">graph TD; A--&gt;B;</code>
+                </span>
+                <span>
                   <strong>Sequence:</strong>{" "}
-                  <code className="bg-white px-1 rounded">
+                  <code className="bg-white px-1 rounded text-[10px]">
                     sequenceDiagram; Alice-&gt;&gt;Bob: Hello
                   </code>
-                </p>
-                <p>
-                  <strong>Class:</strong>{" "}
-                  <code className="bg-white px-1 rounded">classDiagram; class Animal</code>
-                </p>
-                <p>
-                  Learn more at{" "}
-                  <a
-                    href="https://mermaid.js.org/intro/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline hover:text-blue-600"
-                  >
-                    mermaid.js.org
-                  </a>
-                </p>
+                </span>
+                <a
+                  href="https://mermaid.js.org/intro/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-600 ml-auto"
+                >
+                  Docs
+                </a>
               </div>
             </div>
           </div>
 
           {/* Right Column - Preview */}
-          <div className="md:col-span-2">
-            <div className="sticky top-8">
-              <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden flex flex-col h-[calc(100vh-200px)]">
-                <Preview code={code} />
-                <Controls code={code} />
-              </div>
-            </div>
+          <div className="flex flex-col bg-white">
+            <Preview code={code} />
+            <Controls code={code} />
           </div>
         </div>
       </div>
