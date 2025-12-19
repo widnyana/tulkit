@@ -378,7 +378,7 @@ function resolveJsonPointer(
     }
 
     // Handle JSON Pointer array notation
-    if (part.startsWith("0") && /^\d+$/.test(part)) {
+    if (/^\d+$/.test(part)) {
       const index = parseInt(part, 10);
       if (Array.isArray(current) && index < current.length) {
         current = current[index];
