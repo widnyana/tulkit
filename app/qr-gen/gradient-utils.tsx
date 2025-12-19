@@ -16,6 +16,7 @@ type GradientProps = {
   gradient: GradientType;
   colors: string[];
   id: string;
+  size?: number;
 };
 
 export function generateGradientDef({
