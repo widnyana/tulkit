@@ -57,20 +57,24 @@ export async function fetchSchemaFromUrl(url: string): Promise<string> {
   }
 }
 
-function isValidSchema(schema: any): boolean {
+function isValidSchema(schema: unknown): boolean {
   if (!schema || typeof schema !== "object") return false;
 
+  const schemaObj = schema as Record<string, unknown>;
+
   // Check for common JSON Schema identifiers
-  if (schema.$schema && typeof schema.$schema === "string") return true;
-  if (schema.$id && typeof schema.$id === "string") return true;
+  if (schemaObj.$schema && typeof schemaObj.$schema === "string") return true;
+  if (schemaObj.$id && typeof schemaObj.$id === "string") return true;
   if (
-    schema.type &&
-    (typeof schema.type === "string" || Array.isArray(schema.type))
+    schemaObj.type &&
+    (typeof schemaObj.type === "string" || Array.isArray(schemaObj.type))
   )
     return true;
-  if (schema.properties && typeof schema.properties === "object") return true;
-  if (schema.definitions && typeof schema.definitions === "object") return true;
-  if (schema.$defs && typeof schema.$defs === "object") return true;
+  if (schemaObj.properties && typeof schemaObj.properties === "object")
+    return true;
+  if (schemaObj.definitions && typeof schemaObj.definitions === "object")
+    return true;
+  if (schemaObj.$defs && typeof schemaObj.$defs === "object") return true;
 
   return false;
 }
