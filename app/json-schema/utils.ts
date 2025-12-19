@@ -189,6 +189,7 @@ function buildSchemaTree(schema: JSONSchema): SchemaNode {
   const resolvedSchema = resolveReferences(
     schema as JSONSchemaProperty,
     schema,
+    new Set(),
   );
   return {
     name: schema.title || "root",
@@ -203,13 +204,14 @@ function buildChildren(
   node: JSONSchemaProperty,
   basePath: string,
   rootSchema: JSONSchema,
+  visited: Set<string>,
 ): SchemaNode[] {
   const children: SchemaNode[] = [];
 
   if (node.properties) {
     Object.entries(node.properties).forEach(([key, prop]) => {
       const path = basePath ? `${basePath}.${key}` : key;
-      const childNode = buildPropertyNode(key, path, prop, rootSchema);
+      const childNode = buildPropertyNode(key, path, prop, rootSchema, visited);
       children.push(childNode);
     });
   }
@@ -221,7 +223,7 @@ function buildChildren(
       schemas.forEach((schema: JSONSchemaProperty, index: number) => {
         const name = `${combiner}[${index}]`;
         const path = basePath ? `${basePath}.${name}` : name;
-        const childNode = buildPropertyNode(name, path, schema, rootSchema);
+        const childNode = buildPropertyNode(name, path, schema, rootSchema, visited);
         children.push(childNode);
       });
     }
@@ -235,10 +237,11 @@ function buildPropertyNode(
   path: string,
   prop: JSONSchemaProperty,
   rootSchema: JSONSchema,
+  visited: Set<string>,
 ): SchemaNode {
   // Resolve $ref before creating node
   const resolvedProp = prop.$ref
-    ? resolveReferences(prop, rootSchema, new Set())
+    ? resolveReferences(prop, rootSchema, visited)
     : prop;
 
   const node: SchemaNode = {
@@ -253,7 +256,7 @@ function buildPropertyNode(
   };
 
   // Build children recursively with resolved schema
-  node.children = buildChildren(isJSONSchemaProperty(resolvedProp) ? resolvedProp : (resolvedProp as JSONSchemaProperty), path, rootSchema);
+  node.children = buildChildren(isJSONSchemaProperty(resolvedProp) ? resolvedProp : (resolvedProp as JSONSchemaProperty), path, rootSchema, new Set());
 
   return node;
 }
