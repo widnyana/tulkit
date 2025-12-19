@@ -21,6 +21,9 @@ export interface JSONSchemaProperty {
   not?: JSONSchemaProperty;
   $ref?: string;
   title?: string;
+  minItems?: number;
+  maxItems?: number;
+  uniqueItems?: boolean;
 }
 
 export interface JSONSchema {
