@@ -472,25 +472,28 @@ export default function JSONSchemaPage() {
                       </div>
                     </div>
                   </div>
-                  {parsedSchema.warnings && parsedSchema.warnings.length > 0 && (
-                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <div className="text-sm font-medium text-yellow-900 mb-2">
-                        Warnings ({parsedSchema.warnings.length})
+                  {parsedSchema.warnings &&
+                    parsedSchema.warnings.length > 0 && (
+                      <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <div className="text-sm font-medium text-yellow-900 mb-2">
+                          Warnings ({parsedSchema.warnings.length})
+                        </div>
+                        <ul className="text-sm text-yellow-800 space-y-1">
+                          {parsedSchema.warnings
+                            .slice(0, 5)
+                            .map((warning, i) => (
+                              <li key={i} className="truncate">
+                                {warning}
+                              </li>
+                            ))}
+                          {parsedSchema.warnings.length > 5 && (
+                            <li className="italic">
+                              ... and {parsedSchema.warnings.length - 5} more
+                            </li>
+                          )}
+                        </ul>
                       </div>
-                      <ul className="text-sm text-yellow-800 space-y-1">
-                        {parsedSchema.warnings.slice(0, 5).map((warning, i) => (
-                          <li key={i} className="truncate">
-                            {warning}
-                          </li>
-                        ))}
-                        {parsedSchema.warnings.length > 5 && (
-                          <li className="italic">
-                            ... and {parsedSchema.warnings.length - 5} more
-                          </li>
-                        )}
-                      </ul>
-                    </div>
-                  )}
+                    )}
                 </div>
               )}
 

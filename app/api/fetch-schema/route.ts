@@ -4,15 +4,15 @@ import { NextResponse } from "next/server";
 // CORS configuration - more secure for production
 const getAllowedOrigin = (): string => {
   // In production, restrict to specific origins
-  if (process.env.NODE_ENV === 'production') {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
-      'https://tulkit.widnyana.web.id'
+  if (process.env.NODE_ENV === "production") {
+    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
+      "https://tulkit.widnyana.web.id",
     ];
     return allowedOrigins[0]; // Return the first allowed origin
   }
-  
+
   // In development, allow all origins
-  return '*';
+  return "*";
 };
 
 const corsHeaders = {

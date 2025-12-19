@@ -274,7 +274,13 @@ async function createAndNode(
   context?: ExternalRefContext,
 ): Promise<AndNode> {
   const nodePromises = schemas.map((schema, index) =>
-    normalizeNode(schema, rootSchema, visited, `${sourcePath}/allOf[${index}]`, context),
+    normalizeNode(
+      schema,
+      rootSchema,
+      visited,
+      `${sourcePath}/allOf[${index}]`,
+      context,
+    ),
   );
   const nodes = await Promise.all(nodePromises);
 
@@ -344,7 +350,13 @@ async function createXorNode(
   context?: ExternalRefContext,
 ): Promise<XorNode> {
   const nodePromises = schemas.map((schema, index) =>
-    normalizeNode(schema, rootSchema, visited, `${sourcePath}/oneOf[${index}]`, context),
+    normalizeNode(
+      schema,
+      rootSchema,
+      visited,
+      `${sourcePath}/oneOf[${index}]`,
+      context,
+    ),
   );
   const nodes = await Promise.all(nodePromises);
 
@@ -371,7 +383,13 @@ async function createNotNode(
 ): Promise<NotNode> {
   return {
     kind: "not",
-    node: await normalizeNode(schema, rootSchema, visited, `${sourcePath}/not`, context),
+    node: await normalizeNode(
+      schema,
+      rootSchema,
+      visited,
+      `${sourcePath}/not`,
+      context,
+    ),
     sourcePath,
   };
 }
@@ -440,7 +458,13 @@ async function createArrayNode(
   context?: ExternalRefContext,
 ): Promise<ArrayNode> {
   const items = schema.items
-    ? await normalizeNode(schema.items, rootSchema, visited, `${sourcePath}/items`, context)
+    ? await normalizeNode(
+        schema.items,
+        rootSchema,
+        visited,
+        `${sourcePath}/items`,
+        context,
+      )
     : createPrimitiveNode("string", {}, `${sourcePath}/items`);
 
   const constraints: Constraint[] = [];

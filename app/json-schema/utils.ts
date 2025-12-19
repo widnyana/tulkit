@@ -445,7 +445,11 @@ async function resolveExternalReference(
 
     // Report progress
     if (context.onProgress) {
-      context.onProgress(context.fetchedUrls.size, context.maxFiles, absoluteUrl);
+      context.onProgress(
+        context.fetchedUrls.size,
+        context.maxFiles,
+        absoluteUrl,
+      );
     }
 
     // Resolve JSON pointer within external schema
