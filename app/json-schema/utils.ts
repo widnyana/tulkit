@@ -307,7 +307,9 @@ export function resolveReferences(
     try {
       const resolved = resolveJsonPointer(ref, rootSchema);
       if (resolved) {
-        return resolveReferences(resolved, rootSchema, visited);
+        // Create new Set for this resolution path to prevent false circular detection
+        const newVisited = new Set(visited);
+        return resolveReferences(resolved, rootSchema, newVisited);
       }
     } catch (error) {
       console.warn(`Failed to resolve $ref ${ref}:`, error);
@@ -328,7 +330,7 @@ export function resolveReferences(
       resolvedProperties[key] = resolveReferences(
         prop,
         rootSchema,
-        visited,
+        new Set(visited),
       ) as JSONSchemaProperty;
     });
     resolvedSchema.properties = resolvedProperties;
@@ -339,7 +341,7 @@ export function resolveReferences(
     resolvedSchema.items = resolveReferences(
       resolvedSchema.items,
       rootSchema,
-      visited,
+      new Set(visited),
     ) as JSONSchemaProperty;
   }
 
