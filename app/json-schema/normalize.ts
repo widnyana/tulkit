@@ -9,9 +9,44 @@
  */
 
 import type { JSONSchema, JSONSchemaProperty } from "./types";
-import type { ASTNode, Constraint, AndNode, OrNode, XorNode, NotNode, ObjectNode, ArrayNode, PrimitiveNode } from "./ast-types";
+import type {
+  ASTNode,
+  Constraint,
+  AndNode,
+  OrNode,
+  XorNode,
+  NotNode,
+  ObjectNode,
+  ArrayNode,
+  PrimitiveNode,
+} from "./ast-types";
 import { resolveReferences } from "./utils";
 import { detectDiscriminator } from "./discriminator-detection";
+
+/**
+ * Type guard to check if schema is a JSONSchemaProperty
+ */
+function isJSONSchemaProperty(
+  schema: JSONSchema | JSONSchemaProperty,
+): schema is JSONSchemaProperty {
+  return (
+    !("$ref" in schema) ||
+    ("required" in schema && typeof schema.required === "boolean")
+  );
+}
+
+/**
+ * Type guard to check if schema is a JSONSchema
+ */
+function isJSONSchema(
+  schema: JSONSchema | JSONSchemaProperty,
+): schema is JSONSchema {
+  return (
+    ("required" in schema && Array.isArray(schema.required)) ||
+    "definitions" in schema ||
+    "$defs" in schema
+  );
+}
 
 /**
  * Normalize a JSON Schema into an AST.
@@ -36,31 +71,55 @@ function normalizeNode(
   sourcePath: string,
 ): ASTNode {
   // Step 1: Resolve $ref
-  const resolved = node.$ref
-    ? resolveReferences(node, rootSchema, visited)
-    : node;
+  let resolved = node;
+  if (node.$ref) {
+    // Prevent infinite loops - add current ref to visited before resolution
+    if (visited.has(node.$ref)) {
+      resolved = {
+        type: "object",
+        description: "[Circular reference detected]",
+      };
+    } else {
+      const newVisited = new Set(visited);
+      newVisited.add(node.$ref);
+      resolved = resolveReferences(node, rootSchema, newVisited);
+    }
+  }
 
   // Step 2: Lift logic keywords
   const logicNodes: ASTNode[] = [];
 
   if (resolved.allOf && Array.isArray(resolved.allOf)) {
-    logicNodes.push(createAndNode(resolved.allOf, rootSchema, visited, sourcePath));
+    logicNodes.push(
+      createAndNode(resolved.allOf, rootSchema, visited, sourcePath),
+    );
   }
 
   if (resolved.anyOf && Array.isArray(resolved.anyOf)) {
-    logicNodes.push(createOrNode(resolved.anyOf, rootSchema, visited, sourcePath));
+    logicNodes.push(
+      createOrNode(resolved.anyOf, rootSchema, visited, sourcePath),
+    );
   }
 
   if (resolved.oneOf && Array.isArray(resolved.oneOf)) {
-    logicNodes.push(createXorNode(resolved.oneOf, rootSchema, visited, sourcePath));
+    logicNodes.push(
+      createXorNode(resolved.oneOf, rootSchema, visited, sourcePath),
+    );
   }
 
   if (resolved.not) {
-    logicNodes.push(createNotNode(resolved.not, rootSchema, visited, sourcePath));
+    logicNodes.push(
+      createNotNode(resolved.not, rootSchema, visited, sourcePath),
+    );
   }
 
   // Step 3: Extract structure
-  const structureNode = extractStructure(resolved, rootSchema, visited, sourcePath);
+  const structureNode = extractStructure(
+    resolved,
+    rootSchema,
+    visited,
+    sourcePath,
+  );
 
   // Step 4: Composition rule
   // If both structure and logic exist, wrap in AND
@@ -92,7 +151,7 @@ function normalizeNode(
   }
 
   // Fallback: treat as unknown primitive
-  return createPrimitiveNode("string", resolved, sourcePath);
+  return createPrimitiveNode("string", isJSONSchemaProperty(resolved) ? resolved : (resolved as JSONSchemaProperty), sourcePath);
 }
 
 /**
@@ -108,25 +167,59 @@ function extractStructure(
 
   // Object type
   if (types.includes("object") || schema.properties) {
-    return createObjectNode(schema, rootSchema, visited, sourcePath);
+    return createObjectNode(
+      isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
+      rootSchema,
+      visited,
+      sourcePath,
+    );
   }
 
   // Array type
   if (types.includes("array") || schema.items) {
-    return createArrayNode(schema, rootSchema, visited, sourcePath);
+    return createArrayNode(
+      isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
+      rootSchema,
+      visited,
+      sourcePath,
+    );
   }
 
   // Primitive types
-  if (types.some((t) => ["string", "number", "integer", "boolean", "null"].includes(t as string))) {
+  if (
+    types.some((t) =>
+      ["string", "number", "integer", "boolean", "null"].includes(t as string),
+    )
+  ) {
     const primitiveType = types.find((t) =>
       ["string", "number", "integer", "boolean", "null"].includes(t as string),
     ) as "string" | "number" | "integer" | "boolean" | "null";
-    return createPrimitiveNode(primitiveType, schema, sourcePath);
+    return createPrimitiveNode(
+      primitiveType,
+      isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
+      sourcePath,
+    );
+  }
+
+  // Primitive types
+  if (
+    types.some((t) =>
+      ["string", "number", "integer", "boolean", "null"].includes(t as string),
+    )
+  ) {
+    const primitiveType = types.find((t) =>
+      ["string", "number", "integer", "boolean", "null"].includes(t as string),
+    ) as "string" | "number" | "integer" | "boolean" | "null";
+    return createPrimitiveNode(primitiveType, isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty), sourcePath);
   }
 
   // Has enum or const without explicit type
   if (schema.enum || schema.const !== undefined) {
-    return createPrimitiveNode("string", schema, sourcePath);
+    return createPrimitiveNode(
+      "string",
+      isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
+      sourcePath,
+    );
   }
 
   return null;
@@ -172,7 +265,12 @@ function createOrNode(
   sourcePath: string,
 ): OrNode {
   const nodes = schemas.map((schema, index) =>
-    normalizeNode(schema, rootSchema, visited, `${sourcePath}/anyOf[${index}]`),
+    normalizeNode(
+      isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
+      rootSchema,
+      visited,
+      `${sourcePath}/anyOf[${index}]`,
+    ),
   );
 
   // Step 5: Flatten nested ORs

@@ -8,6 +8,13 @@ import type {
 } from "./types";
 import { normalizeSchema } from "./normalize";
 
+/**
+ * Type guard to check if schema is a JSONSchemaProperty
+ */
+function isJSONSchemaProperty(schema: JSONSchema | JSONSchemaProperty): schema is JSONSchemaProperty {
+  return !('required' in schema) || typeof (schema as any).required === 'boolean';
+}
+
 export function parseJSONSchema(input: string): ParsedSchema {
   const errors: string[] = [];
   let schema: JSONSchema = {};
@@ -242,11 +249,11 @@ function buildPropertyNode(
     description: resolvedProp.description,
     enum: resolvedProp.enum,
     defaultValue: resolvedProp.default,
-    constraints: getConstraints(resolvedProp),
+    constraints: getConstraints(isJSONSchemaProperty(resolvedProp) ? resolvedProp : (resolvedProp as JSONSchemaProperty)),
   };
 
   // Build children recursively with resolved schema
-  node.children = buildChildren(resolvedProp, path, rootSchema);
+  node.children = buildChildren(isJSONSchemaProperty(resolvedProp) ? resolvedProp : (resolvedProp as JSONSchemaProperty), path, rootSchema);
 
   return node;
 }
