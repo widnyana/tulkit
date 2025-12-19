@@ -7,6 +7,7 @@
 import { useState } from "react";
 import type { ObjectNode } from "../ast-types";
 import { NodeRenderer } from "./NodeRenderer";
+import { sanitizeText } from "../security";
 
 interface ObjectNodeViewProps {
   node: ObjectNode;
@@ -66,7 +67,7 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
         <div
           className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-indigo-200 ml-10 mb-2"
         >
-          {node.description}
+          {sanitizeText(node.description)}
         </div>
       )}
 

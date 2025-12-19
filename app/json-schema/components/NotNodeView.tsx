@@ -7,6 +7,7 @@
 import { useState } from "react";
 import type { NotNode } from "../ast-types";
 import { NodeRenderer } from "./NodeRenderer";
+import { sanitizeText } from "../security";
 
 interface NotNodeViewProps {
   node: NotNode;
@@ -40,7 +41,7 @@ export function NotNodeView({ node, level }: NotNodeViewProps) {
 
       {node.description && (
         <div className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-red-200 ml-6 mb-2">
-          {node.description}
+          {sanitizeText(node.description)}
         </div>
       )}
 

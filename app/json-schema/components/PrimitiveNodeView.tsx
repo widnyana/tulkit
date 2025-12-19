@@ -6,6 +6,7 @@
 
 import { useState } from "react";
 import type { PrimitiveNode } from "../ast-types";
+import { sanitizeText } from "../security";
 
 interface PrimitiveNodeViewProps {
   node: PrimitiveNode;
@@ -83,7 +84,7 @@ export function PrimitiveNodeView({ node, level }: PrimitiveNodeViewProps) {
       {/* Description */}
       {node.description && (
         <div className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-blue-200 ml-10 mb-2">
-          {node.description}
+          {sanitizeText(node.description)}
         </div>
       )}
 

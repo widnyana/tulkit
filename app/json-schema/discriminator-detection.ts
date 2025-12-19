@@ -37,8 +37,8 @@ export function detectDiscriminator(
   }
 
   // Step 1: Extract constraints from each branch
-  const branchConstraints = branches.map((branch) =>
-    extractConstraints(branch),
+  const branchConstraints = branches.map((branch, index) =>
+    extractConstraints(branch, [], new Set([`branch[${index}]`]), 0),
   );
 
   // Step 2: Find candidate paths (present in ALL branches)
@@ -62,7 +62,15 @@ export function detectDiscriminator(
 function extractConstraints(
   schema: JSONSchemaProperty,
   basePath: string[] = [],
+  visited: Set<string> = new Set(),
+  depth: number = 0,
 ): PropertyConstraint[] {
+  // Prevent infinite recursion with depth limit
+  const MAX_DEPTH = 50;
+  if (depth > MAX_DEPTH) {
+    return [];
+  }
+
   const constraints: PropertyConstraint[] = [];
 
   // Direct const/enum on this schema
@@ -82,19 +90,49 @@ function extractConstraints(
     });
   }
 
-  // Recurse into properties
+  // Recurse into properties with cycle detection
   if (schema.properties && typeof schema.properties === "object") {
     Object.entries(schema.properties).forEach(([key, prop]) => {
       const nestedPath = [...basePath, key];
-      const nestedConstraints = extractConstraints(prop, nestedPath);
+      const pathKey = JSON.stringify(nestedPath);
+
+      // Check for circular references
+      if (visited.has(pathKey)) {
+        return; // Skip circular reference
+      }
+
+      const newVisited = new Set(visited);
+      newVisited.add(pathKey);
+
+      const nestedConstraints = extractConstraints(
+        prop,
+        nestedPath,
+        newVisited,
+        depth + 1,
+      );
       constraints.push(...nestedConstraints);
     });
   }
 
-  // Recurse into allOf (might contain const/enum)
+  // Recurse into allOf (might contain const/enum) with cycle detection
   if (Array.isArray(schema.allOf)) {
-    schema.allOf.forEach((subSchema) => {
-      const nestedConstraints = extractConstraints(subSchema, basePath);
+    schema.allOf.forEach((subSchema, index) => {
+      const pathKey = JSON.stringify([...basePath, `allOf[${index}]`]);
+
+      // Check for circular references
+      if (visited.has(pathKey)) {
+        return; // Skip circular reference
+      }
+
+      const newVisited = new Set(visited);
+      newVisited.add(pathKey);
+
+      const nestedConstraints = extractConstraints(
+        subSchema,
+        basePath,
+        newVisited,
+        depth + 1,
+      );
       constraints.push(...nestedConstraints);
     });
   }
@@ -116,11 +154,10 @@ function findCandidatePaths(
   );
 
   // Filter to paths present in ALL branches
-  const candidatePathStrings = Array.from(firstBranchPaths).filter(
-    (pathStr) =>
-      branchConstraints.every((constraints) =>
-        constraints.some((c) => JSON.stringify(c.path) === pathStr),
-      ),
+  const candidatePathStrings = Array.from(firstBranchPaths).filter((pathStr) =>
+    branchConstraints.every((constraints) =>
+      constraints.some((c) => JSON.stringify(c.path) === pathStr),
+    ),
   );
 
   return candidatePathStrings.map((str) => JSON.parse(str) as string[]);
@@ -155,7 +192,10 @@ function validateCandidate(
   // Check pairwise disjoint (no overlapping values)
   for (let i = 0; i < branchValueSets.length; i++) {
     for (let j = i + 1; j < branchValueSets.length; j++) {
-      const intersection = setIntersection(branchValueSets[i], branchValueSets[j]);
+      const intersection = setIntersection(
+        branchValueSets[i],
+        branchValueSets[j],
+      );
       if (intersection.size > 0) {
         return null; // Overlapping values - ambiguous
       }

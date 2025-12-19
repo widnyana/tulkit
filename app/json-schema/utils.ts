@@ -3,6 +3,7 @@ import type {
   JSONSchemaProperty,
   ParsedSchema,
   SchemaMetadata,
+  SchemaNode,
   PropertyConstraints,
 } from "./types";
 import { normalizeSchema } from "./normalize";
@@ -225,8 +226,10 @@ function buildPropertyNode(
   rootSchema: JSONSchema,
 ): SchemaNode {
   // Resolve $ref before creating node
-  const resolvedProp = prop.$ref ? resolveReferences(prop, rootSchema, new Set()) : prop;
-  
+  const resolvedProp = prop.$ref
+    ? resolveReferences(prop, rootSchema, new Set())
+    : prop;
+
   const node: SchemaNode = {
     name,
     path,
@@ -290,31 +293,7 @@ export function resolveReferences(
     try {
       const resolved = resolveJsonPointer(ref, rootSchema);
       if (resolved) {
-        return resolveReferences(resolved, rootSchema, new Set(visited));
-      }
-    } catch (error) {
-      console.warn(`Failed to resolve $ref ${ref}:`, error);
-      return {
-        type: "object",
-        description: `[Failed to resolve $ref: ${ref}]`,
-      };
-    }
-  }
-
-  // Handle $ref
-  if ((schema as any).$ref) {
-    const ref = (schema as any).$ref;
-
-    // Prevent infinite loops
-    if (visited.has(ref)) {
-      return { type: "object", description: "[Circular reference detected]" };
-    }
-    visited.add(ref);
-
-    try {
-      const resolved = resolveJsonPointer(ref, rootSchema);
-      if (resolved) {
-        return resolveReferences(resolved, rootSchema, new Set(visited));
+        return resolveReferences(resolved, rootSchema, visited);
       }
     } catch (error) {
       console.warn(`Failed to resolve $ref ${ref}:`, error);

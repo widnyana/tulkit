@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useId } from "react";
+import { useState, useId, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { parseJSONSchema, fetchSchemaFromUrl } from "./utils";
 import { NodeRenderer } from "./components/NodeRenderer";
@@ -126,6 +126,20 @@ export default function JSONSchemaPage() {
   const urlId = useId();
   const jsonId = useId();
 
+  // Escape key handler to exit zen mode
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && zenMode) {
+        setZenMode(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [zenMode]);
+
   const handleLoadSchema = async () => {
     setIsLoading(true);
     setParsedSchema(null);
@@ -140,12 +154,27 @@ export default function JSONSchemaPage() {
           return;
         }
         schemaContent = await fetchSchemaFromUrl(url.trim());
+        
+        // Check response size to prevent memory issues
+        if (schemaContent.length > 500000) { // 500KB limit
+          toast.error("Schema content too large. Please use a smaller schema.");
+          setIsLoading(false);
+          return;
+        }
       } else {
         if (!jsonInput.trim()) {
           toast.error("Please enter JSON schema content");
           setIsLoading(false);
           return;
         }
+        
+        // Check input size to prevent memory issues
+        if (jsonInput.length > 500000) { // 500KB limit
+          toast.error("Schema content too large. Please use a smaller schema.");
+          setIsLoading(false);
+          return;
+        }
+        
         schemaContent = jsonInput;
       }
 

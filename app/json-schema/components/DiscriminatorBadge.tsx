@@ -31,7 +31,7 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
   const mappingEntries = Object.entries(discriminator.mapping);
 
   return (
-    <div className="inline-flex items-center gap-2">
+    <div className="relative inline-flex items-center gap-2">
       <span className="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded border border-indigo-200 font-mono">
         discriminator: {pathStr}
       </span>
@@ -45,7 +45,7 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
       </button>
 
       {showMapping && (
-        <div className="absolute mt-2 z-10 bg-white border border-gray-300 rounded shadow-lg p-3">
+        <div className="absolute mt-2 z-10 bg-white border border-gray-300 rounded shadow-lg p-3 max-h-48 overflow-auto">
           <div className="text-xs font-semibold text-gray-700 mb-2">
             Value → Branch mapping:
           </div>
@@ -53,9 +53,11 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
             <tbody>
               {mappingEntries.map(([value, branchIndex]) => (
                 <tr key={value}>
-                  <td className="pr-3 text-gray-600">{value}</td>
+                  <td className="pr-3 text-gray-600 break-all">{value}</td>
                   <td className="text-gray-400">→</td>
-                  <td className="pl-3 text-indigo-600">branch [{branchIndex}]</td>
+                  <td className="pl-3 text-indigo-600">
+                    branch [{branchIndex}]
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -8,6 +8,7 @@ import { useState } from "react";
 import type { XorNode } from "../ast-types";
 import { NodeRenderer } from "./NodeRenderer";
 import { DiscriminatorBadge } from "./DiscriminatorBadge";
+import { sanitizeText } from "../security";
 
 interface XorNodeViewProps {
   node: XorNode;
@@ -42,7 +43,7 @@ export function XorNodeView({ node, level }: XorNodeViewProps) {
 
       {node.description && (
         <div className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-purple-200 ml-6 mb-2">
-          {node.description}
+          {sanitizeText(node.description)}
         </div>
       )}
 
