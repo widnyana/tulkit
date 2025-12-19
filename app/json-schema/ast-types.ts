@@ -26,7 +26,16 @@ export interface Discriminator {
  * Constraint on primitive values
  */
 export interface Constraint {
-  type: "minimum" | "maximum" | "minLength" | "maxLength" | "pattern" | "format" | "minItems" | "maxItems" | "uniqueItems";
+  type:
+    | "minimum"
+    | "maximum"
+    | "minLength"
+    | "maxLength"
+    | "pattern"
+    | "format"
+    | "minItems"
+    | "maxItems"
+    | "uniqueItems";
   value: unknown;
 }
 

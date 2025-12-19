@@ -8,20 +8,24 @@
  * This makes implicit semantics explicit and enables correct rendering.
  */
 
-import type { JSONSchema, JSONSchemaProperty } from "./types";
 import type {
+  AndNode,
+  ArrayNode,
   ASTNode,
   Constraint,
-  AndNode,
-  OrNode,
-  XorNode,
   NotNode,
   ObjectNode,
-  ArrayNode,
+  OrNode,
   PrimitiveNode,
+  XorNode,
 } from "./ast-types";
-import { resolveReferences } from "./utils";
 import { detectDiscriminator } from "./discriminator-detection";
+import type {
+  ExternalRefContext,
+  JSONSchema,
+  JSONSchemaProperty,
+} from "./types";
+import { resolveReferences } from "./utils";
 
 /**
  * Type guard to check if schema is a JSONSchemaProperty
@@ -52,8 +56,11 @@ function isJSONSchema(
  * Normalize a JSON Schema into an AST.
  * Entry point for the normalization algorithm.
  */
-export function normalizeSchema(schema: JSONSchema): ASTNode {
-  return normalizeNode(schema, schema, new Set(), "");
+export async function normalizeSchema(
+  schema: JSONSchema,
+  context?: ExternalRefContext,
+): Promise<ASTNode> {
+  return await normalizeNode(schema, schema, new Set(), "", context);
 }
 
 /**
@@ -63,18 +70,20 @@ export function normalizeSchema(schema: JSONSchema): ASTNode {
  * @param rootSchema - Root schema (for $ref resolution)
  * @param visited - Set of visited $ref paths (circular detection)
  * @param sourcePath - Path in original schema (for debugging)
+ * @param context - External ref context (optional)
  */
-function normalizeNode(
+async function normalizeNode(
   node: JSONSchemaProperty | JSONSchema,
   rootSchema: JSONSchema,
   visited: Set<string>,
   sourcePath: string,
-): ASTNode {
+  context?: ExternalRefContext,
+): Promise<ASTNode> {
   // Step 1: Resolve $ref
   // Delegate all circular detection to resolveReferences()
   let resolved = node;
   if (node.$ref) {
-    resolved = resolveReferences(node, rootSchema, visited);
+    resolved = await resolveReferences(node, rootSchema, visited, context);
   }
 
   // Step 2: Lift logic keywords
@@ -82,34 +91,59 @@ function normalizeNode(
 
   if (resolved.allOf && Array.isArray(resolved.allOf)) {
     logicNodes.push(
-      createAndNode(resolved.allOf, rootSchema, visited, sourcePath),
+      await createAndNode(
+        resolved.allOf,
+        rootSchema,
+        visited,
+        sourcePath,
+        context,
+      ),
     );
   }
 
   if (resolved.anyOf && Array.isArray(resolved.anyOf)) {
     logicNodes.push(
-      createOrNode(resolved.anyOf, rootSchema, visited, sourcePath),
+      await createOrNode(
+        resolved.anyOf,
+        rootSchema,
+        visited,
+        sourcePath,
+        context,
+      ),
     );
   }
 
   if (resolved.oneOf && Array.isArray(resolved.oneOf)) {
     logicNodes.push(
-      createXorNode(resolved.oneOf, rootSchema, visited, sourcePath),
+      await createXorNode(
+        resolved.oneOf,
+        rootSchema,
+        visited,
+        sourcePath,
+        context,
+      ),
     );
   }
 
   if (resolved.not) {
     logicNodes.push(
-      createNotNode(resolved.not, rootSchema, visited, sourcePath),
+      await createNotNode(
+        resolved.not,
+        rootSchema,
+        visited,
+        sourcePath,
+        context,
+      ),
     );
   }
 
   // Step 3: Extract structure
-  const structureNode = extractStructure(
+  const structureNode = await extractStructure(
     resolved,
     rootSchema,
     visited,
     sourcePath,
+    context,
   );
 
   // Step 4: Composition rule
@@ -142,37 +176,46 @@ function normalizeNode(
   }
 
   // Fallback: treat as unknown primitive
-  return createPrimitiveNode("string", isJSONSchemaProperty(resolved) ? resolved : (resolved as JSONSchemaProperty), sourcePath);
+  return createPrimitiveNode(
+    "string",
+    isJSONSchemaProperty(resolved)
+      ? resolved
+      : (resolved as JSONSchemaProperty),
+    sourcePath,
+  );
 }
 
 /**
  * Extract structural schema (object/array/primitive)
  */
-function extractStructure(
+async function extractStructure(
   schema: JSONSchemaProperty | JSONSchema,
   rootSchema: JSONSchema,
   visited: Set<string>,
   sourcePath: string,
-): ASTNode | null {
+  context?: ExternalRefContext,
+): Promise<ASTNode | null> {
   const types = Array.isArray(schema.type) ? schema.type : [schema.type];
 
   // Object type
   if (types.includes("object") || schema.properties) {
-    return createObjectNode(
+    return await createObjectNode(
       isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
       rootSchema,
       visited,
       sourcePath,
+      context,
     );
   }
 
   // Array type
   if (types.includes("array") || schema.items) {
-    return createArrayNode(
+    return await createArrayNode(
       isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
       rootSchema,
       visited,
       sourcePath,
+      context,
     );
   }
 
@@ -201,7 +244,11 @@ function extractStructure(
     const primitiveType = types.find((t) =>
       ["string", "number", "integer", "boolean", "null"].includes(t as string),
     ) as "string" | "number" | "integer" | "boolean" | "null";
-    return createPrimitiveNode(primitiveType, isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty), sourcePath);
+    return createPrimitiveNode(
+      primitiveType,
+      isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
+      sourcePath,
+    );
   }
 
   // Has enum or const without explicit type
@@ -219,15 +266,17 @@ function extractStructure(
 /**
  * Create AndNode from allOf
  */
-function createAndNode(
+async function createAndNode(
   schemas: JSONSchemaProperty[],
   rootSchema: JSONSchema,
   visited: Set<string>,
   sourcePath: string,
-): AndNode {
-  const nodes = schemas.map((schema, index) =>
-    normalizeNode(schema, rootSchema, visited, `${sourcePath}/allOf[${index}]`),
+  context?: ExternalRefContext,
+): Promise<AndNode> {
+  const nodePromises = schemas.map((schema, index) =>
+    normalizeNode(schema, rootSchema, visited, `${sourcePath}/allOf[${index}]`, context),
   );
+  const nodes = await Promise.all(nodePromises);
 
   // Step 5: Flatten nested ANDs
   const flattenedNodes: ASTNode[] = [];
@@ -249,20 +298,23 @@ function createAndNode(
 /**
  * Create OrNode from anyOf
  */
-function createOrNode(
+async function createOrNode(
   schemas: JSONSchemaProperty[],
   rootSchema: JSONSchema,
   visited: Set<string>,
   sourcePath: string,
-): OrNode {
-  const nodes = schemas.map((schema, index) =>
+  context?: ExternalRefContext,
+): Promise<OrNode> {
+  const nodePromises = schemas.map((schema, index) =>
     normalizeNode(
       isJSONSchemaProperty(schema) ? schema : (schema as JSONSchemaProperty),
       rootSchema,
       visited,
       `${sourcePath}/anyOf[${index}]`,
+      context,
     ),
   );
+  const nodes = await Promise.all(nodePromises);
 
   // Step 5: Flatten nested ORs
   const flattenedNodes: ASTNode[] = [];
@@ -284,15 +336,17 @@ function createOrNode(
 /**
  * Create XorNode from oneOf
  */
-function createXorNode(
+async function createXorNode(
   schemas: JSONSchemaProperty[],
   rootSchema: JSONSchema,
   visited: Set<string>,
   sourcePath: string,
-): XorNode {
-  const nodes = schemas.map((schema, index) =>
-    normalizeNode(schema, rootSchema, visited, `${sourcePath}/oneOf[${index}]`),
+  context?: ExternalRefContext,
+): Promise<XorNode> {
+  const nodePromises = schemas.map((schema, index) =>
+    normalizeNode(schema, rootSchema, visited, `${sourcePath}/oneOf[${index}]`, context),
   );
+  const nodes = await Promise.all(nodePromises);
 
   // Step 6: Attach discriminator
   const discriminator = detectDiscriminator(schemas);
@@ -308,15 +362,16 @@ function createXorNode(
 /**
  * Create NotNode from not
  */
-function createNotNode(
+async function createNotNode(
   schema: JSONSchemaProperty,
   rootSchema: JSONSchema,
   visited: Set<string>,
   sourcePath: string,
-): NotNode {
+  context?: ExternalRefContext,
+): Promise<NotNode> {
   return {
     kind: "not",
-    node: normalizeNode(schema, rootSchema, visited, `${sourcePath}/not`),
+    node: await normalizeNode(schema, rootSchema, visited, `${sourcePath}/not`, context),
     sourcePath,
   };
 }
@@ -324,23 +379,25 @@ function createNotNode(
 /**
  * Create ObjectNode
  */
-function createObjectNode(
+async function createObjectNode(
   schema: JSONSchemaProperty | JSONSchema,
   rootSchema: JSONSchema,
   visited: Set<string>,
   sourcePath: string,
-): ObjectNode {
+  context?: ExternalRefContext,
+): Promise<ObjectNode> {
   const properties: Record<string, ASTNode> = {};
 
   if (schema.properties) {
-    Object.entries(schema.properties).forEach(([key, prop]) => {
-      properties[key] = normalizeNode(
+    for (const [key, prop] of Object.entries(schema.properties)) {
+      properties[key] = await normalizeNode(
         prop,
         rootSchema,
         visited,
         `${sourcePath}/properties/${key}`,
+        context,
       );
-    });
+    }
   }
 
   const required = new Set<string>(
@@ -352,11 +409,12 @@ function createObjectNode(
     if (typeof schema.additionalProperties === "boolean") {
       additionalProperties = schema.additionalProperties;
     } else {
-      additionalProperties = normalizeNode(
+      additionalProperties = await normalizeNode(
         schema.additionalProperties,
         rootSchema,
         visited,
         `${sourcePath}/additionalProperties`,
+        context,
       );
     }
   }
@@ -374,14 +432,15 @@ function createObjectNode(
 /**
  * Create ArrayNode
  */
-function createArrayNode(
+async function createArrayNode(
   schema: JSONSchemaProperty,
   rootSchema: JSONSchema,
   visited: Set<string>,
   sourcePath: string,
-): ArrayNode {
+  context?: ExternalRefContext,
+): Promise<ArrayNode> {
   const items = schema.items
-    ? normalizeNode(schema.items, rootSchema, visited, `${sourcePath}/items`)
+    ? await normalizeNode(schema.items, rootSchema, visited, `${sourcePath}/items`, context)
     : createPrimitiveNode("string", {}, `${sourcePath}/items`);
 
   const constraints: Constraint[] = [];

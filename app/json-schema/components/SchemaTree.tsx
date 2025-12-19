@@ -23,11 +23,16 @@ export function SchemaTree({
 
   const getTypeColor = (type: string | string[]) => {
     const types = Array.isArray(type) ? type : [type];
-    if (types.includes("string")) return "bg-green-100 text-green-700 border-green-200";
-    if (types.includes("number")) return "bg-blue-100 text-blue-700 border-blue-200";
-    if (types.includes("boolean")) return "bg-purple-100 text-purple-700 border-purple-200";
-    if (types.includes("array")) return "bg-orange-100 text-orange-700 border-orange-200";
-    if (types.includes("object")) return "bg-indigo-100 text-indigo-700 border-indigo-200";
+    if (types.includes("string"))
+      return "bg-green-100 text-green-700 border-green-200";
+    if (types.includes("number"))
+      return "bg-blue-100 text-blue-700 border-blue-200";
+    if (types.includes("boolean"))
+      return "bg-purple-100 text-purple-700 border-purple-200";
+    if (types.includes("array"))
+      return "bg-orange-100 text-orange-700 border-orange-200";
+    if (types.includes("object"))
+      return "bg-indigo-100 text-indigo-700 border-indigo-200";
     return "bg-gray-100 text-gray-700 border-gray-200";
   };
 
@@ -42,7 +47,7 @@ export function SchemaTree({
 
   const formatEnumValues = () => {
     if (!node.enum) return "";
-    const formatted = node.enum.map(v => JSON.stringify(v));
+    const formatted = node.enum.map((v) => JSON.stringify(v));
 
     if (formatted.length > 5 && !showFullEnum) {
       return formatted.slice(0, 5).join(", ") + "...";
@@ -149,10 +154,10 @@ export function SchemaTree({
 
         {node.enum && (
           <div className="text-xs text-gray-600 bg-gray-50 px-3 py-2 rounded border-l-2 border-gray-300">
-            <span className="font-semibold text-gray-700">Accepted values:</span>{" "}
-            <code className="font-mono break-all">
-              {formatEnumValues()}
-            </code>
+            <span className="font-semibold text-gray-700">
+              Accepted values:
+            </span>{" "}
+            <code className="font-mono break-all">{formatEnumValues()}</code>
             {node.enum.length > 5 && (
               <button
                 type="button"

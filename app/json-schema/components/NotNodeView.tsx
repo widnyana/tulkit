@@ -33,9 +33,7 @@ export function NotNodeView({ node, level }: NotNodeViewProps) {
           <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded border border-red-200">
             NOT
           </span>
-          <span className="text-sm text-gray-600">
-            Must NOT match
-          </span>
+          <span className="text-sm text-gray-600">Must NOT match</span>
         </div>
       </div>
 

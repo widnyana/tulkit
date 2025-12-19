@@ -7,17 +7,19 @@
  * Only escapes dangerous HTML tags while preserving HTML entities
  */
 export function sanitizeText(text: string): string {
-  if (typeof text !== 'string') {
+  if (typeof text !== "string") {
     return String(text);
   }
 
   // Only escape actual HTML tags that could cause XSS
   // Preserve HTML entities like &quot;, &apos;, etc. as-is
-  return text
-    // Escape opening HTML tags
-    .replace(/</g, '')
-    // Escape closing HTML tags
-    .replace(/>/g, '');
+  return (
+    text
+      // Escape opening HTML tags
+      .replace(/</g, "")
+      // Escape closing HTML tags
+      .replace(/>/g, "")
+  );
 }
 
 /**

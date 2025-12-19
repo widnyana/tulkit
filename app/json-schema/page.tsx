@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useState, useId, useEffect } from "react";
 import { toast, Toaster } from "sonner";
-import { parseJSONSchema, fetchSchemaFromUrl } from "./utils";
+import { parseJSONSchema, fetchSchemaFromUrl, extractBaseUrl } from "./utils";
 import { NodeRenderer } from "./components/NodeRenderer";
 import { SchemaStats } from "./components/SchemaStats";
+import { SchemaCache } from "./schema-cache";
 import type { ParsedSchema } from "./types";
 
 const EXAMPLE_SCHEMAS = [
@@ -122,6 +123,13 @@ export default function JSONSchemaPage() {
   const [parsedSchema, setParsedSchema] = useState<ParsedSchema | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [zenMode, setZenMode] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState<{
+    stage: "idle" | "main" | "external" | "parsing" | "complete";
+    current?: number;
+    total?: number;
+    message?: string;
+  }>({ stage: "idle" });
+  const [cacheInstance] = useState(() => new SchemaCache());
 
   const urlId = useId();
   const jsonId = useId();
@@ -143,6 +151,7 @@ export default function JSONSchemaPage() {
   const handleLoadSchema = async () => {
     setIsLoading(true);
     setParsedSchema(null);
+    setLoadingProgress({ stage: "main", message: "Fetching schema..." });
 
     try {
       let schemaContent = "";
@@ -151,40 +160,79 @@ export default function JSONSchemaPage() {
         if (!url.trim()) {
           toast.error("Please enter a URL");
           setIsLoading(false);
+          setLoadingProgress({ stage: "idle" });
           return;
         }
         schemaContent = await fetchSchemaFromUrl(url.trim());
-        
+
         // Check response size to prevent memory issues
-        if (schemaContent.length > 500000) { // 500KB limit
+        if (schemaContent.length > 500000) {
+          // 500KB limit
           toast.error("Schema content too large. Please use a smaller schema.");
           setIsLoading(false);
+          setLoadingProgress({ stage: "idle" });
           return;
         }
       } else {
         if (!jsonInput.trim()) {
           toast.error("Please enter JSON schema content");
           setIsLoading(false);
+          setLoadingProgress({ stage: "idle" });
           return;
         }
-        
+
         // Check input size to prevent memory issues
-        if (jsonInput.length > 500000) { // 500KB limit
+        if (jsonInput.length > 500000) {
+          // 500KB limit
           toast.error("Schema content too large. Please use a smaller schema.");
           setIsLoading(false);
+          setLoadingProgress({ stage: "idle" });
           return;
         }
-        
+
         schemaContent = jsonInput;
       }
 
-      const parsed = parseJSONSchema(schemaContent);
+      // Determine base URL for external refs
+      let baseUrl: string | undefined;
+      if (inputMode === "url") {
+        baseUrl = extractBaseUrl(url.trim());
+      } else {
+        // Try to extract from $id in JSON
+        try {
+          const schemaObj = JSON.parse(schemaContent);
+          if (schemaObj.$id) {
+            baseUrl = extractBaseUrl(schemaObj.$id);
+          }
+        } catch {
+          // Ignore parsing error, will be handled by parseJSONSchema
+        }
+      }
+
+      // Progress callback for external schema fetching
+      const handleProgress = (current: number, total: number, url: string) => {
+        setLoadingProgress({
+          stage: "external",
+          current,
+          total,
+          message: `Fetching external schemas (${current}/${total})...`,
+        });
+      };
+
+      setLoadingProgress({ stage: "parsing", message: "Parsing schema..." });
+      const parsed = await parseJSONSchema(schemaContent, baseUrl, {
+        cache: cacheInstance,
+        onProgress: handleProgress,
+      });
       setParsedSchema(parsed);
+      setLoadingProgress({ stage: "complete" });
 
       if (parsed.errors.length > 0) {
-        parsed.errors.forEach((error) => {
+        parsed.errors.forEach((error: string) => {
           toast.error(error);
         });
+      } else if (parsed.warnings && parsed.warnings.length > 0) {
+        toast.warning(`Schema loaded with ${parsed.warnings.length} warnings`);
       } else {
         toast.success("Schema loaded successfully!");
       }
@@ -192,6 +240,7 @@ export default function JSONSchemaPage() {
       toast.error(
         error instanceof Error ? error.message : "Failed to load schema",
       );
+      setLoadingProgress({ stage: "idle" });
     } finally {
       setIsLoading(false);
     }
@@ -213,6 +262,11 @@ export default function JSONSchemaPage() {
     setUrl("");
     setJsonInput("");
     setParsedSchema(null);
+  };
+
+  const handleClearCache = () => {
+    cacheInstance.clear();
+    toast.success("Cache cleared successfully!");
   };
 
   return (
@@ -282,20 +336,22 @@ export default function JSONSchemaPage() {
               <button
                 type="button"
                 onClick={() => setInputMode("url")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === "url"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  inputMode === "url"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
               >
                 URL
               </button>
               <button
                 type="button"
                 onClick={() => setInputMode("json")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === "json"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  inputMode === "json"
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
               >
                 JSON
               </button>
@@ -353,7 +409,28 @@ export default function JSONSchemaPage() {
             >
               Clear
             </button>
+            <button
+              type="button"
+              onClick={handleClearCache}
+              className="px-6 py-2 bg-orange-100 text-orange-700 font-medium rounded-lg hover:bg-orange-200 transition-colors"
+              title="Clear cached external schemas"
+            >
+              Clear Cache
+            </button>
           </div>
+
+          {/* Progress Indicator */}
+          {loadingProgress.stage !== "idle" &&
+            loadingProgress.stage !== "complete" && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full" />
+                  <span className="text-sm text-blue-900 font-medium">
+                    {loadingProgress.message}
+                  </span>
+                </div>
+              </div>
+            )}
         </div>
 
         {/* Results */}
@@ -361,7 +438,65 @@ export default function JSONSchemaPage() {
           <div className="space-y-6">
             {!zenMode && <SchemaStats metadata={parsedSchema.metadata} />}
 
-            <div className={`bg-white rounded-lg shadow-lg p-6 border border-gray-200 ${zenMode ? 'fixed inset-4 z-50' : ''}`}>
+            {/* Cache Stats */}
+            {!zenMode &&
+              parsedSchema.externalRefs &&
+              parsedSchema.externalRefs.length > 0 && (
+                <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                    External Schema Cache
+                  </h2>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-blue-50 rounded-lg">
+                      <div className="text-sm text-gray-600 mb-1">
+                        External Schemas
+                      </div>
+                      <div className="text-2xl font-bold text-blue-900">
+                        {parsedSchema.externalRefs.length}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-green-50 rounded-lg">
+                      <div className="text-sm text-gray-600 mb-1">
+                        Cache Hits
+                      </div>
+                      <div className="text-2xl font-bold text-green-900">
+                        {parsedSchema.cacheHits || 0}
+                      </div>
+                    </div>
+                    <div className="p-4 bg-orange-50 rounded-lg">
+                      <div className="text-sm text-gray-600 mb-1">
+                        Cache Misses
+                      </div>
+                      <div className="text-2xl font-bold text-orange-900">
+                        {parsedSchema.cacheMisses || 0}
+                      </div>
+                    </div>
+                  </div>
+                  {parsedSchema.warnings && parsedSchema.warnings.length > 0 && (
+                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="text-sm font-medium text-yellow-900 mb-2">
+                        Warnings ({parsedSchema.warnings.length})
+                      </div>
+                      <ul className="text-sm text-yellow-800 space-y-1">
+                        {parsedSchema.warnings.slice(0, 5).map((warning, i) => (
+                          <li key={i} className="truncate">
+                            {warning}
+                          </li>
+                        ))}
+                        {parsedSchema.warnings.length > 5 && (
+                          <li className="italic">
+                            ... and {parsedSchema.warnings.length - 5} more
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
+
+            <div
+              className={`bg-white rounded-lg shadow-lg p-6 border border-gray-200 ${zenMode ? "fixed inset-4 z-50" : ""}`}
+            >
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900">
                   Schema Structure
@@ -372,18 +507,20 @@ export default function JSONSchemaPage() {
                     onClick={() => setZenMode(!zenMode)}
                     className={`px-3 py-1.5 text-sm rounded transition-colors ${
                       zenMode
-                        ? 'bg-purple-600 text-white hover:bg-purple-700'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        ? "bg-purple-600 text-white hover:bg-purple-700"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                     title={zenMode ? "Exit Zen Mode" : "Enter Zen Mode"}
                   >
-                    {zenMode ? '✕ Exit Zen' : '🧘 Zen Mode'}
+                    {zenMode ? "✕ Exit Zen" : "🧘 Zen Mode"}
                   </button>
                 </div>
               </div>
-              <div className={`border border-gray-200 rounded-lg p-4 overflow-y-auto bg-white ${
-                zenMode ? 'h-[calc(100vh-160px)]' : 'max-h-[1000px]'
-              }`}>
+              <div
+                className={`border border-gray-200 rounded-lg p-4 overflow-y-auto bg-white ${
+                  zenMode ? "h-[calc(100vh-160px)]" : "max-h-[1000px]"
+                }`}
+              >
                 <NodeRenderer node={parsedSchema.ast} />
               </div>
             </div>

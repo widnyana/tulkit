@@ -17,10 +17,12 @@ export function PrimitiveNodeView({ node, level }: PrimitiveNodeViewProps) {
   const [showFullEnum, setShowFullEnum] = useState(false);
 
   const getTypeColor = (type: string) => {
-    if (type === "string") return "bg-green-100 text-green-700 border-green-200";
+    if (type === "string")
+      return "bg-green-100 text-green-700 border-green-200";
     if (type === "number" || type === "integer")
       return "bg-blue-100 text-blue-700 border-blue-200";
-    if (type === "boolean") return "bg-purple-100 text-purple-700 border-purple-200";
+    if (type === "boolean")
+      return "bg-purple-100 text-purple-700 border-purple-200";
     return "bg-gray-100 text-gray-700 border-gray-200";
   };
 

@@ -52,8 +52,12 @@ export interface JSONSchema {
 export interface ParsedSchema {
   schema: JSONSchema;
   errors: string[];
+  warnings: string[]; // External ref warnings and non-critical issues
   metadata: SchemaMetadata;
   ast: import("./ast-types").ASTNode;
+  externalRefs?: string[]; // List of fetched external schema URLs
+  cacheHits?: number; // Number of schemas loaded from cache
+  cacheMisses?: number; // Number of schemas fetched from network
 }
 
 export interface SchemaMetadata {
@@ -90,4 +94,17 @@ export interface PropertyConstraints {
   minItems?: number;
   maxItems?: number;
   uniqueItems?: boolean;
+}
+
+export interface ExternalRefContext {
+  baseUrl: string;
+  cache: import("./schema-cache").SchemaCache;
+  fetchedUrls: Set<string>; // Prevent duplicate fetches
+  depth: number; // Current external ref depth
+  maxDepth: number; // Maximum allowed depth (default: 5)
+  maxFiles: number; // Maximum external files (default: 50)
+  warnings: string[]; // Collect warnings during resolution
+  cacheHits: number; // Track cache hits
+  cacheMisses: number; // Track cache misses
+  onProgress?: (current: number, total: number, url: string) => void; // Progress callback
 }

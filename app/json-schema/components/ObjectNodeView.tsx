@@ -43,7 +43,8 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
           </span>
           {propertyEntries.length > 0 && (
             <span className="text-xs text-gray-500">
-              {propertyEntries.length} {propertyEntries.length === 1 ? "property" : "properties"}
+              {propertyEntries.length}{" "}
+              {propertyEntries.length === 1 ? "property" : "properties"}
             </span>
           )}
         </div>
@@ -64,9 +65,7 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
 
       {/* Description */}
       {node.description && (
-        <div
-          className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-indigo-200 ml-10 mb-2"
-        >
+        <div className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-indigo-200 ml-10 mb-2">
           {sanitizeText(node.description)}
         </div>
       )}
@@ -78,7 +77,9 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
             <div
               key={key}
               className={`border-l-2 pl-3 transition-colors ${
-                hoveredProperty === key ? "border-blue-300 bg-blue-50" : "border-gray-200"
+                hoveredProperty === key
+                  ? "border-blue-300 bg-blue-50"
+                  : "border-gray-200"
               }`}
               onMouseEnter={() => setHoveredProperty(key)}
               onMouseLeave={() => setHoveredProperty(null)}
