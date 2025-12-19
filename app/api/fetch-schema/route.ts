@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Validate URL format and prevent dangerous URLs
-    let urlObj;
+    let urlObj: URL | undefined;
     try {
       urlObj = new URL(schemaUrl);
     } catch {

@@ -55,7 +55,7 @@ export function SchemaTree({
     return formatted.join(", ");
   };
 
-  const truncateString = (str: string, maxLength: number = 100) => {
+  const truncateString = (str: string, maxLength = 100) => {
     if (str.length <= maxLength) return str;
     return `${str.substring(0, maxLength)}...`;
   };
@@ -66,12 +66,19 @@ export function SchemaTree({
       <div
         role="button"
         tabIndex={0}
-        className={`grid grid-cols-[auto_1fr_auto_auto] gap-3 items-start py-2 px-3 rounded transition-colors ${
+        className={`grid grid-cols-[auto_1fr_auto_auto] gap-3 items-start py-2 px-3 rounded transition-colors cursor-pointer ${
           isHovered ? "bg-blue-50" : "hover:bg-gray-50"
         }`}
         style={{ paddingLeft: `${level * 24 + 12}px` }}
+        onClick={() => setIsExpanded(!isExpanded)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
       >
         {/* Column 1: Expand/Collapse button */}
         <div className="flex items-center w-6">

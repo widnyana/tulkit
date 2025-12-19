@@ -55,7 +55,7 @@ export function extractBaseUrl(url: string): string {
     const parsed = new URL(url);
     const pathParts = parsed.pathname.split("/");
     pathParts.pop(); // Remove filename
-    parsed.pathname = pathParts.join("/") + "/";
+    parsed.pathname = `${pathParts.join("/")}/`;
     return parsed.href;
   } catch {
     // Fallback: remove everything after last /
@@ -216,7 +216,7 @@ function analyzeSchema(schema: JSONSchema): SchemaMetadata {
     types: {},
   };
 
-  function analyzeNode(node: JSONSchemaProperty, depth: number = 0): void {
+  function analyzeNode(node: JSONSchemaProperty, depth = 0): void {
     metadata.depth = Math.max(metadata.depth, depth);
 
     // Count types
@@ -302,7 +302,7 @@ function analyzeSchema(schema: JSONSchema): SchemaMetadata {
   return metadata;
 }
 
-function buildSchemaTree(schema: JSONSchema): SchemaNode {
+function _buildSchemaTree(schema: JSONSchema): SchemaNode {
   const resolvedSchema = resolveReferences(
     schema as JSONSchemaProperty,
     schema,
@@ -392,7 +392,7 @@ function getConstraints(
     if (prop.pattern !== undefined) constraints.pattern = prop.pattern;
     if (prop.format !== undefined) constraints.format = prop.format;
     if (typeof prop.items === "object") {
-      const items = prop.items as any;
+      const items = prop.items;
       if (items.minItems !== undefined) constraints.minItems = items.minItems;
       if (items.maxItems !== undefined) constraints.maxItems = items.maxItems;
       if (items.uniqueItems !== undefined)
@@ -408,7 +408,7 @@ function getConstraints(
  */
 async function resolveExternalReference(
   ref: string,
-  rootSchema: JSONSchema,
+  _rootSchema: JSONSchema,
   context: ExternalRefContext,
 ): Promise<JSONSchema | JSONSchemaProperty> {
   // Safety checks
@@ -435,8 +435,15 @@ async function resolveExternalReference(
       context.cache.has(absoluteUrl) && !context.cache.isStale(absoluteUrl);
 
     if (isCached) {
-      externalSchema = context.cache.get(absoluteUrl)!;
-      context.cacheHits++;
+      const cached = context.cache.get(absoluteUrl);
+      if (cached) {
+        externalSchema = cached;
+        context.cacheHits++;
+      } else {
+        externalSchema = await fetchSchemaWithCache(absoluteUrl, context.cache);
+        context.fetchedUrls.add(absoluteUrl);
+        context.cacheMisses++;
+      }
     } else {
       externalSchema = await fetchSchemaWithCache(absoluteUrl, context.cache);
       context.fetchedUrls.add(absoluteUrl);
@@ -494,7 +501,7 @@ export async function resolveReferences(
   }
 
   // Handle $ref
-  const ref = (schema as any).$ref;
+  const ref = schema.$ref;
   if (ref) {
     // Prevent infinite loops - check if we're currently resolving this ref in our call stack
     if (visited.has(ref)) {
@@ -509,28 +516,27 @@ export async function resolveReferences(
     if (isExternalRef(ref) && context) {
       // External reference
       return await resolveExternalReference(ref, rootSchema, context);
-    } else {
-      // Internal reference
-      try {
-        const resolved = resolveJsonPointer(ref, rootSchema);
-        if (resolved) {
-          return await resolveReferences(
-            resolved,
-            rootSchema,
-            newVisited,
-            context,
-          );
-        }
-      } catch (error) {
-        const warning = `Failed to resolve internal $ref ${ref}: ${error instanceof Error ? error.message : "Unknown error"}`;
-        if (context) {
-          context.warnings.push(warning);
-        }
-        return {
-          type: "object",
-          description: `[${warning}]`,
-        };
+    }
+    // Internal reference
+    try {
+      const resolved = resolveJsonPointer(ref, rootSchema);
+      if (resolved) {
+        return await resolveReferences(
+          resolved,
+          rootSchema,
+          newVisited,
+          context,
+        );
       }
+    } catch (error) {
+      const warning = `Failed to resolve internal $ref ${ref}: ${error instanceof Error ? error.message : "Unknown error"}`;
+      if (context) {
+        context.warnings.push(warning);
+      }
+      return {
+        type: "object",
+        description: `[${warning}]`,
+      };
     }
   }
 
@@ -564,7 +570,9 @@ export async function resolveReferences(
 
   // Resolve references in combined schemas
   for (const key of ["anyOf", "allOf", "oneOf"]) {
-    const schemas = (resolvedSchema as any)[key];
+    const schemas = (resolvedSchema as Record<string, unknown>)[
+      key
+    ] as JSONSchemaProperty[];
     if (Array.isArray(schemas)) {
       const resolvedArray: JSONSchemaProperty[] = [];
       for (const s of schemas) {
@@ -577,7 +585,7 @@ export async function resolveReferences(
           )) as JSONSchemaProperty,
         );
       }
-      (resolvedSchema as any)[key] = resolvedArray;
+      (resolvedSchema as Record<string, unknown>)[key] = resolvedArray;
     }
   }
 
@@ -614,7 +622,7 @@ function resolveJsonPointer(
   }
 
   const parts = cleanPointer.split("/").filter((part) => part);
-  let current: any = schema;
+  let current: JSONSchemaProperty | JSONSchema = schema;
 
   for (const part of parts) {
     if (current === null || typeof current !== "object") {
@@ -623,7 +631,7 @@ function resolveJsonPointer(
 
     // Handle JSON Pointer array notation
     if (part.startsWith("0") && /^\d+$/.test(part)) {
-      const index = parseInt(part, 10);
+      const index = Number.parseInt(part, 10);
       if (Array.isArray(current) && index < current.length) {
         current = current[index];
       } else {

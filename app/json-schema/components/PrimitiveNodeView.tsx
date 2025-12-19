@@ -35,7 +35,7 @@ export function PrimitiveNodeView({ node }: PrimitiveNodeViewProps) {
     return formatted.join(", ");
   };
 
-  const truncateString = (str: string, maxLength: number = 50) => {
+  const truncateString = (str: string, maxLength = 50) => {
     if (str.length <= maxLength) return str;
     return `${str.substring(0, maxLength)}...`;
   };

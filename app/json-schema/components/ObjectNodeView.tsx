@@ -78,13 +78,22 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
               key={key}
               role="button"
               tabIndex={0}
-              className={`border-l-2 pl-3 transition-colors ${
+              className={`border-l-2 pl-3 transition-colors cursor-pointer ${
                 hoveredProperty === key
                   ? "border-blue-300 bg-blue-50"
                   : "border-gray-200"
               }`}
               onMouseEnter={() => setHoveredProperty(key)}
               onMouseLeave={() => setHoveredProperty(null)}
+              onClick={() =>
+                setExpandedProperty(expandedProperty === key ? null : key)
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setExpandedProperty(expandedProperty === key ? null : key);
+                }
+              }}
             >
               <div className="flex items-center gap-2 py-1">
                 <span className="font-mono font-medium text-base text-gray-900">

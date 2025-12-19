@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 
+import { toast } from "sonner";
 import { NodeRenderer } from "./components/NodeRenderer";
 import { SchemaStats } from "./components/SchemaStats";
 import { SchemaCache } from "./schema-cache";
@@ -480,13 +481,11 @@ export default function JSONSchemaPage() {
                           Warnings ({parsedSchema.warnings.length})
                         </div>
                         <ul className="text-sm text-yellow-800 space-y-1">
-                          {parsedSchema.warnings
-                            .slice(0, 5)
-                            .map((warning) => (
-                              <li key={warning} className="truncate">
-                                {warning}
-                              </li>
-                            ))}
+                          {parsedSchema.warnings.slice(0, 5).map((warning) => (
+                            <li key={warning} className="truncate">
+                              {warning}
+                            </li>
+                          ))}
                           {parsedSchema.warnings.length > 5 && (
                             <li className="italic">
                               ... and {parsedSchema.warnings.length - 5} more

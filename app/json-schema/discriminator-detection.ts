@@ -63,7 +63,7 @@ function extractConstraints(
   schema: JSONSchemaProperty,
   basePath: string[] = [],
   visited: Set<string> = new Set(),
-  depth: number = 0,
+  depth = 0,
 ): PropertyConstraint[] {
   // Prevent infinite recursion with depth limit
   const MAX_DEPTH = 50;

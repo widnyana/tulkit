@@ -4,7 +4,7 @@ import { ToolCard } from "@/components/ToolCard";
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col p-8 bg-cover bg-center items-center justify-center">
-      <div className="absolute inset-0 bg-dark/10 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-dark/10 backdrop-blur-sm" />
 
       <div className="max-w-7xl w-full relative z-10 flex flex-col">
         <div className="text-center mb-12">

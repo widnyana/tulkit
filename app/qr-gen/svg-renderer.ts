@@ -53,7 +53,7 @@ export function transformMatrixIntoPath(
   matrix: (1 | 0)[][],
   size: number,
   options: ShapeOptions = defaultShapeOptions,
-  logoSize: number = 0,
+  logoSize = 0,
 ): { cellSize: number; path: string } {
   const {
     shape = "rounded",

@@ -16,12 +16,11 @@ export function loadInvoice(): InvoiceData | null {
     const parsed = JSON.parse(storedData);
     if (isValidInvoiceData(parsed)) {
       return parsed;
-    } else {
-      console.warn(
-        "Invalid invoice data found in storage, resetting to defaults",
-      );
-      return null;
     }
+    console.warn(
+      "Invalid invoice data found in storage, resetting to defaults",
+    );
+    return null;
   } catch (error) {
     console.error("Error loading invoice data from storage", error);
     return null;

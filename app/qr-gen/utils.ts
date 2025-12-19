@@ -112,8 +112,12 @@ export async function downloadSVGAsPNG(
   );
   return new Promise((resolve, reject) => {
     try {
-      const svgWidth = parseFloat(svgElement.getAttribute("width") || "0");
-      const svgHeight = parseFloat(svgElement.getAttribute("height") || "0");
+      const svgWidth = Number.parseFloat(
+        svgElement.getAttribute("width") || "0",
+      );
+      const svgHeight = Number.parseFloat(
+        svgElement.getAttribute("height") || "0",
+      );
 
       // Get SVG data
       const svgData = new XMLSerializer().serializeToString(svgElement);
