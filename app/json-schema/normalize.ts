@@ -75,6 +75,7 @@ function normalizeNode(
   if (node.$ref) {
     // Prevent infinite loops
     if (visited.has(node.$ref)) {
+      console.log('NORMALIZE circular detected:', node.$ref, 'Visited size:', visited.size, 'Visited contents:', Array.from(visited));
       resolved = {
         type: "object",
         description: "[Circular reference detected - normalize.ts]",
