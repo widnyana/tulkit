@@ -3,6 +3,23 @@
 import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { NodeRenderer } from "./components/NodeRenderer";
 import { SchemaStats } from "./components/SchemaStats";
@@ -12,8 +29,8 @@ import { extractBaseUrl, fetchSchemaFromUrl, parseJSONSchema } from "./utils";
 
 const EXAMPLE_SCHEMAS = [
   {
-    name: "Core schema meta-schema",
-    url: "https://json-schema.org/draft-07/schema",
+    name: "bjw-s' app-template schema",
+    url: "https://raw.githubusercontent.com/bjw-s-labs/helm-charts/common-4.5.0/charts/library/common/values.schema.json",
     schema: "",
   },
   {
@@ -231,6 +248,7 @@ export default function JSONSchemaPage() {
 
       if (parsed.errors.length > 0) {
         parsed.errors.forEach((error: string) => {
+          console.log(`got error: ${error}`);
           toast.error(error);
         });
       } else if (parsed.warnings && parsed.warnings.length > 0) {
@@ -242,6 +260,7 @@ export default function JSONSchemaPage() {
       toast.error(
         error instanceof Error ? error.message : "Failed to load schema",
       );
+      console.log(`got error: ${error}`);
       setLoadingProgress({ stage: "idle" });
     } finally {
       setIsLoading(false);
@@ -272,264 +291,271 @@ export default function JSONSchemaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <Link
-          href="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-        >
-          <svg
-            className="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+    <TooltipProvider>
+      <div className="min-h-screen bg-background p-8">
+        <div className="max-w-7xl mx-auto">
+          <Link
+            href="/"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Home
-        </Link>
-
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            JSON Schema Visualizer
-          </h1>
-          <p className="text-gray-600">
-            Visualize and explore JSON Schema structures with interactive tree
-            view and statistics
-          </p>
-        </header>
-
-        {/* Example Schemas */}
-        <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Quick Examples
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            {EXAMPLE_SCHEMAS.map((example) => (
-              <button
-                key={example.name}
-                type="button"
-                onClick={() => handleExampleClick(example)}
-                className="p-4 bg-gray-50 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors text-left"
-              >
-                <div className="font-medium text-gray-900">{example.name}</div>
-                {example.url && (
-                  <div className="text-sm text-gray-500 mt-1 truncate">
-                    {example.url}
-                  </div>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Input Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200 mb-6">
-          <div className="flex items-center gap-4 mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Input Schema
-            </h2>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setInputMode("url")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  inputMode === "url"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                URL
-              </button>
-              <button
-                type="button"
-                onClick={() => setInputMode("json")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  inputMode === "json"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                JSON
-              </button>
-            </div>
-          </div>
-
-          {inputMode === "url" ? (
-            <div>
-              <label
-                htmlFor={urlId}
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Schema URL
-              </label>
-              <input
-                id={urlId}
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://example.com/schema.json"
-                className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
-            </div>
-          ) : (
-            <div>
-              <label
-                htmlFor={jsonId}
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                JSON Schema Content
-              </label>
-              <textarea
-                id={jsonId}
-                value={jsonInput}
-                onChange={(e) => setJsonInput(e.target.value)}
-                placeholder='{"$schema": "http://json-schema.org/draft-07/schema#", "type": "object", ...}'
-                className="w-full h-64 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          )}
+            </svg>
+            Back to Home
+          </Link>
 
-          <div className="flex gap-4 mt-6">
-            <button
-              type="button"
-              onClick={handleLoadSchema}
-              disabled={isLoading}
-              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? "Loading..." : "Visualize Schema"}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors"
-            >
-              Clear
-            </button>
-            <button
-              type="button"
-              onClick={handleClearCache}
-              className="px-6 py-2 bg-orange-100 text-orange-700 font-medium rounded-lg hover:bg-orange-200 transition-colors"
-              title="Clear cached external schemas"
-            >
-              Clear Cache
-            </button>
-          </div>
+          <header className="mb-8">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              JSON Schema Visualizer
+            </h1>
+            <p className="text-muted-foreground">
+              Visualize and explore JSON Schema structures with interactive tree
+              view and statistics
+            </p>
+          </header>
 
-          {/* Progress Indicator */}
-          {loadingProgress.stage !== "idle" &&
-            loadingProgress.stage !== "complete" && (
-              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full" />
-                  <span className="text-sm text-blue-900 font-medium">
-                    {loadingProgress.message}
-                  </span>
-                </div>
-              </div>
-            )}
-        </div>
-
-        {/* Results */}
-        {parsedSchema && (
-          <div className="space-y-6">
-            {!zenMode && <SchemaStats metadata={parsedSchema.metadata} />}
-
-            {/* Cache Stats */}
-            {!zenMode &&
-              parsedSchema.externalRefs &&
-              parsedSchema.externalRefs.length > 0 && (
-                <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    External Schema Cache
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-blue-50 rounded-lg">
-                      <div className="text-sm text-gray-600 mb-1">
-                        External Schemas
-                      </div>
-                      <div className="text-2xl font-bold text-blue-900">
-                        {parsedSchema.externalRefs.length}
-                      </div>
+          {/* Example Schemas */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Quick Examples</CardTitle>
+              <CardDescription>
+                Click on any example to load it instantly
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {EXAMPLE_SCHEMAS.map((example) => (
+                  <Button
+                    key={example.name}
+                    variant="outline"
+                    onClick={() => handleExampleClick(example)}
+                    className="h-auto p-3 justify-start text-left flex-col items-start gap-2 min-h-[100px]"
+                  >
+                    <div className="flex items-start justify-between w-full gap-2 min-w-0">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <h3 className="font-semibold text-sm leading-tight truncate text-left w-full">
+                            {example.name}
+                          </h3>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs">{example.name}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                      <span className="text-xs text-primary font-medium whitespace-nowrap flex-shrink-0">
+                        {example.url ? "URL" : "JSON"}
+                      </span>
                     </div>
-                    <div className="p-4 bg-green-50 rounded-lg">
-                      <div className="text-sm text-gray-600 mb-1">
-                        Cache Hits
-                      </div>
-                      <div className="text-2xl font-bold text-green-900">
-                        {parsedSchema.cacheHits || 0}
-                      </div>
-                    </div>
-                    <div className="p-4 bg-orange-50 rounded-lg">
-                      <div className="text-sm text-gray-600 mb-1">
-                        Cache Misses
-                      </div>
-                      <div className="text-2xl font-bold text-orange-900">
-                        {parsedSchema.cacheMisses || 0}
-                      </div>
-                    </div>
-                  </div>
-                  {parsedSchema.warnings &&
-                    parsedSchema.warnings.length > 0 && (
-                      <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <div className="text-sm font-medium text-yellow-900 mb-2">
-                          Warnings ({parsedSchema.warnings.length})
-                        </div>
-                        <ul className="text-sm text-yellow-800 space-y-1">
-                          {parsedSchema.warnings.slice(0, 5).map((warning) => (
-                            <li key={warning} className="truncate">
-                              {warning}
-                            </li>
-                          ))}
-                          {parsedSchema.warnings.length > 5 && (
-                            <li className="italic">
-                              ... and {parsedSchema.warnings.length - 5} more
-                            </li>
-                          )}
-                        </ul>
+                    {example.url && (
+                      <div className="w-full min-w-0">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <p className="text-xs text-muted-foreground font-mono truncate text-left w-full">
+                              {example.url}
+                            </p>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs break-all">{example.url}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
                     )}
-                </div>
-              )}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-            <div
-              className={`bg-white rounded-lg shadow-lg p-6 border border-gray-200 ${zenMode ? "fixed inset-4 z-50" : ""}`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900">
-                  Schema Structure
-                </h2>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setZenMode(!zenMode)}
-                    className={`px-3 py-1.5 text-sm rounded transition-colors ${
-                      zenMode
-                        ? "bg-purple-600 text-white hover:bg-purple-700"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                    }`}
-                    title={zenMode ? "Exit Zen Mode" : "Enter Zen Mode"}
-                  >
-                    {zenMode ? "✕ Exit Zen" : "🧘 Zen Mode"}
-                  </button>
-                </div>
-              </div>
-              <div
-                className={`border border-gray-200 rounded-lg p-4 overflow-y-auto bg-white ${
-                  zenMode ? "h-[calc(100vh-160px)]" : "max-h-[1000px]"
-                }`}
+          {/* Input Section */}
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Input Schema</CardTitle>
+              <CardDescription>
+                Provide a URL or paste JSON schema content
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs
+                value={inputMode}
+                onValueChange={(value) => setInputMode(value as "url" | "json")}
               >
-                <NodeRenderer node={parsedSchema.ast} />
+                <TabsList>
+                  <TabsTrigger value="url">URL</TabsTrigger>
+                  <TabsTrigger value="json">JSON</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="url" className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor={urlId}
+                      className="block text-sm font-medium mb-2"
+                    >
+                      Schema URL
+                    </label>
+                    <Input
+                      id={urlId}
+                      type="url"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      placeholder="https://example.com/schema.json"
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="json" className="space-y-4">
+                  <div>
+                    <label
+                      htmlFor={jsonId}
+                      className="block text-sm font-medium mb-2"
+                    >
+                      JSON Schema Content
+                    </label>
+                    <Textarea
+                      id={jsonId}
+                      value={jsonInput}
+                      onChange={(e) => setJsonInput(e.target.value)}
+                      placeholder='{"$schema": "http://json-schema.org/draft-07/schema#", "type": "object", ...}'
+                      className="min-h-[200px] font-mono text-sm"
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              <div className="flex gap-4 mt-6">
+                <Button onClick={handleLoadSchema} disabled={isLoading}>
+                  {isLoading ? "Loading..." : "Visualize Schema"}
+                </Button>
+                <Button variant="outline" onClick={handleClear}>
+                  Clear
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleClearCache}
+                  title="Clear cached external schemas"
+                >
+                  Clear Cache
+                </Button>
               </div>
+
+              {/* Progress Indicator */}
+              {loadingProgress.stage !== "idle" &&
+                loadingProgress.stage !== "complete" && (
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full" />
+                      <span className="text-sm text-blue-900 font-medium">
+                        {loadingProgress.message}
+                      </span>
+                    </div>
+                  </div>
+                )}
+            </CardContent>
+          </Card>
+
+          {/* Results */}
+          {parsedSchema && (
+            <div className="space-y-6">
+              {!zenMode && <SchemaStats metadata={parsedSchema.metadata} />}
+
+              {/* Cache Stats */}
+              {!zenMode &&
+                parsedSchema.externalRefs &&
+                parsedSchema.externalRefs.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>External Schema Cache</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                          <div className="text-sm text-blue-600 mb-1">
+                            External Schemas
+                          </div>
+                          <div className="text-2xl font-bold text-blue-900">
+                            {parsedSchema.externalRefs.length}
+                          </div>
+                        </div>
+                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                          <div className="text-sm text-green-600 mb-1">
+                            Cache Hits
+                          </div>
+                          <div className="text-2xl font-bold text-green-900">
+                            {parsedSchema.cacheHits || 0}
+                          </div>
+                        </div>
+                        <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
+                          <div className="text-sm text-orange-600 mb-1">
+                            Cache Misses
+                          </div>
+                          <div className="text-2xl font-bold text-orange-900">
+                            {parsedSchema.cacheMisses || 0}
+                          </div>
+                        </div>
+                      </div>
+                      {parsedSchema.warnings &&
+                        parsedSchema.warnings.length > 0 && (
+                          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <div className="text-sm font-medium text-yellow-900 mb-2">
+                              Warnings ({parsedSchema.warnings.length})
+                            </div>
+                            <ul className="text-sm text-yellow-800 space-y-1">
+                              {parsedSchema.warnings
+                                .slice(0, 5)
+                                .map((warning) => (
+                                  <li key={warning} className="truncate">
+                                    {warning}
+                                  </li>
+                                ))}
+                              {parsedSchema.warnings.length > 5 && (
+                                <li className="italic">
+                                  ... and {parsedSchema.warnings.length - 5}{" "}
+                                  more
+                                </li>
+                              )}
+                            </ul>
+                          </div>
+                        )}
+                    </CardContent>
+                  </Card>
+                )}
+
+              <Card className={`${zenMode ? "fixed inset-4 z-50" : ""}`}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Schema Structure</CardTitle>
+                    <Button
+                      variant={zenMode ? "secondary" : "outline"}
+                      size="sm"
+                      onClick={() => setZenMode(!zenMode)}
+                    >
+                      {zenMode ? "✕ Exit Zen" : "🧘 Zen Mode"}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div
+                    className={`border rounded-lg p-4 overflow-y-auto bg-background ${
+                      zenMode ? "h-[calc(100vh-160px)]" : "max-h-[1000px]"
+                    }`}
+                  >
+                    <NodeRenderer node={parsedSchema.ast} />
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

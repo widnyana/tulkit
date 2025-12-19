@@ -1,3 +1,4 @@
+import { Card, CardContent } from "@/components/ui/card";
 import type { SchemaMetadata } from "../types";
 
 interface SchemaStatsProps {
@@ -8,34 +9,42 @@ export function SchemaStats({ metadata }: SchemaStatsProps) {
   const formatNumber = (num: number) => num.toLocaleString();
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="text-2xl font-bold text-blue-600">
-          {formatNumber(metadata.totalProperties)}
-        </div>
-        <div className="text-sm text-gray-600">Total Properties</div>
-      </div>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-2xl font-bold text-blue-600">
+            {formatNumber(metadata.totalProperties)}
+          </div>
+          <div className="text-sm text-muted-foreground">Total Properties</div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="text-2xl font-bold text-green-600">
-          {formatNumber(metadata.requiredProperties)}
-        </div>
-        <div className="text-sm text-gray-600">Required</div>
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-2xl font-bold text-green-600">
+            {formatNumber(metadata.requiredProperties)}
+          </div>
+          <div className="text-sm text-muted-foreground">Required</div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="text-2xl font-bold text-orange-600">
-          {formatNumber(metadata.optionalProperties)}
-        </div>
-        <div className="text-sm text-gray-600">Optional</div>
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-2xl font-bold text-orange-600">
+            {formatNumber(metadata.optionalProperties)}
+          </div>
+          <div className="text-sm text-muted-foreground">Optional</div>
+        </CardContent>
+      </Card>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="text-2xl font-bold text-purple-600">
-          {metadata.depth}
-        </div>
-        <div className="text-sm text-gray-600">Max Depth</div>
-      </div>
+      <Card>
+        <CardContent className="p-4">
+          <div className="text-2xl font-bold text-purple-600">
+            {metadata.depth}
+          </div>
+          <div className="text-sm text-muted-foreground">Max Depth</div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

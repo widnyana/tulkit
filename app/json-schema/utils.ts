@@ -188,17 +188,22 @@ export async function fetchSchemaFromUrl(url: string): Promise<string> {
 function isValidSchema(schema: unknown): boolean {
   if (!schema || typeof schema !== "object") return false;
 
+  const schemaObj = schema as Record<string, unknown>;
+
   // Check for common JSON Schema identifiers
-  if (schema.$schema && typeof schema.$schema === "string") return true;
-  if (schema.$id && typeof schema.$id === "string") return true;
+  if ("$schema" in schemaObj && typeof schemaObj.$schema === "string")
+    return true;
+  if ("$id" in schemaObj && typeof schemaObj.$id === "string") return true;
   if (
-    schema.type &&
-    (typeof schema.type === "string" || Array.isArray(schema.type))
+    "type" in schemaObj &&
+    (typeof schemaObj.type === "string" || Array.isArray(schemaObj.type))
   )
     return true;
-  if (schema.properties && typeof schema.properties === "object") return true;
-  if (schema.definitions && typeof schema.definitions === "object") return true;
-  if (schema.$defs && typeof schema.$defs === "object") return true;
+  if ("properties" in schemaObj && typeof schemaObj.properties === "object")
+    return true;
+  if ("definitions" in schemaObj && typeof schemaObj.definitions === "object")
+    return true;
+  if ("$defs" in schemaObj && typeof schemaObj.$defs === "object") return true;
 
   return false;
 }
@@ -638,11 +643,13 @@ function resolveJsonPointer(
         return null;
       }
     } else {
-      current = current[part];
+      // Type-safe property access with type assertion
+      current = (current as any)[part];
     }
   }
 
-  return current;
+  // Return only JSONSchema compatible objects
+  return current as JSONSchema;
 }
 
 function getEmptyMetadata(): SchemaMetadata {
