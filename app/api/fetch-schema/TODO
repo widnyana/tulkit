@@ -1,0 +1,3 @@
+- protect the endpoint only callable from the same domain. ensure the request is validated and can withstand header spoofing attacks via curl or other tools. ensure we have:
+    - Timestamp + replay protection
+    - Request signing with HMAC (AWS-style, Stripe-style): Sign method + path + body hash + timestamp.
