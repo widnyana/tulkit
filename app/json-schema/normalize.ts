@@ -73,7 +73,7 @@ function normalizeNode(
   // Step 1: Resolve $ref
   let resolved = node;
   if (node.$ref) {
-    // Prevent infinite loops - add current ref to visited before resolution
+    // Prevent infinite loops
     if (visited.has(node.$ref)) {
       resolved = {
         type: "object",
