@@ -77,7 +77,7 @@ function normalizeNode(
     if (visited.has(node.$ref)) {
       resolved = {
         type: "object",
-        description: "[Circular reference detected]",
+        description: "[Circular reference detected - normalize.ts]",
       };
     } else {
       const newVisited = new Set(visited);

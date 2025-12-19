@@ -1,11 +1,11 @@
 import { normalizeSchema } from "./normalize";
 import type {
-  JSONSchema,
-  JSONSchemaProperty,
-  ParsedSchema,
-  PropertyConstraints,
-  SchemaMetadata,
-  SchemaNode,
+	JSONSchema,
+	JSONSchemaProperty,
+	ParsedSchema,
+	PropertyConstraints,
+	SchemaMetadata,
+	SchemaNode,
 } from "./types";
 
 export function parseJSONSchema(input: string): ParsedSchema {
@@ -286,6 +286,7 @@ export function resolveReferences(
 	if (ref) {
 		// Prevent infinite loops
 		if (visited.has(ref)) {
+			console.log(ref);
 			return { type: "object", description: "[Circular reference detected]" };
 		}
 		visited.add(ref);
@@ -378,7 +379,7 @@ function resolveJsonPointer(
 		}
 
 		// Handle JSON Pointer array notation
-		if (/^\d+$/.test(part)) {
+		if (part.startsWith("0") && /^\d+$/.test(part)) {
 			const index = parseInt(part, 10);
 			if (Array.isArray(current) && index < current.length) {
 				current = current[index];
