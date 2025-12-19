@@ -71,20 +71,10 @@ function normalizeNode(
   sourcePath: string,
 ): ASTNode {
   // Step 1: Resolve $ref
+  // Delegate all circular detection to resolveReferences()
   let resolved = node;
   if (node.$ref) {
-    // Prevent infinite loops
-    if (visited.has(node.$ref)) {
-      console.log('NORMALIZE circular detected:', node.$ref, 'Visited size:', visited.size, 'Visited contents:', Array.from(visited));
-      resolved = {
-        type: "object",
-        description: "[Circular reference detected - normalize.ts]",
-      };
-    } else {
-      const newVisited = new Set(visited);
-      newVisited.add(node.$ref);
-      resolved = resolveReferences(node, rootSchema, newVisited);
-    }
+    resolved = resolveReferences(node, rootSchema, visited);
   }
 
   // Step 2: Lift logic keywords

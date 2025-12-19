@@ -6,8 +6,8 @@
 
 import { useState } from "react";
 import type { AndNode } from "../ast-types";
-import { NodeRenderer } from "./NodeRenderer";
 import { sanitizeText } from "../security";
+import { NodeRenderer } from "./NodeRenderer";
 
 interface AndNodeViewProps {
   node: AndNode;

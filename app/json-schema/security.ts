@@ -15,9 +15,9 @@ export function sanitizeText(text: string): string {
   // Preserve HTML entities like &quot;, &apos;, etc. as-is
   return text
     // Escape opening HTML tags
-    .replace(/</g, '&lt;')
+    .replace(/</g, '')
     // Escape closing HTML tags
-    .replace(/>/g, '&gt;');
+    .replace(/>/g, '');
 }
 
 /**

@@ -284,17 +284,19 @@ export function resolveReferences(
 	// Handle $ref
 	const ref = (schema as any).$ref;
 	if (ref) {
-		// Prevent infinite loops
+		// Prevent infinite loops - check if we're currently resolving this ref in our call stack
 		if (visited.has(ref)) {
-			console.log(ref);
 			return { type: "object", description: "[Circular reference detected]" };
 		}
-		visited.add(ref);
+
+		// Create a new Set for this branch to avoid false positives across different branches
+		const newVisited = new Set(visited);
+		newVisited.add(ref);
 
 		try {
 			const resolved = resolveJsonPointer(ref, rootSchema);
 			if (resolved) {
-				return resolveReferences(resolved, rootSchema, visited);
+				return resolveReferences(resolved, rootSchema, newVisited);
 			}
 		} catch (error) {
 			console.warn(`Failed to resolve $ref ${ref}:`, error);
@@ -309,13 +311,14 @@ export function resolveReferences(
 	const resolvedSchema = { ...schema };
 
 	// Recursively resolve references in nested properties
+	// Each property gets its own branch, so we pass the current visited set
 	if (resolvedSchema.properties) {
 		const resolvedProperties: Record<string, JSONSchemaProperty> = {};
 		Object.entries(resolvedSchema.properties).forEach(([key, prop]) => {
 			resolvedProperties[key] = resolveReferences(
 				prop,
 				rootSchema,
-				visited,
+				visited, // Pass current visited, each property is a separate branch
 			) as JSONSchemaProperty;
 		});
 		resolvedSchema.properties = resolvedProperties;
@@ -326,7 +329,7 @@ export function resolveReferences(
 		resolvedSchema.items = resolveReferences(
 			resolvedSchema.items,
 			rootSchema,
-			visited,
+			visited, // Pass current visited
 		) as JSONSchemaProperty;
 	}
 
@@ -335,7 +338,7 @@ export function resolveReferences(
 		const schemas = (resolvedSchema as any)[key];
 		if (Array.isArray(schemas)) {
 			(resolvedSchema as any)[key] = schemas.map((s: JSONSchemaProperty) =>
-				resolveReferences(s, rootSchema, visited),
+				resolveReferences(s, rootSchema, visited), // Each array element is a separate branch
 			);
 		}
 	});
@@ -344,7 +347,7 @@ export function resolveReferences(
 		resolvedSchema.not = resolveReferences(
 			resolvedSchema.not,
 			rootSchema,
-			visited,
+			visited, // Pass current visited
 		) as JSONSchemaProperty;
 	}
 
@@ -352,7 +355,7 @@ export function resolveReferences(
 		resolvedSchema.additionalProperties = resolveReferences(
 			resolvedSchema.additionalProperties as JSONSchemaProperty,
 			rootSchema,
-			visited,
+			visited, // Pass current visited
 		) as JSONSchemaProperty;
 	}
 
