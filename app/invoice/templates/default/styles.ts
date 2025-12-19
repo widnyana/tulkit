@@ -24,18 +24,18 @@ export const defaultTemplateStyles = StyleSheet.create({
     objectFit: "contain",
   },
   companyInfo: {
-    textAlign: "right" as "right",
+    textAlign: "right" as const,
   },
   invoiceTitle: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 5,
-    textAlign: "center" as "center",
+    textAlign: "center" as const,
     color: "#2563eb", // blue color for better visual hierarchy
   },
   invoiceNumber: {
     fontSize: 12,
-    textAlign: "center" as "center",
+    textAlign: "center" as const,
     color: "#64748b", // gray color for less prominence
     marginBottom: 20,
   },
@@ -54,7 +54,7 @@ export const defaultTemplateStyles = StyleSheet.create({
     flex: 1,
   },
   recipientInfoText: {
-    textAlign: "right" as "right",
+    textAlign: "right" as const,
   },
   label: {
     fontSize: 9,
@@ -96,7 +96,7 @@ export const defaultTemplateStyles = StyleSheet.create({
   descriptionColHeader: {
     width: "50%",
     padding: 8,
-    textAlign: "left" as "left",
+    textAlign: "left" as const,
     fontWeight: "bold",
     fontSize: 9,
     textTransform: "uppercase",
@@ -105,7 +105,7 @@ export const defaultTemplateStyles = StyleSheet.create({
   narrowColHeader: {
     width: "16.66%",
     padding: 8,
-    textAlign: "center" as "center",
+    textAlign: "center" as const,
     fontWeight: "bold",
     fontSize: 9,
     textTransform: "uppercase",
@@ -114,13 +114,13 @@ export const defaultTemplateStyles = StyleSheet.create({
   descriptionCol: {
     width: "50%",
     padding: 8,
-    textAlign: "left" as "left",
+    textAlign: "left" as const,
     fontSize: 10,
   },
   narrowCol: {
     width: "16.66%",
     padding: 8,
-    textAlign: "center" as "center",
+    textAlign: "center" as const,
     fontSize: 10,
   },
   notes: {
@@ -198,7 +198,7 @@ export const defaultTemplateStyles = StyleSheet.create({
     bottom: 20,
     left: 40,
     right: 40,
-    textAlign: "center" as "center",
+    textAlign: "center" as const,
     fontSize: 8,
     color: "#64748b",
     borderTopWidth: 1,

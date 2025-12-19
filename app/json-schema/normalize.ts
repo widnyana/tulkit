@@ -42,7 +42,7 @@ function isJSONSchemaProperty(
 /**
  * Type guard to check if schema is a JSONSchema
  */
-function isJSONSchema(
+function _isJSONSchema(
   schema: JSONSchema | JSONSchemaProperty,
 ): schema is JSONSchema {
   return (

@@ -76,6 +76,8 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
           {propertyEntries.map(([key, value]) => (
             <div
               key={key}
+              role="button"
+              tabIndex={0}
               className={`border-l-2 pl-3 transition-colors ${
                 hoveredProperty === key
                   ? "border-blue-300 bg-blue-50"

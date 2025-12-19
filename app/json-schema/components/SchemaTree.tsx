@@ -50,20 +50,22 @@ export function SchemaTree({
     const formatted = node.enum.map((v) => JSON.stringify(v));
 
     if (formatted.length > 5 && !showFullEnum) {
-      return formatted.slice(0, 5).join(", ") + "...";
+      return `${formatted.slice(0, 5).join(", ")}...`;
     }
     return formatted.join(", ");
   };
 
   const truncateString = (str: string, maxLength: number = 100) => {
     if (str.length <= maxLength) return str;
-    return str.substring(0, maxLength) + "...";
+    return `${str.substring(0, maxLength)}...`;
   };
 
   return (
     <div className="border-l-2 border-transparent hover:border-blue-300 transition-colors">
       {/* Main property row - using CSS Grid for alignment */}
       <div
+        role="button"
+        tabIndex={0}
         className={`grid grid-cols-[auto_1fr_auto_auto] gap-3 items-start py-2 px-3 rounded transition-colors ${
           isHovered ? "bg-blue-50" : "hover:bg-gray-50"
         }`}

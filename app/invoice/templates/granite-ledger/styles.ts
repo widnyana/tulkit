@@ -116,7 +116,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   descriptionColHeader: {
     width: "50%",
     padding: 12,
-    textAlign: "left" as "left",
+    textAlign: "left" as const,
     fontWeight: "bold",
     fontSize: 9,
     textTransform: "uppercase",
@@ -128,7 +128,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   narrowColHeader: {
     width: "16.66%",
     padding: 12,
-    textAlign: "center" as "center",
+    textAlign: "center" as const,
     fontWeight: "bold",
     fontSize: 9,
     textTransform: "uppercase",
@@ -140,7 +140,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   descriptionCol: {
     width: "50%",
     padding: 12,
-    textAlign: "left" as "left",
+    textAlign: "left" as const,
     fontSize: 10,
     fontFamily: "Helvetica",
   },
@@ -148,7 +148,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   narrowCol: {
     width: "16.66%",
     padding: 12,
-    textAlign: "center" as "center",
+    textAlign: "center" as const,
     fontSize: 10,
     fontFamily: "Helvetica",
   },
@@ -235,7 +235,7 @@ export const graniteTemplateStyles = StyleSheet.create({
     bottom: 20,
     left: 40,
     right: 40,
-    textAlign: "center" as "center",
+    textAlign: "center" as const,
     fontSize: 9,
     color: "#7F8C8D",
     borderTopWidth: 1,

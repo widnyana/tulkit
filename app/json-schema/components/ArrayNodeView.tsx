@@ -42,9 +42,9 @@ export function ArrayNodeView({ node, level }: ArrayNodeViewProps) {
 
         {/* Constraints */}
         <div className="flex gap-2">
-          {node.constraints?.map((constraint, idx) => (
+          {node.constraints?.map((constraint) => (
             <span
-              key={idx}
+              key={`${constraint.type}-${String(constraint.value)}`}
               className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded border border-gray-200 font-mono"
             >
               {constraint.type}: {String(constraint.value)}

@@ -185,7 +185,7 @@ export async function fetchSchemaFromUrl(url: string): Promise<string> {
   }
 }
 
-function isValidSchema(schema: any): boolean {
+function isValidSchema(schema: unknown): boolean {
   if (!schema || typeof schema !== "object") return false;
 
   // Check for common JSON Schema identifiers
@@ -268,7 +268,7 @@ function analyzeSchema(schema: JSONSchema): SchemaMetadata {
 
     // Analyze nested schemas
     ["anyOf", "allOf", "oneOf"].forEach((key) => {
-      const schemas = (node as any)[key];
+      const schemas = (node as Record<string, unknown>)[key];
       if (Array.isArray(schemas)) {
         schemas.forEach((s: JSONSchemaProperty) => {
           analyzeNode(s, depth + 1);
@@ -287,7 +287,7 @@ function analyzeSchema(schema: JSONSchema): SchemaMetadata {
 
   // Also analyze definitions/$defs
   ["definitions", "$defs"].forEach((key) => {
-    const defs = (schema as any)[key];
+    const defs = (schema as Record<string, unknown>)[key];
     if (defs && typeof defs === "object") {
       for (const def of Object.values(defs) as JSONSchemaProperty[]) {
         analyzeNode(def, 1);
@@ -333,7 +333,7 @@ function buildChildren(
 
   // Handle combined schemas
   ["anyOf", "allOf", "oneOf"].forEach((combiner) => {
-    const schemas = (node as any)[combiner];
+    const schemas = (node as Record<string, unknown>)[combiner];
     if (Array.isArray(schemas)) {
       schemas.forEach((schema: JSONSchemaProperty, index: number) => {
         const name = `${combiner}[${index}]`;

@@ -10,10 +10,9 @@ import { sanitizeText } from "../security";
 
 interface PrimitiveNodeViewProps {
   node: PrimitiveNode;
-  level: number;
 }
 
-export function PrimitiveNodeView({ node, level }: PrimitiveNodeViewProps) {
+export function PrimitiveNodeView({ node }: PrimitiveNodeViewProps) {
   const [showFullEnum, setShowFullEnum] = useState(false);
 
   const getTypeColor = (type: string) => {
@@ -31,14 +30,14 @@ export function PrimitiveNodeView({ node, level }: PrimitiveNodeViewProps) {
     const formatted = node.enum.map((v) => JSON.stringify(v));
 
     if (formatted.length > 5 && !showFullEnum) {
-      return formatted.slice(0, 5).join(", ") + "...";
+      return `${formatted.slice(0, 5).join(", ")}...`;
     }
     return formatted.join(", ");
   };
 
   const truncateString = (str: string, maxLength: number = 50) => {
     if (str.length <= maxLength) return str;
-    return str.substring(0, maxLength) + "...";
+    return `${str.substring(0, maxLength)}...`;
   };
 
   return (
@@ -112,8 +111,8 @@ export function PrimitiveNodeView({ node, level }: PrimitiveNodeViewProps) {
         <div className="text-xs text-gray-600 bg-gray-50 px-3 py-2 rounded border-l-2 border-gray-300 ml-10 mb-2">
           <span className="font-semibold text-gray-700">Constraints:</span>{" "}
           <span className="space-x-3 font-mono">
-            {node.constraints.map((constraint, idx) => (
-              <span key={idx}>
+            {node.constraints.map((constraint) => (
+              <span key={`${constraint.type}-${String(constraint.value)}`}>
                 {constraint.type}: {String(constraint.value)}
               </span>
             ))}

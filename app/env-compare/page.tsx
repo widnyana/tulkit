@@ -52,7 +52,9 @@ export default function EnvComparePage() {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-label="Back arrow"
           >
+            <title>Back to Home</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -75,7 +77,9 @@ export default function EnvComparePage() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-label="Security shield"
             >
+              <title>Privacy Protected</title>
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

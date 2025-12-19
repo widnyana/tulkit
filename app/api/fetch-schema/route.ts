@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
   try {
     // Validate URL format and prevent dangerous URLs
-    let urlObj: URL;
+    let urlObj;
     try {
       urlObj = new URL(schemaUrl);
     } catch {
@@ -97,7 +97,10 @@ export async function GET(request: NextRequest) {
 
     // Check content length before processing
     const contentLength = response.headers.get("content-length");
-    if (contentLength && parseInt(contentLength, 10) > MAX_RESPONSE_SIZE) {
+    if (
+      contentLength &&
+      Number.parseInt(contentLength, 10) > MAX_RESPONSE_SIZE
+    ) {
       return NextResponse.json(
         { error: "Response too large (max 10MB)" },
         { status: 413, headers: corsHeaders },
@@ -115,7 +118,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate that it's valid JSON and not obviously malicious
-    let parsed;
+    let parsed: unknown;
     try {
       parsed = JSON.parse(text);
     } catch {

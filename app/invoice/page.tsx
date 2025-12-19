@@ -85,7 +85,9 @@ const InvoicePage = () => {
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
+            aria-label="Back arrow"
           >
+            <title>Back to Home</title>
             <path
               strokeLinecap="round"
               strokeLinejoin="round"

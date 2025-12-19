@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useId, useEffect } from "react";
-import { toast, Toaster } from "sonner";
-import { parseJSONSchema, fetchSchemaFromUrl, extractBaseUrl } from "./utils";
+import { useEffect, useId, useState } from "react";
+
 import { NodeRenderer } from "./components/NodeRenderer";
 import { SchemaStats } from "./components/SchemaStats";
 import { SchemaCache } from "./schema-cache";
 import type { ParsedSchema } from "./types";
+import { extractBaseUrl, fetchSchemaFromUrl, parseJSONSchema } from "./utils";
 
 const EXAMPLE_SCHEMAS = [
   {
@@ -166,7 +166,7 @@ export default function JSONSchemaPage() {
         schemaContent = await fetchSchemaFromUrl(url.trim());
 
         // Check response size to prevent memory issues
-        if (schemaContent.length > 500000) {
+        if (schemaContent.length > 5000000) {
           // 500KB limit
           toast.error("Schema content too large. Please use a smaller schema.");
           setIsLoading(false);
@@ -182,7 +182,7 @@ export default function JSONSchemaPage() {
         }
 
         // Check input size to prevent memory issues
-        if (jsonInput.length > 500000) {
+        if (jsonInput.length > 5000000) {
           // 500KB limit
           toast.error("Schema content too large. Please use a smaller schema.");
           setIsLoading(false);
@@ -210,13 +210,14 @@ export default function JSONSchemaPage() {
       }
 
       // Progress callback for external schema fetching
-      const handleProgress = (current: number, total: number, url: string) => {
+      const handleProgress = (current: number, total: number, _url: string) => {
         setLoadingProgress({
           stage: "external",
           current,
           total,
           message: `Fetching external schemas (${current}/${total})...`,
         });
+        console.info(`fetching ${url}`);
       };
 
       setLoadingProgress({ stage: "parsing", message: "Parsing schema..." });
@@ -481,8 +482,8 @@ export default function JSONSchemaPage() {
                         <ul className="text-sm text-yellow-800 space-y-1">
                           {parsedSchema.warnings
                             .slice(0, 5)
-                            .map((warning, i) => (
-                              <li key={i} className="truncate">
+                            .map((warning) => (
+                              <li key={warning} className="truncate">
                                 {warning}
                               </li>
                             ))}

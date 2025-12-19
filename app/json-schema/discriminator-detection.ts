@@ -170,7 +170,7 @@ function findCandidatePaths(
 function validateCandidate(
   path: string[],
   branchConstraints: PropertyConstraint[][],
-  branches: JSONSchemaProperty[],
+  _branches: JSONSchemaProperty[],
 ): Discriminator | null {
   const pathStr = JSON.stringify(path);
 
