@@ -19,6 +19,8 @@ const defaultInvoiceData: InvoiceData = {
   recipient: {
     name: "",
     address: "",
+    email: "",
+    phone: "",
   },
   invoiceNumber: "INV-001",
   issueDate: new Date().toISOString().split("T")[0],
@@ -59,7 +61,15 @@ const InvoicePage = () => {
     // Load saved data from localStorage when component mounts
     const savedData = loadInvoice();
     if (savedData) {
-      setInvoiceData(savedData);
+      // Merge over defaults so newly-added optional fields (e.g. recipient
+      // email/phone) stay defined even for invoices saved before they existed.
+      setInvoiceData((prev) => ({
+        ...prev,
+        ...savedData,
+        recipient: { ...prev.recipient, ...savedData.recipient },
+        sender: { ...prev.sender, ...savedData.sender },
+        paymentInfo: { ...prev.paymentInfo, ...savedData.paymentInfo },
+      }));
     }
     setIsLoading(false);
   }, []);

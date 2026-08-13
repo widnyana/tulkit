@@ -10,6 +10,7 @@
     "lint": "biome check --max-diagnostics 1000",
     "format": "biome format --use-server --use-editorconfig=true --write --max-diagnostics 1000",
     "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types",
     "prepare": "[ -e .git ] && git config core.hooksPath .githooks || true"
   },
   "dependencies": {

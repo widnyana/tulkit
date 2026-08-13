@@ -62,8 +62,6 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
         if (validated.success) {
           saveInvoice(validated.data);
           onDataChange(validated.data);
-        } else {
-          console.error("Invalid form data, not saving", validated.error);
         }
       }, 500); // 300ms debounce
 
