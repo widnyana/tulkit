@@ -215,7 +215,7 @@ because apparently, you *do* need another random tool on the internet. ¯\_(ツ)
         {/* Tools Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool, index) => {
-            const CardWrapper = tool.disabled ? "div" : Link;
+            const CardWrapper: React.ElementType = tool.disabled ? "div" : Link;
             const wrapperProps = tool.disabled
               ? {}
               : { href: tool.href as string };
