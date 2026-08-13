@@ -139,11 +139,6 @@ because apparently, you *do* need another random tool on the internet. ¯\_(ツ)
           </p>
         </div>
 
-        {/* About tulkit */}
-        <p className="max-w-3xl mx-auto text-center text-base sm:text-lg text-slate-600 leading-relaxed mb-12">
-          tulkit is a collection of focused developer utilities that run entirely in your browser. No signups, no tracking, no "we reserve the right to use your data for training." Just tools that do one thing well and get out of your way. Whether you're comparing environment configs before a deploy, generating a clean invoice for freelance work, or sanity-checking an IP plan, each tool here is built to save you a few minutes of friction. Because apparently, you *do* need another random tool on the internet — might as well be one that doesn't phone home. Everything stays local: your files, your configs, your data. We just provide the interface.
-        </p>
-
         {/* Tools Grid */}
         <section>
           <h2 className="sr-only">Tools</h2>
