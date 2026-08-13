@@ -5,13 +5,17 @@ import {
   calculateBasicInfo,
   calculateSubnets,
   calculateSupernet,
+  formatSubnetOutput,
+  formatSupernetOutput,
 } from "../utils";
 import type { SubnetResult, SupernetResult } from "../types";
+import { useQueryState } from "../useQueryState";
+import CopyableOutput from "./CopyableOutput";
 
 export default function SubnetCalculator() {
-  const [baseNetwork, setBaseNetwork] = useState("");
-  const [baseMask, setBaseMask] = useState("24");
-  const [newMask, setNewMask] = useState("26");
+  const [baseNetwork, setBaseNetwork] = useQueryState("ip");
+  const [baseMask, setBaseMask] = useQueryState("mask", "24");
+  const [newMask, setNewMask] = useQueryState("newMask", "26");
   const [subnets, setSubnets] = useState<SubnetResult[] | null>(null);
   const [supernet, setSupernet] = useState<SupernetResult | null>(null);
   const [error, setError] = useState("");
@@ -211,6 +215,9 @@ export default function SubnetCalculator() {
               {supernet.hostMax}
             </p>
           </div>
+          <div className="mt-6">
+            <CopyableOutput {...formatSupernetOutput(supernet)} />
+          </div>
         </div>
       )}
 
@@ -282,6 +289,9 @@ export default function SubnetCalculator() {
               | <strong>Hosts per Subnet:</strong>{" "}
               {subnets[0].hostsNet.toLocaleString()}
             </p>
+          </div>
+          <div className="mt-6">
+            <CopyableOutput {...formatSubnetOutput(subnets)} />
           </div>
         </div>
       )}

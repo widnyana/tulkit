@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useId } from "react";
-import { deaggregate } from "../utils";
+import { deaggregate, formatDeaggregationOutput } from "../utils";
 import type { DeaggregationResult } from "../types";
+import { useQueryState } from "../useQueryState";
+import CopyableOutput from "./CopyableOutput";
 
 export default function Deaggregator() {
-  const [startIP, setStartIP] = useState("");
-  const [endIP, setEndIP] = useState("");
+  const [startIP, setStartIP] = useQueryState("start");
+  const [endIP, setEndIP] = useQueryState("end");
   const [result, setResult] = useState<DeaggregationResult | null>(null);
   const [error, setError] = useState("");
 
@@ -184,6 +186,12 @@ export default function Deaggregator() {
               specified IP range. You can use them for routing, firewall rules,
               or network configuration.
             </p>
+          </div>
+
+          <div className="mt-6">
+            <CopyableOutput
+              {...formatDeaggregationOutput(result, startIP, endIP)}
+            />
           </div>
         </div>
       )}

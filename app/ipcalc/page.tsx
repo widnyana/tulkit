@@ -1,15 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import BasicCalculator from "./components/BasicCalculator";
 import SubnetCalculator from "./components/SubnetCalculator";
 import Deaggregator from "./components/Deaggregator";
+import { useQueryState } from "./useQueryState";
 
 type Tab = "basic" | "subnet" | "deaggregator";
 
 export default function IPCalcPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("basic");
+  return (
+    <Suspense fallback={null}>
+      <IPCalcContent />
+    </Suspense>
+  );
+}
+
+function IPCalcContent() {
+  const [tab, setTab] = useQueryState("tab", "basic");
+  const activeTab = tab as Tab;
+  const setActiveTab = (t: Tab) => setTab(t);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
