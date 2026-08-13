@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Pre-commit secret scanner.
+# Activated via core.hooksPath=.githooks (set by the "prepare" script in package.json).
+# Blocks the commit when gitleaks detects a secret in the staged changes.
+
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "[secret-scan] gitleaks not found on PATH; skipping. install: mise use -g gitleaks@latest" >&2
+  exit 0
+fi
+
+echo "[secret-scan] scanning staged changes with gitleaks..."
+
+# --redact keeps any matched secret out of the console output.
+if ! gitleaks git --staged --redact --verbose; then
+  echo "[secret-scan] potential secret detected; commit blocked." >&2
+  echo "[secret-scan] if this is a false positive or intentional, bypass with: git commit --no-verify" >&2
+  exit 1
+fi
