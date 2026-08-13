@@ -216,7 +216,7 @@ export default function QRGeneratorPage() {
             Create beautiful, scannable QR codes with custom shapes, colors, and
             gradients.
           </p>
-          <p className="text-gray-600 mb-4 leading-relaxed">
+          <p className="sr-only">
             Generate QR codes for URLs, Wi-Fi credentials, contact cards (vCard), or plain text — then download the image or copy it to the clipboard. Supports custom colors, error correction levels, and size adjustments. Useful for sharing conference Wi-Fi with attendees, putting contact info on a business card, or just making a link scannable. The QR rendering happens entirely in your browser; we don't log or store what you encode.
           </p>
         </header>

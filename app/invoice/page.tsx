@@ -110,7 +110,7 @@ const InvoicePage = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Invoice Generator
         </h1>
-        <p className="text-gray-600 mb-6 leading-relaxed">
+        <p className="sr-only">
           Generate clean, professional invoice PDFs for freelance work, side projects, or whatever needs a paper trail. Customize sender/recipient details, line items, tax rates, currency formatting, and payment info — then export directly to PDF. The invoice layout is your standard professional format, not some avant-garde designer experiment. All data stays in your browser; nothing gets sent to a server.
         </p>
 
