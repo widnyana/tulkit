@@ -14,7 +14,7 @@ export function Footer() {
           >
             tulkit
           </a>
-          {" "}© 2025 Widnyana — Solving your tiny, annoying problems so you can get back to the big ones.
+          {" "}© 2025 – now Widnyana — Solving your tiny, annoying problems so you can get back to the big ones.
         </p>
 
         <Separator className="w-48 h-px bg-gray-300 my-2" />
