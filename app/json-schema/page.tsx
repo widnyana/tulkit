@@ -318,9 +318,12 @@ export default function JSONSchemaPage() {
             <h1 className="text-3xl font-bold text-foreground mb-2">
               JSON Schema Visualizer
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mb-4">
               Visualize and explore JSON Schema structures with interactive tree
               view and statistics
+            </p>
+            <p className="text-muted-foreground mb-4 leading-relaxed">
+              Generate JSON schemas from example JSON, or validate existing schemas against the spec. Useful for documenting API contracts, adding validation to your config parsing, or figuring out why your schema keeps failing that one edge case. The editor shows live feedback and supports common schema keywords — types, required fields, patterns, enums, nested objects, arrays. Everything runs client-side; your JSON never leaves your browser.
             </p>
           </header>
 
