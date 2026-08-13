@@ -3,6 +3,7 @@
   "author": "Widnyana",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "NODE_OPTIONS='--inspect' next dev --turbopack",
     "build": "next build --turbopack",
