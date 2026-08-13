@@ -13,3 +13,7 @@ Solving your tiny, annoying problems so you can get back to the big ones.
 - IP Calculator
 - Random String Generator
 - Invoice Generator
+
+## Development
+
+A pre-commit hook scans staged changes for secrets with [gitleaks](https://github.com/gitleaks/gitleaks). It auto-activates on `pnpm install` via `core.hooksPath`. Install gitleaks once: `mise use -g gitleaks@latest`.
