@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useId } from "react";
-import { calculateBasicInfo } from "../utils";
+import { calculateBasicInfo, formatBasicOutput } from "../utils";
 import type { BasicCalcResult } from "../types";
+import { useQueryState } from "../useQueryState";
+import CopyableOutput from "./CopyableOutput";
 
 export default function BasicCalculator() {
-  const [address, setAddress] = useState("");
-  const [netmask, setNetmask] = useState("24");
+  const [address, setAddress] = useQueryState("ip");
+  const [netmask, setNetmask] = useQueryState("mask", "24");
   const [result, setResult] = useState<BasicCalcResult | null>(null);
   const [error, setError] = useState("");
 
@@ -150,6 +152,8 @@ export default function BasicCalculator() {
           </div>
         </div>
       )}
+
+      {result && <CopyableOutput {...formatBasicOutput(result)} />}
     </div>
   );
 }
