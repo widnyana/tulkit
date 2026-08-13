@@ -34,6 +34,6 @@ export function NodeRenderer({ node, level = 0 }: NodeRendererProps) {
     case "array":
       return <ArrayNodeView node={node} level={level} />;
     case "primitive":
-      return <PrimitiveNodeView node={node} level={level} />;
+      return <PrimitiveNodeView node={node} />;
   }
 }
