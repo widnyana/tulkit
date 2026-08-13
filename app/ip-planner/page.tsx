@@ -44,9 +44,12 @@ export default function IPPlannerPage() {
 
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">NetPlan</h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 mb-4">
             Plan, validate, and prevent IP address collisions with comprehensive
             subnet tools.
+          </p>
+          <p className="text-gray-600 mb-4 leading-relaxed">
+            Plan and visualize IP subnet allocations without fighting a calculator. Enter your network address and prefix length, then generate subnets with whatever sizes you need — /24 for offices, /29 for point-to-point links, /32 for loopbacks. The tool shows address ranges, usable hosts, and CIDR notations in a clean table. Useful for network documentation, lab setups, or that moment when you realize you've backed yourself into a corner with 10.0.0.0/8.
           </p>
 
           <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
