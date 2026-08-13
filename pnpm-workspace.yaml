@@ -1,0 +1,10 @@
+# Supply-chain guard: refuse to install any package version younger than 7 days
+# (10080 min). Blocks freshly-published malicious releases during their live
+# window. Lockfile-pinned versions are unaffected. Override per-package via
+# minimumReleaseAgeExclude if a legit urgent release is blocked.
+minimumReleaseAge: 10080
+
+allowBuilds:
+  '@parcel/watcher': set this to true or false
+  '@swc/core': set this to true or false
+  sharp: set this to true or false

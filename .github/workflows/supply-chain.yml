@@ -1,0 +1,45 @@
+name: supply-chain
+
+on:
+  pull_request:
+    paths:
+      - package.json
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+  push:
+    branches: [main]
+  schedule:
+    # Weekly re-scan catches advisories disclosed after a PR merged.
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      # Scanner: fail on known-vulnerable dependencies (tighten to moderate if desired).
+      - name: pnpm audit
+        run: pnpm audit --audit-level=high
+
+      # Flag dependencies that request install/build scripts — the primary malware
+      # vector. pnpm blocks these by default; approve intentional ones via
+      # `pnpm approve-builds` (recorded in pnpm-workspace.yaml allowBuilds).
+      - name: Flag install scripts
+        run: |
+          pnpm install --frozen-lockfile 2>&1 | tee install.log
+          if grep -qi "ignored build scripts" install.log; then
+            echo "::warning::New/updated dependencies request build scripts — review before approving."
+          fi
