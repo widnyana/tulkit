@@ -51,7 +51,7 @@ function IPCalcContent() {
           <p className="text-gray-600 mb-4">
             Comprehensive IP address calculation and subnet planning tool
           </p>
-          <p className="text-gray-600 mb-4 leading-relaxed">
+          <p className="sr-only">
             Punch in an IP address and CIDR prefix (or netmask) to get the full breakdown: network address, broadcast address, first and last usable hosts, total hosts, and binary representations. Includes a deaggregator for /32 aggregates — paste a list of addresses and it'll collapse them into the minimal CIDR prefix list. Useful for quick network math, ACL planning, or when you need to verify that <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">192.168.1.0/24</code> actually covers what you think it does. Runs entirely in your browser.
           </p>
           <p className="text-xs text-gray-500 mt-4">
