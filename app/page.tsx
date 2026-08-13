@@ -139,8 +139,15 @@ because apparently, you *do* need another random tool on the internet. ¯\_(ツ)
           </p>
         </div>
 
+        {/* About tulkit */}
+        <p className="max-w-3xl mx-auto text-center text-base sm:text-lg text-slate-600 leading-relaxed mb-12">
+          tulkit is a collection of focused developer utilities that run entirely in your browser. No signups, no tracking, no "we reserve the right to use your data for training." Just tools that do one thing well and get out of your way. Whether you're comparing environment configs before a deploy, generating a clean invoice for freelance work, or sanity-checking an IP plan, each tool here is built to save you a few minutes of friction. Because apparently, you *do* need another random tool on the internet — might as well be one that doesn't phone home. Everything stays local: your files, your configs, your data. We just provide the interface.
+        </p>
+
         {/* Tools Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section>
+          <h2 className="sr-only">Tools</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {cards.map((tool, index) => {
             const CardWrapper: React.ElementType = tool.disabled ? "div" : Link;
             const wrapperProps = tool.disabled
@@ -192,7 +199,8 @@ because apparently, you *do* need another random tool on the internet. ¯\_(ツ)
               </CardWrapper>
             );
           })}
-        </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
