@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { tools } from "@/lib/tools";
+import { SiteJsonLd } from "@/components/ToolJsonLd";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -125,6 +126,7 @@ const categoryColors: Record<string, string> = {
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <SiteJsonLd />
       {/* Main Content */}
       <main className="relative max-w-7xl mx-auto px-6 sm:px-8 py-16 sm:py-24">
         {/* Header */}
