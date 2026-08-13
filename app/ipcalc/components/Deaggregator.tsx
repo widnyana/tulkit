@@ -7,7 +7,7 @@ import { useQueryState } from "../useQueryState";
 import CopyableOutput from "./CopyableOutput";
 
 export default function Deaggregator() {
-  const [startIP, setStartIP] = useQueryState("start");
+  const [startIP, setStartIP] = useQueryState("ip");
   const [endIP, setEndIP] = useQueryState("end");
   const [result, setResult] = useState<DeaggregationResult | null>(null);
   const [error, setError] = useState("");
