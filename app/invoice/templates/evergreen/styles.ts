@@ -66,6 +66,25 @@ export const evergreenTemplateStyles = StyleSheet.create({
     color: "#52645E",
     marginTop: 4,
   },
+  brandRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  // Logo sits on a mint plate with a teal hairline — same wash/hairline pair
+  // as the table header, so the mark reads as part of the ledger language.
+  logoPlate: {
+    backgroundColor: "#E8F3EF",
+    border: 0.5,
+    borderColor: "#0F766E",
+    borderRadius: 2,
+    padding: 6,
+    marginRight: 12,
+  },
+  logo: {
+    maxWidth: 72,
+    maxHeight: 36,
+    objectFit: "contain",
+  },
   brandName: {
     fontSize: 16,
     fontWeight: 700,
