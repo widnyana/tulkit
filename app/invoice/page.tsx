@@ -1,5 +1,6 @@
 "use client";
 
+import { createDefaultInvoiceData } from "@/lib/invoice/defaults";
 import { loadInvoice } from "@/lib/invoice/storage";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { useEffect, useState } from "react";
@@ -9,53 +10,10 @@ import InvoiceForm from "./components/InvoiceForm";
 import InvoicePDFPreview from "./components/InvoicePDFPreview";
 import Link from "next/link";
 
-const defaultInvoiceData: InvoiceData = {
-  sender: {
-    name: "",
-    address: "",
-    email: "",
-    phone: "",
-  },
-  recipient: {
-    name: "",
-    address: "",
-    email: "",
-    phone: "",
-  },
-  invoiceNumber: "INV-001",
-  issueDate: new Date().toISOString().split("T")[0],
-  dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    .toISOString()
-    .split("T")[0], // 7 days from now
-  items: [
-    {
-      id: "1",
-      description: "Initial item",
-      quantity: 1,
-      unitPrice: 0,
-      notes: "",
-    },
-  ],
-  notes: "",
-  taxEnabled: false,
-  taxRate: 10,
-  templateKey: "default",
-  currency: "$",
-  decimalSeparator: ",",
-  thousandSeparator: ".",
-  paymentInfo: {
-    bankName: "",
-    accountNumber: "",
-    routingCode: "",
-    paymentMethods: [],
-    paymentQRCode: "",
-  },
-  showBranding: true,
-};
-
 const InvoicePage = () => {
-  const [invoiceData, setInvoiceData] =
-    useState<InvoiceData>(defaultInvoiceData);
+  const [invoiceData, setInvoiceData] = useState<InvoiceData>(
+    createDefaultInvoiceData,
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

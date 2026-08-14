@@ -43,6 +43,18 @@ export function saveInvoice(data: InvoiceData): void {
   }
 }
 
+export function clearInvoice(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.removeItem(INVOICE_STORAGE_KEY);
+  } catch (error) {
+    console.error("Error clearing invoice data from storage", error);
+  }
+}
+
 // validation function to check if data has required structure
 function isValidInvoiceData(data: InvoiceData): data is InvoiceData {
   return (
