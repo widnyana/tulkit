@@ -1,4 +1,5 @@
 import type { InvoiceData } from "@/lib/invoice/types";
+import { SITE_URL } from "@/lib/site";
 import { Document, Page, Text, View } from "@react-pdf/renderer";
 import type React from "react";
 import { GraniteTemplateDetailsSection } from "./components/DetailsSection";
@@ -23,7 +24,7 @@ const GraniteTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
       title={`Invoice ${invoiceData.invoiceNumber || ""}`}
       author={invoiceData.sender.name || ""}
       subject={`Invoice for ${invoiceData.recipient.name || ""}`}
-      creator="https://tulkit.widnyana.web.id/invoice"
+      creator={`${SITE_URL}/invoice`}
       producer="@react-pdf/renderer"
     >
       <Page size="A4" style={graniteTemplateStyles.page}>
@@ -60,13 +61,14 @@ const GraniteTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         </View>
 
         {/* Footer */}
-        <Text
-          style={graniteTemplateStyles.footer}
-          render={({ pageNumber, totalPages }) =>
-            `Page ${pageNumber} of ${totalPages}`
-          }
-          fixed
-        />
+        <View style={graniteTemplateStyles.footer} fixed>
+          <Text
+            render={({ pageNumber, totalPages }) =>
+              `Page ${pageNumber} of ${totalPages}`
+            }
+          />
+          <Text>{`generated with ${SITE_URL.replace(/^https?:\/\//, "")}`}</Text>
+        </View>
       </Page>
     </Document>
   );

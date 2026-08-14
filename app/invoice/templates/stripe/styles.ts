@@ -147,8 +147,9 @@ export const stripeTemplateStyles = StyleSheet.create({
     bottom: 24,
     left: 40,
     right: 40,
+    flexDirection: "row",
+    justifyContent: "space-between",
     fontSize: 8,
     color: "#8898AA",
-    textAlign: "center",
   },
 });
