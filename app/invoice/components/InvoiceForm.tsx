@@ -1,5 +1,6 @@
 "use client";
 
+import { formatNumber } from "@/lib/invoice/formatNumber";
 import { sampleInvoiceData } from "@/lib/invoice/sample-data";
 import { saveInvoice } from "@/lib/invoice/storage";
 import type { InvoiceData } from "@/lib/invoice/types";
@@ -45,6 +46,11 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
   const items = watch("items");
   const taxEnabled = watch("taxEnabled");
   const taxRate = watch("taxRate");
+
+  // Money display must match the templates: selected currency + separators
+  const currency = watch("currency") || "$";
+  const decimalSep = watch("decimalSeparator") || ",";
+  const thousandSep = watch("thousandSeparator") || ".";
 
   // Calculate totals
   const subtotal = items.reduce(
@@ -703,7 +709,14 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       />
                     </td>
                     <td className="px-4 py-2">
-                      ${(field.quantity * field.unitPrice).toFixed(2)}
+                      {currency}
+                      {formatNumber(
+                        (items[index]?.quantity || 0) *
+                          (items[index]?.unitPrice || 0),
+                        2,
+                        decimalSep,
+                        thousandSep,
+                      )}
                     </td>
                     <td className="px-4 py-2">
                       <button
@@ -1033,17 +1046,26 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       <div className="bg-gray-50 p-4 rounded-md">
         <div className="flex justify-between mb-1">
           <span>Subtotal:</span>
-          <span>${subtotal.toFixed(2)}</span>
+          <span>
+            {currency}
+            {formatNumber(subtotal, 2, decimalSep, thousandSep)}
+          </span>
         </div>
         {taxEnabled && (
           <div className="flex justify-between mb-1">
             <span>Tax ({taxRate}%):</span>
-            <span>${taxAmount.toFixed(2)}</span>
+            <span>
+              {currency}
+              {formatNumber(taxAmount, 2, decimalSep, thousandSep)}
+            </span>
           </div>
         )}
         <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-gray-200">
           <span>Total:</span>
-          <span>${total.toFixed(2)}</span>
+          <span>
+            {currency}
+            {formatNumber(total, 2, decimalSep, thousandSep)}
+          </span>
         </div>
       </div>
 
