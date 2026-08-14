@@ -85,6 +85,16 @@ const toolIcons: Record<string, ReactNode> = {
       />
     </svg>
   ),
+  "/base64": (
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M17 6l5 6-5 6M7 6l-5 6 5 6m6-15l-2 18"
+      />
+    </svg>
+  ),
 };
 
 const comingSoonCard = {
