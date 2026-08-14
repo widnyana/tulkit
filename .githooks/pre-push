@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Pre-push dependency audit.
+# Activated via core.hooksPath=.githooks (set by the "prepare" script in package.json).
+# Blocks the push when pnpm finds a high-or-critical severity advisory.
+# Mirrors the CI check in .github/workflows/supply-chain.yml as a local early warning.
+
+set -euo pipefail
+
+if ! command -v pnpm >/dev/null 2>&1; then
+  echo "[audit] pnpm not found on PATH; skipping." >&2
+  exit 0
+fi
+
+echo "[audit] running pnpm audit --audit-level=high..."
+
+if ! pnpm audit --audit-level=high; then
+  echo "[audit] high/critical advisory found; push blocked." >&2
+  echo "[audit] review with: pnpm audit --audit-level=high" >&2
+  echo "[audit] to bypass (e.g. no fix available yet): git push --no-verify" >&2
+  exit 1
+fi
