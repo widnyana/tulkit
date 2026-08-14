@@ -245,9 +245,10 @@ export const apexTemplateStyles = StyleSheet.create({
     bottom: 24,
     left: 40,
     right: 40,
+    flexDirection: "row",
+    justifyContent: "space-between",
     fontSize: 8,
     color: "#9CA3AF",
-    textAlign: "center",
   },
 
   // Notes section

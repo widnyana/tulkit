@@ -1,4 +1,5 @@
 import type { InvoiceData } from "@/lib/invoice/types";
+import { SITE_URL } from "@/lib/site";
 import { Document, Page, Text, View } from "@react-pdf/renderer";
 import type React from "react";
 import { ApexTemplateBilledTo } from "./components/BilledTo";
@@ -23,7 +24,7 @@ const ApexTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
       title={`Invoice ${invoiceData.invoiceNumber || ""}`}
       author={invoiceData.sender.name || ""}
       subject={`Invoice for ${invoiceData.recipient.name || ""}`}
-      creator="https://tulkit.widnyana.web.id/invoice"
+      creator={`${SITE_URL}/invoice`}
       producer="@react-pdf/renderer"
     >
       <Page size="A4" style={s.page}>
@@ -67,13 +68,14 @@ const ApexTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         </View>
 
         {/* Page number footer */}
-        <Text
-          style={s.footer}
-          render={({ pageNumber, totalPages }) =>
-            `Page ${pageNumber} of ${totalPages}`
-          }
-          fixed
-        />
+        <View style={s.footer} fixed>
+          <Text
+            render={({ pageNumber, totalPages }) =>
+              `Page ${pageNumber} of ${totalPages}`
+            }
+          />
+          <Text>{`generated with ${SITE_URL.replace(/^https?:\/\//, "")}`}</Text>
+        </View>
       </Page>
     </Document>
   );
