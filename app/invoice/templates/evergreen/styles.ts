@@ -40,6 +40,8 @@ export const evergreenTemplateStyles = StyleSheet.create({
     bottom: 28,
     left: 48,
     right: 48,
+    flexDirection: "row",
+    justifyContent: "space-between",
     fontSize: 8,
     color: "#52645E",
   },
