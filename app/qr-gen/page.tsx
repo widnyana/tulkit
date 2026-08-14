@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useReducer, useRef, useId, useEffect } from "react";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 import { SITE_URL } from "@/lib/site";
 import { QRCodeSVG } from "./components/QRCodeSVG";
@@ -186,7 +186,6 @@ export default function QRGeneratorPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <Toaster position="top-right" />
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
