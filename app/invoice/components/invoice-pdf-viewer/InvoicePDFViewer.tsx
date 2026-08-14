@@ -6,6 +6,7 @@ import type React from "react";
 import { useMemo } from "react";
 import { ApexTemplate } from "../../templates/apex/ApexTemplate";
 import { DefaultTemplate } from "../../templates/default/DefaultTemplate";
+import { EvergreenTemplate } from "../../templates/evergreen/EvergreenTemplate";
 import { GraniteTemplate } from "../../templates/granite-ledger/GraniteTemplate";
 import { StripeTemplate } from "../../templates/stripe/StripeTemplate";
 
@@ -62,6 +63,8 @@ const InvoicePDFViewer: React.FC<InvoicePDFViewerProps> = ({ invoiceData }) => {
         <GraniteTemplate invoiceData={invoiceData} />
       ) : invoiceData.templateKey === "apex" ? (
         <ApexTemplate invoiceData={invoiceData} />
+      ) : invoiceData.templateKey === "evergreen" ? (
+        <EvergreenTemplate invoiceData={invoiceData} />
       ) : (
         <DefaultTemplate invoiceData={invoiceData} />
       )}

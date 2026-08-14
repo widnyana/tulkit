@@ -216,6 +216,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     <option value="apex">Apex</option>
                     <option value="granite">Granite Ledger</option>
                     <option value="stripe">Stripe</option>
+                    <option value="evergreen">Evergreen</option>
                   </select>
                 </div>
               )}

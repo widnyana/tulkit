@@ -28,7 +28,12 @@ export interface PaymentInformation {
   paymentQRCode?: string; // base64 image or URL
 }
 
-export type TemplateKey = "default" | "stripe" | "apex" | "granite"; // Extend as needed for more templates
+export type TemplateKey =
+  | "default"
+  | "stripe"
+  | "apex"
+  | "granite"
+  | "evergreen"; // Extend as needed for more templates
 
 export interface InvoiceData {
   sender: InvoiceSender;
