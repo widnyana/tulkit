@@ -56,7 +56,9 @@ const DefaultTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
               `Page ${pageNumber} of ${totalPages}`
             }
           />
-          <Text>{`generated with ${SITE_URL.replace(/^https?:\/\//, "")}`}</Text>
+          {invoiceData.showBranding !== false && (
+            <Text>{`generated with ${SITE_URL.replace(/^https?:\/\//, "")}`}</Text>
+          )}
         </View>
       </Page>
     </Document>
