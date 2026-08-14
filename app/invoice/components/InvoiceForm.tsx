@@ -1,5 +1,6 @@
 "use client";
 
+import { sampleInvoiceData } from "@/lib/invoice/sample-data";
 import { saveInvoice } from "@/lib/invoice/storage";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { invoiceDataSchema } from "@/lib/invoice/validation";
@@ -165,8 +166,31 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
     remove(index);
   };
 
+  // Demo: populate the form with a complete sample so the live preview renders.
+  // Preserves the user's selected template so they can compare each template.
+  // The existing debounced `watch` subscription then validates, saves, and
+  // propagates — no extra save wiring. logoPreview is local state init from
+  // mount, so sync it to the sample's logo (or null) so the thumbnail matches
+  // the reset form state.
+  const handleLoadSample = () => {
+    const templateKey = form.getValues("templateKey") ?? "default";
+    form.reset({ ...sampleInvoiceData, templateKey });
+    setLogoPreview(sampleInvoiceData.logo ?? null);
+    toast.success("Sample loaded — switch templates to compare");
+  };
+
   return (
     <form className="space-y-6 p-4 text-gray-900">
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={handleLoadSample}
+          className="px-3 py-1 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+        >
+          Load sample
+        </button>
+      </div>
+
       {/* Template and Currency Settings */}
       <div className="border-b border-gray-200 pb-6">
         <h3 className="text-base font-semibold text-gray-900 mb-4">
