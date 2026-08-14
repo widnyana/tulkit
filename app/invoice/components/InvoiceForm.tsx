@@ -1,8 +1,9 @@
 "use client";
 
 import { formatNumber } from "@/lib/invoice/formatNumber";
+import { createDefaultInvoiceData } from "@/lib/invoice/defaults";
 import { sampleInvoiceData } from "@/lib/invoice/sample-data";
-import { saveInvoice } from "@/lib/invoice/storage";
+import { clearInvoice, saveInvoice } from "@/lib/invoice/storage";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { SITE_HOST } from "@/lib/site";
 import { invoiceDataSchema } from "@/lib/invoice/validation";
@@ -186,13 +187,42 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
     toast.success("Sample loaded — switch templates to compare");
   };
 
+  // Nuke all changes: clear persisted data, reset the form to a fresh default
+  // invoice (with current dates), and drop the local logo thumbnail. Guarded by
+  // a native confirm since this is destructive and cannot be undone.
+  const handleReset = () => {
+    if (
+      !window.confirm(
+        "Reset the invoice? This clears all fields and cannot be undone.",
+      )
+    ) {
+      return;
+    }
+    const fresh = createDefaultInvoiceData();
+    clearInvoice();
+    form.reset(fresh);
+    setLogoPreview(null);
+    // The debounced watch subscription only propagates schema-valid data, and a
+    // fresh invoice has empty (required) sender fields — so push it to the parent
+    // directly, otherwise the preview keeps showing the pre-reset invoice.
+    onDataChange(fresh);
+    toast.success("Invoice reset");
+  };
+
   return (
     <form className="space-y-6 p-4 text-gray-900">
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={handleReset}
+          className="px-4 py-1.5 text-sm font-medium border border-red-200 bg-red-50 text-red-700 rounded-lg transition-colors hover:bg-red-100"
+        >
+          Reset
+        </button>
         <button
           type="button"
           onClick={handleLoadSample}
-          className="px-3 py-1 text-sm border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+          className="px-4 py-1.5 text-sm font-medium border border-blue-200 bg-blue-50 text-blue-700 rounded-lg transition-colors hover:bg-blue-100"
         >
           Load sample
         </button>
