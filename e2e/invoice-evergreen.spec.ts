@@ -25,6 +25,19 @@ test.describe("Evergreen invoice template", () => {
       timeout: 30_000,
     });
 
+    // The sample ships a base64 logo — the PDF must embed it as an image
+    // XObject. Guards against the header silently dropping the logo.
+    const trigger = page.getByText("Download Invoice PDF");
+    await expect(trigger).toBeVisible({ timeout: 30_000 });
+    const downloadPromise = page.waitForEvent("download", { timeout: 60_000 });
+    await trigger.click();
+    const download = await downloadPromise;
+    const buffer = readFileSync(await download.path());
+    expect(
+      buffer.includes("/Subtype /Image") || buffer.includes("/Subtype/Image"),
+      "sample logo must be embedded in the PDF",
+    ).toBeTruthy();
+
     expect(offenses, `react-pdf string-child warnings:\n${offenses.join("\n")}`).toEqual([]);
     expect(pageErrors, `uncaught page errors:\n${pageErrors.join("\n")}`).toEqual([]);
   });
