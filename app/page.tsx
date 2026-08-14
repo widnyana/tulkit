@@ -16,7 +16,12 @@ import type { ReactNode } from "react";
 /** Presentational icons keyed by tool href. Kept out of the shared data module. */
 const toolIcons: Record<string, ReactNode> = {
   "/env-compare": (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -26,7 +31,12 @@ const toolIcons: Record<string, ReactNode> = {
     </svg>
   ),
   "/ip-planner": (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -36,7 +46,12 @@ const toolIcons: Record<string, ReactNode> = {
     </svg>
   ),
   "/ipcalc": (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -46,7 +61,12 @@ const toolIcons: Record<string, ReactNode> = {
     </svg>
   ),
   "/random-string": (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -56,7 +76,12 @@ const toolIcons: Record<string, ReactNode> = {
     </svg>
   ),
   "/invoice": (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -66,7 +91,12 @@ const toolIcons: Record<string, ReactNode> = {
     </svg>
   ),
   "/qr-gen": (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -76,7 +106,12 @@ const toolIcons: Record<string, ReactNode> = {
     </svg>
   ),
   "/json-schema": (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -86,7 +121,12 @@ const toolIcons: Record<string, ReactNode> = {
     </svg>
   ),
   "/base64": (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -105,7 +145,12 @@ const comingSoonCard = {
   href: undefined as string | undefined,
   disabled: true,
   icon: (
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -145,70 +190,82 @@ export default function Home() {
             tulkit
           </h1>
           <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
-because apparently, you *do* need another random tool on the internet. ¯\_(ツ)_/¯
+            because apparently, you *do* need another random tool on the
+            internet. ¯\_(ツ)_/¯
           </p>
         </div>
 
         {/* About tulkit */}
         <p className="sr-only">
-          tulkit is a collection of focused developer utilities that run entirely in your browser. No signups, no tracking, no "we reserve the right to use your data for training." Just tools that do one thing well and get out of your way. Whether you're comparing environment configs before a deploy, generating a clean invoice for freelance work, or sanity-checking an IP plan, each tool here is built to save you a few minutes of friction. Because apparently, you *do* need another random tool on the internet — might as well be one that doesn't phone home. Everything stays local: your files, your configs, your data. We just provide the interface.
+          tulkit is a collection of focused developer utilities that run
+          entirely in your browser. No signups, no tracking, no "we reserve the
+          right to use your data for training." Just tools that do one thing
+          well and get out of your way. Whether you're comparing environment
+          configs before a deploy, generating a clean invoice for freelance
+          work, or sanity-checking an IP plan, each tool here is built to save
+          you a few minutes of friction. Because apparently, you *do* need
+          another random tool on the internet — might as well be one that
+          doesn't phone home. Everything stays local: your files, your configs,
+          your data. We just provide the interface.
         </p>
 
         {/* Tools Grid */}
         <section>
           <h2 className="sr-only">Tools</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cards.map((tool, index) => {
-            const CardWrapper: React.ElementType = tool.disabled ? "div" : Link;
-            const wrapperProps = tool.disabled
-              ? {}
-              : { href: tool.href as string };
+            {cards.map((tool, index) => {
+              const CardWrapper: React.ElementType = tool.disabled
+                ? "div"
+                : Link;
+              const wrapperProps = tool.disabled
+                ? {}
+                : { href: tool.href as string };
 
-            return (
-              <CardWrapper key={tool.href || index} {...wrapperProps}>
-                <Card
-                  className={cn(
-                    "h-full transition-all duration-200 border-slate-200/60",
-                    tool.disabled
-                      ? "opacity-60 cursor-not-allowed"
-                      : "hover:shadow-lg hover:-translate-y-1 cursor-pointer group"
-                  )}
-                >
-                  <CardHeader className="space-y-4 pb-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div
-                        className={cn(
-                          "p-2.5 rounded-lg border border-slate-200/50",
-                          tool.disabled
-                            ? "bg-gray-100"
-                            : "bg-gradient-to-br from-slate-100 to-slate-50 group-hover:from-slate-200 group-hover:to-slate-100 transition-colors"
-                        )}
-                      >
-                        {tool.icon}
+              return (
+                <CardWrapper key={tool.href || index} {...wrapperProps}>
+                  <Card
+                    className={cn(
+                      "h-full transition-all duration-200 border-slate-200/60",
+                      tool.disabled
+                        ? "opacity-60 cursor-not-allowed"
+                        : "hover:shadow-lg hover:-translate-y-1 cursor-pointer group",
+                    )}
+                  >
+                    <CardHeader className="space-y-4 pb-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div
+                          className={cn(
+                            "p-2.5 rounded-lg border border-slate-200/50",
+                            tool.disabled
+                              ? "bg-gray-100"
+                              : "bg-gradient-to-br from-slate-100 to-slate-50 group-hover:from-slate-200 group-hover:to-slate-100 transition-colors",
+                          )}
+                        >
+                          {tool.icon}
+                        </div>
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            "text-xs font-medium",
+                            categoryColors[tool.category],
+                          )}
+                        >
+                          {tool.category}
+                        </Badge>
                       </div>
-                      <Badge
-                        variant="outline"
-                        className={cn(
-                          "text-xs font-medium",
-                          categoryColors[tool.category]
-                        )}
-                      >
-                        {tool.category}
-                      </Badge>
-                    </div>
-                    <CardTitle className="text-xl leading-tight">
-                      {tool.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0 pb-6">
-                    <CardDescription className="text-sm leading-relaxed">
-                      {tool.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
-              </CardWrapper>
-            );
-          })}
+                      <CardTitle className="text-xl leading-tight">
+                        {tool.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0 pb-6">
+                      <CardDescription className="text-sm leading-relaxed">
+                        {tool.description}
+                      </CardDescription>
+                    </CardContent>
+                  </Card>
+                </CardWrapper>
+              );
+            })}
           </div>
         </section>
       </main>
