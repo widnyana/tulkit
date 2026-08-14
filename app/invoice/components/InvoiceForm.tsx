@@ -1091,6 +1091,30 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           />
         </div>
       </div>
+
+      {/* Footer branding */}
+      <div>
+        <Controller
+          name="showBranding"
+          control={control}
+          render={({ field }) => (
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                checked={field.value !== false}
+                className="h-4 w-4 text-blue-600 rounded"
+                onChange={(e) => field.onChange(e.target.checked)}
+                onBlur={field.onBlur}
+                name={field.name}
+                ref={field.ref}
+              />
+              <label className="ml-2 text-sm font-medium text-gray-900 cursor-pointer">
+                Show "generated with tulkit.widnyana.web.id" in the footer
+              </label>
+            </div>
+          )}
+        />
+      </div>
     </form>
   );
 };

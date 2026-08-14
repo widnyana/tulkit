@@ -51,4 +51,5 @@ export interface InvoiceData {
   decimalSeparator?: string; // Default: ","
   thousandSeparator?: string; // Default: "."
   paymentInfo?: PaymentInformation;
+  showBranding?: boolean; // Footer "generated with <host>". Default: shown (only explicit false hides).
 }

@@ -72,4 +72,5 @@ export const invoiceDataSchema = z.object({
     .optional()
     .default("."),
   paymentInfo: paymentInformationSchema.optional(),
+  showBranding: z.boolean().optional().default(true),
 }) satisfies z.ZodSchema<InvoiceData>;

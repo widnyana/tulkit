@@ -50,6 +50,7 @@ const defaultInvoiceData: InvoiceData = {
     paymentMethods: [],
     paymentQRCode: "",
   },
+  showBranding: true,
 };
 
 const InvoicePage = () => {
