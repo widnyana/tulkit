@@ -44,4 +44,45 @@ test.describe("invoice generator", () => {
     expect(offenses, `banned console output:\n${offenses.join("\n")}`).toEqual([]);
     expect(pageErrors, `uncaught page errors:\n${pageErrors.join("\n")}`).toEqual([]);
   });
+
+  test.describe("Load sample", () => {
+    test("populates the form and renders the live preview", async ({ page }) => {
+      await page.goto("/invoice");
+
+      await page.getByRole("button", { name: "Load sample" }).click();
+
+      // Placeholder is replaced by the live PDF preview (PDFViewer iframe).
+      await expect(page.locator('iframe[src^="blob:"]')).toBeVisible({
+        timeout: 30_000,
+      });
+    });
+
+    test("preserves the selected template", async ({ page }) => {
+      await page.goto("/invoice");
+      const templateSelect = page.locator("select").first();
+      await templateSelect.selectOption("granite");
+
+      await page.getByRole("button", { name: "Load sample" }).click();
+
+      await expect(templateSelect).toHaveValue("granite");
+      await expect(page.locator('iframe[src^="blob:"]')).toBeVisible({
+        timeout: 30_000,
+      });
+    });
+
+    test("persists the sample across reload", async ({ page }) => {
+      await page.goto("/invoice");
+      await page.getByRole("button", { name: "Load sample" }).click();
+      await expect(page.locator('iframe[src^="blob:"]')).toBeVisible({
+        timeout: 30_000,
+      });
+
+      await page.reload();
+
+      // After reload the sample is restored from localStorage.
+      await expect(page.getByPlaceholder("Your company name")).toHaveValue(
+        "Northwind Creative Studio",
+      );
+    });
+  });
 });

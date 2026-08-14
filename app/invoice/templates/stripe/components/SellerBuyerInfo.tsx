@@ -40,7 +40,7 @@ export const StripeTemplateSellerBuyerInfo = ({
       </View>
 
       {/* separator */}
-      <View style={{ width: "10%" }}> &nbsp;</View>
+      <View style={{ width: "10%" }} />
 
       {/* From section */}
       <View style={{ width: "45%", alignItems: "flex-end" }}>
