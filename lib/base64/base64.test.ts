@@ -22,7 +22,11 @@ describe("base64 text", () => {
 
   it("wraps to fixed-width rows, last row may be shorter", () => {
     const text = "the quick brown fox jumps over the lazy dog";
-    const wrapped = encodeBase64(text, { singleLine: false, lineWidth: 4, urlSafe: false });
+    const wrapped = encodeBase64(text, {
+      singleLine: false,
+      lineWidth: 4,
+      urlSafe: false,
+    });
     const rows = wrapped.split("\n");
     for (const row of rows.slice(0, -1)) assert.equal(row.length, 4);
     assert.ok(rows[rows.length - 1].length <= 4);
@@ -43,13 +47,23 @@ describe("base64 url-safe", () => {
   const chars = new Uint8Array([0xfb, 0xff, 0xbf]); // standard base64 "+/+/"
 
   it("encodes with -_ and no padding when urlSafe", () => {
-    assert.equal(bytesToBase64(chars, { singleLine: true, lineWidth: 0, urlSafe: true }), "-_-_");
-    assert.equal(bytesToBase64(chars, { singleLine: true, lineWidth: 0, urlSafe: false }), "+/+/");
+    assert.equal(
+      bytesToBase64(chars, { singleLine: true, lineWidth: 0, urlSafe: true }),
+      "-_-_",
+    );
+    assert.equal(
+      bytesToBase64(chars, { singleLine: true, lineWidth: 0, urlSafe: false }),
+      "+/+/",
+    );
   });
 
   it("decodes url-safe input back to the original text", () => {
     const text = "subjects?_&data";
-    const urlSafe = encodeBase64(text, { singleLine: true, lineWidth: 0, urlSafe: true });
+    const urlSafe = encodeBase64(text, {
+      singleLine: true,
+      lineWidth: 0,
+      urlSafe: true,
+    });
     assert.equal(decodeBase64(urlSafe), text);
   });
 
