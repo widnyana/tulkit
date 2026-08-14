@@ -71,6 +71,14 @@ export const tools: Tool[] = [
     category: "Development",
     keywords: ["JSON Schema", "schema visualizer", "JSON tree", "schema explorer"],
   },
+  {
+    href: "/base64",
+    title: "Base64 Encoder / Decoder",
+    description:
+      "Encode text to Base64 or decode it back, with fixed-width or single-line output",
+    category: "Data",
+    keywords: ["base64 encode", "base64 decode", "base64 converter", "text to base64"],
+  },
 ];
 
 export function getTool(href: string): Tool | undefined {
