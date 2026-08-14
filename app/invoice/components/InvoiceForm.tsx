@@ -4,7 +4,7 @@ import { formatNumber } from "@/lib/invoice/formatNumber";
 import { sampleInvoiceData } from "@/lib/invoice/sample-data";
 import { saveInvoice } from "@/lib/invoice/storage";
 import type { InvoiceData } from "@/lib/invoice/types";
-import { SITE_URL } from "@/lib/site";
+import { SITE_HOST } from "@/lib/site";
 import { invoiceDataSchema } from "@/lib/invoice/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2, Upload, X } from "lucide-react";
@@ -1110,7 +1110,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 ref={field.ref}
               />
               <label className="ml-2 text-sm font-medium text-gray-900 cursor-pointer">
-                {`Show "generated with ${SITE_URL.replace(/^https?:\/\//, "")}" in the footer`}
+                {`Show "generated with ${SITE_HOST}" in the footer`}
               </label>
             </div>
           )}

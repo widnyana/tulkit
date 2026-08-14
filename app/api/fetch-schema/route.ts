@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -6,7 +7,7 @@ const getAllowedOrigin = (): string => {
   // In production, restrict to specific origins
   if (process.env.NODE_ENV === "production") {
     const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
-      "https://tulkit.widnyana.web.id",
+      SITE_URL,
     ];
     return allowedOrigins[0]; // Return the first allowed origin
   }
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
     const MAX_RESPONSE_SIZE = 10 * 1024 * 1024; // 10MB
     const response = await fetch(schemaUrl, {
       headers: {
-        "User-Agent": "Tulkit/1.0 https://tulkit.widnyana.web.id",
+        "User-Agent": `Tulkit/1.0 ${SITE_URL}`,
         Accept: "application/json, application/schema+json, */*",
       },
       // Set a timeout to prevent hanging

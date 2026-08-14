@@ -1,4 +1,5 @@
 import { Separator } from "@/components/ui/separator";
+import { GITHUB_URL } from "@/lib/site";
 
 export function Footer() {
   return (
@@ -7,7 +8,7 @@ export function Footer() {
         {/* Copyright Section */}
         <p className="text-xs text-gray-400">
           <a
-            href="https://github.com/widnyana/tulkit"
+            href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold hover:text-gray-500 transition-colors"
