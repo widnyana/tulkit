@@ -4,18 +4,19 @@ import Link from "next/link";
 import { useReducer, useRef, useId, useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SITE_URL } from "@/lib/site";
 import { QRCodeSVG } from "./components/QRCodeSVG";
 import { StyleControls } from "./components/StyleControls";
 import type { ShapeOptions } from "./types";
 import type { GradientType } from "./gradient-utils";
-import { downloadSVGAsPNG } from "./utils";
+import { downloadSVGAsPNG, QR_WATERMARK } from "./utils";
 
 // Quick start templates
 const templates = [
   {
     icon: "🌐",
     label: "My Website",
-    example: "https://tulkit.widnyana.web.id/",
+    example: `${SITE_URL}/`,
   },
   {
     icon: "☎️",
@@ -143,7 +144,6 @@ export default function QRGeneratorPage() {
       try {
         await downloadSVGAsPNG(svgRef.current, state.filename || "qr-code", {
           includeWatermark: state.includeWatermark,
-          watermarkText: "Generated using https://tulkit.widnyana.web.id",
         });
         toast.success("QR code downloaded successfully!");
       } catch (_error) {
@@ -264,7 +264,7 @@ export default function QRGeneratorPage() {
                 onChange={(e) =>
                   dispatch({ type: "SET_TEXT", payload: e.target.value })
                 }
-                placeholder="Examples:&#10;• https://tulkit.widnyana.web.id/&#10;• tel:+1-555-0123&#10;• mailto:hello@example.com&#10;• WiFi password, menu, contact info, or any text!"
+                placeholder={`Examples:\n• ${SITE_URL}/\n• tel:+1-555-0123\n• mailto:hello@example.com\n• WiFi password, menu, contact info, or any text!`}
                 className="w-full h-32 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <div className="flex items-center justify-between mt-2">
@@ -521,8 +521,7 @@ export default function QRGeneratorPage() {
                           </span>
                         </label>
                         <p className="text-xs text-gray-500 mt-1 ml-6">
-                          Adds &quot;Generated using
-                          https://tulkit.widnyana.web.id&quot; below the QR code
+                          Adds &quot;{QR_WATERMARK}&quot; below the QR code
                         </p>
                       </div>
                     </div>
@@ -562,7 +561,6 @@ export default function QRGeneratorPage() {
                       logoImage={state.logoImage}
                       logoSize={state.logoSize}
                       includeWatermark={state.includeWatermark}
-                      watermarkText="Generated using https://tulkit.widnyana.web.id"
                     />
                   </div>
 
@@ -609,8 +607,7 @@ export default function QRGeneratorPage() {
 
                   {state.includeWatermark && (
                     <p className="text-xs text-gray-500 mt-4 text-center">
-                      Includes small text: &quot;Generated using
-                      https://tulkit.widnyana.web.id&quot;
+                      Includes small text: &quot;{QR_WATERMARK}&quot;
                     </p>
                   )}
                 </div>

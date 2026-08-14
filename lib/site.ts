@@ -6,6 +6,9 @@
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ?? "https://tulkit.widnyana.web.id";
 
+/** Bare host without scheme, e.g. "tulkit.widnyana.web.id". */
+export const SITE_HOST = SITE_URL.replace(/^https?:\/\//, "");
+
 export const SITE_NAME = "tulkit";
 
 export const SITE_TITLE = "tulkit — Utility Toolkit";
@@ -16,3 +19,7 @@ export const SITE_DESCRIPTION =
 export const SITE_AUTHOR = "Widnyana";
 
 export const THEME_COLOR = "#0f172a";
+
+export const GITHUB_URL = "https://github.com/widnyana/tulkit";
+
+export const TWITTER_URL = "https://x.com/widnyana_";

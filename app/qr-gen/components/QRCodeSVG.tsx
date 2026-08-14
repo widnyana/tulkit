@@ -11,6 +11,7 @@ import { transformMatrixIntoPath } from "../svg-renderer";
 import type { ShapeOptions } from "../types";
 import { generateGradientDef, getGradientUrl } from "../gradient-utils";
 import type { GradientType } from "../gradient-utils";
+import { QR_WATERMARK } from "../utils";
 
 interface QRCodeSVGProps {
   value: string;
@@ -38,7 +39,7 @@ function QRCodeSVG({
   logoSize = 0,
   className,
   includeWatermark = false,
-  watermarkText = "Generated using https://tulkit.widnyana.web.id",
+  watermarkText = QR_WATERMARK,
   ref,
 }: QRCodeSVGProps) {
   const gradientId = useId();

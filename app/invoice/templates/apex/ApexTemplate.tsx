@@ -1,5 +1,5 @@
 import type { InvoiceData } from "@/lib/invoice/types";
-import { SITE_URL } from "@/lib/site";
+import { SITE_HOST, SITE_URL } from "@/lib/site";
 import { Document, Page, Text, View } from "@react-pdf/renderer";
 import type React from "react";
 import { ApexTemplateBilledTo } from "./components/BilledTo";
@@ -75,7 +75,7 @@ const ApexTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
             }
           />
           {invoiceData.showBranding !== false && (
-            <Text>{`generated with ${SITE_URL.replace(/^https?:\/\//, "")}`}</Text>
+            <Text>{`generated with ${SITE_HOST}`}</Text>
           )}
         </View>
       </Page>

@@ -1,5 +1,9 @@
 import { qrcodegen } from "@/lib/qrcodegen";
+import { SITE_URL } from "@/lib/site";
 import type { QROptions } from "./types";
+
+/** Watermark stamped below a QR code. */
+export const QR_WATERMARK = `Generated using ${SITE_URL}`;
 
 /**
  * Generate QR code from text with specified error correction level
@@ -65,11 +69,7 @@ export function renderQRToCanvas(
     ctx.fillStyle = "#666666";
     ctx.font = "12px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(
-      "Generated using https://tulkit.widnyana.web.id",
-      canvas.width / 2,
-      watermarkY,
-    );
+    ctx.fillText(QR_WATERMARK, canvas.width / 2, watermarkY);
   }
 }
 
@@ -159,8 +159,7 @@ export async function downloadSVGAsPNG(
           ctx.font = "12px sans-serif";
           ctx.textAlign = "center";
           ctx.fillText(
-            options.watermarkText ||
-              "Generated using https://tulkit.widnyana.web.id",
+            options.watermarkText || QR_WATERMARK,
             canvas.width / 2,
             watermarkY,
           );
