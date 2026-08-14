@@ -4,7 +4,6 @@ import { createDefaultInvoiceData } from "@/lib/invoice/defaults";
 import { loadInvoice } from "@/lib/invoice/storage";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { useEffect, useState } from "react";
-import { Toaster } from "sonner";
 import InvoiceDownloadButton from "./components/InvoiceDownloadButton";
 import InvoiceForm from "./components/InvoiceForm";
 import InvoicePDFPreview from "./components/InvoicePDFPreview";
@@ -43,7 +42,6 @@ const InvoicePage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <Toaster position="top-right" />
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
