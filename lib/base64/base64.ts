@@ -53,8 +53,10 @@ const RAW: EncodeOptions = { singleLine: true, lineWidth: 0, urlSafe: false };
 
 function hexToBytes(hex: string): Uint8Array {
   const clean = hex.replace(/\s+/g, "").replace(/^0x/i, "");
-  if (clean.length % 2 !== 0) throw new Error("Hex must have an even number of digits");
-  if (!/^[0-9a-fA-F]*$/.test(clean)) throw new Error("Hex contains non-hex characters");
+  if (clean.length % 2 !== 0)
+    throw new Error("Hex must have an even number of digits");
+  if (!/^[0-9a-fA-F]*$/.test(clean))
+    throw new Error("Hex contains non-hex characters");
   const bytes = new Uint8Array(clean.length / 2);
   for (let i = 0; i < bytes.length; i++) {
     bytes[i] = Number.parseInt(clean.slice(i * 2, i * 2 + 2), 16);
