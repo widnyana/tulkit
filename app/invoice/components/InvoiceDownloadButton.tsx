@@ -10,6 +10,7 @@ import { DefaultTemplate } from "../templates/default/DefaultTemplate";
 import { StripeTemplate } from "../templates/stripe/StripeTemplate";
 import { GraniteTemplate } from "../templates/granite-ledger/GraniteTemplate";
 import { ApexTemplate } from "../templates/apex/ApexTemplate";
+import { EvergreenTemplate } from "../templates/evergreen/EvergreenTemplate";
 import { Button } from "./ui/button";
 
 interface InvoiceDownloadButtonProps {
@@ -89,6 +90,8 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
             <GraniteTemplate invoiceData={invoiceData} />
           ) : invoiceData.templateKey === "apex" ? (
             <ApexTemplate invoiceData={invoiceData} />
+          ) : invoiceData.templateKey === "evergreen" ? (
+            <EvergreenTemplate invoiceData={invoiceData} />
           ) : (
             <DefaultTemplate invoiceData={invoiceData} />
           )

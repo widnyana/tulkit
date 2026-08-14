@@ -53,7 +53,7 @@ export const invoiceDataSchema = z.object({
     .min(0, "Tax rate must be non-negative")
     .max(100, "Tax rate cannot exceed 100%"),
   templateKey: z
-    .enum(["default", "stripe", "apex", "granite"])
+    .enum(["default", "stripe", "apex", "granite", "evergreen"])
     .default("default"),
   logo: z.string().optional(),
   currency: z
