@@ -9,3 +9,4 @@ allowBuilds:
 # @parcel/watcher > micromatch chain. pnpm 11 reads overrides here, not package.json.
 overrides:
   picomatch: ^2.3.2
+  nanoid: ^3.3.18
