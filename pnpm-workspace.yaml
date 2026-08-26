@@ -3,6 +3,7 @@ minimumReleaseAge: 10080
 allowBuilds:
   "@parcel/watcher": true
   "@swc/core": true
+  msgpackr-extract: set this to true or false
   sharp: true
 
 # Force patched picomatch (ReDoS GHSA-c2c7-rcm5-vvqj) under next-intl's

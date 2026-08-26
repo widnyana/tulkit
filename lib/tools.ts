@@ -21,7 +21,12 @@ export const tools: Tool[] = [
     description:
       "Compare environment files across staging and production to identify differences and missing keys",
     category: "Development",
-    keywords: ["env diff", "dotenv compare", "environment variables", "config diff"],
+    keywords: [
+      "env diff",
+      "dotenv compare",
+      "environment variables",
+      "config diff",
+    ],
   },
   {
     href: "/ip-planner",
@@ -37,7 +42,13 @@ export const tools: Tool[] = [
     description:
       "Comprehensive IP calculator with subnet, supernet operations and CIDR deaggregation",
     category: "Network",
-    keywords: ["IP calculator", "subnet calculator", "CIDR", "supernet", "deaggregation"],
+    keywords: [
+      "IP calculator",
+      "subnet calculator",
+      "CIDR",
+      "supernet",
+      "deaggregation",
+    ],
   },
   {
     href: "/random-string",
@@ -53,7 +64,12 @@ export const tools: Tool[] = [
     description:
       "Create professional invoices with live PDF preview and multiple template support",
     category: "Productivity",
-    keywords: ["invoice generator", "PDF invoice", "billing", "invoice template"],
+    keywords: [
+      "invoice generator",
+      "PDF invoice",
+      "billing",
+      "invoice template",
+    ],
   },
   {
     href: "/qr-gen",
@@ -69,7 +85,26 @@ export const tools: Tool[] = [
     description:
       "Visualize and explore JSON Schema structures with interactive tree view",
     category: "Development",
-    keywords: ["JSON Schema", "schema visualizer", "JSON tree", "schema explorer"],
+    keywords: [
+      "JSON Schema",
+      "schema visualizer",
+      "JSON tree",
+      "schema explorer",
+    ],
+  },
+  {
+    href: "/cron",
+    title: "Cron Expression Generator",
+    description:
+      "Build cron schedules with live plain-English preview and output ready for crontab -e or /etc/cron.d files",
+    category: "Development",
+    keywords: [
+      "cron generator",
+      "crontab",
+      "cron.d",
+      "cron expression",
+      "scheduler",
+    ],
   },
   {
     href: "/base64",
@@ -77,7 +112,12 @@ export const tools: Tool[] = [
     description:
       "Encode text to Base64 or decode it back, with fixed-width or single-line output",
     category: "Data",
-    keywords: ["base64 encode", "base64 decode", "base64 converter", "text to base64"],
+    keywords: [
+      "base64 encode",
+      "base64 decode",
+      "base64 converter",
+      "text to base64",
+    ],
   },
 ];
 
