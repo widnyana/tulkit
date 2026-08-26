@@ -19,7 +19,7 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
   if (!discriminator) {
     return (
       <span
-        className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded border border-gray-300 italic"
+        className="text-xs px-2 py-1 bg-muted text-muted-foreground rounded border border-border italic"
         title="No unique discriminator field detected - branches may overlap"
       >
         No discriminator
@@ -32,7 +32,7 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
 
   return (
     <div className="relative inline-flex items-center gap-2">
-      <span className="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded border border-indigo-200 font-mono">
+      <span className="text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded border border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-900 font-mono">
         discriminator: {pathStr}
       </span>
 
@@ -45,16 +45,16 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
       </button>
 
       {showMapping && (
-        <div className="absolute mt-2 z-10 bg-white border border-gray-300 rounded shadow-lg p-3 max-h-48 overflow-auto">
-          <div className="text-xs font-semibold text-gray-700 mb-2">
+        <div className="absolute mt-2 z-10 bg-card border border-border rounded shadow-lg p-3 max-h-48 overflow-auto">
+          <div className="text-xs font-semibold text-foreground mb-2">
             Value → Branch mapping:
           </div>
           <table className="text-xs font-mono">
             <tbody>
               {mappingEntries.map(([value, branchIndex]) => (
                 <tr key={value}>
-                  <td className="pr-3 text-gray-600 break-all">{value}</td>
-                  <td className="text-gray-400">→</td>
+                  <td className="pr-3 text-muted-foreground break-all">{value}</td>
+                  <td className="text-muted-foreground">→</td>
                   <td className="pl-3 text-indigo-600">
                     branch [{branchIndex}]
                   </td>

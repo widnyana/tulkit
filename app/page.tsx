@@ -135,6 +135,21 @@ const toolIcons: Record<string, ReactNode> = {
       />
     </svg>
   ),
+  "/cron": (
+    <svg
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      className="w-6 h-6"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  ),
 };
 
 const comingSoonCard = {
@@ -171,25 +186,29 @@ const cards = [
 ];
 
 const categoryColors: Record<string, string> = {
-  Development: "bg-blue-100 text-blue-700 border-blue-200",
-  Network: "bg-purple-100 text-purple-700 border-purple-200",
-  Data: "bg-green-100 text-green-700 border-green-200",
-  Productivity: "bg-orange-100 text-orange-700 border-orange-200",
-  "Coming Soon": "bg-gray-100 text-gray-500 border-gray-200",
+  Development:
+    "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900",
+  Network:
+    "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-900",
+  Data: "bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-900",
+  Productivity:
+    "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-900",
+  "Coming Soon":
+    "bg-gray-100 text-gray-500 border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-800",
 };
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <SiteJsonLd />
       {/* Main Content */}
       <main className="relative max-w-7xl mx-auto px-6 sm:px-8 py-16 sm:py-24">
         {/* Header */}
         <div className="mb-16 text-center space-y-4">
-          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-600 bg-clip-text text-transparent">
+          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-600 bg-clip-text text-transparent dark:from-slate-100 dark:via-slate-200 dark:to-slate-400">
             tulkit
           </h1>
-          <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             because apparently, you *do* need another random tool on the
             internet. ¯\_(ツ)_/¯
           </p>
@@ -225,7 +244,7 @@ export default function Home() {
                 <CardWrapper key={tool.href || index} {...wrapperProps}>
                   <Card
                     className={cn(
-                      "h-full transition-all duration-200 border-slate-200/60",
+                      "h-full transition-all duration-200 border-slate-200/60 dark:border-slate-800",
                       tool.disabled
                         ? "opacity-60 cursor-not-allowed"
                         : "hover:shadow-lg hover:-translate-y-1 cursor-pointer group",
@@ -235,10 +254,10 @@ export default function Home() {
                       <div className="flex items-start justify-between gap-3">
                         <div
                           className={cn(
-                            "p-2.5 rounded-lg border border-slate-200/50",
+                            "p-2.5 rounded-lg border border-slate-200/50 dark:border-slate-800/50",
                             tool.disabled
-                              ? "bg-gray-100"
-                              : "bg-gradient-to-br from-slate-100 to-slate-50 group-hover:from-slate-200 group-hover:to-slate-100 transition-colors",
+                              ? "bg-gray-100 dark:bg-gray-900"
+                              : "bg-gradient-to-br from-slate-100 to-slate-50 group-hover:from-slate-200 group-hover:to-slate-100 transition-colors dark:from-slate-900 dark:to-slate-950 dark:group-hover:from-slate-800 dark:group-hover:to-slate-900",
                           )}
                         >
                           {tool.icon}

@@ -80,7 +80,7 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
   }
 
   return (
-    <div className="p-4 border-t bg-gray-50">
+    <div className="p-4 border-t bg-muted">
       <PDFDownloadLink
         key={dataKey}
         document={

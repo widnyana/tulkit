@@ -20,11 +20,11 @@ export default function IPPlannerPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <svg
             className="w-5 h-5 mr-2"
@@ -43,8 +43,8 @@ export default function IPPlannerPage() {
         </Link>
 
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">NetPlan</h1>
-          <p className="text-gray-600 mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-2">NetPlan</h1>
+          <p className="text-muted-foreground mb-4">
             Plan, validate, and prevent IP address collisions with comprehensive
             subnet tools.
           </p>
@@ -52,11 +52,11 @@ export default function IPPlannerPage() {
             Plan and visualize IP subnet allocations without fighting a calculator. Enter your network address and prefix length, then generate subnets with whatever sizes you need — /24 for offices, /29 for point-to-point links, /32 for loopbacks. The tool shows address ranges, usable hosts, and CIDR notations in a clean table. Useful for network documentation, lab setups, or that moment when you realize you've backed yourself into a corner with 10.0.0.0/8.
           </p>
 
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="text-sm font-semibold text-blue-900 mb-2">
+          <div className="mt-8 bg-blue-50 border border-blue-200 dark:bg-blue-950 dark:border-blue-900 rounded-lg p-4">
+            <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">
               💡 About IP Space Planning
             </h3>
-            <ul className="text-sm text-blue-800 space-y-1">
+            <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1">
               <li>
                 <strong>VLSM Splitter:</strong> Efficiently divide large
                 networks into smaller subnets
@@ -76,7 +76,7 @@ export default function IPPlannerPage() {
             </ul>
           </div>
         </header>
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-border">
           <nav className="flex flex-wrap gap-2" aria-label="Tabs">
             {tabs.map((tab) => (
               <button
@@ -87,8 +87,8 @@ export default function IPPlannerPage() {
                   flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-t-lg transition-colors
                   ${
                     activeTab === tab.id
-                      ? "bg-white text-purple-700 border-b-2 border-purple-700"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                      ? "bg-background text-purple-700 border-b-2 border-purple-700"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }
                 `}
               >

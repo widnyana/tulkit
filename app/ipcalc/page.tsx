@@ -23,12 +23,12 @@ function IPCalcContent() {
   const setActiveTab = (t: Tab) => setTab(t);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <Link
             href="/"
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-4"
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -45,21 +45,21 @@ function IPCalcContent() {
             </svg>
             Back to Home
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             IP Calculator
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Comprehensive IP address calculation and subnet planning tool
           </p>
           <p className="sr-only">
-            Punch in an IP address and CIDR prefix (or netmask) to get the full breakdown: network address, broadcast address, first and last usable hosts, total hosts, and binary representations. Includes a deaggregator for /32 aggregates — paste a list of addresses and it'll collapse them into the minimal CIDR prefix list. Useful for quick network math, ACL planning, or when you need to verify that <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">192.168.1.0/24</code> actually covers what you think it does. Runs entirely in your browser.
+            Punch in an IP address and CIDR prefix (or netmask) to get the full breakdown: network address, broadcast address, first and last usable hosts, total hosts, and binary representations. Includes a deaggregator for /32 aggregates — paste a list of addresses and it'll collapse them into the minimal CIDR prefix list. Useful for quick network math, ACL planning, or when you need to verify that <code className="bg-muted px-1.5 py-0.5 rounded text-sm">192.168.1.0/24</code> actually covers what you think it does. Runs entirely in your browser.
           </p>
-          <p className="text-xs text-gray-500 mt-4">
+          <p className="text-xs text-muted-foreground mt-4">
             Based on ipcalc by Krischan Jodies (http://jodies.de/ipcalc)
           </p>
         </div>
 
-        <div className="mb-6 border-b border-gray-200">
+        <div className="mb-6 border-b border-border">
           <nav className="flex space-x-8">
             <button
               type="button"
@@ -67,7 +67,7 @@ function IPCalcContent() {
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === "basic"
                   ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >
               Basic Calculator
@@ -78,7 +78,7 @@ function IPCalcContent() {
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === "subnet"
                   ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >
               Subnet / Supernet
@@ -89,7 +89,7 @@ function IPCalcContent() {
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === "deaggregator"
                   ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >
               Deaggregator
@@ -103,11 +103,11 @@ function IPCalcContent() {
           {activeTab === "deaggregator" && <Deaggregator />}
         </div>
 
-        <div className="mt-8 bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg text-gray-900 font-semibold mb-3">
+        <div className="mt-8 bg-card rounded-lg shadow p-6">
+          <h3 className="text-lg text-foreground font-semibold mb-3">
             About This Tool
           </h3>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-muted-foreground">
             <p>
               <strong>Basic Calculator:</strong> Calculate network information
               from an IP address and netmask. Shows network, broadcast, host
@@ -123,7 +123,7 @@ function IPCalcContent() {
               the optimal set of CIDR blocks. Useful for firewall rules and
               routing configurations.
             </p>
-            <p className="pt-3 border-t border-gray-200 mt-3">
+            <p className="pt-3 border-t border-border mt-3">
               <strong>Credits:</strong> This tool is based on the excellent{" "}
               <a
                 href="http://jodies.de/ipcalc"

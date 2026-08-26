@@ -176,12 +176,12 @@ function CronEditor() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+    <div className="min-h-screen bg-background p-4 sm:p-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-6">
           <Link
             href="/"
-            className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors text-sm"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors text-sm"
           >
             <svg
               className="w-4 h-4 mr-1.5"
@@ -198,8 +198,8 @@ function CronEditor() {
             </svg>
             Back to Home
           </Link>
-          <h1 className="text-xl font-bold text-gray-900 mb-1">
-            cron schedule editor
+          <h1 className="text-xl font-bold text-foreground mb-1">
+            Cron Expression Generator
           </h1>
           <p className="sr-only">
             Edit a cron expression and get an instant plain-English description
@@ -208,18 +208,18 @@ function CronEditor() {
             the required user column. Everything runs in your browser; nothing
             is sent to a server.
           </p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-muted-foreground text-sm">
             The quick and simple editor for cron schedule expressions — runs in
             your browser; nothing is sent to a server.
           </p>
         </header>
 
         <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-          <section className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 sm:p-6">
+          <section className="bg-card rounded-lg shadow-lg border border-border p-4 sm:p-6">
             <div className="flex items-center justify-between mb-2 gap-2">
               <label
                 htmlFor={exprId}
-                className="text-sm font-medium text-gray-700"
+                className="text-sm font-medium text-foreground"
               >
                 Cron schedule
               </label>
@@ -229,7 +229,7 @@ function CronEditor() {
                   onClick={() =>
                     copy(parsed.shortcut ?? normalized, "Expression")
                   }
-                  className="text-xs font-medium text-gray-500 hover:text-blue-700 transition-colors"
+                  className="text-xs font-medium text-muted-foreground hover:text-blue-700 transition-colors"
                 >
                   copy
                 </button>
@@ -249,14 +249,16 @@ function CronEditor() {
               aria-invalid={parsed.error ? true : undefined}
               data-testid="cron-expression"
               className={`w-full px-4 py-3 font-mono text-xl rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                parsed.error ? "border-red-300 bg-red-50/30" : "border-gray-300"
+                parsed.error
+                  ? "border-red-300 bg-red-50/30 dark:border-red-800 dark:bg-red-950/30"
+                  : "border-input"
               }`}
             />
 
             {parsed.error && (
               <p
                 role="alert"
-                className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"
+                className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 dark:bg-red-950 dark:border-red-900 dark:text-red-400"
               >
                 {parsed.error}
               </p>

@@ -53,11 +53,11 @@ export default function Deaggregator() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+      <div className="bg-card rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
           Deaggregator (IP Range to CIDR)
         </h2>
-        <p className="text-gray-600 text-sm mb-6">
+        <p className="text-muted-foreground text-sm mb-6">
           Convert an IP address range into optimal CIDR blocks
         </p>
 
@@ -65,7 +65,7 @@ export default function Deaggregator() {
           <div>
             <label
               htmlFor={startIPId}
-              className="block text-sm font-medium text-gray-900 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Start IP Address
             </label>
@@ -76,14 +76,14 @@ export default function Deaggregator() {
               onChange={(e) => setStartIP(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., 192.168.1.10"
-              className="w-full text-blue-900 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
             <label
               htmlFor={endIPId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               End IP Address
             </label>
@@ -94,7 +94,7 @@ export default function Deaggregator() {
               onChange={(e) => setEndIP(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., 192.168.1.100"
-              className="w-full px-4 text-blue-900 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 text-foreground py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -108,46 +108,46 @@ export default function Deaggregator() {
         </button>
 
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-700 text-sm">{error}</p>
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-950 dark:border-red-900">
+            <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
           </div>
         )}
       </div>
 
       {result && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">CIDR Blocks</h3>
             <button
               type="button"
               onClick={handleCopyAll}
-              className="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-sm bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
             >
               Copy All
             </button>
           </div>
 
-          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-950 dark:border-blue-900">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div>
-                <span className="font-medium text-blue-800">
+                <span className="font-medium text-blue-800 dark:text-blue-300">
                   Total IP Addresses:
                 </span>
-                <span className="ml-2 text-blue-900 font-mono">
+                <span className="ml-2 text-blue-900 font-mono dark:text-blue-300">
                   {result.totalIPs.toLocaleString()}
                 </span>
               </div>
               <div>
-                <span className="font-medium text-blue-800">
+                <span className="font-medium text-blue-800 dark:text-blue-300">
                   Number of Blocks:
                 </span>
-                <span className="ml-2 text-blue-900 font-mono">
+                <span className="ml-2 text-blue-900 font-mono dark:text-blue-300">
                   {result.blockCount}
                 </span>
               </div>
               <div>
-                <span className="font-medium text-blue-800">Range:</span>
-                <span className="ml-2 text-blue-900 font-mono">
+                <span className="font-medium text-blue-800 dark:text-blue-300">Range:</span>
+                <span className="ml-2 text-blue-900 font-mono dark:text-blue-300">
                   {startIP} - {endIP}
                 </span>
               </div>
@@ -158,20 +158,20 @@ export default function Deaggregator() {
             {result.cidrBlocks.map((block, index) => (
               <div
                 key={block}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                className="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted transition-colors"
               >
                 <div className="flex items-center space-x-3">
-                  <span className="text-sm text-gray-500 font-medium w-12">
+                  <span className="text-sm text-muted-foreground font-medium w-12">
                     #{index + 1}
                   </span>
-                  <span className="text-sm font-mono font-semibold text-gray-900">
+                  <span className="text-sm font-mono font-semibold text-foreground">
                     {block}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCopy(block)}
-                  className="px-3 py-1 text-xs bg-white text-gray-600 rounded border border-gray-300 hover:bg-gray-50 transition-colors"
+                  className="px-3 py-1 text-xs bg-background text-muted-foreground rounded border border-border hover:bg-muted transition-colors"
                   title="Copy to clipboard"
                 >
                   Copy
@@ -180,8 +180,8 @@ export default function Deaggregator() {
             ))}
           </div>
 
-          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-800">
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-950 dark:border-green-900">
+            <p className="text-sm text-green-800 dark:text-green-300">
               <strong>Info:</strong> These CIDR blocks optimally cover the
               specified IP range. You can use them for routing, firewall rules,
               or network configuration.

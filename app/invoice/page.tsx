@@ -41,11 +41,11 @@ const InvoicePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <svg
             className="w-5 h-5 mr-2"
@@ -64,7 +64,7 @@ const InvoicePage = () => {
           </svg>
           Back to Home
         </Link>
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
           Invoice Generator
         </h1>
         <p className="sr-only">
@@ -72,14 +72,14 @@ const InvoicePage = () => {
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-150px)]">
-          <div className="bg-white rounded-lg shadow-md overflow-y-auto">
+          <div className="bg-card rounded-lg shadow-md overflow-y-auto">
             <InvoiceForm
               initialData={invoiceData}
               onDataChange={setInvoiceData}
             />
           </div>
 
-          <div className="flex flex-col bg-white rounded-lg shadow-md">
+          <div className="flex flex-col bg-card rounded-lg shadow-md">
             <div className="flex-grow h-[calc(100%-80px)]">
               <InvoicePDFPreview invoiceData={invoiceData} />
             </div>

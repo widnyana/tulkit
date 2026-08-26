@@ -97,11 +97,11 @@ export default function Base64Page() {
             : "Base64 to convert";
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <svg
             className="w-5 h-5 mr-2"
@@ -119,10 +119,10 @@ export default function Base64Page() {
           Back to Home
         </Link>
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Base64 Encoder / Decoder
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Encode, decode, inspect JWTs, and convert files — UTF-8 safe
           </p>
           <p className="sr-only">
@@ -137,7 +137,7 @@ export default function Base64Page() {
           </p>
         </header>
 
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
+        <div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
           <div className="flex flex-wrap gap-2 mb-6">
             {MODES.map((m) => (
               <button
@@ -147,7 +147,7 @@ export default function Base64Page() {
                 className={`px-6 py-2 font-medium rounded-lg transition-colors ${
                   mode === m.id
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}
               >
                 {m.label}
@@ -167,7 +167,7 @@ export default function Base64Page() {
                     className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                       hexDir === "toBase64"
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     }`}
                   >
                     Hex → Base64
@@ -178,7 +178,7 @@ export default function Base64Page() {
                     className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                       hexDir === "toHex"
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     }`}
                   >
                     Base64 → Hex
@@ -187,7 +187,7 @@ export default function Base64Page() {
               )}
 
               <div className="mb-6">
-                <div className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="block text-sm font-medium text-foreground mb-2">
                   {inputLabel}
                 </div>
                 <Textarea
@@ -198,10 +198,10 @@ export default function Base64Page() {
                       ? "Paste a JWT (header.payload.signature)…"
                       : "Type or paste here…"
                   }
-                  className="min-h-[140px] font-mono text-gray-900"
+                  className="min-h-[140px] font-mono text-foreground"
                 />
                 {(mode === "encode" || mode === "decode") && (
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {input.length} chars · {inputBytes} bytes
                   </p>
                 )}
@@ -214,7 +214,7 @@ export default function Base64Page() {
                       checked={singleLine}
                       onCheckedChange={(c) => setSingleLine(c === true)}
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-foreground">
                       Single line output
                     </span>
                   </label>
@@ -223,7 +223,7 @@ export default function Base64Page() {
                       checked={urlSafe}
                       onCheckedChange={(c) => setUrlSafe(c === true)}
                     />
-                    <span className="text-sm text-gray-700">
+                    <span className="text-sm text-foreground">
                       URL-safe (base64url)
                     </span>
                   </label>
@@ -231,7 +231,7 @@ export default function Base64Page() {
                     <div className="flex items-center gap-2">
                       <label
                         htmlFor={widthId}
-                        className="text-sm font-medium text-gray-700"
+                        className="text-sm font-medium text-foreground"
                       >
                         Line width
                       </label>
@@ -250,7 +250,7 @@ export default function Base64Page() {
                           if (Number.isNaN(val) || val < 4) setLineWidth(4);
                           else if (val > 120) setLineWidth(120);
                         }}
-                        className="w-24 px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-24 px-4 py-2 text-foreground border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       />
                     </div>
                   )}
@@ -262,9 +262,9 @@ export default function Base64Page() {
 
         {/* Output card — hidden for file mode (FilePanel renders its own) */}
         {mode !== "file" && mode !== "jwt" && (
-          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+          <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Output</h2>
+              <h2 className="text-lg font-semibold text-foreground">Output</h2>
               {text.output && (
                 <button
                   type="button"
@@ -283,10 +283,10 @@ export default function Base64Page() {
                   readOnly
                   value={text.output}
                   placeholder="Result appears here…"
-                  className="min-h-[140px] font-mono text-gray-900 bg-gray-50"
+                  className="min-h-[140px] font-mono text-foreground bg-muted"
                 />
                 {(mode === "encode" || mode === "decode") && text.output && (
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {text.output.length} chars
                   </p>
                 )}
@@ -296,7 +296,7 @@ export default function Base64Page() {
         )}
 
         {mode === "jwt" && (
-          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+          <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
             <p className="text-sm text-amber-600 mb-4">
               Signature is decoded for display only —{" "}
               <strong>not verified</strong>. Verifying a JWT requires the
@@ -317,16 +317,16 @@ export default function Base64Page() {
                   onCopy={copy}
                 />
                 <div>
-                  <div className="text-sm font-medium text-gray-700 mb-1">
+                  <div className="text-sm font-medium text-foreground mb-1">
                     Signature (raw)
                   </div>
-                  <code className="block break-all font-mono text-sm text-gray-900 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                  <code className="block break-all font-mono text-sm text-foreground bg-muted border border-border rounded-lg p-3">
                     {jwt.data.signature}
                   </code>
                 </div>
               </div>
             ) : (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Decoded header and payload appear here…
               </p>
             )}
@@ -349,7 +349,7 @@ function JwtField({
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <div className="text-sm font-medium text-gray-700">{label}</div>
+        <div className="text-sm font-medium text-foreground">{label}</div>
         <button
           type="button"
           onClick={() => onCopy(value)}
@@ -361,7 +361,7 @@ function JwtField({
       <Textarea
         readOnly
         value={value}
-        className="min-h-[100px] font-mono text-gray-900 bg-gray-50"
+        className="min-h-[100px] font-mono text-foreground bg-muted"
       />
     </div>
   );

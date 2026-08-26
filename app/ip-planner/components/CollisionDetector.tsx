@@ -26,11 +26,11 @@ export default function CollisionDetector() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+      <div className="bg-card rounded-lg shadow-md p-6 border border-border">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
           Subnet Collision Detector
         </h2>
-        <p className="text-sm text-gray-600 mb-6">
+        <p className="text-sm text-muted-foreground mb-6">
           Prevent network outages by checking if a new subnet overlaps with
           existing subnets
         </p>
@@ -39,7 +39,7 @@ export default function CollisionDetector() {
           <div>
             <label
               htmlFor={existingSubnetsId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Existing Subnets (one per line)
             </label>
@@ -49,9 +49,9 @@ export default function CollisionDetector() {
               onChange={(e) => setExistingSubnets(e.target.value)}
               rows={8}
               placeholder="e.g.,&#10;10.10.0.0/24&#10;10.10.1.0/24&#10;192.168.0.0/16"
-              className="w-full px-4 py-2 text-gray-900 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground font-mono text-sm border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               List all currently active subnets in CIDR notation
             </p>
           </div>
@@ -59,7 +59,7 @@ export default function CollisionDetector() {
           <div>
             <label
               htmlFor={newSubnetId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Proposed New Subnet
             </label>
@@ -69,7 +69,7 @@ export default function CollisionDetector() {
               value={newSubnet}
               onChange={(e) => setNewSubnet(e.target.value)}
               placeholder="e.g., 10.10.3.0/24"
-              className="w-full px-4 py-2 text-gray-900 font-mono border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground font-mono border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
 
@@ -87,14 +87,14 @@ export default function CollisionDetector() {
         <div
           className={`rounded-lg shadow-md p-6 border-2 ${
             result.hasCollision
-              ? "bg-red-50 border-red-300"
-              : "bg-green-50 border-green-300"
+              ? "bg-red-50 border-red-300 dark:bg-red-950 dark:border-red-800"
+              : "bg-green-50 border-green-300 dark:bg-green-950 dark:border-green-800"
           }`}
         >
           <div className="flex items-center gap-3 mb-4">
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                result.hasCollision ? "bg-red-200" : "bg-green-200"
+                result.hasCollision ? "bg-red-200 dark:bg-red-900" : "bg-green-200 dark:bg-green-900"
               }`}
             >
               <span className="text-3xl">
@@ -104,14 +104,14 @@ export default function CollisionDetector() {
             <div>
               <h3
                 className={`text-xl font-bold ${
-                  result.hasCollision ? "text-red-900" : "text-green-900"
+                  result.hasCollision ? "text-red-900 dark:text-red-300" : "text-green-900 dark:text-green-300"
                 }`}
               >
                 {result.hasCollision ? "COLLISION DETECTED" : "NO COLLISION"}
               </h3>
               <p
                 className={`text-sm ${
-                  result.hasCollision ? "text-red-700" : "text-green-700"
+                  result.hasCollision ? "text-red-700 dark:text-red-300" : "text-green-700 dark:text-green-300"
                 }`}
               >
                 {result.message}
@@ -121,24 +121,24 @@ export default function CollisionDetector() {
 
           {result.hasCollision && result.overlappingSubnets.length > 0 && (
             <div className="mt-4">
-              <p className="text-sm font-semibold text-red-900 mb-2">
+              <p className="text-sm font-semibold text-red-900 dark:text-red-300 mb-2">
                 Overlapping Subnets:
               </p>
               <div className="space-y-2">
                 {result.overlappingSubnets.map((subnet) => (
                   <div
                     key={subnet}
-                    className="bg-red-100 border border-red-300 rounded-lg p-3"
+                    className="bg-red-100 border border-red-300 dark:bg-red-950 dark:border-red-800 rounded-lg p-3"
                   >
-                    <p className="font-mono text-sm text-red-900">{subnet}</p>
+                    <p className="font-mono text-sm text-red-900 dark:text-red-300">{subnet}</p>
                   </div>
                 ))}
               </div>
-              <div className="mt-4 p-4 bg-red-100 border border-red-300 rounded-lg">
-                <p className="text-sm text-red-900 font-semibold mb-1">
+              <div className="mt-4 p-4 bg-red-100 border border-red-300 dark:bg-red-950 dark:border-red-800 rounded-lg">
+                <p className="text-sm text-red-900 dark:text-red-300 font-semibold mb-1">
                   ⚠️ Action Required
                 </p>
-                <p className="text-sm text-red-800">
+                <p className="text-sm text-red-800 dark:text-red-300">
                   The proposed subnet overlaps with{" "}
                   {result.overlappingSubnets.length} existing subnet(s). This
                   will cause IP address conflicts and network outages. Please
@@ -149,11 +149,11 @@ export default function CollisionDetector() {
           )}
 
           {!result.hasCollision && (
-            <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded-lg">
-              <p className="text-sm text-green-900 font-semibold mb-1">
+            <div className="mt-4 p-4 bg-green-100 border border-green-300 dark:bg-green-950 dark:border-green-800 rounded-lg">
+              <p className="text-sm text-green-900 dark:text-green-300 font-semibold mb-1">
                 ✅ Safe to Deploy
               </p>
-              <p className="text-sm text-green-800">
+              <p className="text-sm text-green-800 dark:text-green-300">
                 The proposed subnet does not overlap with any existing subnets.
                 It is safe to use this IP address range.
               </p>

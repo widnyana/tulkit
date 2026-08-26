@@ -26,34 +26,34 @@ export default function NextRuns({
   if (!showRuns) return null;
 
   return (
-    <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50/70 p-3 sm:p-4">
+    <div className="mt-4 rounded-lg border border-border bg-muted/70 p-3 sm:p-4">
       <p
         data-testid="cron-description"
-        className="text-2xl leading-snug text-gray-800 sm:text-3xl"
+        className="text-2xl leading-snug text-foreground sm:text-3xl"
       >
         {description ? `${description}.` : ""}
       </p>
 
       {isShortcut ? (
-        <p className="mt-2 text-sm text-gray-500">No fixed next run time.</p>
+        <p className="mt-2 text-sm text-muted-foreground">No fixed next run time.</p>
       ) : upcoming.length > 0 && now !== null ? (
         <div data-testid="cron-next-runs" className="mt-2 text-sm">
           {upcoming.map((d) => (
             <div key={d.toISOString()}>
-              <span className="font-medium text-gray-600">
+              <span className="font-medium text-muted-foreground">
                 {formatRelativeTime(d, now)}
               </span>
-              <span aria-hidden className="mx-1.5 text-gray-400">
+              <span aria-hidden className="mx-1.5 text-muted-foreground">
                 —
               </span>
-              <span className="font-mono text-gray-400">
+              <span className="font-mono text-muted-foreground">
                 {formatTimestamp(d)}
               </span>
             </div>
           ))}
         </div>
       ) : description ? (
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-muted-foreground">
           No upcoming runs found within the next 4 years
         </p>
       ) : null}

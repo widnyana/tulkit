@@ -15,7 +15,7 @@ interface CadenceCardsProps {
 export default function CadenceCards({ active, onSelect }: CadenceCardsProps) {
   return (
     <div className="mt-5">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         Quick start
       </p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -30,18 +30,18 @@ export default function CadenceCards({ active, onSelect }: CadenceCardsProps) {
               data-testid="cron-example"
               className={`rounded-lg border px-3 py-2 text-left transition-colors ${
                 isActive
-                  ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
-                  : "border-gray-300 bg-white hover:border-blue-400"
+                  ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500 dark:bg-blue-950"
+                  : "border-border bg-card hover:border-blue-400"
               }`}
             >
               <span
                 className={`block text-sm font-medium ${
-                  isActive ? "text-blue-700" : "text-gray-700"
+                  isActive ? "text-blue-700 dark:text-blue-300" : "text-foreground"
                 }`}
               >
                 {p.label}
               </span>
-              <span className="mt-0.5 block font-mono text-xs text-gray-400">
+              <span className="mt-0.5 block font-mono text-xs text-muted-foreground">
                 {p.value}
               </span>
             </button>

@@ -23,22 +23,22 @@ export function NotNodeView({ node, level }: NotNodeViewProps) {
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-gray-400 hover:text-gray-700 transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors"
           aria-expanded={isExpanded}
         >
           {isExpanded ? "▼" : "▶"}
         </button>
 
         <div className="flex items-center gap-2">
-          <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded border border-red-200">
+          <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded border border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-900">
             NOT
           </span>
-          <span className="text-sm text-gray-600">Must NOT match</span>
+          <span className="text-sm text-muted-foreground">Must NOT match</span>
         </div>
       </div>
 
       {node.description && (
-        <div className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-red-200 ml-6 mb-2">
+        <div className="text-sm text-foreground bg-muted px-3 py-2 rounded border-l-2 border-red-200 dark:border-red-800 ml-6 mb-2">
           {sanitizeText(node.description)}
         </div>
       )}

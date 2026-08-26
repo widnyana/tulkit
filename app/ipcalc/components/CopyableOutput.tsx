@@ -24,11 +24,11 @@ export default function CopyableOutput({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-card rounded-lg shadow p-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">Copyable Output</h3>
         <div className="flex items-center gap-3">
-          <div className="flex rounded-lg border border-gray-300 overflow-hidden text-sm">
+          <div className="flex rounded-lg border border-border overflow-hidden text-sm">
             {(["markdown", "plain"] as const).map((f) => (
               <button
                 key={f}
@@ -37,7 +37,7 @@ export default function CopyableOutput({
                 className={`px-3 py-1 transition-colors ${
                   format === f
                     ? "bg-blue-600 text-white"
-                    : "bg-white text-gray-600 hover:bg-gray-50"
+                    : "bg-background text-muted-foreground hover:bg-muted"
                 }`}
               >
                 {f === "markdown" ? "Markdown" : "Plain"}
@@ -47,7 +47,7 @@ export default function CopyableOutput({
           <button
             type="button"
             onClick={handleCopy}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 text-sm bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
           >
             {copied ? (
               <Check className="w-4 h-4" />
@@ -59,7 +59,7 @@ export default function CopyableOutput({
         </div>
       </div>
 
-      <pre className="text-sm font-mono text-gray-900 bg-gray-50 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto">
+      <pre className="text-sm font-mono text-foreground bg-muted rounded-lg p-4 whitespace-pre-wrap overflow-x-auto max-h-96 overflow-y-auto">
         {current}
       </pre>
     </div>
