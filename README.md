@@ -13,6 +13,10 @@ Solving your tiny, annoying problems so you can get back to the big ones.
 - IP Calculator
 - Random String Generator
 - Invoice Generator
+- QR Code Generator
+- JSON Schema Visualizer
+- Base64 Encoder / Decoder
+- Cron Expression Generator
 
 ## Development
 
