@@ -6,22 +6,22 @@ export function Footer() {
     <footer className="text-center mt-auto pt-16 pb-8 relative z-10">
       <div className="flex flex-col items-center gap-3">
         {/* Copyright Section */}
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted-foreground">
           <a
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold hover:text-gray-500 transition-colors"
+            className="font-semibold hover:text-muted-foreground transition-colors"
           >
             tulkit
           </a>
           {" "}© 2025 – now Widnyana — Solving your tiny, annoying problems so you can get back to the big ones.
         </p>
 
-        <Separator className="w-48 h-px bg-gray-300 my-2" />
+        <Separator className="w-48 h-px bg-border my-2" />
 
         {/* Donation Section */}
-        <div className="inline-flex items-center gap-2 text-gray-400">
+        <div className="inline-flex items-center gap-2 text-muted-foreground">
           <svg
             className="w-4 h-4 flex-shrink-0"
             fill="none"
@@ -37,7 +37,7 @@ export function Footer() {
             />
           </svg>
           <span className="text-xs">Support via EVM:</span>
-          <code className="text-xs font-mono text-gray-400 hover:text-gray-500 transition-colors">
+          <code className="text-xs font-mono text-muted-foreground hover:text-muted-foreground transition-colors">
             0x0D9ef1907CE24C928b53c931D8f7E6C53B33ace1
           </code>
         </div>

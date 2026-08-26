@@ -21,13 +21,13 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
 
   return (
     <div className="border-l-2 border-transparent hover:border-indigo-300 transition-colors">
-      <div className="grid grid-cols-[auto_1fr_auto] gap-3 items-start py-2 px-3 rounded hover:bg-gray-50">
+      <div className="grid grid-cols-[auto_1fr_auto] gap-3 items-start py-2 px-3 rounded hover:bg-muted">
         {/* Expand/collapse */}
         <div className="flex items-center w-6">
           {propertyEntries.length > 0 && (
             <button
               type="button"
-              className="text-gray-400 hover:text-gray-700 transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
               onClick={() => setIsExpanded(!isExpanded)}
               aria-expanded={isExpanded}
             >
@@ -38,11 +38,11 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
 
         {/* Type badge */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono px-2 py-1 rounded border bg-indigo-100 text-indigo-700 border-indigo-200">
+          <span className="text-xs font-mono px-2 py-1 rounded border bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-900">
             object
           </span>
           {propertyEntries.length > 0 && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {propertyEntries.length}{" "}
               {propertyEntries.length === 1 ? "property" : "properties"}
             </span>
@@ -52,7 +52,7 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
         {/* Additional properties indicator */}
         <div>
           {node.additionalProperties !== undefined && (
-            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded border border-gray-200">
+            <span className="text-xs px-2 py-1 bg-muted text-foreground rounded border border-border">
               {typeof node.additionalProperties === "boolean"
                 ? node.additionalProperties
                   ? "additional allowed"
@@ -65,7 +65,7 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
 
       {/* Description */}
       {node.description && (
-        <div className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-indigo-200 ml-10 mb-2">
+        <div className="text-sm text-foreground bg-muted px-3 py-2 rounded border-l-2 border-indigo-200 dark:border-indigo-800 ml-10 mb-2">
           {sanitizeText(node.description)}
         </div>
       )}
@@ -78,18 +78,18 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
               key={key}
               className={`border-l-2 pl-3 transition-colors ${
                 hoveredProperty === key
-                  ? "border-blue-300 bg-blue-50"
-                  : "border-gray-200"
+                  ? "border-blue-300 bg-blue-50 dark:bg-blue-950 dark:border-blue-800"
+                  : "border-border"
               }`}
               onMouseEnter={() => setHoveredProperty(key)}
               onMouseLeave={() => setHoveredProperty(null)}
             >
               <div className="flex items-center gap-2 py-1">
-                <span className="font-mono font-medium text-base text-gray-900">
+                <span className="font-mono font-medium text-base text-foreground">
                   {key}
                 </span>
                 {node.required.has(key) && (
-                  <span className="text-xs font-semibold px-2 py-1 bg-red-100 text-red-700 rounded border border-red-200">
+                  <span className="text-xs font-semibold px-2 py-1 bg-red-100 text-red-700 rounded border border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-900">
                     required
                   </span>
                 )}
@@ -106,8 +106,8 @@ export function ObjectNodeView({ node, level }: ObjectNodeViewProps) {
       {isExpanded &&
         node.additionalProperties &&
         typeof node.additionalProperties !== "boolean" && (
-          <div className="ml-10 mt-2 border-l-2 border-gray-300 pl-3">
-            <div className="text-xs font-semibold text-gray-600 mb-1">
+          <div className="ml-10 mt-2 border-l-2 border-border pl-3">
+            <div className="text-xs font-semibold text-muted-foreground mb-1">
               Additional properties schema:
             </div>
             <NodeRenderer node={node.additionalProperties} level={level + 1} />

@@ -24,16 +24,16 @@ export function SchemaTree({
   const getTypeColor = (type: string | string[]) => {
     const types = Array.isArray(type) ? type : [type];
     if (types.includes("string"))
-      return "bg-green-100 text-green-700 border-green-200";
+      return "bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-900";
     if (types.includes("number"))
-      return "bg-blue-100 text-blue-700 border-blue-200";
+      return "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900";
     if (types.includes("boolean"))
-      return "bg-purple-100 text-purple-700 border-purple-200";
+      return "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-900";
     if (types.includes("array"))
-      return "bg-orange-100 text-orange-700 border-orange-200";
+      return "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-900";
     if (types.includes("object"))
-      return "bg-indigo-100 text-indigo-700 border-indigo-200";
-    return "bg-gray-100 text-gray-700 border-gray-200";
+      return "bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-950 dark:text-indigo-300 dark:border-indigo-900";
+    return "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-800";
   };
 
   const getTypeDisplay = (type: string | string[]) => {
@@ -67,7 +67,7 @@ export function SchemaTree({
         role="button"
         tabIndex={0}
         className={`grid grid-cols-[auto_1fr_auto_auto] gap-3 items-start py-2 px-3 rounded transition-colors cursor-pointer ${
-          isHovered ? "bg-blue-50" : "hover:bg-gray-50"
+          isHovered ? "bg-blue-50 dark:bg-blue-950" : "hover:bg-muted"
         }`}
         style={{ paddingLeft: `${level * 24 + 12}px` }}
         onClick={() => setIsExpanded(!isExpanded)}
@@ -85,7 +85,7 @@ export function SchemaTree({
           {hasChildren && (
             <button
               type="button"
-              className="text-gray-400 hover:text-gray-700 transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsExpanded(!isExpanded);
@@ -101,14 +101,14 @@ export function SchemaTree({
 
         {/* Column 2: Property name and path */}
         <div className="flex items-center gap-2 min-w-0">
-          <span className="font-mono font-medium text-base text-gray-900 truncate">
+          <span className="font-mono font-medium text-base text-foreground truncate">
             {node.name}
           </span>
           {isHovered && (
             <button
               type="button"
               onClick={() => copyToClipboard(node.path)}
-              className="text-xs text-gray-400 hover:text-blue-600 transition-colors opacity-0 group-hover:opacity-100"
+              className="text-xs text-muted-foreground hover:text-blue-600 transition-colors opacity-0 group-hover:opacity-100"
               title="Copy path"
             >
               📋
@@ -130,18 +130,18 @@ export function SchemaTree({
         {/* Column 4: Badges (required, enum count, default) */}
         <div className="flex items-center gap-2 flex-wrap">
           {isRequired && (
-            <span className="text-xs font-semibold px-2 py-1 bg-red-100 text-red-700 rounded border border-red-200">
+            <span className="text-xs font-semibold px-2 py-1 bg-red-100 text-red-700 rounded border border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-900">
               required
             </span>
           )}
           {node.enum && (
-            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-700 rounded border border-gray-200">
+            <span className="text-xs px-2 py-1 bg-muted text-foreground rounded border border-border">
               {node.enum.length} values
             </span>
           )}
           {node.defaultValue !== undefined && (
             <span
-              className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded border border-amber-200 font-mono max-w-xs truncate"
+              className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded border border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-900 font-mono max-w-xs truncate"
               title={JSON.stringify(node.defaultValue)}
             >
               default: {truncateString(JSON.stringify(node.defaultValue), 50)}
@@ -156,14 +156,14 @@ export function SchemaTree({
         style={{ paddingLeft: `${level * 24 + 48}px` }}
       >
         {node.description && (
-          <div className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-blue-200">
+          <div className="text-sm text-foreground bg-muted px-3 py-2 rounded border-l-2 border-blue-200 dark:border-blue-800">
             {sanitizeText(node.description)}
           </div>
         )}
 
         {node.enum && (
-          <div className="text-xs text-gray-600 bg-gray-50 px-3 py-2 rounded border-l-2 border-gray-300">
-            <span className="font-semibold text-gray-700">
+          <div className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded border-l-2 border-border">
+            <span className="font-semibold text-foreground">
               Accepted values:
             </span>{" "}
             <code className="font-mono break-all">{formatEnumValues()}</code>
@@ -180,8 +180,8 @@ export function SchemaTree({
         )}
 
         {node.constraints && (
-          <div className="text-xs text-gray-600 bg-gray-50 px-3 py-2 rounded border-l-2 border-gray-300">
-            <span className="font-semibold text-gray-700">Constraints:</span>{" "}
+          <div className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded border-l-2 border-border">
+            <span className="font-semibold text-foreground">Constraints:</span>{" "}
             <span className="space-x-3 font-mono">
               {node.constraints.minimum !== undefined && (
                 <span>min: {node.constraints.minimum}</span>
@@ -208,7 +208,7 @@ export function SchemaTree({
 
       {/* Children */}
       {isExpanded && hasChildren && (
-        <div className="border-l-2 border-gray-200 ml-3">
+        <div className="border-l-2 border-border ml-3">
           {node.children?.map((child, index) => (
             <SchemaTree
               key={`${child.path}-${index}`}

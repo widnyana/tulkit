@@ -185,11 +185,11 @@ export default function QRGeneratorPage() {
   const isVeryLong = state.text.length > 500;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <svg
             className="w-5 h-5 mr-2"
@@ -208,10 +208,10 @@ export default function QRGeneratorPage() {
         </Link>
 
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             QR Code Generator with Styling
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Create beautiful, scannable QR codes with custom shapes, colors, and
             gradients.
           </p>
@@ -225,8 +225,8 @@ export default function QRGeneratorPage() {
           {/* Left Column - Input Sections */}
           <div className="md:col-span-3 space-y-6">
             {/* Quick Start Templates */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
+              <h2 className="text-lg font-semibold text-foreground mb-4">
                 Quick Start Templates
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -235,10 +235,10 @@ export default function QRGeneratorPage() {
                     key={template.label}
                     type="button"
                     onClick={() => handleTemplateClick(template.example)}
-                    className="flex flex-col items-center gap-2 p-4 bg-gray-50 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                    className="flex flex-col items-center gap-2 p-4 bg-muted border-border rounded-lg dark:hover:bg-blue-950 dark:hover:border-blue-800 transition-colors"
                   >
                     <span className="text-2xl">{template.icon}</span>
-                    <span className="text-sm font-medium text-gray-700">
+                    <span className="text-sm font-medium text-foreground">
                       {template.label}
                     </span>
                   </button>
@@ -247,13 +247,13 @@ export default function QRGeneratorPage() {
             </div>
 
             {/* Input Section */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
+              <h2 className="text-lg font-semibold text-foreground mb-4">
                 What do you want to share?
               </h2>
               <label
                 htmlFor={textId}
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-foreground mb-2"
               >
                 Type or paste your content here
               </label>
@@ -264,10 +264,10 @@ export default function QRGeneratorPage() {
                   dispatch({ type: "SET_TEXT", payload: e.target.value })
                 }
                 placeholder={`Examples:\n• ${SITE_URL}/\n• tel:+1-555-0123\n• mailto:hello@example.com\n• WiFi password, menu, contact info, or any text!`}
-                className="w-full h-32 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full h-32 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {state.text.length} characters
                 </p>
                 {isLong && !isVeryLong && (
@@ -284,13 +284,13 @@ export default function QRGeneratorPage() {
             </div>
 
             {/* Quality Settings */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+            <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-foreground">
                     Quality Settings
                   </h2>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Choose error correction level
                   </p>
                 </div>
@@ -304,20 +304,20 @@ export default function QRGeneratorPage() {
                   }
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
                     state.errorLevel === "LOW"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      : "border-border hover:border-border"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-2xl">📱</span>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-foreground">
                         Clean Screens
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Perfect for digital displays, social media, websites
                       </p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         Smallest file size
                       </p>
                     </div>
@@ -331,20 +331,20 @@ export default function QRGeneratorPage() {
                   }
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
                     state.errorLevel === "MEDIUM"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      : "border-border hover:border-border"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-2xl">📄</span>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-foreground">
                         Most Uses (Recommended)
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Perfect for printed materials, business cards, flyers
                       </p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         Works if slightly damaged or dirty
                       </p>
                     </div>
@@ -358,20 +358,20 @@ export default function QRGeneratorPage() {
                   }
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
                     state.errorLevel === "QUARTILE"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      : "border-border hover:border-border"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-2xl">🏷️</span>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-foreground">
                         Outdoor/Stickers
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Perfect for stickers, signs, rough surfaces
                       </p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         Works if scratched, faded, or partially covered
                       </p>
                     </div>
@@ -385,20 +385,20 @@ export default function QRGeneratorPage() {
                   }
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
                     state.errorLevel === "HIGH"
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      : "border-border hover:border-border"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-2xl">🏗️</span>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-foreground">
                         Harsh Conditions
                       </h3>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <p className="text-sm text-muted-foreground mt-1">
                         Perfect for construction sites, damaged surfaces
                       </p>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         Works even if 30% is damaged or covered
                       </p>
                     </div>
@@ -408,17 +408,17 @@ export default function QRGeneratorPage() {
             </div>
 
             {/* Styling Section */}
-            <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+            <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
               <button
                 type="button"
                 onClick={() => dispatch({ type: "TOGGLE_STYLING" })}
                 className="flex items-center justify-between w-full text-left"
               >
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">
+                  <h2 className="text-lg font-semibold text-foreground">
                     Styling & Customization
                   </h2>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Customize shapes, colors, and add logos
                   </p>
                 </div>
@@ -428,7 +428,7 @@ export default function QRGeneratorPage() {
               </button>
 
               {state.showStyling && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="mt-6 pt-6 border-t border-border">
                   <StyleControls
                     shapeOptions={state.shapeOptions}
                     onShapeOptionsChange={(options) =>
@@ -453,7 +453,7 @@ export default function QRGeneratorPage() {
                     <div className="mt-6">
                       <label
                         htmlFor={logoUploadId}
-                        className="block text-sm font-medium text-gray-700 mb-2"
+                        className="block text-sm font-medium text-foreground mb-2"
                       >
                         Upload Logo (optional)
                       </label>
@@ -463,12 +463,12 @@ export default function QRGeneratorPage() {
                         type="file"
                         accept="image/*"
                         onChange={handleLogoUpload}
-                        className="block w-full text-sm text-gray-500
+                        className="block w-full text-sm text-muted-foreground
                       file:mr-4 file:py-2 file:px-4
                       file:rounded-lg file:border-0
                       file:text-sm file:font-semibold
-                      file:bg-blue-50 file:text-blue-700
-                      hover:file:bg-blue-100"
+                      file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-950 dark:file:text-blue-300
+                      dark:hover:file:bg-blue-900 hover:file:bg-blue-100"
                       />
                       {state.logoImage && (
                         <div className="mt-2 flex items-center gap-2">
@@ -498,7 +498,7 @@ export default function QRGeneratorPage() {
                   </button>
 
                   {state.showAdvanced && (
-                    <div className="mt-4 pt-4 border-t border-gray-200 space-y-4">
+                    <div className="mt-4 pt-4 border-t border-border space-y-4">
                       <div>
                         <label className="flex items-center space-x-2 cursor-pointer">
                           <Checkbox
@@ -515,11 +515,11 @@ export default function QRGeneratorPage() {
                               });
                             }}
                           />
-                          <span className="text-sm font-medium text-gray-700">
+                          <span className="text-sm font-medium text-foreground">
                             Include watermark
                           </span>
                         </label>
-                        <p className="text-xs text-gray-500 mt-1 ml-6">
+                        <p className="text-xs text-muted-foreground mt-1 ml-6">
                           Adds &quot;{QR_WATERMARK}&quot; below the QR code
                         </p>
                       </div>
@@ -534,21 +534,21 @@ export default function QRGeneratorPage() {
           <div className="md:col-span-2">
             <div className="sticky top-8">
               {state.text ? (
-                <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+                <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold text-gray-900">
+                    <h2 className="text-lg font-semibold text-foreground">
                       Your QR Code is Ready!
                     </h2>
                     <button
                       type="button"
                       onClick={handleClear}
-                      className="px-4 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors text-sm"
+                      className="px-4 py-2 bg-secondary text-secondary-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors text-sm"
                     >
                       Start Over
                     </button>
                   </div>
 
-                  <div className="flex justify-center p-8 bg-gray-50 border border-gray-200 rounded-lg mb-6">
+                  <div className="flex justify-center p-8 bg-muted border border-border rounded-lg mb-6">
                     <QRCodeSVG
                       ref={svgRef}
                       value={state.text}
@@ -563,11 +563,11 @@ export default function QRGeneratorPage() {
                     />
                   </div>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <h3 className="font-semibold text-blue-900 mb-2">
+                  <div className="bg-blue-50 border border-blue-200 dark:bg-blue-950 dark:border-blue-900 rounded-lg p-4 mb-4">
+                    <h3 className="font-semibold text-blue-900 mb-2 dark:text-blue-300">
                       Next steps
                     </h3>
-                    <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                    <ol className="text-sm text-blue-800 space-y-1 dark:text-blue-300 list-decimal list-inside">
                       <li>Download using the button below</li>
                       <li>Test by scanning with your phone</li>
                       <li>Use anywhere - print, email, or share online</li>
@@ -577,7 +577,7 @@ export default function QRGeneratorPage() {
                   <div className="mb-4">
                     <label
                       htmlFor={filenameId}
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-foreground mb-2"
                     >
                       Name your file (optional)
                     </label>
@@ -592,7 +592,7 @@ export default function QRGeneratorPage() {
                         })
                       }
                       placeholder="qr-code"
-                      className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
 
@@ -605,15 +605,15 @@ export default function QRGeneratorPage() {
                   </button>
 
                   {state.includeWatermark && (
-                    <p className="text-xs text-gray-500 mt-4 text-center">
+                    <p className="text-xs text-muted-foreground mt-4 text-center">
                       Includes small text: &quot;{QR_WATERMARK}&quot;
                     </p>
                   )}
                 </div>
               ) : (
-                <div className="bg-white rounded-lg shadow-lg p-12 border border-gray-200 text-center">
+                <div className="bg-card rounded-lg shadow-lg p-12 border border-border text-center">
                   <svg
-                    className="w-16 h-16 mx-auto mb-4 text-gray-400"
+                    className="w-16 h-16 mx-auto mb-4 text-muted-foreground"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -625,10 +625,10 @@ export default function QRGeneratorPage() {
                       d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
                     />
                   </svg>
-                  <p className="text-gray-600 mb-2 text-lg font-medium">
+                  <p className="text-muted-foreground mb-2 text-lg font-medium">
                     Pick a template above or type your own content
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-muted-foreground">
                     Works with websites, phone numbers, emails, and plain text
                   </p>
                 </div>

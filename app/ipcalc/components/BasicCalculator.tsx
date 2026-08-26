@@ -47,11 +47,11 @@ export default function BasicCalculator() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+      <div className="bg-card rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
           Basic IP Calculator
         </h2>
-        <p className="text-gray-600 text-sm mb-6">
+        <p className="text-muted-foreground text-sm mb-6">
           Calculate network information for an IP address and netmask
         </p>
 
@@ -59,7 +59,7 @@ export default function BasicCalculator() {
           <div className="md:col-span-2">
             <label
               htmlFor={addressId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               IP Address
             </label>
@@ -70,14 +70,14 @@ export default function BasicCalculator() {
               onChange={(e) => setAddress(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., 192.168.1.1"
-              className="w-full text-blue-900 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
             <label
               htmlFor={netmaskId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Netmask (CIDR or dotted)
             </label>
@@ -88,7 +88,7 @@ export default function BasicCalculator() {
               onChange={(e) => setNetmask(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="24 or 255.255.255.0"
-              className="w-full text-blue-900 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -102,14 +102,14 @@ export default function BasicCalculator() {
         </button>
 
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-700 text-sm">{error}</p>
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-950 dark:border-red-900">
+            <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
           </div>
         )}
       </div>
 
       {result && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">Network Information</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -135,7 +135,7 @@ export default function BasicCalculator() {
             </div>
           </div>
 
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mt-6 pt-6 border-t border-border">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InfoRow label="Hosts/Net" value={result.hostsNet.toString()} />
               <InfoRow label="Class" value={result.networkClass} />
@@ -169,10 +169,10 @@ function InfoRow({
 }) {
   return (
     <div className="flex justify-between items-center py-2">
-      <span className="text-sm font-medium text-gray-600">{label}:</span>
+      <span className="text-sm font-medium text-muted-foreground">{label}:</span>
       <span
         className={`text-sm font-mono ${
-          highlight ? "text-blue-600 font-semibold" : "text-gray-900"
+          highlight ? "text-blue-600 font-semibold" : "text-foreground"
         }`}
       >
         {value}

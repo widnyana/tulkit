@@ -41,11 +41,11 @@ export default function EnvComparePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <svg
             className="w-5 h-5 mr-2"
@@ -65,18 +65,18 @@ export default function EnvComparePage() {
           Back to Home
         </Link>
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Environment Variable Comparator
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Compare environment files to identify differences and missing keys
           </p>
           <p className="sr-only">
-            Paste two <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">.env</code> files and see exactly what differs — missing keys, changed values, and overlaps in a clean side-by-side view. Useful when you're promoting staging configs to production, debugging why something works locally but not in dev, or just sanity-checking that your teammate actually added that new <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">DATABASE_URL</code>. The comparison happens entirely in your browser; we never see your keys or values.
+            Paste two <code className="bg-muted px-1.5 py-0.5 rounded text-sm">.env</code> files and see exactly what differs — missing keys, changed values, and overlaps in a clean side-by-side view. Useful when you're promoting staging configs to production, debugging why something works locally but not in dev, or just sanity-checking that your teammate actually added that new <code className="bg-muted px-1.5 py-0.5 rounded text-sm">DATABASE_URL</code>. The comparison happens entirely in your browser; we never see your keys or values.
           </p>
-          <div className="flex items-start gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-lg">
+          <div className="flex items-start gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-lg dark:bg-green-950 dark:border-green-900">
             <svg
-              className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5"
+              className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5 dark:text-green-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -90,7 +90,7 @@ export default function EnvComparePage() {
                 d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
               />
             </svg>
-            <div className="text-sm text-green-800">
+            <div className="text-sm text-green-800 dark:text-green-300">
               <strong className="font-semibold">Privacy First:</strong> All
               comparisons are performed locally in your browser. No data is
               transmitted to any remote server.
@@ -102,7 +102,7 @@ export default function EnvComparePage() {
           <div>
             <label
               htmlFor={env1NameId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Environment Name
             </label>
@@ -112,11 +112,11 @@ export default function EnvComparePage() {
               value={env1Name}
               onChange={(e) => setEnv1Name(e.target.value)}
               placeholder="e.g., Production, Staging, Development"
-              className="w-full px-4 py-2 mb-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 mb-3 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <label
               htmlFor={env1Id}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Environment Variables
             </label>
@@ -124,7 +124,7 @@ export default function EnvComparePage() {
               id={env1Id}
               value={env1}
               onChange={(e) => setEnv1(e.target.value)}
-              className="w-full h-96 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-96 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="DATABASE_URL=postgres://localhost:5432/db&#10;API_KEY=your-api-key&#10;NODE_ENV=production"
             />
           </div>
@@ -132,7 +132,7 @@ export default function EnvComparePage() {
           <div>
             <label
               htmlFor={env2NameId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Environment Name
             </label>
@@ -142,11 +142,11 @@ export default function EnvComparePage() {
               value={env2Name}
               onChange={(e) => setEnv2Name(e.target.value)}
               placeholder="e.g., Production, Staging, Development"
-              className="w-full px-4 py-2 mb-3 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 mb-3 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <label
               htmlFor={env2Id}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Environment Variables
             </label>
@@ -154,7 +154,7 @@ export default function EnvComparePage() {
               id={env2Id}
               value={env2}
               onChange={(e) => setEnv2(e.target.value)}
-              className="w-full h-96 p-4 font-mono text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-96 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="DATABASE_URL=postgres://staging:5432/db&#10;API_KEY=staging-key&#10;DEBUG=true"
             />
           </div>
@@ -165,14 +165,14 @@ export default function EnvComparePage() {
             type="button"
             onClick={handleCompare}
             disabled={!env1.trim() || !env2.trim()}
-            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-muted/60 disabled:cursor-not-allowed transition-colors"
           >
             Compare
           </button>
           <button
             type="button"
             onClick={handleClear}
-            className="px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors"
+            className="px-6 py-2 bg-secondary text-secondary-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors"
           >
             Clear
           </button>
@@ -181,9 +181,9 @@ export default function EnvComparePage() {
         {result && (
           <div className="space-y-6">
             {result.summary.onlyInFirst > 0 && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 dark:bg-blue-950 dark:border-blue-900">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-blue-900">
+                  <h2 className="text-lg font-semibold text-blue-900 dark:text-blue-300">
                     Only in {displayName1} ({result.summary.onlyInFirst})
                   </h2>
                   <button
@@ -200,13 +200,13 @@ export default function EnvComparePage() {
                   {result.onlyInFirst.map((item) => (
                     <div
                       key={item.key}
-                      className="bg-white border border-blue-300 rounded p-3 font-mono text-sm"
+                      className="bg-card border border-blue-300 rounded p-3 font-mono text-sm"
                     >
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-foreground">
                         {item.key}
                       </span>
-                      <span className="text-gray-500 ml-2">=</span>
-                      <span className="text-gray-700 ml-2">{item.value}</span>
+                      <span className="text-muted-foreground ml-2">=</span>
+                      <span className="text-foreground ml-2">{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -214,9 +214,9 @@ export default function EnvComparePage() {
             )}
 
             {result.summary.onlyInSecond > 0 && (
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+              <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 dark:bg-purple-950 dark:border-purple-900">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-purple-900">
+                  <h2 className="text-lg font-semibold text-purple-900 dark:text-purple-300">
                     Only in {displayName2} ({result.summary.onlyInSecond})
                   </h2>
                   <button
@@ -233,13 +233,13 @@ export default function EnvComparePage() {
                   {result.onlyInSecond.map((item) => (
                     <div
                       key={item.key}
-                      className="bg-white border border-purple-300 rounded p-3 font-mono text-sm"
+                      className="bg-card border border-purple-300 rounded p-3 font-mono text-sm"
                     >
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-foreground">
                         {item.key}
                       </span>
-                      <span className="text-gray-500 ml-2">=</span>
-                      <span className="text-gray-700 ml-2">{item.value}</span>
+                      <span className="text-muted-foreground ml-2">=</span>
+                      <span className="text-foreground ml-2">{item.value}</span>
                     </div>
                   ))}
                 </div>
@@ -247,15 +247,15 @@ export default function EnvComparePage() {
             )}
 
             {result.summary.identical > 0 && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-green-900 mb-4">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6 dark:bg-green-950 dark:border-green-900">
+                <h2 className="text-lg font-semibold text-green-900 mb-4 dark:text-green-300">
                   Identical Keys ({result.summary.identical})
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                   {result.identical.map((item) => (
                     <div
                       key={item.key}
-                      className="bg-white border border-green-300 rounded p-2 font-mono text-sm text-gray-900"
+                      className="bg-card border border-green-300 rounded p-2 font-mono text-sm text-foreground"
                     >
                       {item.key}
                     </div>
@@ -264,33 +264,33 @@ export default function EnvComparePage() {
               </div>
             )}
             {result.summary.different > 0 && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-yellow-900 mb-4">
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 dark:bg-yellow-950 dark:border-yellow-900">
+                <h2 className="text-lg font-semibold text-yellow-900 mb-4 dark:text-yellow-300">
                   Different Values ({result.summary.different})
                 </h2>
                 <div className="space-y-2">
                   {result.differences.map((diff) => (
                     <div
                       key={diff.key}
-                      className="bg-white border border-yellow-300 rounded p-3"
+                      className="bg-card border border-yellow-300 rounded p-3"
                     >
-                      <div className="font-mono text-sm font-medium text-gray-900 mb-2">
+                      <div className="font-mono text-sm font-medium text-foreground mb-2">
                         {diff.key}
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                        <div className="bg-red-50 border border-red-200 rounded p-2">
-                          <span className="text-red-700 font-medium">
+                        <div className="bg-red-50 border border-red-200 rounded p-2 dark:bg-red-950 dark:border-red-900">
+                          <span className="text-red-700 font-medium dark:text-red-300">
                             {displayName1}:
                           </span>
-                          <span className="ml-2 text-gray-900 font-mono">
+                          <span className="ml-2 text-foreground font-mono">
                             {diff.value1}
                           </span>
                         </div>
-                        <div className="bg-green-50 border border-green-200 rounded p-2">
-                          <span className="text-green-700 font-medium">
+                        <div className="bg-green-50 border border-green-200 rounded p-2 dark:bg-green-950 dark:border-green-900">
+                          <span className="text-green-700 font-medium dark:text-green-300">
                             {displayName2}:
                           </span>
-                          <span className="ml-2 text-gray-900 font-mono">
+                          <span className="ml-2 text-foreground font-mono">
                             {diff.value2}
                           </span>
                         </div>
@@ -302,8 +302,8 @@ export default function EnvComparePage() {
             )}
 
             {result.summary.total === 0 && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                <p className="text-gray-600">
+              <div className="bg-muted border border-border rounded-lg p-6 text-center">
+                <p className="text-muted-foreground">
                   No environment variables found to compare
                 </p>
               </div>

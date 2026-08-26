@@ -38,16 +38,16 @@ const InvoicePDFPreview: React.FC<InvoicePDFPreviewProps> = ({
   if (!isClient) {
     // Render placeholder during SSR/hydration
     return (
-      <div className="h-full w-full flex items-center justify-center bg-gray-100">
-        <p className="text-gray-500">Loading preview...</p>
+      <div className="h-full w-full flex items-center justify-center bg-muted">
+        <p className="text-muted-foreground">Loading preview...</p>
       </div>
     );
   }
 
   if (!hasValidData) {
     return (
-      <div className="h-full w-full flex items-center justify-center bg-gray-100">
-        <p className="text-gray-500 text-center p-4">
+      <div className="h-full w-full flex items-center justify-center bg-muted">
+        <p className="text-muted-foreground text-center p-4">
           Fill in the invoice details to see the preview
         </p>
       </div>

@@ -45,11 +45,11 @@ export default function RandomStringPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <svg
             className="w-5 h-5 mr-2"
@@ -67,10 +67,10 @@ export default function RandomStringPage() {
           Back to Home
         </Link>
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Random String Generator
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="text-muted-foreground mb-4">
             Generate secure random strings with customizable options
           </p>
           <p className="sr-only">
@@ -78,8 +78,8 @@ export default function RandomStringPage() {
           </p>
         </header>
 
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="bg-card rounded-lg shadow-lg p-6 mb-6 border border-border">
+          <h2 className="text-lg font-semibold text-foreground mb-4">
             Configuration
           </h2>
 
@@ -87,7 +87,7 @@ export default function RandomStringPage() {
             <div>
               <label
                 htmlFor={countId}
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-foreground mb-2"
               >
                 Number of Strings (min: 1, max: 50)
               </label>
@@ -111,14 +111,14 @@ export default function RandomStringPage() {
                   if (Number.isNaN(val) || val < 1) setCount(1);
                   else if (val > 50) setCount(50);
                 }}
-                className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
             <div>
               <label
                 htmlFor={lengthId}
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-foreground mb-2"
               >
                 String Length (min: 4, max: 255)
               </label>
@@ -142,13 +142,13 @@ export default function RandomStringPage() {
                   if (Number.isNaN(val) || val < 4) setLength(4);
                   else if (val > 255) setLength(255);
                 }}
-                className="w-full px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
 
           <div className="mb-6">
-            <div className="block text-sm font-medium text-gray-700 mb-3">
+            <div className="block text-sm font-medium text-foreground mb-3">
               Character Types
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -159,7 +159,7 @@ export default function RandomStringPage() {
                     setUseUppercase(checked === true)
                   }
                 />
-                <span className="text-sm text-gray-700">Uppercase (A-Z)</span>
+                <span className="text-sm text-foreground">Uppercase (A-Z)</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -169,7 +169,7 @@ export default function RandomStringPage() {
                     setUseLowercase(checked === true)
                   }
                 />
-                <span className="text-sm text-gray-700">Lowercase (a-z)</span>
+                <span className="text-sm text-foreground">Lowercase (a-z)</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -177,7 +177,7 @@ export default function RandomStringPage() {
                   checked={useNumbers}
                   onCheckedChange={(checked) => setUseNumbers(checked === true)}
                 />
-                <span className="text-sm text-gray-700">Numbers (0-9)</span>
+                <span className="text-sm text-foreground">Numbers (0-9)</span>
               </label>
 
               <label className="flex items-center space-x-2 cursor-pointer">
@@ -185,7 +185,7 @@ export default function RandomStringPage() {
                   checked={useSymbols}
                   onCheckedChange={(checked) => setUseSymbols(checked === true)}
                 />
-                <span className="text-sm text-gray-700">Symbols (!@#$)</span>
+                <span className="text-sm text-foreground">Symbols (!@#$)</span>
               </label>
             </div>
           </div>
@@ -210,7 +210,7 @@ export default function RandomStringPage() {
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="px-6 py-2 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-secondary text-secondary-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors"
                 >
                   Clear
                 </button>
@@ -220,9 +220,9 @@ export default function RandomStringPage() {
         </div>
 
         {results.length > 0 && (
-          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
+          <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-foreground">
                 Generated Strings ({results.length})
               </h2>
             </div>
@@ -230,9 +230,9 @@ export default function RandomStringPage() {
               {results.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition-colors"
+                  className="flex items-center justify-between bg-muted border border-border rounded-lg p-3 hover:bg-muted transition-colors"
                 >
-                  <code className="font-mono text-sm text-gray-900 break-all flex-1">
+                  <code className="font-mono text-sm text-foreground break-all flex-1">
                     {item.value}
                   </code>
                   <button

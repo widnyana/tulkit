@@ -6,23 +6,23 @@ import { FIELD_LABELS, FIELD_ORDER, type FieldName } from "../utils";
 /** Per-field accent colors, carried over from the original chip palette. */
 const FIELD_ACCENTS: Record<FieldName, { chip: string; focus: string }> = {
   minute: {
-    chip: "bg-blue-50 text-blue-700 border-blue-200",
+    chip: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900",
     focus: "focus:ring-blue-500 focus:border-blue-500",
   },
   hour: {
-    chip: "bg-green-50 text-green-700 border-green-200",
+    chip: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-900",
     focus: "focus:ring-green-500 focus:border-green-500",
   },
   dom: {
-    chip: "bg-purple-50 text-purple-700 border-purple-200",
+    chip: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-900",
     focus: "focus:ring-purple-500 focus:border-purple-500",
   },
   month: {
-    chip: "bg-pink-50 text-pink-700 border-pink-200",
+    chip: "bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-950 dark:text-pink-300 dark:border-pink-900",
     focus: "focus:ring-pink-500 focus:border-pink-500",
   },
   dow: {
-    chip: "bg-cyan-50 text-cyan-700 border-cyan-200",
+    chip: "bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-950 dark:text-cyan-300 dark:border-cyan-900",
     focus: "focus:ring-cyan-500 focus:border-cyan-500",
   },
 };
@@ -50,7 +50,7 @@ export default function FieldGrid({
 
   return (
     <div className="mt-4">
-      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         Fields
       </p>
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
@@ -80,7 +80,9 @@ export default function FieldGrid({
                 autoComplete="off"
                 autoCapitalize="off"
                 className={`w-full rounded-md border px-2 py-1.5 font-mono text-sm outline-none ${accent.focus} ${
-                  error ? "border-red-400 bg-red-50/30" : "border-gray-300"
+                  error
+                    ? "border-red-400 bg-red-50/30 dark:bg-red-950/30"
+                    : "border-input"
                 }`}
               />
               {error && (

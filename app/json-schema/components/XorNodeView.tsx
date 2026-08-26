@@ -24,17 +24,17 @@ export function XorNodeView({ node, level }: XorNodeViewProps) {
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-gray-400 hover:text-gray-700 transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-colors"
           aria-expanded={isExpanded}
         >
           {isExpanded ? "▼" : "▶"}
         </button>
 
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded border border-purple-200">
+          <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-semibold rounded border border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-900">
             XOR
           </span>
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-muted-foreground">
             Exactly one must match ({node.nodes.length} schemas)
           </span>
           <DiscriminatorBadge discriminator={node.discriminator} />
@@ -42,7 +42,7 @@ export function XorNodeView({ node, level }: XorNodeViewProps) {
       </div>
 
       {node.description && (
-        <div className="text-sm text-gray-700 bg-gray-50 px-3 py-2 rounded border-l-2 border-purple-200 ml-6 mb-2">
+        <div className="text-sm text-foreground bg-muted px-3 py-2 rounded border-l-2 border-purple-200 dark:border-purple-800 ml-6 mb-2">
           {sanitizeText(node.description)}
         </div>
       )}
@@ -55,7 +55,7 @@ export function XorNodeView({ node, level }: XorNodeViewProps) {
               className="relative"
             >
               <div className="absolute left-0 top-0 bottom-0 w-8 flex items-center justify-center">
-                <span className="text-xs font-mono text-gray-400">
+                <span className="text-xs font-mono text-muted-foreground">
                   [{index}]
                 </span>
               </div>

@@ -21,7 +21,7 @@ interface DeployPanelProps {
 }
 
 const INPUT_CLASS =
-  "w-full px-4 py-2 font-mono text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent";
+  "w-full px-4 py-2 font-mono text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent";
 
 /**
  * Always-visible deployment output: pick the target (per-user crontab or a
@@ -48,14 +48,14 @@ export default function DeployPanel({
   const fileNameId = useId();
 
   return (
-    <section className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 sm:p-6">
-      <h2 className="text-base font-semibold text-gray-900">Deploy</h2>
-      <p className="mt-0.5 text-sm text-gray-500">Ready-to-paste output</p>
+    <section className="bg-card rounded-lg shadow-lg border border-border p-4 sm:p-6">
+      <h2 className="text-base font-semibold text-foreground">Deploy</h2>
+      <p className="mt-0.5 text-sm text-muted-foreground">Ready-to-paste output</p>
 
       <div className="mt-4">
         <label
           htmlFor={modeId}
-          className="mb-2 block text-sm font-medium text-gray-700"
+          className="mb-2 block text-sm font-medium text-foreground"
         >
           Target
         </label>
@@ -64,7 +64,7 @@ export default function DeployPanel({
           value={mode}
           onChange={(e) => setMode(e.target.value as Mode)}
           data-testid="cron-target"
-          className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-900 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border border-input bg-background px-4 py-2 text-foreground focus:border-transparent focus:ring-2 focus:ring-blue-500"
         >
           <option value="crontab">crontab -e (per-user crontab)</option>
           <option value="cron-d">File in /etc/cron.d/</option>
@@ -74,7 +74,7 @@ export default function DeployPanel({
       <div className="mt-4">
         <label
           htmlFor={commandId}
-          className="mb-2 block text-sm font-medium text-gray-700"
+          className="mb-2 block text-sm font-medium text-foreground"
         >
           Command
         </label>
@@ -95,10 +95,10 @@ export default function DeployPanel({
           <div className="mt-4">
             <label
               htmlFor={userId}
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="mb-2 block text-sm font-medium text-foreground"
             >
               Run as user{" "}
-              <span className="text-gray-400">(required in /etc/cron.d)</span>
+              <span className="text-muted-foreground">(required in /etc/cron.d)</span>
             </label>
             <input
               id={userId}
@@ -114,9 +114,9 @@ export default function DeployPanel({
           <div className="mt-4">
             <label
               htmlFor={fileNameId}
-              className="mb-2 block text-sm font-medium text-gray-700"
+              className="mb-2 block text-sm font-medium text-foreground"
             >
-              File name <span className="text-gray-400">(no dots allowed)</span>
+              File name <span className="text-muted-foreground">(no dots allowed)</span>
             </label>
             <input
               id={fileNameId}
@@ -151,7 +151,7 @@ export default function DeployPanel({
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
             {mode === "cron-d" && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Install with:{" "}
                 <code className="font-mono">
                   sudo cp {fileName.trim() || "my-job"} /etc/cron.d/ &amp;&amp;
@@ -163,7 +163,7 @@ export default function DeployPanel({
               <button
                 type="button"
                 onClick={() => onCopy(`${output}\n`, "crontab entry")}
-                className="rounded px-4 py-1.5 text-sm font-medium text-gray-700 border border-gray-300 bg-white hover:bg-gray-50 transition-colors"
+                className="rounded px-4 py-1.5 text-sm font-medium text-foreground border border-border bg-background hover:bg-muted transition-colors"
               >
                 Copy block
               </button>

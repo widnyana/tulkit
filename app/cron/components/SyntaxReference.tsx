@@ -33,7 +33,7 @@ const SHORTCUT_MEANINGS: Record<(typeof KNOWN_SHORTCUTS)[number], string> = {
 };
 
 const GROUP_LABEL =
-  "text-xs font-semibold uppercase tracking-wide text-gray-400";
+  "text-xs font-semibold uppercase tracking-wide text-muted-foreground";
 
 /**
  * Compact cheat sheet rendered directly under the expression input so it is
@@ -45,7 +45,7 @@ export default function SyntaxReference({ onShortcut }: SyntaxReferenceProps) {
   return (
     <div
       data-testid="cron-syntax"
-      className="mt-3 rounded-lg border border-gray-200 bg-gray-50/70 px-3 py-2.5"
+      className="mt-3 rounded-lg border border-border bg-muted/70 px-3 py-2.5"
     >
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
         <span className={GROUP_LABEL}>Field values</span>
@@ -55,15 +55,15 @@ export default function SyntaxReference({ onShortcut }: SyntaxReferenceProps) {
             title={`${op.example} — ${op.name}`}
             className="inline-flex items-center gap-1.5"
           >
-            <code className="flex h-5 w-5 items-center justify-center rounded border border-blue-200 bg-blue-50 font-mono text-[11px] font-semibold text-blue-700">
+            <code className="flex h-5 w-5 items-center justify-center rounded border border-blue-200 bg-blue-50 font-mono text-[11px] font-semibold text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300">
               {op.symbol}
             </code>
-            <span className="text-xs text-gray-600">{op.name}</span>
+            <span className="text-xs text-muted-foreground">{op.name}</span>
           </span>
         ))}
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-gray-200 pt-2">
+      <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-border pt-2">
         <span className={GROUP_LABEL}>@ shortcuts</span>
         {KNOWN_SHORTCUTS.map((s) => (
           <button
@@ -72,7 +72,7 @@ export default function SyntaxReference({ onShortcut }: SyntaxReferenceProps) {
             onClick={() => onShortcut(s)}
             title={SHORTCUT_MEANINGS[s]}
             data-testid="cron-shortcut"
-            className="rounded-full border border-gray-300 bg-white px-2 py-0.5 font-mono text-xs text-gray-700 transition-colors hover:border-blue-400 hover:text-blue-700"
+            className="rounded-full border border-border bg-background px-2 py-0.5 font-mono text-xs text-foreground transition-colors hover:border-blue-400 hover:text-blue-700"
           >
             {s}
           </button>

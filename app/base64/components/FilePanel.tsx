@@ -62,7 +62,7 @@ export function FilePanel() {
           className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
             dir === "encode"
               ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
           }`}
         >
           File → Base64
@@ -73,7 +73,7 @@ export function FilePanel() {
           className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
             dir === "decode"
               ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
           }`}
         >
           Base64 → File
@@ -90,7 +90,7 @@ export function FilePanel() {
               const file = e.dataTransfer.files[0];
               if (file) readFile(file);
             }}
-            className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-8 text-gray-500 cursor-pointer hover:border-blue-400 hover:text-gray-700 transition-colors"
+            className="flex flex-col items-center justify-center border-2 border-dashed border-input rounded-lg p-8 text-muted-foreground cursor-pointer hover:border-blue-400 hover:text-foreground transition-colors"
           >
             <span className="text-sm">
               Drop a file here, or click to choose
@@ -113,12 +113,12 @@ export function FilePanel() {
                   checked={asDataUri}
                   onCheckedChange={(c) => setAsDataUri(c === true)}
                 />
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-foreground">
                   Output as data URI
                 </span>
               </label>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-foreground">
                   Result ({output.length} chars)
                 </span>
                 <button
@@ -132,7 +132,7 @@ export function FilePanel() {
               <Textarea
                 readOnly
                 value={output}
-                className="min-h-[140px] font-mono text-gray-900 bg-gray-50"
+                className="min-h-[140px] font-mono text-foreground bg-muted"
               />
             </>
           )}
@@ -140,26 +140,26 @@ export function FilePanel() {
       ) : (
         <div className="space-y-4">
           <div>
-            <div className="block text-sm font-medium text-gray-700 mb-2">
+            <div className="block text-sm font-medium text-foreground mb-2">
               Base64 to decode
             </div>
             <Textarea
               value={decodeInput}
               onChange={(e) => setDecodeInput(e.target.value)}
               placeholder="Paste Base64 or a data URI…"
-              className="min-h-[140px] font-mono text-gray-900"
+              className="min-h-[140px] font-mono text-foreground"
             />
           </div>
           <div className="flex flex-wrap items-end gap-4">
             <div>
-              <div className="block text-sm font-medium text-gray-700 mb-2">
+              <div className="block text-sm font-medium text-foreground mb-2">
                 File name
               </div>
               <input
                 type="text"
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
-                className="px-4 py-2 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 text-foreground border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <button

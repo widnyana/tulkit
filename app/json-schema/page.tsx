@@ -453,10 +453,10 @@ export default function JSONSchemaPage() {
               {/* Progress Indicator */}
               {loadingProgress.stage !== "idle" &&
                 loadingProgress.stage !== "complete" && (
-                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-950 dark:border-blue-900">
                     <div className="flex items-center gap-2">
                       <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full" />
-                      <span className="text-sm text-blue-900 font-medium">
+                      <span className="text-sm text-blue-900 font-medium dark:text-blue-300">
                         {loadingProgress.message}
                       </span>
                     </div>
@@ -480,38 +480,38 @@ export default function JSONSchemaPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                          <div className="text-sm text-blue-600 mb-1">
+                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 dark:bg-blue-950 dark:border-blue-900">
+                          <div className="text-sm text-blue-600 mb-1 dark:text-blue-400">
                             External Schemas
                           </div>
-                          <div className="text-2xl font-bold text-blue-900">
+                          <div className="text-2xl font-bold text-blue-900 dark:text-blue-300">
                             {parsedSchema.externalRefs.length}
                           </div>
                         </div>
-                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                          <div className="text-sm text-green-600 mb-1">
+                        <div className="p-4 bg-green-50 rounded-lg border border-green-200 dark:bg-green-950 dark:border-green-900">
+                          <div className="text-sm text-green-600 mb-1 dark:text-green-400">
                             Cache Hits
                           </div>
-                          <div className="text-2xl font-bold text-green-900">
+                          <div className="text-2xl font-bold text-green-900 dark:text-green-300">
                             {parsedSchema.cacheHits || 0}
                           </div>
                         </div>
-                        <div className="p-4 bg-orange-50 rounded-lg border border-orange-200">
-                          <div className="text-sm text-orange-600 mb-1">
+                        <div className="p-4 bg-orange-50 rounded-lg border border-orange-200 dark:bg-orange-950 dark:border-orange-900">
+                          <div className="text-sm text-orange-600 mb-1 dark:text-orange-400">
                             Cache Misses
                           </div>
-                          <div className="text-2xl font-bold text-orange-900">
+                          <div className="text-2xl font-bold text-orange-900 dark:text-orange-300">
                             {parsedSchema.cacheMisses || 0}
                           </div>
                         </div>
                       </div>
                       {parsedSchema.warnings &&
                         parsedSchema.warnings.length > 0 && (
-                          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <div className="text-sm font-medium text-yellow-900 mb-2">
+                          <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg dark:bg-yellow-950 dark:border-yellow-900">
+                            <div className="text-sm font-medium text-yellow-900 mb-2 dark:text-yellow-300">
                               Warnings ({parsedSchema.warnings.length})
                             </div>
-                            <ul className="text-sm text-yellow-800 space-y-1">
+                            <ul className="text-sm text-yellow-800 space-y-1 dark:text-yellow-300">
                               {parsedSchema.warnings
                                 .slice(0, 5)
                                 .map((warning) => (

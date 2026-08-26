@@ -78,8 +78,8 @@ export function SchemaTypeDistribution({
   );
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+    <div className="bg-card rounded-lg border border-border p-6 mb-6">
+      <h3 className="text-lg font-semibold text-foreground mb-4">
         Type Distribution
       </h3>
       <div className="space-y-3">
@@ -87,10 +87,10 @@ export function SchemaTypeDistribution({
           const percentage = (count / total) * 100;
           return (
             <div key={type} className="flex items-center gap-3">
-              <div className="w-16 text-sm font-medium text-gray-700">
+              <div className="w-16 text-sm font-medium text-foreground">
                 {type}
               </div>
-              <div className="flex-1 bg-gray-200 rounded-full h-6 overflow-hidden">
+              <div className="flex-1 bg-muted rounded-full h-6 overflow-hidden">
                 <div
                   className={`h-full ${typeColors[type] || "bg-gray-500"} flex items-center justify-end pr-2`}
                   style={{ width: `${percentage}%` }}
@@ -103,7 +103,7 @@ export function SchemaTypeDistribution({
                 </div>
               </div>
               {percentage <= 10 && (
-                <span className="text-sm text-gray-600 w-8 text-right">
+                <span className="text-sm text-muted-foreground w-8 text-right">
                   {formatNumber(count)}
                 </span>
               )}

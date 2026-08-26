@@ -50,7 +50,7 @@ export function StyleControls({
     <div className="space-y-6">
       {/* Module Shape */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-foreground mb-3">
           Module Shape
         </label>
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
@@ -61,8 +61,8 @@ export function StyleControls({
               onClick={() => onShapeOptionsChange({ ...shapeOptions, shape })}
               className={`p-3 border-2 rounded-lg transition-all ${
                 shapeOptions.shape === shape
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300"
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                  : "border-border hover:border-border"
               }`}
             >
               <ShapePreview shape={shape} size={40} />
@@ -74,7 +74,7 @@ export function StyleControls({
 
       {/* Eye Pattern Shape */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-foreground mb-3">
           Corner Detection Pattern Shape
         </label>
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
@@ -90,8 +90,8 @@ export function StyleControls({
               }
               className={`p-3 border-2 rounded-lg transition-all ${
                 shapeOptions.eyePatternShape === shape
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300"
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                  : "border-border hover:border-border"
               }`}
             >
               <ShapePreview shape={shape} size={40} />
@@ -104,7 +104,7 @@ export function StyleControls({
       {/* Gap Controls */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Module Gap: {shapeOptions.gap || 0}
           </label>
           <input
@@ -121,13 +121,13 @@ export function StyleControls({
             }
             className="w-full"
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Space between modules for visual effect
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Corner Gap: {shapeOptions.eyePatternGap || 0}
           </label>
           <input
@@ -144,7 +144,7 @@ export function StyleControls({
             }
             className="w-full"
           />
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Space in corner detection patterns
           </p>
         </div>
@@ -152,7 +152,7 @@ export function StyleControls({
 
       {/* Color Picker */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-foreground mb-3">
           Colors {colors.length > 1 ? "(Gradient)" : ""}
         </label>
         <div className="flex flex-wrap gap-2">
@@ -186,7 +186,7 @@ export function StyleControls({
             <button
               type="button"
               onClick={() => onColorsChange([...colors, "#000000"])}
-              className="w-12 h-12 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 flex items-center justify-center text-gray-400 hover:text-gray-600"
+              className="w-12 h-12 border-2 border-dashed border-input rounded-lg hover:border-border flex items-center justify-center text-muted-foreground hover:text-muted-foreground"
             >
               +
             </button>
@@ -196,7 +196,7 @@ export function StyleControls({
 
       {/* Gradient Type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-foreground mb-3">
           Gradient Type
         </label>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -207,8 +207,8 @@ export function StyleControls({
               onClick={() => onGradientTypeChange(type)}
               className={`p-3 border-2 rounded-lg transition-all ${
                 gradientType === type
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300"
+                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                  : "border-border hover:border-border"
               }`}
             >
               <p className="text-sm font-medium">{label}</p>
@@ -219,7 +219,7 @@ export function StyleControls({
 
       {/* Logo Size */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-foreground mb-2">
           Logo Size: {logoSize}px
         </label>
         <input
@@ -231,7 +231,7 @@ export function StyleControls({
           onChange={(e) => onLogoSizeChange(Number(e.target.value))}
           className="w-full"
         />
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           {logoSize === 0 ? "No logo" : "Reserve space for center logo."}
         </p>
       </div>

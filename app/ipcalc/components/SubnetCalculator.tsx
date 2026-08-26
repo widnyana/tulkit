@@ -78,11 +78,11 @@ export default function SubnetCalculator() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+      <div className="bg-card rounded-lg shadow p-6">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
           Subnet / Supernet Calculator
         </h2>
-        <p className="text-gray-600 text-sm mb-6">
+        <p className="text-muted-foreground text-sm mb-6">
           Calculate subnets (larger prefix) or supernets (smaller prefix) from a
           base network
         </p>
@@ -91,7 +91,7 @@ export default function SubnetCalculator() {
           <div>
             <label
               htmlFor={baseNetworkId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Base Network
             </label>
@@ -102,14 +102,14 @@ export default function SubnetCalculator() {
               onChange={(e) => setBaseNetwork(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., 192.168.1.0"
-              className="w-full text-blue-900 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
             <label
               htmlFor={baseMaskId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               Base Netmask (CIDR)
             </label>
@@ -120,14 +120,14 @@ export default function SubnetCalculator() {
               onChange={(e) => setBaseMask(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="24"
-              className="w-full text-blue-900 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
             <label
               htmlFor={newMaskId}
-              className="block text-sm font-medium text-gray-700 mb-2"
+              className="block text-sm font-medium text-foreground mb-2"
             >
               New Netmask (CIDR)
             </label>
@@ -138,7 +138,7 @@ export default function SubnetCalculator() {
               onChange={(e) => setNewMask(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="26"
-              className="w-full text-blue-900 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -152,65 +152,65 @@ export default function SubnetCalculator() {
         </button>
 
         {error && (
-          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-700 text-sm">{error}</p>
+          <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-950 dark:border-red-900">
+            <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
           </div>
         )}
       </div>
 
       {mode === "supernet" && supernet && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">Supernet</h3>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Network
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     CIDR
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Netmask
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Wildcard
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Broadcast
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Hosts
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                <tr className="hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm font-mono text-gray-900">
+              <tbody className="bg-card divide-y divide-border">
+                <tr className="hover:bg-muted">
+                  <td className="px-4 py-3 text-sm font-mono text-foreground">
                     {supernet.network}
                   </td>
                   <td className="px-4 py-3 text-sm font-mono text-blue-600 font-semibold">
                     /{supernet.cidr}
                   </td>
-                  <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                  <td className="px-4 py-3 text-sm font-mono text-foreground">
                     {supernet.mask}
                   </td>
-                  <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                  <td className="px-4 py-3 text-sm font-mono text-foreground">
                     {supernet.wildcard}
                   </td>
-                  <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                  <td className="px-4 py-3 text-sm font-mono text-foreground">
                     {supernet.broadcast}
                   </td>
-                  <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                  <td className="px-4 py-3 text-sm font-mono text-foreground">
                     {supernet.hostsNet.toLocaleString()}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-800">
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-950 dark:border-blue-900">
+            <p className="text-sm text-blue-800 dark:text-blue-300">
               <strong>Host Range:</strong> {supernet.hostMin} -{" "}
               {supernet.hostMax}
             </p>
@@ -222,60 +222,60 @@ export default function SubnetCalculator() {
       )}
 
       {mode === "subnet" && subnets && subnets.length > 0 && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-card rounded-lg shadow p-6">
           <h3 className="text-lg font-semibold mb-4">
             Subnets ({subnets.length} total)
           </h3>
           {subnets.length >= 1000 && (
-            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <p className="text-sm text-yellow-800">
+            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg dark:bg-yellow-950 dark:border-yellow-900">
+              <p className="text-sm text-yellow-800 dark:text-yellow-300">
                 Showing first 1000 subnets (of many more possible)
               </p>
             </div>
           )}
           <div className="overflow-x-auto max-h-96 overflow-y-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 sticky top-0">
+            <table className="min-w-full divide-y divide-border">
+              <thead className="bg-muted sticky top-0">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     #
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Network
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     CIDR
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Netmask
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Broadcast
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Hosts
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-card divide-y divide-border">
                 {subnets.map((subnet, index) => (
-                  <tr key={subnet.network} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-500">
+                  <tr key={subnet.network} className="hover:bg-muted">
+                    <td className="px-4 py-3 text-sm text-muted-foreground">
                       {index + 1}
                     </td>
-                    <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                    <td className="px-4 py-3 text-sm font-mono text-foreground">
                       {subnet.network}
                     </td>
                     <td className="px-4 py-3 text-sm font-mono text-blue-600 font-semibold">
                       /{subnet.cidr}
                     </td>
-                    <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                    <td className="px-4 py-3 text-sm font-mono text-foreground">
                       {subnet.mask}
                     </td>
-                    <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                    <td className="px-4 py-3 text-sm font-mono text-foreground">
                       {subnet.broadcast}
                     </td>
-                    <td className="px-4 py-3 text-sm font-mono text-gray-900">
+                    <td className="px-4 py-3 text-sm font-mono text-foreground">
                       {subnet.hostsNet.toLocaleString()}
                     </td>
                   </tr>
@@ -283,8 +283,8 @@ export default function SubnetCalculator() {
               </tbody>
             </table>
           </div>
-          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-sm text-green-800">
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-950 dark:border-green-900">
+            <p className="text-sm text-green-800 dark:text-green-300">
               <strong>Total Subnets:</strong> {subnets.length.toLocaleString()}{" "}
               | <strong>Hosts per Subnet:</strong>{" "}
               {subnets[0].hostsNet.toLocaleString()}

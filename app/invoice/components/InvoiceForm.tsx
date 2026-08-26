@@ -210,27 +210,27 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
   };
 
   return (
-    <form className="space-y-6 p-4 text-gray-900">
+    <form className="space-y-6 p-4 text-foreground">
       <div className="flex justify-end gap-2">
         <button
           type="button"
           onClick={handleReset}
-          className="px-4 py-1.5 text-sm font-medium border border-red-200 bg-red-50 text-red-700 rounded-lg transition-colors hover:bg-red-100"
+          className="px-4 py-1.5 text-sm font-medium border border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300 rounded-lg transition-colors hover:bg-red-100 dark:hover:bg-red-900"
         >
           Reset
         </button>
         <button
           type="button"
           onClick={handleLoadSample}
-          className="px-4 py-1.5 text-sm font-medium border border-blue-200 bg-blue-50 text-blue-700 rounded-lg transition-colors hover:bg-blue-100"
+          className="px-4 py-1.5 text-sm font-medium border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300 rounded-lg transition-colors hover:bg-blue-100 dark:hover:bg-blue-900"
         >
           Load sample
         </button>
       </div>
 
       {/* Template and Currency Settings */}
-      <div className="border-b border-gray-200 pb-6">
-        <h3 className="text-base font-semibold text-gray-900 mb-4">
+      <div className="border-b border-border pb-6">
+        <h3 className="text-base font-semibold text-foreground mb-4">
           Template & Currency Settings
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -241,12 +241,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-gray-700 text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Template
                   </label>
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border text-gray-700  border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border text-foreground  border-input rounded-md"
                     value={field.value}
                   >
                     <option value="default">Default Template</option>
@@ -267,12 +267,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm text-gray-700 font-medium mb-1">
+                  <label className="block text-sm text-foreground font-medium mb-1">
                     Currency Symbol
                   </label>
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border border-gray-300 text-gray-700 rounded-md"
+                    className="w-full px-3 py-2 border border-input text-foreground rounded-md"
                     value={field.value || "$"}
                   >
                     <option value="€">Euro - €</option>
@@ -301,12 +301,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Decimal Separator
                   </label>
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-input rounded-md"
                     value={field.value || ","}
                   >
                     <option value=",">, (comma)</option>
@@ -324,12 +324,12 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Thousand Separator
                   </label>
                   <select
                     {...field}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-input rounded-md"
                     value={field.value || "."}
                   >
                     <option value=".">. (period)</option>
@@ -343,7 +343,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 text-gray-900 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 text-foreground md:grid-cols-2 gap-6">
         {/* Sender Information */}
         <div className="space-y-4">
           <h3 className="text-lg font-medium">From</h3>
@@ -353,13 +353,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Company Name
                   </label>
                   <input
                     {...field}
                     type="text"
-                    className={`w-full px-3 py-2 border rounded-md ${errors.sender?.name ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.sender?.name ? "border-red-500" : "border-input"}`}
                     placeholder="Your company name"
                   />
                   {errors.sender?.name && (
@@ -375,13 +375,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Address
                   </label>
                   <textarea
                     {...field}
                     rows={3}
-                    className={`w-full px-3 py-2 border rounded-md ${errors.sender?.address ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.sender?.address ? "border-red-500" : "border-input"}`}
                     placeholder="Your address"
                   />
                   {errors.sender?.address && (
@@ -397,13 +397,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Email
                   </label>
                   <input
                     {...field}
                     type="email"
-                    className={`w-full px-3 py-2 border rounded-md ${errors.sender?.email ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.sender?.email ? "border-red-500" : "border-input"}`}
                     placeholder="your@email.com"
                   />
                   {errors.sender?.email && (
@@ -419,13 +419,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Phone
                   </label>
                   <input
                     {...field}
                     type="tel"
-                    className={`w-full px-3 py-2 border rounded-md ${errors.sender?.phone ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.sender?.phone ? "border-red-500" : "border-input"}`}
                     placeholder="Your phone number"
                   />
                   {errors.sender?.phone && (
@@ -448,13 +448,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Client Name
                   </label>
                   <input
                     {...field}
                     type="text"
-                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.name ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.name ? "border-red-500" : "border-input"}`}
                     placeholder="Client name"
                   />
                   {errors.recipient?.name && (
@@ -470,13 +470,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Address
                   </label>
                   <textarea
                     {...field}
                     rows={3}
-                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.address ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.address ? "border-red-500" : "border-input"}`}
                     placeholder="Client address"
                   />
                   {errors.recipient?.address && (
@@ -492,13 +492,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Email
                   </label>
                   <input
                     {...field}
                     type="email"
-                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.email ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.email ? "border-red-500" : "border-input"}`}
                     placeholder="client@email.com"
                   />
                   {errors.recipient?.email && (
@@ -514,13 +514,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Phone
                   </label>
                   <input
                     {...field}
                     type="tel"
-                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.phone ? "border-red-500" : "border-gray-300"}`}
+                    className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.phone ? "border-red-500" : "border-input"}`}
                     placeholder="Client phone number"
                   />
                   {errors.recipient?.phone && (
@@ -536,8 +536,8 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Invoice Details & Logo */}
-      <div className="border-b text-gray-900 border-gray-200 pb-6">
-        <h3 className="text-base font-semibold text-gray-900 mb-4">
+      <div className="border-b text-foreground border-border pb-6">
+        <h3 className="text-base font-semibold text-foreground mb-4">
           Invoice Details & Logo
         </h3>
 
@@ -548,13 +548,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Invoice Number
                 </label>
                 <input
                   {...field}
                   type="text"
-                  className={`w-full px-3 py-2 border rounded-md ${errors.invoiceNumber ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-3 py-2 border rounded-md ${errors.invoiceNumber ? "border-red-500" : "border-input"}`}
                   placeholder="INV-001"
                 />
                 {errors.invoiceNumber && (
@@ -570,13 +570,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Issue Date
                 </label>
                 <input
                   {...field}
                   type="date"
-                  className={`w-full px-3 py-2 border rounded-md ${errors.issueDate ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-3 py-2 border rounded-md ${errors.issueDate ? "border-red-500" : "border-input"}`}
                 />
                 {errors.issueDate && (
                   <p className="text-red-500 text-sm mt-1">
@@ -591,13 +591,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             control={control}
             render={({ field }) => (
               <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
+                <label className="block text-sm font-medium text-foreground mb-1">
                   Due Date
                 </label>
                 <input
                   {...field}
                   type="date"
-                  className={`w-full px-3 py-2 border rounded-md ${errors.dueDate ? "border-red-500" : "border-gray-300"}`}
+                  className={`w-full px-3 py-2 border rounded-md ${errors.dueDate ? "border-red-500" : "border-input"}`}
                 />
                 {errors.dueDate && (
                   <p className="text-red-500 text-sm mt-1">
@@ -611,11 +611,11 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
         {/* Logo Upload */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-900 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Company Logo (Optional)
           </label>
           <div className="flex items-center space-x-4">
-            <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-input rounded-lg cursor-pointer bg-muted hover:bg-muted">
               {logoPreview ? (
                 <div className="relative w-full h-full rounded-md overflow-hidden">
                   <Image
@@ -627,8 +627,8 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <Upload className="w-8 h-8 text-gray-400" />
-                  <p className="text-sm text-gray-500 mt-2">Upload</p>
+                  <Upload className="w-8 h-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground mt-2">Upload</p>
                 </div>
               )}
               <input
@@ -642,7 +642,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <button
                 type="button"
                 onClick={removeLogo}
-                className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-full"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -665,27 +665,27 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </button>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Description
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Quantity
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Unit Price
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Total
                 </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-card divide-y divide-border">
               {fields.map((field, index) => (
                 <React.Fragment key={field.id}>
                   <tr>
@@ -697,7 +697,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                           <input
                             {...field}
                             type="text"
-                            className="w-full px-2 py-1 border border-gray-300 rounded"
+                            className="w-full px-2 py-1 border border-input rounded"
                             placeholder="Item description"
                           />
                         )}
@@ -713,7 +713,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                             type="number"
                             min="0"
                             step="1"
-                            className="w-20 px-2 py-1 border border-gray-300 rounded"
+                            className="w-20 px-2 py-1 border border-input rounded"
                             onChange={(e) =>
                               field.onChange(Number(e.target.value))
                             }
@@ -731,7 +731,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                             type="number"
                             min="0"
                             step="0.01"
-                            className="w-24 px-2 py-1 border border-gray-300 rounded"
+                            className="w-24 px-2 py-1 border border-input rounded"
                             onChange={(e) =>
                               field.onChange(Number(e.target.value))
                             }
@@ -768,7 +768,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                           <input
                             {...field}
                             type="text"
-                            className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                            className="w-full px-2 py-1 border border-input rounded text-xs"
                             placeholder="Notes (optional)"
                           />
                         )}
@@ -783,8 +783,8 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Tax Settings */}
-      <div className="border-b border-gray-200 pb-6">
-        <h3 className="text-base font-semibold text-gray-900 mb-4">
+      <div className="border-b border-border pb-6">
+        <h3 className="text-base font-semibold text-foreground mb-4">
           Tax Settings
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -803,7 +803,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     name={field.name}
                     ref={field.ref}
                   />
-                  <label className="ml-2 text-sm font-medium text-gray-900 cursor-pointer">
+                  <label className="ml-2 text-sm font-medium text-foreground cursor-pointer">
                     Apply Tax
                   </label>
                 </div>
@@ -817,7 +817,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 control={control}
                 render={({ field }) => (
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">
+                    <label className="block text-sm font-medium text-foreground mb-1">
                       Tax Rate (%)
                     </label>
                     <input
@@ -826,7 +826,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       min="0"
                       max="100"
                       step="0.1"
-                      className={`w-full px-3 py-2 border rounded-md ${errors.taxRate ? "border-red-500" : "border-gray-300"}`}
+                      className={`w-full px-3 py-2 border rounded-md ${errors.taxRate ? "border-red-500" : "border-input"}`}
                       placeholder="Tax rate"
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
@@ -844,8 +844,8 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Payment Information */}
-      <div className="border-b border-gray-200 pb-6">
-        <h3 className="text-base font-semibold text-gray-900 mb-4">
+      <div className="border-b border-border pb-6">
+        <h3 className="text-base font-semibold text-foreground mb-4">
           Payment Information (Optional)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -856,13 +856,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Bank Name
                   </label>
                   <input
                     {...field}
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-input rounded-md"
                     placeholder="e.g., Chase Bank"
                   />
                 </div>
@@ -877,13 +877,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Account Number
                   </label>
                   <input
                     {...field}
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-input rounded-md"
                     placeholder="e.g., 1234567890"
                   />
                 </div>
@@ -898,13 +898,13 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               control={control}
               render={({ field }) => (
                 <div>
-                  <label className="block text-sm font-medium text-gray-900 mb-1">
+                  <label className="block text-sm font-medium text-foreground mb-1">
                     Routing/SWIFT Code
                   </label>
                   <input
                     {...field}
                     type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="w-full px-3 py-2 border border-input rounded-md"
                     placeholder="e.g., CHASUS33"
                   />
                 </div>
@@ -915,7 +915,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
         {/* Payment Methods */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-900 mb-2">
+          <label className="block text-sm font-medium text-foreground mb-2">
             Accepted Payment Methods
           </label>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -958,11 +958,11 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
         {/* Payment QR Code */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-900 mb-1">
+          <label className="block text-sm font-medium text-foreground mb-1">
             Payment QR Code (Optional)
           </label>
           <div className="flex items-center space-x-4">
-            <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+            <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-input rounded-lg cursor-pointer bg-muted hover:bg-muted">
               {watch("paymentInfo.paymentQRCode") ? (
                 <div className="relative w-full h-full rounded-md overflow-hidden">
                   <Image
@@ -974,8 +974,8 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <Upload className="w-8 h-8 text-gray-400" />
-                  <p className="text-sm text-gray-500 mt-2">Upload QR</p>
+                  <Upload className="w-8 h-8 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground mt-2">Upload QR</p>
                 </div>
               )}
               <input
@@ -1064,7 +1064,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   setValue("paymentInfo.paymentQRCode", undefined);
                   toast.success("QR code removed");
                 }}
-                className="p-2 text-red-500 hover:bg-red-50 rounded-full"
+                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-full"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1074,7 +1074,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       </div>
 
       {/* Totals */}
-      <div className="bg-gray-50 p-4 rounded-md">
+      <div className="bg-muted p-4 rounded-md">
         <div className="flex justify-between mb-1">
           <span>Subtotal:</span>
           <span>
@@ -1091,7 +1091,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
             </span>
           </div>
         )}
-        <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-gray-200">
+        <div className="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-border">
           <span>Total:</span>
           <span>
             {currency}
@@ -1102,7 +1102,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
       {/* Notes */}
       <div>
-        <h3 className="text-base font-semibold text-gray-900 mb-4">
+        <h3 className="text-base font-semibold text-foreground mb-4">
           Notes / Terms
         </h3>
         <div className="space-y-2">
@@ -1114,7 +1114,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <textarea
                   {...field}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-input rounded-md"
                   placeholder="Additional notes or terms"
                 />
               </div>
@@ -1139,7 +1139,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 name={field.name}
                 ref={field.ref}
               />
-              <label className="ml-2 text-sm font-medium text-gray-900 cursor-pointer">
+              <label className="ml-2 text-sm font-medium text-foreground cursor-pointer">
                 {`Show "generated with ${SITE_HOST}" in the footer`}
               </label>
             </div>
