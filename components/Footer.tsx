@@ -18,6 +18,17 @@ export function Footer() {
           {" "}© 2025 – now Widnyana — Solving your tiny, annoying problems so you can get back to the big ones.
         </p>
 
+        <p className="text-xs text-muted-foreground">
+          AI agents:{" "}
+          <a
+            href="/llms.txt"
+            className="font-semibold hover:text-muted-foreground transition-colors"
+          >
+            /llms.txt
+          </a>{" "}
+          lists every tool and its programmatic API.
+        </p>
+
         <Separator className="w-48 h-px bg-border my-2" />
 
         {/* Donation Section */}
