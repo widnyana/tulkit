@@ -59,8 +59,7 @@ CORS: fully open — any origin may call this endpoint.
 # plain, save to file
 curl -s -X POST ${SITE_URL}/api/qr \\
   -H 'Content-Type: application/json' \\
-  -d '{"text":"https://tulkit.widnyana.web.id/"}' \\
-  | node -e 'process.stdin.pipe(process.stdout)' # inspect {"svg": ...}
+  -d '{"text":"${SITE_URL}/"}'
 
 # styled: circular modules, diamond eyes, red->blue linear gradient
 curl -s -X POST ${SITE_URL}/api/qr \\
