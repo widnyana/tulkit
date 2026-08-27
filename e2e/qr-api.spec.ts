@@ -1,5 +1,5 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
-// Behavioral coverage for POST /api/qr rendering (svg-renderer +
+import { SITE_URL } from "../lib/site";
 // lib/qrcodegen can't be loaded by node:test strip-types because of the
 // vendored TS namespace). Parser validation lives in app/qr-gen/request.ts
 // and is unit-tested separately.
@@ -27,7 +27,7 @@ test.describe("POST /api/qr", () => {
 
   test("applies styling options", async ({ request }) => {
     const res = await post(request, {
-      text: "https://tulkit.widnyana.web.id/",
+      text: `${SITE_URL}/`,
       shape: "circle",
       eyePatternShape: "diamond",
       gradient: "linear",
