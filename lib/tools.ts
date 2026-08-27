@@ -117,6 +117,9 @@ export const tools: Tool[] = [
       "base64 decode",
       "base64 converter",
       "text to base64",
+      "llms.txt",
+      "api",
+      "agent",
     ],
   },
 ];
