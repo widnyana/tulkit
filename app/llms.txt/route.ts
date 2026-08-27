@@ -12,6 +12,7 @@ export const dynamic = "force-static";
  */
 const TOOL_GUIDES: Record<string, string> = {
   "/base64": "/base64/llms.txt",
+  "/qr-gen": "/qr-gen/llms.txt",
 };
 
 const guideLines = Object.entries(TOOL_GUIDES).map(([href, docPath]) => {
@@ -34,8 +35,8 @@ ${guideLines.join("\n")}
 
 ## API
 
-POST ${SITE_URL}/api/base64 is currently the only programmatic endpoint.
-See the Base64 guide above for its request/response schema.
+POST ${SITE_URL}/api/base64 and POST ${SITE_URL}/api/qr are the current
+programmatic endpoints. See each tool's guide above for its schema.
 `;
 
 export async function GET(_request: NextRequest) {
