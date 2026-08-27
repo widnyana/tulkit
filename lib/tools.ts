@@ -77,7 +77,15 @@ export const tools: Tool[] = [
     description:
       "Generate customizable QR codes with error correction and download support",
     category: "Data",
-    keywords: ["QR code generator", "QR code", "barcode", "download QR"],
+    keywords: [
+      "QR code generator",
+      "QR code",
+      "barcode",
+      "download QR",
+      "llms.txt",
+      "api",
+      "agent",
+    ],
   },
   {
     href: "/json-schema",
