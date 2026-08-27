@@ -20,58 +20,60 @@ export const sampleInvoiceData: InvoiceData = {
   invoiceNumber: "NW-2026-014",
   issueDate: "2026-08-14",
   dueDate: "2026-08-28",
-  items:[
+  items: [
     {
-      "id": "s1",
-      "description": "Brand identity & logo design",
-      "quantity": 1,
-      "unitPrice": 4200,
-      "notes": "3 concepts, 2 revision rounds"
+      id: "s1",
+      description: "Brand identity & logo design",
+      quantity: 1,
+      unitPrice: 4200,
+      notes: "3 concepts, 2 revision rounds",
     },
     {
-      "id": "s2",
-      "description": "Landing page — design and build",
-      "quantity": 1,
-      "unitPrice": 3800,
-      "notes": "Responsive, CMS-ready"
+      id: "s2",
+      description: "Landing page — design and build",
+      quantity: 1,
+      unitPrice: 3800,
+      notes: "Responsive, CMS-ready",
     },
     {
-      "id": "s3",
-      "description": "Design consultation (hourly)",
-      "quantity": 8,
-      "unitPrice": 95,
-      "notes": "Product strategy sessions"
+      id: "s3",
+      description: "Design consultation (hourly)",
+      quantity: 8,
+      unitPrice: 95,
+      notes: "Product strategy sessions",
     },
     {
-      "id": "s4",
-      "description": "Fourth item",
-      "quantity": 1,
-      "unitPrice": 25,
-      "notes": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+      id: "s4",
+      description: "Fourth item",
+      quantity: 1,
+      unitPrice: 25,
+      notes:
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
     },
     {
-      "id": "s5",
-      "description": "Custom UI component library",
-      "quantity": 1,
-      "unitPrice": 1850,
-      "notes": "Figma design system & reusable web components"
+      id: "s5",
+      description: "Custom UI component library",
+      quantity: 1,
+      unitPrice: 1850,
+      notes: "Figma design system & reusable web components",
     },
     {
-      "id": "s6",
-      "description": "SEO & performance optimization",
-      "quantity": 1,
-      "unitPrice": 600,
-      "notes": "Meta tags, image compression, speed audit"
+      id: "s6",
+      description: "SEO & performance optimization",
+      quantity: 1,
+      unitPrice: 600,
+      notes: "Meta tags, image compression, speed audit",
     },
     {
-      "id": "s7",
-      "description": "Monthly site maintenance retainer",
-      "quantity": 3,
-      "unitPrice": 450,
-      "notes": "Q3 hosting management & security updates"
-    }
+      id: "s7",
+      description: "Monthly site maintenance retainer",
+      quantity: 3,
+      unitPrice: 450,
+      notes: "Q3 hosting management & security updates",
+    },
   ],
-  notes: "Payment due within 14 days. Late payments incur 1.5% monthly interest.",
+  notes:
+    "Payment due within 14 days. Late payments incur 1.5% monthly interest.",
   taxEnabled: true,
   taxRate: 11,
   currency: "$",
@@ -83,6 +85,7 @@ export const sampleInvoiceData: InvoiceData = {
     accountNumber: "0098-7722-4401",
     routingCode: "121000358",
     paymentMethods: ["Bank transfer", "Credit card", "PayPal"],
-    paymentQRCode: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoCAAAAADObDPFAAAEi0lEQVR4nO3WQXYUOxBFQe9/0zDQOR7QX86rqgK+6Xizcj8pU8GEjx+S8vG3F/guARUDKgZUDKgYUDGgYkDFgIoBFQMqBlQMqBhQMaBiQMWAigEVAyoGVAyoGFAxoGJAxYCKARUDKgZUDKgYUDGgYkaoj4uZ7vn177vvus/T+4KK+4KK+4KK+4KK+4KK+4KK+4KK+16GmnpTvz5sd0992FP7vvSeumjqg4p9ULEPKvZBxT6o2AcV+28H9evCdx94+vfp3rv7bueNBVCrNxZArd5YALV6YwHU6o0FUKs3FkCt3lgAtXpj4WGoCnn1gaBAgQIFChQoUP8q1Om80x6o2AMVe6BiD1TsgYo9ULEHKvb+N1Cn/QpXHzTtc3ffbe+pi3Z9ULEPKvZBxT6o2AcV+6Bi/+2gTrNb5E99X90XVNwXVNwXVNwXVNwXVNwXVNwXVNz3MtTd7BY5XXR33+n5qwFV5/72AaDiAFBxAKg4AFQcACoOeBeo3WJT6j2nc+q+p/uN99bBdxcBBersAaBArXvr4LuLgAJ19oC3h6qLXwWa/l73uAqT506FacFpIChQZwtOA0GBOltwGggK1NmC08C3hZr+PvUqeH1o3fNuQNV77y4AKi4AKi4AKi4AKi4AKi4AajP46gPq+Qo1we/23n2Pe9eH1YfW+0DF+0DF+0DF+0DF+0DF+0DF+/45qLrYtFB98DT/8kPjnO35q4NAxUGg4iBQcRCoOAhUHAQqDgIVB97tVejp3Ok/3OX3TIXLF4MClQIqBlQMqBhQMaBuPmjXu7rg6dzduQmyBlQMqBhQMaBiQMWAigEVc/s/nJcHx8VP73/qH+qlX4u7AaDiAFBxAKg4AFQcACoOABUHgNpcvMtugasgp3NO76vv/jyfi6BiEVQsgopFULEIKhZBxSKooXD4gOl8nTfdPwFW4LofKFCg/rNXz4OK50HF86DieVDx/B+Hmr7rA6de3a/uUe99mVMXOf0GBerrRU6/QYH6epHTb1Cgvl7k9PvtoXaL1IVOz00Ad/doTKBA1T0aEyhQdY/GBApU3aMxgfr9UFP/6oNP97gKV+d+nqsPn3q7RXb3gALVAioGVAyoGFAxbwt1NxPYrn+au/eN77j4/hxQMaBiQMWAigEVAyrmbaCeWnz3++576j91Xw0oUKDS76Di76Di76Di76Di738NKl84LHp6/yn80+c/+2MB1OqPBVCrPxZArf5YALX6YwHU6o8FUKs/FkCt/lgYHr77fVroeNH44LofKFCgQIECBQrUd4Wqvz+VCrk9XwdMA2t/esDR6w8CKgZUDKgYUDGgYkDFfBuo3Xd9yHTu9J4KBAoUKFCgQIEC9RTU3X6F3D1o+t7NOz33cs9YALX6YwHU6o8FUKs/FkCt/lgAtfpjAdTqjwVQqz8WLqY+fJp79fvu/Jd76sKg4sKg4sKg4sKg4sKg4sKg4sKgJAVUDKgYUDGgYkDFgIoBFQMqBlQMqBhQMaBiQMWAigEVAyoGVAyoGFAxoGJAxYCKARUDKgZUDKgYUDGgYkDFgIoBFfMT3wUhxgiLNikAAAAASUVORK5CYII=",
+    paymentQRCode:
+      "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoCAAAAADObDPFAAAEi0lEQVR4nO3WQXYUOxBFQe9/0zDQOR7QX86rqgK+6Xizcj8pU8GEjx+S8vG3F/guARUDKgZUDKgYUDGgYkDFgIoBFQMqBlQMqBhQMaBiQMWAigEVAyoGVAyoGFAxoGJAxYCKARUDKgZUDKgYUDGgYkaoj4uZ7vn177vvus/T+4KK+4KK+4KK+4KK+4KK+4KK+4KK+16GmnpTvz5sd0992FP7vvSeumjqg4p9ULEPKvZBxT6o2AcV+28H9evCdx94+vfp3rv7bueNBVCrNxZArd5YALV6YwHU6o0FUKs3FkCt3lgAtXpj4WGoCnn1gaBAgQIFChQoUP8q1Om80x6o2AMVe6BiD1TsgYo9ULEHKvb+N1Cn/QpXHzTtc3ffbe+pi3Z9ULEPKvZBxT6o2AcV+6Bi/+2gTrNb5E99X90XVNwXVNwXVNwXVNwXVNwXVNwXVNz3MtTd7BY5XXR33+n5qwFV5/72AaDiAFBxAKg4AFQcACoOeBeo3WJT6j2nc+q+p/uN99bBdxcBBersAaBArXvr4LuLgAJ19oC3h6qLXwWa/l73uAqT506FacFpIChQZwtOA0GBOltwGggK1NmC08C3hZr+PvUqeH1o3fNuQNV77y4AKi4AKi4AKi4AKi4AKi4AajP46gPq+Qo1we/23n2Pe9eH1YfW+0DF+0DF+0DF+0DF+0DF+0DF+/45qLrYtFB98DT/8kPjnO35q4NAxUGg4iBQcRCoOAhUHAQqDgIVB97tVejp3Ok/3OX3TIXLF4MClQIqBlQMqBhQMaBuPmjXu7rg6dzduQmyBlQMqBhQMaBiQMWAigEVc/s/nJcHx8VP73/qH+qlX4u7AaDiAFBxAKg4AFQcACoOABUHgNpcvMtugasgp3NO76vv/jyfi6BiEVQsgopFULEIKhZBxSKooXD4gOl8nTfdPwFW4LofKFCg/rNXz4OK50HF86DieVDx/B+Hmr7rA6de3a/uUe99mVMXOf0GBerrRU6/QYH6epHTb1Cgvl7k9PvtoXaL1IVOz00Ad/doTKBA1T0aEyhQdY/GBApU3aMxgfr9UFP/6oNP97gKV+d+nqsPn3q7RXb3gALVAioGVAyoGFAxbwt1NxPYrn+au/eN77j4/hxQMaBiQMWAigEVAyrmbaCeWnz3++576j91Xw0oUKDS76Di76Di76Di76Di738NKl84LHp6/yn80+c/+2MB1OqPBVCrPxZArf5YALX6YwHU6o8FUKs/FkCt/lgYHr77fVroeNH44LofKFCgQIECBQrUd4Wqvz+VCrk9XwdMA2t/esDR6w8CKgZUDKgYUDGgYkDFfBuo3Xd9yHTu9J4KBAoUKFCgQIEC9RTU3X6F3D1o+t7NOz33cs9YALX6YwHU6o8FUKs/FkCt/lgAtfpjAdTqjwVQqz8WLqY+fJp79fvu/Jd76sKg4sKg4sKg4sKg4sKg4sKg4sKgJAVUDKgYUDGgYkDFgIoBFQMqBlQMqBhQMaBiQMWAigEVAyoGVAyoGFAxoGJAxYCKARUDKgZUDKgYUDGgYkDFgIoBFfMT3wUhxgiLNikAAAAASUVORK5CYII=",
   },
 };

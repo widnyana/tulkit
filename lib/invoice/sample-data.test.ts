@@ -35,7 +35,11 @@ describe("sampleInvoiceData", () => {
     const { taxRate, decimalSeparator, thousandSeparator, currency } =
       sampleInvoiceData;
     assert.ok(taxRate >= 0 && taxRate <= 100, "taxRate out of [0, 100]");
-    assert.equal(decimalSeparator?.length, 1, "decimal separator must be 1 char");
+    assert.equal(
+      decimalSeparator?.length,
+      1,
+      "decimal separator must be 1 char",
+    );
     assert.equal(
       thousandSeparator?.length,
       1,
