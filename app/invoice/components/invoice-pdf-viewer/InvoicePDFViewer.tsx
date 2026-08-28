@@ -4,11 +4,7 @@ import type { InvoiceData } from "@/lib/invoice/types";
 import { PDFViewer } from "@react-pdf/renderer";
 import type React from "react";
 import { useMemo } from "react";
-import { ApexTemplate } from "../../templates/apex/ApexTemplate";
-import { DefaultTemplate } from "../../templates/default/DefaultTemplate";
-import { EvergreenTemplate } from "../../templates/evergreen/EvergreenTemplate";
-import { GraniteTemplate } from "../../templates/granite-ledger/GraniteTemplate";
-import { StripeTemplate } from "../../templates/stripe/StripeTemplate";
+import { InvoiceDocument } from "../../invoice-document";
 
 interface InvoicePDFViewerProps {
   invoiceData: InvoiceData;
@@ -57,17 +53,7 @@ const InvoicePDFViewer: React.FC<InvoicePDFViewerProps> = ({ invoiceData }) => {
       height="100%"
       style={{ border: "none" }}
     >
-      {invoiceData.templateKey === "stripe" ? (
-        <StripeTemplate invoiceData={invoiceData} />
-      ) : invoiceData.templateKey === "granite" ? (
-        <GraniteTemplate invoiceData={invoiceData} />
-      ) : invoiceData.templateKey === "apex" ? (
-        <ApexTemplate invoiceData={invoiceData} />
-      ) : invoiceData.templateKey === "evergreen" ? (
-        <EvergreenTemplate invoiceData={invoiceData} />
-      ) : (
-        <DefaultTemplate invoiceData={invoiceData} />
-      )}
+      <InvoiceDocument invoiceData={invoiceData} />
     </PDFViewer>
   );
 };

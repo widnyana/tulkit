@@ -82,4 +82,60 @@ describe("invoiceDataSchema", () => {
     });
     assert.ok(!r.success, "unknown template key should be rejected");
   });
+
+  it("accepts a base64 image data URI logo", () => {
+    const r = invoiceDataSchema.safeParse({
+      ...validInvoice,
+      logo: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUg==",
+    });
+    assert.ok(r.success, "expected data URI logo to parse");
+  });
+
+  it("rejects remote URLs as logo (SSRF guard) and oversized images", () => {
+    for (const logo of [
+      "http://169.254.169.254/latest/meta-data/",
+      "https://evil.example/logo.png",
+      "data:text/html;base64,PGh0bWw+",
+      "file:///etc/passwd",
+      `data:image/png;base64,${"A".repeat(3_000_000)}`,
+    ]) {
+      const r = invoiceDataSchema.safeParse({ ...validInvoice, logo });
+      assert.ok(
+        !r.success,
+        `expected logo to be rejected: ${logo.slice(0, 40)}`,
+      );
+    }
+  });
+
+  it("enforces length caps (DoS bound)", () => {
+    const r = invoiceDataSchema.safeParse({
+      ...validInvoice,
+      items: [
+        { id: "1", description: "x".repeat(2001), quantity: 1, unitPrice: 1 },
+      ],
+    });
+    assert.ok(!r.success);
+    assert.ok(codes(r).includes("too_big"));
+
+    const tooMany = invoiceDataSchema.safeParse({
+      ...validInvoice,
+      items: Array.from({ length: 501 }, (_, i) => ({
+        id: String(i),
+        description: "x",
+        quantity: 1,
+        unitPrice: 1,
+      })),
+    });
+    assert.ok(!tooMany.success);
+  });
+
+  it("rejects non-ISO dates", () => {
+    for (const date of ["13/06/2025", "June 13", "", "2025-6-1"]) {
+      const r = invoiceDataSchema.safeParse({
+        ...validInvoice,
+        issueDate: date,
+      });
+      assert.ok(!r.success, `expected issueDate to be rejected: "${date}"`);
+    }
+  });
 });

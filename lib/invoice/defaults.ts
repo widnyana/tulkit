@@ -48,3 +48,18 @@ export function createDefaultInvoiceData(): InvoiceData {
     showBranding: true,
   };
 }
+
+// Single merge node: layer parsed/stored data over current state so optional
+// fields added later stay defined. Used by mount-restore AND JSON import.
+export function mergeInvoiceWithDefaults(
+  prev: InvoiceData,
+  saved: InvoiceData,
+): InvoiceData {
+  return {
+    ...prev,
+    ...saved,
+    recipient: { ...prev.recipient, ...saved.recipient },
+    sender: { ...prev.sender, ...saved.sender },
+    paymentInfo: { ...prev.paymentInfo, ...saved.paymentInfo },
+  };
+}

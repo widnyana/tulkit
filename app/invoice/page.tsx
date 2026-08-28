@@ -1,9 +1,16 @@
 "use client";
 
-import { createDefaultInvoiceData } from "@/lib/invoice/defaults";
-import { loadInvoice } from "@/lib/invoice/storage";
+import {
+  createDefaultInvoiceData,
+  mergeInvoiceWithDefaults,
+} from "@/lib/invoice/defaults";
+import { exportInvoiceJson, loadInvoice } from "@/lib/invoice/storage";
 import type { InvoiceData } from "@/lib/invoice/types";
-import { useEffect, useState } from "react";
+import { invoiceDataSchema } from "@/lib/invoice/validation";
+import { FileDown, FileUp } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { Button } from "./components/ui/button";
 import InvoiceDownloadButton from "./components/InvoiceDownloadButton";
 import InvoiceForm from "./components/InvoiceForm";
 import InvoicePDFPreview from "./components/InvoicePDFPreview";
@@ -14,20 +21,43 @@ const InvoicePage = () => {
     createDefaultInvoiceData,
   );
   const [isLoading, setIsLoading] = useState(true);
+  // Bumped on JSON import so InvoiceForm remounts with the imported data —
+  // react-hook-form owns its state after mount and ignores parent updates.
+  const [formVersion, setFormVersion] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExportJson = () => {
+    try {
+      exportInvoiceJson(invoiceData);
+      toast.success("Invoice JSON downloaded");
+    } catch {
+      toast.error("Could not download invoice JSON");
+    }
+  };
+
+  const handleImportJson = async (file: File) => {
+    try {
+      const parsed = invoiceDataSchema.safeParse(JSON.parse(await file.text()));
+      if (!parsed.success) {
+        toast.error(
+          `Invalid invoice file: ${parsed.error.issues[0]?.message ?? "unknown error"}`,
+        );
+        return;
+      }
+      // Single merge node — same one the mount-restore path uses.
+      setInvoiceData((prev) => mergeInvoiceWithDefaults(prev, parsed.data));
+      toast.success("Invoice imported");
+      setFormVersion((v) => v + 1);
+    } catch {
+      toast.error("Could not read file as JSON");
+    }
+  };
 
   useEffect(() => {
     // Load saved data from localStorage when component mounts
     const savedData = loadInvoice();
     if (savedData) {
-      // Merge over defaults so newly-added optional fields (e.g. recipient
-      // email/phone) stay defined even for invoices saved before they existed.
-      setInvoiceData((prev) => ({
-        ...prev,
-        ...savedData,
-        recipient: { ...prev.recipient, ...savedData.recipient },
-        sender: { ...prev.sender, ...savedData.sender },
-        paymentInfo: { ...prev.paymentInfo, ...savedData.paymentInfo },
-      }));
+      setInvoiceData((prev) => mergeInvoiceWithDefaults(prev, savedData));
     }
     setIsLoading(false);
   }, []);
@@ -68,12 +98,44 @@ const InvoicePage = () => {
           Invoice Generator
         </h1>
         <p className="sr-only">
-          Generate clean, professional invoice PDFs for freelance work, side projects, or whatever needs a paper trail. Customize sender/recipient details, line items, tax rates, currency formatting, and payment info — then export directly to PDF. The invoice layout is your standard professional format, not some avant-garde designer experiment. All data stays in your browser; nothing gets sent to a server.
+          Generate clean, professional invoice PDFs for freelance work, side
+          projects, or whatever needs a paper trail. Customize sender/recipient
+          details, line items, tax rates, currency formatting, and payment info
+          — then export directly to PDF. The invoice layout is your standard
+          professional format, not some avant-garde designer experiment. All
+          data stays in your browser; nothing gets sent to a server.
         </p>
+
+        <div className="flex gap-2 mb-4">
+          <Button variant="outline" size="sm" onClick={handleExportJson}>
+            <FileDown className="w-4 h-4 mr-2" />
+            Export JSON
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <FileUp className="w-4 h-4 mr-2" />
+            Import JSON
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="application/json,.json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleImportJson(file);
+              e.target.value = "";
+            }}
+          />
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-150px)]">
           <div className="bg-card rounded-lg shadow-md overflow-y-auto">
             <InvoiceForm
+              key={formVersion}
               initialData={invoiceData}
               onDataChange={setInvoiceData}
             />

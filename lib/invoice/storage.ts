@@ -1,3 +1,4 @@
+import { invoiceDataSchema } from "./validation";
 import type { InvoiceData } from "./types";
 
 const INVOICE_STORAGE_KEY = "tulkit_invoice_data";
@@ -13,12 +14,15 @@ export function loadInvoice(): InvoiceData | null {
       return null;
     }
 
-    const parsed = JSON.parse(storedData);
-    if (isValidInvoiceData(parsed)) {
-      return parsed;
+    // Single boundary definition for the invoice shape — the same zod schema
+    // that gates file import and the API. Anything it rejects resets to null.
+    const parsed = invoiceDataSchema.safeParse(JSON.parse(storedData));
+    if (parsed.success) {
+      return parsed.data;
     }
     console.warn(
       "Invalid invoice data found in storage, resetting to defaults",
+      parsed.error.issues,
     );
     return null;
   } catch (error) {
@@ -33,14 +37,26 @@ export function saveInvoice(data: InvoiceData): void {
   }
 
   try {
-    if (isValidInvoiceData(data)) {
-      window.localStorage.setItem(INVOICE_STORAGE_KEY, JSON.stringify(data));
-    } else {
-      console.error("Invalid invoice data, not saving to storage");
-    }
+    // data is already trusted (form state only updates after schema validation).
+    window.localStorage.setItem(INVOICE_STORAGE_KEY, JSON.stringify(data));
   } catch (error) {
     console.error("Error saving invoice data to storage", error);
   }
+}
+
+export function exportInvoiceJson(data: InvoiceData): void {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `invoice-${data.invoiceNumber || "untitled"}.json`;
+  a.click();
+  // Defer revoke: revoking synchronously after click() can cancel the
+  // download on Firefox/Safari. ponytail: fixed 10s timer, drop when the
+  // download pipeline ever moves to streams.
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
 export function clearInvoice(): void {
@@ -55,23 +71,3 @@ export function clearInvoice(): void {
   }
 }
 
-// validation function to check if data has required structure
-function isValidInvoiceData(data: InvoiceData): data is InvoiceData {
-  return (
-    data &&
-    typeof data === "object" &&
-    data.sender &&
-    typeof data.sender === "object" &&
-    data.recipient &&
-    typeof data.recipient === "object" &&
-    typeof data.invoiceNumber === "string" &&
-    typeof data.issueDate === "string" &&
-    typeof data.dueDate === "string" &&
-    Array.isArray(data.items) &&
-    typeof data.taxEnabled === "boolean" &&
-    typeof data.taxRate === "number" &&
-    (typeof data.templateKey === "string" || data.templateKey === undefined) &&
-    (typeof data.currency === "string" || data.currency === undefined) &&
-    (typeof data.paymentInfo === "object" || data.paymentInfo === undefined)
-  );
-}

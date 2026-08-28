@@ -69,6 +69,9 @@ export const tools: Tool[] = [
       "PDF invoice",
       "billing",
       "invoice template",
+      "llms.txt",
+      "api",
+      "agent",
     ],
   },
   {
