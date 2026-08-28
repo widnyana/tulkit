@@ -6,11 +6,7 @@ import { Download } from "lucide-react";
 import type React from "react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { DefaultTemplate } from "../templates/default/DefaultTemplate";
-import { StripeTemplate } from "../templates/stripe/StripeTemplate";
-import { GraniteTemplate } from "../templates/granite-ledger/GraniteTemplate";
-import { ApexTemplate } from "../templates/apex/ApexTemplate";
-import { EvergreenTemplate } from "../templates/evergreen/EvergreenTemplate";
+import { InvoiceDocument } from "../invoice-document";
 import { Button } from "./ui/button";
 
 interface InvoiceDownloadButtonProps {
@@ -83,19 +79,7 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
     <div className="p-4 border-t bg-muted">
       <PDFDownloadLink
         key={dataKey}
-        document={
-          invoiceData.templateKey === "stripe" ? (
-            <StripeTemplate invoiceData={invoiceData} />
-          ) : invoiceData.templateKey === "granite" ? (
-            <GraniteTemplate invoiceData={invoiceData} />
-          ) : invoiceData.templateKey === "apex" ? (
-            <ApexTemplate invoiceData={invoiceData} />
-          ) : invoiceData.templateKey === "evergreen" ? (
-            <EvergreenTemplate invoiceData={invoiceData} />
-          ) : (
-            <DefaultTemplate invoiceData={invoiceData} />
-          )
-        }
+        document={<InvoiceDocument invoiceData={invoiceData} />}
         fileName={`invoice-${invoiceData.invoiceNumber || "untitled"}.pdf`}
         className="w-full block"
         onClick={handleDownloadStart}

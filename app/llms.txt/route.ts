@@ -6,19 +6,20 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-static";
 
 /**
- * Per-tool deep guides (llms.txt documents) keyed by registry href.
- * Registering here adds a Guides entry to /llms.txt — one line per new
- * agent-ready tool.
+ * Per-tool deep guides (llms.txt documents) keyed by registry href, with the
+ * tool's programmatic API endpoint (empty string = no API). Registering here
+ * adds a Guides entry to /llms.txt — one line per new agent-ready tool.
  */
-const TOOL_GUIDES: Record<string, string> = {
-  "/base64": "/base64/llms.txt",
-  "/qr-gen": "/qr-gen/llms.txt",
+const TOOL_GUIDES: Record<string, { doc: string; api: string }> = {
+  "/base64": { doc: "/base64/llms.txt", api: "/api/base64" },
+  "/invoice": { doc: "/invoice/llms.txt", api: "/api/invoice-pdf" },
+  "/qr-gen": { doc: "/qr-gen/llms.txt", api: "/api/qr" },
 };
 
-const guideLines = Object.entries(TOOL_GUIDES).map(([href, docPath]) => {
+const guideLines = Object.entries(TOOL_GUIDES).map(([href, { doc, api }]) => {
   const tool = tools.find((t) => t.href === href);
   if (!tool) throw new Error(`TOOL_GUIDES references unknown tool: ${href}`);
-  return `- [${tool.title} usage & API](${SITE_URL}${docPath}): full how-to plus programmatic reference`;
+  return `- [${tool.title} usage & API](${SITE_URL}${doc}): full how-to; programmatic endpoint POST ${SITE_URL}${api}`;
 });
 
 const DOC = `# ${SITE_NAME}
@@ -32,11 +33,6 @@ ${tools.map((tool) => `- [${tool.title}](${SITE_URL}${tool.href}): ${tool.descri
 ## Guides
 
 ${guideLines.join("\n")}
-
-## API
-
-POST ${SITE_URL}/api/base64 and POST ${SITE_URL}/api/qr are the current
-programmatic endpoints. See each tool's guide above for its schema.
 `;
 
 export async function GET(_request: NextRequest) {
