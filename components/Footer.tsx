@@ -15,7 +15,7 @@ export function Footer() {
           >
             tulkit
           </a>
-          {" "}© 2025 – now Widnyana — Solving your tiny, annoying problems so you can get back to the big ones.
+          {" "}© 2025 – now — Solving your tiny, annoying problems so you can get back to the big ones.
         </p>
 
         <p className="text-xs text-muted-foreground">
