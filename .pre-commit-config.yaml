@@ -1,0 +1,34 @@
+# Runs at pre-push via .githooks/pre-push (core.hooksPath blocks pre-commit install).
+# Manual: pre-commit run --hook-stage pre-push --all-files
+repos:
+  - repo: local
+    hooks:
+      - id: gitleaks
+        # ponytail: full-history scan; rev-range if push latency ever matters
+        name: secret scan (gitleaks, full history)
+        entry: gitleaks git . --redact --verbose
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: bun-audit
+        # needs bun.lock (untracked); fresh clones fail — bypass: --no-verify
+        name: dependency vuln scan (bun audit)
+        entry: bun audit
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: lint
+        name: code smells (biome check)
+        entry: pnpm lint
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+      - id: build
+        name: build check (next build, type gate included)
+        entry: pnpm build
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
