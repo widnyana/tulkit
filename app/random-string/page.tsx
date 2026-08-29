@@ -74,7 +74,13 @@ export default function RandomStringPage() {
             Generate secure random strings with customizable options
           </p>
           <p className="sr-only">
-            Generate random strings for API keys, tokens, temporary passwords, or test data. Configure character sets (alphanumeric, hex, base64, custom), length, and output format — single string, newline-separated list, or comma-delimited. Useful for seeding dev environments, generating test fixtures, or when you need a quick crypto-practice token that's at least trying. Everything runs in your browser; nothing is sent to a server.
+            Generate random strings for API keys, tokens, temporary passwords,
+            or test data. Configure character sets (alphanumeric, hex, base64,
+            custom), length, and output format — single string,
+            newline-separated list, or comma-delimited. Useful for seeding dev
+            environments, generating test fixtures, or when you need a quick
+            crypto-practice token that's at least trying. Everything runs in
+            your browser; nothing is sent to a server.
           </p>
         </header>
 
