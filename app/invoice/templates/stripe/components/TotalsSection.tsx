@@ -1,5 +1,5 @@
 import type { InvoiceData } from "@/lib/invoice/types";
-import { formatNumber } from "@/lib/invoice/formatNumber";
+import { formatCurrency } from "@/lib/invoice/formatCurrency";
 import { Text, View } from "@react-pdf/renderer";
 import { stripeTemplateStyles as s } from "../styles";
 
@@ -28,8 +28,7 @@ export const StripeTemplateTotalsSection = ({
         <View style={s.totalRow}>
           <Text style={s.totalLabel}>Subtotal</Text>
           <Text style={s.totalValue}>
-            {currency}
-            {formatNumber(subtotal, 2, decimalSep, thousandSep)}
+            {formatCurrency(subtotal, currency, decimalSep, thousandSep)}
           </Text>
         </View>
 
@@ -38,8 +37,7 @@ export const StripeTemplateTotalsSection = ({
           <View style={s.totalRow}>
             <Text style={s.totalLabel}>Tax ({invoiceData.taxRate || 0}%)</Text>
             <Text style={s.totalValue}>
-              {currency}
-              {formatNumber(taxAmount, 2, decimalSep, thousandSep)}
+              {formatCurrency(taxAmount, currency, decimalSep, thousandSep)}
             </Text>
           </View>
         )}
@@ -47,8 +45,7 @@ export const StripeTemplateTotalsSection = ({
         <View style={s.grandTotal}>
           <Text style={s.grandTotalLabel}>Total</Text>
           <Text style={s.grandTotalValue}>
-            {currency}
-            {formatNumber(total, 2, decimalSep, thousandSep)}
+            {formatCurrency(total, currency, decimalSep, thousandSep)}
           </Text>
         </View>
       </View>

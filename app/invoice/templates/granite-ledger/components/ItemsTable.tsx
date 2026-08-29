@@ -1,3 +1,5 @@
+import { formatCurrency } from "@/lib/invoice/formatCurrency";
+import { formatNumber } from "@/lib/invoice/formatNumber";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { Text, View } from "@react-pdf/renderer";
 import type React from "react";
@@ -10,6 +12,10 @@ interface GraniteTemplateItemsTableProps {
 export const GraniteTemplateItemsTable: React.FC<
   GraniteTemplateItemsTableProps
 > = ({ invoiceData }) => {
+  const currency = invoiceData.currency || "$";
+  const decimalSep = invoiceData.decimalSeparator || ",";
+  const thousandSep = invoiceData.thousandSeparator || ".";
+
   // Calculate totals for each item
   const itemsWithTotals = invoiceData.items.map((item) => ({
     ...item,
@@ -20,6 +26,7 @@ export const GraniteTemplateItemsTable: React.FC<
     <View style={graniteTemplateStyles.table}>
       {/* Table Header */}
       <View
+        fixed
         style={[
           graniteTemplateStyles.tableRow,
           graniteTemplateStyles.headerRow,
@@ -37,6 +44,7 @@ export const GraniteTemplateItemsTable: React.FC<
       {itemsWithTotals.map((item, index) => (
         <View
           key={item.id}
+          wrap={Boolean(item.notes)}
           style={[
             graniteTemplateStyles.tableRow,
             index % 2 === 0
@@ -55,24 +63,18 @@ export const GraniteTemplateItemsTable: React.FC<
             )}
           </View>
           <Text style={graniteTemplateStyles.narrowCol}>
-            {item.quantity.toLocaleString(undefined, {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
-            })}
+            {formatNumber(
+              item.quantity,
+              Number.isInteger(item.quantity) ? 0 : 2,
+              decimalSep,
+              thousandSep,
+            )}
           </Text>
           <Text style={graniteTemplateStyles.narrowCol}>
-            {invoiceData.currency}
-            {item.unitPrice.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {formatCurrency(item.unitPrice, currency, decimalSep, thousandSep)}
           </Text>
           <Text style={graniteTemplateStyles.narrowCol}>
-            {invoiceData.currency}
-            {item.total.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {formatCurrency(item.total, currency, decimalSep, thousandSep)}
           </Text>
         </View>
       ))}

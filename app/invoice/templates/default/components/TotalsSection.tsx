@@ -1,5 +1,5 @@
 import type { InvoiceData } from "@/lib/invoice/types";
-import { formatNumber } from "@/lib/invoice/formatNumber";
+import { formatCurrency } from "@/lib/invoice/formatCurrency";
 import { Text, View } from "@react-pdf/renderer";
 import { defaultTemplateStyles } from "../styles";
 
@@ -29,8 +29,7 @@ export const DefaultTemplateTotalsSection = ({
       <View style={styles.totalsRow}>
         <Text style={styles.totalsLabel}>Subtotal:</Text>
         <Text style={styles.value}>
-          {currency}
-          {formatNumber(subtotal, 2, decimalSep, thousandSep)}
+          {formatCurrency(subtotal, currency, decimalSep, thousandSep)}
         </Text>
       </View>
 
@@ -50,16 +49,14 @@ export const DefaultTemplateTotalsSection = ({
           Tax ({invoiceData.taxRate || 0}%):
         </Text>
         <Text style={styles.value}>
-          {currency}
-          {formatNumber(taxAmount, 2, decimalSep, thousandSep)}
+          {formatCurrency(taxAmount, currency, decimalSep, thousandSep)}
         </Text>
       </View>
 
       <View style={styles.totalsLastRow}>
         <Text style={styles.totalsLabel}>Total:</Text>
         <Text style={styles.value}>
-          {currency}
-          {formatNumber(total, 2, decimalSep, thousandSep)}
+          {formatCurrency(total, currency, decimalSep, thousandSep)}
         </Text>
       </View>
     </View>

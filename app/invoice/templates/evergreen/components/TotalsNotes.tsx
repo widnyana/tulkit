@@ -1,5 +1,5 @@
 import type { InvoiceData } from "@/lib/invoice/types";
-import { formatNumber } from "@/lib/invoice/formatNumber";
+import { formatCurrency } from "@/lib/invoice/formatCurrency";
 import { Text, View } from "@react-pdf/renderer";
 import { EvergreenTemplatePaymentInfo } from "./PaymentInfo";
 import { evergreenTemplateStyles as s } from "../styles";
@@ -24,7 +24,8 @@ export const EvergreenTemplateTotalsNotes = ({
     : 0;
   const total = subtotal + taxAmount;
 
-  const fmt = (n: number) => formatNumber(n, 2, decimalSep, thousandSep);
+  const fmt = (n: number) =>
+    formatCurrency(n, currency, decimalSep, thousandSep);
 
   return (
     // wrap={false}: the whole cluster moves to the next page as one unit, so
@@ -42,10 +43,7 @@ export const EvergreenTemplateTotalsNotes = ({
       <View style={s.totalsCol}>
         <View style={s.totalsRow}>
           <Text style={s.totalsLabel}>Subtotal</Text>
-          <Text style={s.totalsValue}>
-            {currency}
-            {fmt(subtotal)}
-          </Text>
+          <Text style={s.totalsValue}>{fmt(subtotal)}</Text>
         </View>
         {/* Always render tax row to avoid reconciliation bugs */}
         <View
@@ -60,17 +58,11 @@ export const EvergreenTemplateTotalsNotes = ({
           ]}
         >
           <Text style={s.totalsLabel}>Tax ({invoiceData.taxRate || 0}%)</Text>
-          <Text style={s.totalsValue}>
-            {currency}
-            {fmt(taxAmount)}
-          </Text>
+          <Text style={s.totalsValue}>{fmt(taxAmount)}</Text>
         </View>
         <View style={s.totalsDueRow}>
           <Text style={s.totalsDueLabel}>TOTAL DUE</Text>
-          <Text style={s.totalsDueValue}>
-            {currency}
-            {fmt(total)}
-          </Text>
+          <Text style={s.totalsDueValue}>{fmt(total)}</Text>
         </View>
       </View>
     </View>

@@ -28,7 +28,7 @@ export const GraniteTemplatePaymentInfo = ({
   }
 
   return (
-    <View style={s.paymentSection}>
+    <View style={s.paymentSection} wrap={false}>
       <Text style={s.paymentTitle}>Payment Information</Text>
 
       {/* Bank Details */}

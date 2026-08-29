@@ -39,7 +39,10 @@ const GraniteTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
           <GraniteTemplateItemsTable invoiceData={invoiceData} />
 
           {/* Notes and Totals container */}
-          <View style={graniteTemplateStyles.notesAndTotalsContainer}>
+          <View
+            style={graniteTemplateStyles.notesAndTotalsContainer}
+            wrap={false}
+          >
             {/* Notes section */}
             {hasNotes && (
               <View style={graniteTemplateStyles.notes}>
