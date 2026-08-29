@@ -3,9 +3,10 @@
 import { useState, useId } from "react";
 import type { SubnetInfo } from "../types";
 import { formatHosts, reverseLookup } from "@/lib/ip/core";
+import { useQueryState } from "../useQueryState";
 
 export default function ReverseLookup() {
-  const [ipAddress, setIPAddress] = useState("192.168.1.55");
+  const [ipAddress, setIPAddress] = useQueryState("ip", "192.168.1.55");
   const [cidr, setCIDR] = useState(24);
   const [result, setResult] = useState<SubnetInfo | null>(null);
   const [error, setError] = useState<string>("");

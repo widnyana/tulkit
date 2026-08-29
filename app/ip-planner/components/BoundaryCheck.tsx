@@ -3,9 +3,10 @@
 import { useState, useId } from "react";
 import type { BoundaryCheckResult } from "../types";
 import { suggestSubnetMask } from "@/lib/ip/core";
+import { useQueryState } from "../useQueryState";
 
 export default function BoundaryCheck() {
-  const [startIP, setStartIP] = useState("192.168.1.0");
+  const [startIP, setStartIP] = useQueryState("ip", "192.168.1.0");
   const [requiredHosts, setRequiredHosts] = useState(50);
   const [result, setResult] = useState<BoundaryCheckResult | null>(null);
   const [error, setError] = useState<string>("");
