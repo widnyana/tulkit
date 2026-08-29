@@ -47,7 +47,7 @@ const StripeTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         <StripeTemplateItemsTable invoiceData={invoiceData} />
 
         {/* Summary totals and Notes side by side */}
-        <View style={[s.row, s.mt16]}>
+        <View style={[s.row, s.mt16]} wrap={false}>
           <View style={{ flex: 1, marginRight: 20 }}>
             <StripeTemplateNotes invoiceData={invoiceData} />
           </View>

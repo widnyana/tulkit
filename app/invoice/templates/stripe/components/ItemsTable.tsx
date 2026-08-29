@@ -14,8 +14,9 @@ export const StripeTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
 
   return (
     <View style={s.mt20}>
-      {/* Table Header */}
-      <View style={s.tableHeader}>
+      {/* Table Header - fixed inside the table wrapper, so it repeats on every
+          page the table spans and on no page after it */}
+      <View style={s.tableHeader} fixed>
         <Text style={[s.label, { flex: 3 }]}>Description</Text>
         <Text style={[s.label, { flex: 0.8, textAlign: "center" }]}>Qty</Text>
         <Text style={[s.label, { flex: 1, textAlign: "right" }]}>Amount</Text>
@@ -23,7 +24,9 @@ export const StripeTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
 
       {/* Table Rows - Use stable item.id as key */}
       {invoiceData.items.map((item) => (
-        <View key={item.id} style={s.tableRow}>
+        // wrap={false}: a split row leaves the qty and amount on one page and
+        // the description on the next
+        <View key={item.id} style={s.tableRow} wrap={false}>
           <View style={{ flex: 3 }}>
             <Text style={s.tableCell}>{item.description || ""}</Text>
             {item.notes && item.notes.trim().length > 0 && (
