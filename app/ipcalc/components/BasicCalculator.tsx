@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useId } from "react";
-import { calculateBasicInfo, formatBasicOutput } from "../utils";
+import { calculateBasicInfo, formatBasicOutput, formatHosts } from "../utils";
 import type { BasicCalcResult } from "../types";
 import { useQueryState } from "../useQueryState";
 import CopyableOutput from "./CopyableOutput";
@@ -69,7 +69,7 @@ export default function BasicCalculator() {
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="e.g., 192.168.1.1"
+              placeholder="e.g., 192.168.1.1 or 2001:db8::1"
               className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -87,7 +87,7 @@ export default function BasicCalculator() {
               value={netmask}
               onChange={(e) => setNetmask(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="24 or 255.255.255.0"
+              placeholder="24, 255.255.255.0, or /64"
               className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -117,7 +117,11 @@ export default function BasicCalculator() {
               <InfoRow label="Address" value={result.address} />
               <InfoRow
                 label="Netmask"
-                value={`${result.netmask} = ${result.netmaskCIDR}`}
+                value={
+                  result.family === "ipv6"
+                    ? `/${result.netmaskCIDR}`
+                    : `${result.netmask} = ${result.netmaskCIDR}`
+                }
               />
               <InfoRow label="Wildcard" value={result.wildcard} />
               <InfoRow
@@ -129,7 +133,10 @@ export default function BasicCalculator() {
 
             <div className="space-y-3">
               <InfoRow label="Network" value={result.network} />
-              <InfoRow label="Broadcast" value={result.broadcast} />
+              <InfoRow
+                label={result.family === "ipv6" ? "Last Address" : "Broadcast"}
+                value={result.broadcast}
+              />
               <InfoRow label="HostMin" value={result.hostMin} />
               <InfoRow label="HostMax" value={result.hostMax} />
             </div>
@@ -137,8 +144,10 @@ export default function BasicCalculator() {
 
           <div className="mt-6 pt-6 border-t border-border">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InfoRow label="Hosts/Net" value={result.hostsNet.toString()} />
-              <InfoRow label="Class" value={result.networkClass} />
+              <InfoRow label="Hosts/Net" value={formatHosts(result.hostsNet)} />
+              {result.networkClass && (
+                <InfoRow label="Class" value={result.networkClass} />
+              )}
               {result.networkType && (
                 <div className="md:col-span-2">
                   <InfoRow

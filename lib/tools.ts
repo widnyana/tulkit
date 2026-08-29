@@ -40,10 +40,11 @@ export const tools: Tool[] = [
     href: "/ipcalc",
     title: "IP Calculator",
     description:
-      "Comprehensive IP calculator with subnet, supernet operations and CIDR deaggregation",
+      "Comprehensive IPv4 & IPv6 calculator with subnet, supernet operations and CIDR deaggregation",
     category: "Network",
     keywords: [
       "IP calculator",
+      "IPv6 calculator",
       "subnet calculator",
       "CIDR",
       "supernet",

@@ -5,6 +5,7 @@ import {
   calculateBasicInfo,
   calculateSubnets,
   calculateSupernet,
+  formatHosts,
   formatSubnetOutput,
   formatSupernetOutput,
 } from "../utils";
@@ -43,9 +44,12 @@ export default function SubnetCalculator() {
 
     const baseCIDR = baseInfo.netmaskCIDR;
     const newCIDRNum = Number(newMask);
+    const maxPrefix = baseInfo.family === "ipv6" ? 128 : 32;
 
-    if (Number.isNaN(newCIDRNum) || newCIDRNum < 0 || newCIDRNum > 32) {
-      setError("Invalid new netmask");
+    if (Number.isNaN(newCIDRNum) || newCIDRNum < 0 || newCIDRNum > maxPrefix) {
+      setError(
+        `Invalid new prefix (0–${maxPrefix} for ${baseInfo.family === "ipv6" ? "IPv6" : "IPv4"})`,
+      );
       return;
     }
 
@@ -101,7 +105,7 @@ export default function SubnetCalculator() {
               value={baseNetwork}
               onChange={(e) => setBaseNetwork(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="e.g., 192.168.1.0"
+              placeholder="e.g., 192.168.1.0 or 2001:db8::"
               className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -119,7 +123,7 @@ export default function SubnetCalculator() {
               value={baseMask}
               onChange={(e) => setBaseMask(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="24"
+              placeholder="24 or /64"
               className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -137,7 +141,7 @@ export default function SubnetCalculator() {
               value={newMask}
               onChange={(e) => setNewMask(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="26"
+              placeholder="26 or /80"
               className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -178,7 +182,7 @@ export default function SubnetCalculator() {
                     Wildcard
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Broadcast
+                    {supernet.family === "ipv6" ? "Last Address" : "Broadcast"}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Hosts
@@ -203,7 +207,7 @@ export default function SubnetCalculator() {
                     {supernet.broadcast}
                   </td>
                   <td className="px-4 py-3 text-sm font-mono text-foreground">
-                    {supernet.hostsNet.toLocaleString()}
+                    {formatHosts(supernet.hostsNet)}
                   </td>
                 </tr>
               </tbody>
@@ -250,7 +254,9 @@ export default function SubnetCalculator() {
                     Netmask
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Broadcast
+                    {subnets[0].family === "ipv6"
+                      ? "Last Address"
+                      : "Broadcast"}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Hosts
@@ -276,7 +282,7 @@ export default function SubnetCalculator() {
                       {subnet.broadcast}
                     </td>
                     <td className="px-4 py-3 text-sm font-mono text-foreground">
-                      {subnet.hostsNet.toLocaleString()}
+                      {formatHosts(subnet.hostsNet)}
                     </td>
                   </tr>
                 ))}
@@ -287,7 +293,7 @@ export default function SubnetCalculator() {
             <p className="text-sm text-green-800 dark:text-green-300">
               <strong>Total Subnets:</strong> {subnets.length.toLocaleString()}{" "}
               | <strong>Hosts per Subnet:</strong>{" "}
-              {subnets[0].hostsNet.toLocaleString()}
+              {formatHosts(subnets[0].hostsNet)}
             </p>
           </div>
           <div className="mt-6">

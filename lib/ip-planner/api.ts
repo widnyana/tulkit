@@ -1,11 +1,12 @@
 import {
   calculateSubnetInfo,
   detectCollisions,
+  MAX_SAFE_HOST_COUNT,
   parseCidr,
   reverseLookup,
   splitVLSM,
   suggestSubnetMask,
-} from "../../app/ip-planner/utils.ts";
+} from "../../lib/ip/core.ts";
 
 /**
  * Programmatic (agent-facing) contract for ip-planner operations.
@@ -37,9 +38,6 @@ export interface IpPlannerApiRequest {
 
 /** Max array length accepted for requiredSizes / existingSubnets. */
 export const IP_PLANNER_ARRAY_LIMIT = 1000;
-
-/** Host counts are Number-safe integers; larger allocations are prefix math. */
-const MAX_SAFE_HOST_COUNT = Number.MAX_SAFE_INTEGER;
 
 function asString(value: unknown, field: string): string {
   if (typeof value !== "string") {

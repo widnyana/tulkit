@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useId } from "react";
-import { deaggregate, formatDeaggregationOutput } from "../utils";
+import { deaggregate, formatDeaggregationOutput, formatHosts } from "../utils";
 import type { DeaggregationResult } from "../types";
 import { useQueryState } from "../useQueryState";
 import CopyableOutput from "./CopyableOutput";
@@ -75,7 +75,7 @@ export default function Deaggregator() {
               value={startIP}
               onChange={(e) => setStartIP(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="e.g., 192.168.1.10"
+              placeholder="e.g., 192.168.1.10 or 2001:db8::1"
               className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -93,7 +93,7 @@ export default function Deaggregator() {
               value={endIP}
               onChange={(e) => setEndIP(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="e.g., 192.168.1.100"
+              placeholder="e.g., 192.168.1.100 or 2001:db8::ff"
               className="w-full px-4 text-foreground py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -134,7 +134,7 @@ export default function Deaggregator() {
                   Total IP Addresses:
                 </span>
                 <span className="ml-2 text-blue-900 font-mono dark:text-blue-300">
-                  {result.totalIPs.toLocaleString()}
+                  {formatHosts(result.totalIPs)}
                 </span>
               </div>
               <div>

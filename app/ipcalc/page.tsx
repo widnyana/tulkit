@@ -49,23 +49,31 @@ function IPCalcContent() {
             IP Calculator
           </h1>
           <p className="text-muted-foreground mb-4">
-            Comprehensive IP address calculation and subnet planning tool
+            Comprehensive IPv4 &amp; IPv6 address calculation and subnet
+            planning tool
           </p>
           <p className="sr-only">
-            Punch in an IP address and CIDR prefix (or netmask) to get the full
-            breakdown: network address, broadcast address, first and last usable
-            hosts, total hosts, and binary representations. Includes a
-            deaggregator for /32 aggregates — paste a list of addresses and
-            it'll collapse them into the minimal CIDR prefix list. Useful for
-            quick network math, ACL planning, or when you need to verify that{" "}
+            Full IPv4 and IPv6 support. Punch in an IP address and CIDR prefix
+            (or netmask) to get the complete breakdown: network address, the
+            last address of the block, first and last usable hosts, total hosts,
+            and the block's RFC range type. Includes a deaggregator for
+            aggregates — paste a start and end address (either address family)
+            and it'll collapse the range into the minimal CIDR prefix list.
+            Useful for quick network math, ACL planning, or when you need to
+            verify that{" "}
             <code className="bg-muted px-1.5 py-0.5 rounded text-sm">
               192.168.1.0/24
+            </code>{" "}
+            or{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-sm">
+              2001:db8::/32
             </code>{" "}
             actually covers what you think it does. Runs entirely in your
             browser.
           </p>
           <p className="text-xs text-muted-foreground mt-4">
-            Based on ipcalc by Krischan Jodies (http://jodies.de/ipcalc)
+            IPv4 &amp; IPv6 supported · Based on ipcalc by Krischan Jodies
+            (http://jodies.de/ipcalc)
           </p>
         </div>
 
@@ -120,18 +128,21 @@ function IPCalcContent() {
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>
               <strong>Basic Calculator:</strong> Calculate network information
-              from an IP address and netmask. Shows network, broadcast, host
-              range, and special network types.
+              for IPv4 or IPv6 addresses from a netmask or prefix. Shows
+              network, the last address of the block, host range, and the
+              address's RFC range type (RFC 1918 for IPv4, ULA/link-local for
+              IPv6, etc.).
             </p>
             <p>
               <strong>Subnet / Supernet:</strong> Generate subnets when
               increasing the prefix (e.g., /24 to /26) or calculate the supernet
-              when decreasing the prefix (e.g., /24 to /22).
+              when decreasing the prefix (e.g., /24 to /22). Works for both IPv4
+              (prefix up to /32) and IPv6 (prefix up to /128).
             </p>
             <p>
-              <strong>Deaggregator:</strong> Convert an IP address range into
-              the optimal set of CIDR blocks. Useful for firewall rules and
-              routing configurations.
+              <strong>Deaggregator:</strong> Convert an IP address range — IPv4
+              or IPv6 — into the optimal set of CIDR blocks. Useful for firewall
+              rules and routing configurations.
             </p>
             <p className="pt-3 border-t border-border mt-3">
               <strong>Credits:</strong> This tool is based on the excellent{" "}

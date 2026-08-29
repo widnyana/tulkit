@@ -4,7 +4,7 @@ import {
   formatIpAddress,
   parseCidr,
   parseIpAddress,
-} from "../../app/ip-planner/utils.ts";
+} from "../../lib/ip/core.ts";
 import { parseIpPlannerRequest, runIpPlannerOperation } from "./api.ts";
 
 describe("parseIpAddress (IPv6)", () => {

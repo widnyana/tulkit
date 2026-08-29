@@ -2,7 +2,7 @@
 
 import { useState, useId } from "react";
 import type { CollisionCheck } from "../types";
-import { detectCollisions } from "../utils";
+import { detectCollisions } from "@/lib/ip/core";
 
 export default function CollisionDetector() {
   const [existingSubnets, setExistingSubnets] = useState(

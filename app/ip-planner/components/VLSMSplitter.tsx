@@ -2,7 +2,7 @@
 
 import { useState, useId } from "react";
 import type { VLSMResult } from "../types";
-import { formatHosts, splitVLSM } from "../utils";
+import { formatHosts, splitVLSM } from "@/lib/ip/core";
 
 export default function VLSMSplitter() {
   const [parentBlock, setParentBlock] = useState("10.10.0.0/22");
