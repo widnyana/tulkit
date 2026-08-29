@@ -79,9 +79,10 @@ function parseV4Value(s: string): bigint | null {
   return out;
 }
 
-function parseV6Value(s: string): bigint | null {
-  if (!s || s.includes("%")) return null; // no zone IDs
+function parseV6Value(input: string): bigint | null {
+  if (!input || input.includes("%")) return null; // no zone IDs
 
+  let s = input;
   // Embedded IPv4 → rewrite as two hex groups.
   if (s.includes(".")) {
     const idx = s.lastIndexOf(":");
