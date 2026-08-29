@@ -169,7 +169,9 @@ function InfoRow({
 }) {
   return (
     <div className="flex justify-between items-center py-2">
-      <span className="text-sm font-medium text-muted-foreground">{label}:</span>
+      <span className="text-sm font-medium text-muted-foreground">
+        {label}:
+      </span>
       <span
         className={`text-sm font-mono ${
           highlight ? "text-blue-600 font-semibold" : "text-foreground"

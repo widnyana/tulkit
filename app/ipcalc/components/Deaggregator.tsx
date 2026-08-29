@@ -146,7 +146,9 @@ export default function Deaggregator() {
                 </span>
               </div>
               <div>
-                <span className="font-medium text-blue-800 dark:text-blue-300">Range:</span>
+                <span className="font-medium text-blue-800 dark:text-blue-300">
+                  Range:
+                </span>
                 <span className="ml-2 text-blue-900 font-mono dark:text-blue-300">
                   {startIP} - {endIP}
                 </span>

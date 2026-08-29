@@ -372,10 +372,7 @@ function formatRows(rows: [string, string][]): CopyableOutput {
 }
 
 /** Render objects as a markdown table + aligned plaintext columns. */
-function formatTable(
-  headers: string[],
-  rows: string[][],
-): CopyableOutput {
+function formatTable(headers: string[], rows: string[][]): CopyableOutput {
   const markdown = [
     `| ${headers.join(" | ")} |`,
     `| ${headers.map(() => "---").join(" | ")} |`,
@@ -386,7 +383,10 @@ function formatTable(
     Math.max(h.length, ...rows.map((r) => r[i].length)),
   );
   const line = (cells: string[]) =>
-    cells.map((c, i) => c.padEnd(widths[i])).join("  ").trimEnd();
+    cells
+      .map((c, i) => c.padEnd(widths[i]))
+      .join("  ")
+      .trimEnd();
   const plaintext = [line(headers), ...rows.map(line)].join("\n");
 
   return { markdown, plaintext };
