@@ -14,7 +14,8 @@
       "next.config.ts",
       "README.md",
       "postcss.config.mjs",
-      "tsconfig.json"
+      "tsconfig.json",
+      "!lib/qrcodegen.ts"
     ]
   },
   "formatter": {
@@ -25,7 +26,7 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "a11y": {
         "noSvgWithoutTitle": "off",
         "noStaticElementInteractions": "off",
@@ -54,6 +55,11 @@
       "source": {
         "organizeImports": "off"
       }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
     }
   }
 }
