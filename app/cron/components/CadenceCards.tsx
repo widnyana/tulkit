@@ -36,7 +36,9 @@ export default function CadenceCards({ active, onSelect }: CadenceCardsProps) {
             >
               <span
                 className={`block text-sm font-medium ${
-                  isActive ? "text-blue-700 dark:text-blue-300" : "text-foreground"
+                  isActive
+                    ? "text-blue-700 dark:text-blue-300"
+                    : "text-foreground"
                 }`}
               >
                 {p.label}
