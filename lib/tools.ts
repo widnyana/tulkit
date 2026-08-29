@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SITE_NAME } from "./site";
 
 /**
- * Serializable tool catalog — the single source of truth for the homepage
+ * Serializable tool catalog; the single source of truth for the homepage
  * grid, sitemap, per-tool metadata, OG images, and JSON-LD. Presentation
  * (icons, category colors) stays in the components that render it.
  */
@@ -32,9 +32,15 @@ export const tools: Tool[] = [
     href: "/ip-planner",
     title: "NetPlan",
     description:
-      "IP network planning with VLSM, collision detection, and boundary validation",
+      "IPv4 & IPv6 network planning with VLSM, collision detection, and boundary validation",
     category: "Network",
-    keywords: ["VLSM", "subnet planner", "IP planning", "network design"],
+    keywords: [
+      "VLSM",
+      "subnet planner",
+      "IP planning",
+      "IPv6 planning",
+      "network design",
+    ],
   },
   {
     href: "/ipcalc",

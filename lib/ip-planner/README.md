@@ -2,7 +2,7 @@
 
 Agent-facing **programmatic contract** for the `/ip-planner` tool: pure
 parsing + dispatch over the shared subnet core in [`lib/ip`](../ip/README.md).
-No DOM, no network — safe to unit test directly and to call from a route
+No DOM, no network; safe to unit test directly and to call from a route
 handler (`app/ip-planner/llms.txt/route.ts` re-exports the operation list).
 
 ## Files
@@ -22,7 +22,7 @@ Notable rules:
 
 - `requiredSizes` / `existingSubnets` are capped at `IP_PLANNER_ARRAY_LIMIT = 1000` entries.
 - Host counts must be integers in `[1, MAX_SAFE_HOST_COUNT]` (re-exported from
-  `lib/ip/core.ts` — the single definition lives there).
+  `lib/ip/core.ts`, where the single definition lives).
 - `collision` rejects mixed address families: IPv4 and IPv6 are disjoint
   spaces, so a mixed query is caller error.
 - `detectCollisions` reports invalid CIDRs in its `message` instead of failing,

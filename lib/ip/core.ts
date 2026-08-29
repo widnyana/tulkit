@@ -138,7 +138,7 @@ export function validateCIDR(cidr: string): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Operations — ip-planner
+// Operations (ip-planner)
 // ---------------------------------------------------------------------------
 
 function subnetInfoFrom(
@@ -326,7 +326,7 @@ export function detectCollisions(
 }
 
 // ---------------------------------------------------------------------------
-// Operations — ipcalc
+// Operations (ipcalc)
 // ---------------------------------------------------------------------------
 
 /**

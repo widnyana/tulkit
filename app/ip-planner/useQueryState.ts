@@ -9,7 +9,7 @@ import { useCallback, useEffect, useRef } from "react";
  *
  * Copied from app/cron/useQueryState (the improved variant): the returned
  * setter has a stable identity across renders and skips navigation entirely
- * when the resulting query string is unchanged — this prevents feedback loops
+ * when the resulting query string is unchanged. This prevents feedback loops
  * where a render effect pushes a value, the URL update recreates the callback,
  * and the effect fires again.
  */

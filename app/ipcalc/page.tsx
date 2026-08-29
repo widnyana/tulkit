@@ -57,7 +57,7 @@ function IPCalcContent() {
             (or netmask) to get the complete breakdown: network address, the
             last address of the block, first and last usable hosts, total hosts,
             and the block's RFC range type. Includes a deaggregator for
-            aggregates — paste a start and end address (either address family)
+            aggregates: paste a start and end address (either address family)
             and it'll collapse the range into the minimal CIDR prefix list.
             Useful for quick network math, ACL planning, or when you need to
             verify that{" "}
@@ -140,8 +140,8 @@ function IPCalcContent() {
               (prefix up to /32) and IPv6 (prefix up to /128).
             </p>
             <p>
-              <strong>Deaggregator:</strong> Convert an IP address range — IPv4
-              or IPv6 — into the optimal set of CIDR blocks. Useful for firewall
+              <strong>Deaggregator:</strong> Convert an IP address range (IPv4
+              or IPv6) into the optimal set of CIDR blocks. Useful for firewall
               rules and routing configurations.
             </p>
             <p className="pt-3 border-t border-border mt-3">

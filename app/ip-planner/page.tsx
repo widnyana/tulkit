@@ -61,16 +61,17 @@ function IPPlannerContent() {
           <h1 className="text-3xl font-bold text-foreground mb-2">NetPlan</h1>
           <p className="text-muted-foreground mb-4">
             Plan, validate, and prevent IP address collisions with comprehensive
-            subnet tools.
+            IPv4 &amp; IPv6 subnet tools.
           </p>
           <p className="sr-only">
-            Plan and visualize IP subnet allocations without fighting a
-            calculator. Enter your network address and prefix length, then
-            generate subnets with whatever sizes you need — /24 for offices, /29
-            for point-to-point links, /32 for loopbacks. The tool shows address
-            ranges, usable hosts, and CIDR notations in a clean table. Useful
-            for network documentation, lab setups, or that moment when you
-            realize you've backed yourself into a corner with 10.0.0.0/8.
+            Full IPv4 and IPv6 support. Plan and visualize IP subnet allocations
+            without fighting a calculator. Enter your network address and prefix
+            length, then generate subnets with whatever sizes you need: /24 for
+            offices, /29 for point-to-point links, /32 for loopbacks, or IPv6
+            blocks like 2001:db8::/48. The tool shows address ranges, usable
+            hosts, and CIDR notations in a clean table. Useful for network
+            documentation, lab setups, or that moment when you realize you've
+            backed yourself into a corner with 10.0.0.0/8.
           </p>
 
           <div className="mt-8 bg-blue-50 border border-blue-200 dark:bg-blue-950 dark:border-blue-900 rounded-lg p-4">

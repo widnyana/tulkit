@@ -5,7 +5,7 @@
  * family-generic dispatch lives in ./core.ts.
  */
 
-/** Leading-ones mask check: octets are 0–255 and the mask must be contiguous. */
+/** Leading-ones mask check: octets are 0-255 and the mask must be contiguous. */
 const DECIMAL_OCTET = /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
 const V4_MAX = 0xffff_ffffn;
 
@@ -47,7 +47,7 @@ export function dottedMaskToCidr(mask: string): number | null {
 const v4 = (a: number, b: number, c: number, d: number): bigint =>
   (BigInt(a) << 24n) | (BigInt(b) << 16n) | (BigInt(c) << 8n) | BigInt(d);
 
-/** Address class A–E based on the first octet. */
+/** Address class A-E based on the first octet. */
 export function classifyV4Class(value: bigint): string {
   const first = Number(value >> 24n);
   if (first >= 1 && first <= 126) return "A";
