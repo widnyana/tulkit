@@ -14,7 +14,7 @@ bigint arithmetic.
 | File | Role |
 | --- | --- |
 | `types.ts` | `IpFamily`, `IpAddress`, and all result shapes (`SubnetInfo`, `BasicCalcResult`, …) |
-| `ipv4.ts` | IPv4 parse/format, dotted-mask ↔ CIDR, class A–E + RFC 1918/3330/3171/3021 classification |
+| `ipv4.ts` | IPv4 parse/format, dotted-mask ↔ CIDR, class A-E + RFC 1918/3330/3171/3021 classification |
 | `ipv6.ts` | IPv6 parse (RFC 4291, compression + embedded IPv4) / format (RFC 5952), expanded masks, RFC 4291/4193/3849 range classification |
 | `core.ts` | Family dispatch + all operations (below); the only file consumers need to import from |
 | `core.test.ts` | Unit tests (`node --test --experimental-strip-types`) |
@@ -30,7 +30,7 @@ bigint arithmetic.
 
 - **Parse at the boundary.** `parseIpAddress` / `parseCidr` are the only
   untrusted→trusted crossings; they return `null` for invalid input. Never
-  reimplement octet/hex validation elsewhere — `ipv6.ts` itself reuses
+  reimplement octet/hex validation elsewhere; `ipv6.ts` itself reuses
   `ipv4.ts`'s `parseV4Value` for embedded IPv4.
 - **Host counts** are `number` for IPv4, decimal **string** for IPv6 (they can
   exceed `Number.MAX_SAFE_INTEGER`). Use `formatHosts` for display. VLSM and

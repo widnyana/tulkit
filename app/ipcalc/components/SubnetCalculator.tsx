@@ -48,7 +48,7 @@ export default function SubnetCalculator() {
 
     if (Number.isNaN(newCIDRNum) || newCIDRNum < 0 || newCIDRNum > maxPrefix) {
       setError(
-        `Invalid new prefix (0–${maxPrefix} for ${baseInfo.family === "ipv6" ? "IPv6" : "IPv4"})`,
+        `Invalid new prefix (0-${maxPrefix} for ${baseInfo.family === "ipv6" ? "IPv6" : "IPv4"})`,
       );
       return;
     }

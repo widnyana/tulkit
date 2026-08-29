@@ -75,7 +75,7 @@ export interface BasicCalcResult {
   hostMax: string;
   /** number for IPv4, decimal string for IPv6 (may exceed 2^53). */
   hostsNet: number | string;
-  /** IPv4 class A–E; undefined for IPv6. */
+  /** IPv4 class A-E; undefined for IPv6. */
   networkClass?: string;
   /** RFC 1918/3330/… type for IPv4; RFC 4291/4193/3849 range for IPv6. */
   networkType?: string;

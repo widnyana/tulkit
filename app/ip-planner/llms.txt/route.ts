@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-static";
 
-const DOC = `# IP Planner — tulkit
+const DOC = `# IP Planner (tulkit)
 
 Canonical page: ${SITE_URL}/ip-planner
 IPv4 and IPv6 subnet planning: subnet details, VLSM splitting, mask
@@ -15,11 +15,11 @@ stores nothing.
 
 ## Web UI
 
-- **Subnet info** — network, broadcast, mask, usable hosts, first/last IP from CIDR.
-- **VLSM splitter** — divide a parent block into subnets sized to a list of host requirements (largest first).
-- **Boundary check** — suggest the optimal mask for a required host count and verify the start IP is a network address.
-- **Reverse lookup** — find subnet details for any IP within a prefix.
-- **Collision detector** — check a new subnet against a list of existing subnets.
+- **Subnet info**: network, broadcast, mask, usable hosts, first/last IP from CIDR.
+- **VLSM splitter**: divide a parent block into subnets sized to a list of host requirements (largest first).
+- **Boundary check**: suggest the optimal mask for a required host count and verify the start IP is a network address.
+- **Reverse lookup**: find subnet details for any IP within a prefix.
+- **Collision detector**: check a new subnet against a list of existing subnets.
 
 ## API
 
@@ -32,16 +32,16 @@ Content-Type: application/json
 { "operation": "subnetInfo", "cidr": "192.168.1.0/24" }
 \`\`\`
 
-- **operation** (required): one of ${IP_PLANNER_OPERATIONS.join(", ")}
+- **operation**: (required): one of ${IP_PLANNER_OPERATIONS.join(", ")}
 - op-specific fields:
 
 | Operation | Fields |
 | --------- | ------ |
 | subnetInfo | \`cidr\` (string, e.g. "10.0.0.0/16" or "2001:db8::/32") |
-| vlsm | \`parentBlock\` (string CIDR), \`requiredSizes\` (array of integers 1–2^53−1, max 1000) |
-| suggestMask | \`ip\` (string), \`requiredHosts\` (integer 1–2^53−1) |
-| reverseLookup | \`ip\` (string), \`cidr\` (integer 0–32 for IPv4, 0–128 for IPv6) |
-| collision | \`existingSubnets\` (array of CIDR strings, max 1000), \`newSubnet\` (string CIDR) — all must be the same family |
+| vlsm | \`parentBlock\` (string CIDR), \`requiredSizes\` (array of integers 1-2^53-1, max 1000) |
+| suggestMask | \`ip\` (string), \`requiredHosts\` (integer 1-2^53-1) |
+| reverseLookup | \`ip\` (string), \`cidr\` (integer 0-32 for IPv4, 0-128 for IPv6) |
+| collision | \`existingSubnets\` (array of CIDR strings, max 1000), \`newSubnet\` (string CIDR); all must be the same family |
 
 Response: \`200 {"result": {...}}\`
 
@@ -54,8 +54,8 @@ last address (IPv6 has no broadcast). For IPv4, \`usableHosts\` is a number
 and \`mask\` is dotted-quad, as before.
 - \`subnetInfo\`/\`reverseLookup\`: \`{network, broadcast, mask, cidr, usableHosts, firstIP, lastIP, cidrNotation}\`
 - \`vlsm\`: array of \`{network, cidr, mask, usableHosts, firstIP, lastIP, cidrNotation}\`, allocated largest-first
-- \`suggestMask\`: \`{suggestedMask, network, broadcast, isValid, warning?}\` — \`isValid\` is false (with \`warning\`) when the start IP is not the network address; still a 200
-- \`collision\`: \`{hasCollision, overlappingSubnets, message}\` — invalid CIDRs in the input are reported in \`message\`, not rejected; still a 200
+- \`suggestMask\`: \`{suggestedMask, network, broadcast, isValid, warning?}\`; \`isValid\` is false (with \`warning\`) when the start IP is not the network address; still a 200
+- \`collision\`: \`{hasCollision, overlappingSubnets, message}\`; invalid CIDRs in the input are reported in \`message\`, not rejected; still a 200
 
 ### Errors
 
@@ -107,7 +107,7 @@ curl -s -X POST ${SITE_URL}/api/ip-planner \\
   -d '{"operation":"vlsm","parentBlock":"2001:db8::/48","requiredSizes":[65536,100]}'
 \`\`\`
 
-CORS: fully open — any origin may call this endpoint.
+CORS: fully open; any origin may call this endpoint.
 `;
 
 export async function GET(_request: NextRequest) {

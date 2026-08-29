@@ -10,7 +10,7 @@ import {
 
 /**
  * Programmatic (agent-facing) contract for ip-planner operations.
- * Pure parsing + dispatch; no DOM, no network — safe to unit test directly
+ * Pure parsing + dispatch; no DOM, no network; safe to unit test directly
  * and to call from a route handler.
  */
 
