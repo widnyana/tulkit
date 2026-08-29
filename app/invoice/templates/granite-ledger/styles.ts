@@ -46,20 +46,13 @@ export const graniteTemplateStyles = StyleSheet.create({
     fontFamily: "Helvetica",
   },
 
-  // Enhanced main content container (modernized - no border)
-  container: {
-    backgroundColor: "#FFFFFF",
-    paddingTop: 8,
-    paddingBottom: 8,
-    paddingHorizontal: 24,
-  },
-
   // Improved details container with better spacing (modernized - using padding instead of border)
   detailsContainer: {
+    marginTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 12,
-    paddingBottom: 4,
+    marginBottom: 8,
+    paddingBottom: 2,
   },
 
   leftColumn: {
@@ -76,7 +69,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   label: {
     fontSize: 9,
     fontWeight: "bold",
-    marginBottom: 6,
+    marginBottom: 3,
     textTransform: "uppercase",
     color: "#7F8C8D", // Medium granite color
     letterSpacing: 0.8,
@@ -84,17 +77,17 @@ export const graniteTemplateStyles = StyleSheet.create({
   },
 
   value: {
-    fontSize: 11,
-    marginBottom: 3,
-    lineHeight: 1.4,
+    fontSize: 10,
+    marginBottom: 2,
+    lineHeight: 1.35,
     color: "#2C3E50", // Dark granite for readability
     fontFamily: "Helvetica",
   },
 
   contactValue: {
-    fontSize: 10,
-    marginBottom: 4,
-    lineHeight: 1.4,
+    fontSize: 9.5,
+    marginBottom: 2,
+    lineHeight: 1.35,
     color: "#2C3E50",
     fontFamily: "Helvetica",
   },
@@ -102,9 +95,6 @@ export const graniteTemplateStyles = StyleSheet.create({
   // Enhanced table with better spacing and visual hierarchy (modernized - no border)
   table: {
     width: "100%",
-    marginBottom: 10,
-    borderRadius: 4,
-    overflow: "hidden",
   },
 
   tableRow: {
@@ -116,7 +106,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   },
 
   descriptionColHeader: {
-    width: "50%",
+    width: "54%",
     padding: 8,
     textAlign: "left" as const,
     fontWeight: "bold",
@@ -128,7 +118,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   },
 
   narrowColHeader: {
-    width: "16.66%",
+    width: "15.33%",
     padding: 8,
     textAlign: "center" as const,
     fontWeight: "bold",
@@ -140,16 +130,16 @@ export const graniteTemplateStyles = StyleSheet.create({
   },
 
   descriptionCol: {
-    width: "50%",
-    padding: 7,
+    width: "54%",
+    padding: 5,
     textAlign: "left" as const,
     fontSize: 10,
     fontFamily: "Helvetica",
   },
 
   narrowCol: {
-    width: "16.66%",
-    padding: 7,
+    width: "15.33%",
+    padding: 5,
     textAlign: "center" as const,
     fontSize: 10,
     fontFamily: "Helvetica",
@@ -167,7 +157,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   // Enhanced notes and totals container with better balance
   notesAndTotalsContainer: {
     flexDirection: "row",
-    marginTop: 10,
+    marginTop: 20,
     justifyContent: "space-between",
     alignItems: "flex-start",
   },

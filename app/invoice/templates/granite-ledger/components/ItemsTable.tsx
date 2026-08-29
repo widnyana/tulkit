@@ -42,9 +42,12 @@ export const GraniteTemplateItemsTable: React.FC<
 
       {/* Table Rows */}
       {itemsWithTotals.map((item, index) => (
+        // A row must never split: letting a note-bearing row wrap left the
+        // quantity/price/total cells stranded at the foot of one page while the
+        // description moved to the next. A row that does not fit moves whole.
         <View
           key={item.id}
-          wrap={Boolean(item.notes)}
+          wrap={false}
           style={[
             graniteTemplateStyles.tableRow,
             index % 2 === 0
