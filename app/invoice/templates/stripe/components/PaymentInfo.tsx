@@ -32,7 +32,9 @@ const StripeTemplatePaymentInfo: React.FC<PaymentInfoProps> = ({
   }
 
   return (
-    <View style={s.paymentSection}>
+    // wrap={false}: the block used to split and strand a single payment row
+    // alone on the next page
+    <View style={s.paymentSection} wrap={false}>
       <Text style={[s.label, s.mb12]}>Payment Information</Text>
 
       {/* Bank Details */}
