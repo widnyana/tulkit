@@ -2,7 +2,7 @@
 
 import { useState, useId } from "react";
 import type { VLSMResult } from "../types";
-import { splitVLSM } from "../utils";
+import { formatHosts, splitVLSM } from "../utils";
 
 export default function VLSMSplitter() {
   const [parentBlock, setParentBlock] = useState("10.10.0.0/22");
@@ -42,7 +42,7 @@ export default function VLSMSplitter() {
     const text = results
       .map(
         (r) =>
-          `${r.cidrNotation} | Mask: ${r.mask} | Hosts: ${r.usableHosts} | Range: ${r.firstIP} - ${r.lastIP}`,
+          `${r.cidrNotation} | Mask: ${r.mask} | Hosts: ${formatHosts(r.usableHosts)} | Range: ${r.firstIP} - ${r.lastIP}`,
       )
       .join("\n");
     navigator.clipboard.writeText(text);
@@ -72,7 +72,7 @@ export default function VLSMSplitter() {
               type="text"
               value={parentBlock}
               onChange={(e) => setParentBlock(e.target.value)}
-              placeholder="e.g., 10.10.0.0/22"
+              placeholder="e.g., 10.10.0.0/22 or 2001:db8::/48"
               className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
@@ -163,7 +163,7 @@ export default function VLSMSplitter() {
                       {result.mask}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-foreground">
-                      {result.usableHosts.toLocaleString()}
+                      {formatHosts(result.usableHosts)}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm font-mono text-muted-foreground">
                       {result.firstIP} - {result.lastIP}

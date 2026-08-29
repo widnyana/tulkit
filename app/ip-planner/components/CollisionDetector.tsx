@@ -48,7 +48,7 @@ export default function CollisionDetector() {
               value={existingSubnets}
               onChange={(e) => setExistingSubnets(e.target.value)}
               rows={8}
-              placeholder="e.g.,&#10;10.10.0.0/24&#10;10.10.1.0/24&#10;192.168.0.0/16"
+              placeholder="e.g.,&#10;10.10.0.0/24&#10;2001:db8:1::/48&#10;192.168.0.0/16"
               className="w-full px-4 py-2 text-foreground font-mono text-sm border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
             <p className="text-xs text-muted-foreground mt-1">
@@ -68,7 +68,7 @@ export default function CollisionDetector() {
               type="text"
               value={newSubnet}
               onChange={(e) => setNewSubnet(e.target.value)}
-              placeholder="e.g., 10.10.3.0/24"
+              placeholder="e.g., 10.10.3.0/24 or 2001:db8:2::/48"
               className="w-full px-4 py-2 text-foreground font-mono border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
@@ -94,7 +94,9 @@ export default function CollisionDetector() {
           <div className="flex items-center gap-3 mb-4">
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                result.hasCollision ? "bg-red-200 dark:bg-red-900" : "bg-green-200 dark:bg-green-900"
+                result.hasCollision
+                  ? "bg-red-200 dark:bg-red-900"
+                  : "bg-green-200 dark:bg-green-900"
               }`}
             >
               <span className="text-3xl">
@@ -104,14 +106,18 @@ export default function CollisionDetector() {
             <div>
               <h3
                 className={`text-xl font-bold ${
-                  result.hasCollision ? "text-red-900 dark:text-red-300" : "text-green-900 dark:text-green-300"
+                  result.hasCollision
+                    ? "text-red-900 dark:text-red-300"
+                    : "text-green-900 dark:text-green-300"
                 }`}
               >
                 {result.hasCollision ? "COLLISION DETECTED" : "NO COLLISION"}
               </h3>
               <p
                 className={`text-sm ${
-                  result.hasCollision ? "text-red-700 dark:text-red-300" : "text-green-700 dark:text-green-300"
+                  result.hasCollision
+                    ? "text-red-700 dark:text-red-300"
+                    : "text-green-700 dark:text-green-300"
                 }`}
               >
                 {result.message}
@@ -130,7 +136,9 @@ export default function CollisionDetector() {
                     key={subnet}
                     className="bg-red-100 border border-red-300 dark:bg-red-950 dark:border-red-800 rounded-lg p-3"
                   >
-                    <p className="font-mono text-sm text-red-900 dark:text-red-300">{subnet}</p>
+                    <p className="font-mono text-sm text-red-900 dark:text-red-300">
+                      {subnet}
+                    </p>
                   </div>
                 ))}
               </div>

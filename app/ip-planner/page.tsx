@@ -49,7 +49,13 @@ export default function IPPlannerPage() {
             subnet tools.
           </p>
           <p className="sr-only">
-            Plan and visualize IP subnet allocations without fighting a calculator. Enter your network address and prefix length, then generate subnets with whatever sizes you need — /24 for offices, /29 for point-to-point links, /32 for loopbacks. The tool shows address ranges, usable hosts, and CIDR notations in a clean table. Useful for network documentation, lab setups, or that moment when you realize you've backed yourself into a corner with 10.0.0.0/8.
+            Plan and visualize IP subnet allocations without fighting a
+            calculator. Enter your network address and prefix length, then
+            generate subnets with whatever sizes you need — /24 for offices, /29
+            for point-to-point links, /32 for loopbacks. The tool shows address
+            ranges, usable hosts, and CIDR notations in a clean table. Useful
+            for network documentation, lab setups, or that moment when you
+            realize you've backed yourself into a corner with 10.0.0.0/8.
           </p>
 
           <div className="mt-8 bg-blue-50 border border-blue-200 dark:bg-blue-950 dark:border-blue-900 rounded-lg p-4">

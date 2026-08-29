@@ -3,7 +3,7 @@ export interface SubnetInfo {
   broadcast: string;
   mask: string;
   cidr: number;
-  usableHosts: number;
+  usableHosts: number | string;
   firstIP: string;
   lastIP: string;
   cidrNotation: string;
@@ -18,7 +18,7 @@ export interface VLSMResult {
   network: string;
   cidr: number;
   mask: string;
-  usableHosts: number;
+  usableHosts: number | string;
   firstIP: string;
   lastIP: string;
   cidrNotation: string;
@@ -36,10 +36,4 @@ export interface BoundaryCheckResult {
   broadcast: string;
   isValid: boolean;
   warning?: string;
-}
-
-export interface ExistingSubnet {
-  cidr: string;
-  startInt: number;
-  endInt: number;
 }
