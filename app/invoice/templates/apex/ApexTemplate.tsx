@@ -35,7 +35,7 @@ const ApexTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         <ApexTemplateHeader invoiceData={invoiceData} />
 
         {/* Two-column layout: Billed To (left) + Invoice Details (right) */}
-        <View style={s.twoColumnRow}>
+        <View style={s.twoColumnRow} wrap={false}>
           <View style={s.leftColumn}>
             <ApexTemplateBilledTo invoiceData={invoiceData} />
           </View>
@@ -47,8 +47,10 @@ const ApexTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         {/* Items Table */}
         <ApexTemplateItemsTable invoiceData={invoiceData} />
 
-        {/* Two-column layout: Notes (left) + Totals (right) */}
-        <View style={s.twoColumnRow}>
+        {/* Two-column layout: Notes (left) + Totals (right).
+            wrap={false} keeps the pair whole across a page break; mt24 carries
+            the spacing the table wrapper used to own. */}
+        <View style={[s.twoColumnRow, s.mt24]} wrap={false}>
           <View style={s.leftColumn}>
             <ApexTemplateNotes invoiceData={invoiceData} />
           </View>
@@ -58,7 +60,7 @@ const ApexTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         </View>
 
         {/* Two-column layout: Payment Information (left) + From (right) */}
-        <View style={[s.twoColumnRow, s.mt20]}>
+        <View style={[s.twoColumnRow, s.mt20]} wrap={false}>
           <View style={s.leftColumn}>
             <ApexTemplatePaymentInfo invoiceData={invoiceData} />
           </View>

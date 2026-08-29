@@ -16,9 +16,13 @@ export const ApexTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
     formatMoney(amount, currency, decimalSep, thousandSep);
 
   return (
-    <View style={s.mb24}>
-      {/* Table Header */}
-      <View style={s.tableHeader}>
+    // No bottom margin on the wrapper: react-pdf counts trailing margin when
+    // deciding whether a node fits, which pushes a table that fills the page
+    // exactly onto the next one whole. The spacing lives on the row below.
+    <View>
+      {/* Table Header - fixed inside the table wrapper, so it repeats on every
+          page the table spans and on no page after it */}
+      <View style={s.tableHeader} fixed>
         <Text style={[s.tableHeaderText, { flex: 3 }]}>Description</Text>
         <Text style={[s.tableHeaderText, { width: 60, textAlign: "center" }]}>
           Qty
@@ -33,9 +37,12 @@ export const ApexTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
 
       {/* Table Rows */}
       {invoiceData.items.map((item, index) => (
+        // wrap={false}: a split row leaves the numeric cells on one page and
+        // the description on the next
         <View
           key={item.id}
           style={[s.tableRow, index % 2 === 1 ? s.tableRowAlt : {}]}
+          wrap={false}
         >
           <View style={{ flex: 3 }}>
             <Text style={s.tableCell}>{item.description}</Text>
