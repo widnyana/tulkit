@@ -51,7 +51,10 @@ describe("sampleInvoiceData", () => {
   it("carries the intended template pressure (stresstest-lite profile)", () => {
     // Mixed note optionality: no-note items interleaved with short/long ones.
     const noteless = sampleInvoiceData.items.filter((i) => !i.notes).length;
-    assert.ok(noteless >= 3, "expected >=3 items without notes (mixed pattern)");
+    assert.ok(
+      noteless >= 3,
+      "expected >=3 items without notes (mixed pattern)",
+    );
     const longest = Math.max(
       ...sampleInvoiceData.items.map((i) => i.notes?.length ?? 0),
     );
