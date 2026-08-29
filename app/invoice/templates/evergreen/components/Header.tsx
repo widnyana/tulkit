@@ -21,14 +21,18 @@ export const EvergreenTemplateHeader = ({ invoiceData }: HeaderProps) => {
           ) : null}
           <View>
             <Text style={s.brandName}>{invoiceData.sender.name || ""}</Text>
-            <Text style={s.brandContact}>{invoiceData.sender.address || ""}</Text>
+            <Text style={s.brandContact}>
+              {invoiceData.sender.address || ""}
+            </Text>
             <Text style={s.brandContact}>{invoiceData.sender.email || ""}</Text>
             <Text style={s.brandContact}>{invoiceData.sender.phone || ""}</Text>
           </View>
         </View>
         <View style={{ alignItems: "flex-end" }}>
           <Text style={s.eyebrow}>INVOICE</Text>
-          <Text style={s.invoiceNumber}>#{invoiceData.invoiceNumber || ""}</Text>
+          <Text style={s.invoiceNumber}>
+            #{invoiceData.invoiceNumber || ""}
+          </Text>
         </View>
       </View>
     </View>
