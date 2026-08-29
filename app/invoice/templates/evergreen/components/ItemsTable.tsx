@@ -20,12 +20,16 @@ export const EvergreenTemplateItemsTable = ({
   const thousandSep = invoiceData.thousandSeparator || ".";
 
   return (
+    // The header is `fixed` *inside* this wrapper, not on the Page. react-pdf
+    // duplicates a fixed node into every fragment its immediate parent is split
+    // into, so the header repeats on each page the table spans and stops once
+    // the wrapper is exhausted - the totals page below never inherits it.
     <View>
-      {/* Table header */}
-      <View style={s.tableHeader}>
+      {/* Table header - repeats on every page the table spans */}
+      <View style={s.tableHeader} fixed>
         <Text style={s.colDescriptionHeader}>Description</Text>
         <Text style={s.colNarrowHeader}>Qty</Text>
-        <Text style={s.colNarrowHeader}>Price</Text>
+        <Text style={s.colWideHeader}>Price</Text>
         <Text style={s.colWideHeader}>Amount</Text>
       </View>
 
@@ -41,7 +45,7 @@ export const EvergreenTemplateItemsTable = ({
             {item.notes ? <Text style={s.itemNotes}>{item.notes}</Text> : null}
           </View>
           <Text style={s.colNarrow}>{item.quantity || 0}</Text>
-          <Text style={s.colNarrow}>
+          <Text style={s.colWide}>
             {formatCurrency(
               item.unitPrice || 0,
               currency,
