@@ -1,16 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense } from "react";
 import BoundaryCheck from "./components/BoundaryCheck";
 import CollisionDetector from "./components/CollisionDetector";
 import ReverseLookup from "./components/ReverseLookup";
 import VLSMSplitter from "./components/VLSMSplitter";
+import { useQueryState } from "./useQueryState";
 
 type TabType = "vlsm" | "collision" | "boundary" | "lookup";
 
 export default function IPPlannerPage() {
-  const [activeTab, setActiveTab] = useState<TabType>("vlsm");
+  return (
+    <Suspense fallback={null}>
+      <IPPlannerContent />
+    </Suspense>
+  );
+}
+
+function IPPlannerContent() {
+  const [tab, setTab] = useQueryState("tab", "vlsm");
 
   const tabs = [
     { id: "vlsm" as TabType, label: "VLSM Splitter", icon: "📊" },
@@ -18,6 +27,12 @@ export default function IPPlannerPage() {
     { id: "boundary" as TabType, label: "Boundary Check", icon: "🟡" },
     { id: "lookup" as TabType, label: "Reverse Lookup", icon: "🔍" },
   ];
+
+  // Guard the raw query-string value against the union; unknown values ↯ "vlsm".
+  const activeTab: TabType = tabs.some((t) => t.id === tab)
+    ? (tab as TabType)
+    : "vlsm";
+  const setActiveTab = (t: TabType) => setTab(t);
 
   return (
     <div className="min-h-screen bg-background p-8">
