@@ -31,37 +31,38 @@ const GraniteTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         {/* Header with muted background, logo and invoice title */}
         <GraniteTemplateHeader invoiceData={invoiceData} />
 
-        {/* Main content container */}
-        <View style={graniteTemplateStyles.container}>
-          <GraniteTemplateDetailsSection invoiceData={invoiceData} />
+        {/* Sections sit directly on the Page. They used to live inside a
+            wrapper View, and splitting that nested container jettisoned the
+            whole table to the next page instead of breaking it - a five-item
+            invoice printed an almost empty first page. */}
+        <GraniteTemplateDetailsSection invoiceData={invoiceData} />
 
-          {/* Line items table */}
-          <GraniteTemplateItemsTable invoiceData={invoiceData} />
+        {/* Line items table */}
+        <GraniteTemplateItemsTable invoiceData={invoiceData} />
 
-          {/* Notes and Totals container */}
-          <View
-            style={graniteTemplateStyles.notesAndTotalsContainer}
-            wrap={false}
-          >
-            {/* Notes section */}
-            {hasNotes && (
-              <View style={graniteTemplateStyles.notes}>
-                <Text style={graniteTemplateStyles.notesLabel}>Notes</Text>
-                <Text style={graniteTemplateStyles.value}>
-                  {invoiceData.notes}
-                </Text>
-              </View>
-            )}
-
-            {/* Totals section */}
-            <View style={graniteTemplateStyles.totals}>
-              <GraniteTemplateTotalsSection invoiceData={invoiceData} />
+        {/* Notes and Totals container */}
+        <View
+          style={graniteTemplateStyles.notesAndTotalsContainer}
+          wrap={false}
+        >
+          {/* Notes section */}
+          {hasNotes && (
+            <View style={graniteTemplateStyles.notes}>
+              <Text style={graniteTemplateStyles.notesLabel}>Notes</Text>
+              <Text style={graniteTemplateStyles.value}>
+                {invoiceData.notes}
+              </Text>
             </View>
-          </View>
+          )}
 
-          {/* Payment Information section */}
-          <GraniteTemplatePaymentInfo invoiceData={invoiceData} />
+          {/* Totals section */}
+          <View style={graniteTemplateStyles.totals}>
+            <GraniteTemplateTotalsSection invoiceData={invoiceData} />
+          </View>
         </View>
+
+        {/* Payment Information section */}
+        <GraniteTemplatePaymentInfo invoiceData={invoiceData} />
 
         {/* Footer */}
         <View style={graniteTemplateStyles.footer} fixed>
