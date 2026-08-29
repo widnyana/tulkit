@@ -72,7 +72,18 @@ export default function EnvComparePage() {
             Compare environment files to identify differences and missing keys
           </p>
           <p className="sr-only">
-            Paste two <code className="bg-muted px-1.5 py-0.5 rounded text-sm">.env</code> files and see exactly what differs — missing keys, changed values, and overlaps in a clean side-by-side view. Useful when you're promoting staging configs to production, debugging why something works locally but not in dev, or just sanity-checking that your teammate actually added that new <code className="bg-muted px-1.5 py-0.5 rounded text-sm">DATABASE_URL</code>. The comparison happens entirely in your browser; we never see your keys or values.
+            Paste two{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-sm">.env</code>{" "}
+            files and see exactly what differs — missing keys, changed values,
+            and overlaps in a clean side-by-side view. Useful when you're
+            promoting staging configs to production, debugging why something
+            works locally but not in dev, or just sanity-checking that your
+            teammate actually added that new{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-sm">
+              DATABASE_URL
+            </code>
+            . The comparison happens entirely in your browser; we never see your
+            keys or values.
           </p>
           <div className="flex items-start gap-2 px-4 py-3 bg-green-50 border border-green-200 rounded-lg dark:bg-green-950 dark:border-green-900">
             <svg
