@@ -1,5 +1,5 @@
 import type { InvoiceData } from "@/lib/invoice/types";
-import { formatNumber } from "@/lib/invoice/formatNumber";
+import { formatCurrency } from "@/lib/invoice/formatCurrency";
 import { Text, View } from "@react-pdf/renderer";
 import { defaultTemplateStyles } from "../styles";
 
@@ -38,14 +38,17 @@ export const DefaultTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
           </Text>
           <Text style={styles.narrowCol}>{item.quantity || 0}</Text>
           <Text style={styles.narrowCol}>
-            {currency}
-            {formatNumber(item.unitPrice || 0, 2, decimalSep, thousandSep)}
+            {formatCurrency(
+              item.unitPrice || 0,
+              currency,
+              decimalSep,
+              thousandSep,
+            )}
           </Text>
           <Text style={styles.narrowCol}>
-            {currency}
-            {formatNumber(
+            {formatCurrency(
               (item.quantity || 0) * (item.unitPrice || 0),
-              2,
+              currency,
               decimalSep,
               thousandSep,
             )}

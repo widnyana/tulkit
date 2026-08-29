@@ -1,3 +1,4 @@
+import { formatCurrency } from "@/lib/invoice/formatCurrency";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { Text, View } from "@react-pdf/renderer";
 import type React from "react";
@@ -10,6 +11,10 @@ interface GraniteTemplateTotalsSectionProps {
 export const GraniteTemplateTotalsSection: React.FC<
   GraniteTemplateTotalsSectionProps
 > = ({ invoiceData }) => {
+  const currency = invoiceData.currency || "$";
+  const decimalSep = invoiceData.decimalSeparator || ",";
+  const thousandSep = invoiceData.thousandSeparator || ".";
+
   // Calculate totals
   const subtotal = invoiceData.items.reduce(
     (sum, item) => sum + item.quantity * item.unitPrice,
@@ -23,16 +28,12 @@ export const GraniteTemplateTotalsSection: React.FC<
   const total = subtotal + taxAmount;
 
   return (
-    <View style={graniteTemplateStyles.totalsTable}>
+    <View style={graniteTemplateStyles.totalsTable} wrap={false}>
       {/* Subtotal */}
       <View style={graniteTemplateStyles.totalsRow}>
         <Text style={graniteTemplateStyles.totalsLabel}>Subtotal:</Text>
         <Text style={graniteTemplateStyles.value}>
-          {invoiceData.currency}
-          {subtotal.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+          {formatCurrency(subtotal, currency, decimalSep, thousandSep)}
         </Text>
       </View>
 
@@ -43,24 +44,28 @@ export const GraniteTemplateTotalsSection: React.FC<
             Tax ({invoiceData.taxRate}%):
           </Text>
           <Text style={graniteTemplateStyles.value}>
-            {invoiceData.currency}
-            {taxAmount.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}
+            {formatCurrency(taxAmount, currency, decimalSep, thousandSep)}
           </Text>
         </View>
       )}
 
       {/* Total - with accent color */}
       <View style={graniteTemplateStyles.totalsLastRow}>
-        <Text style={graniteTemplateStyles.totalsLabel}>Total:</Text>
-        <Text style={graniteTemplateStyles.value}>
-          {invoiceData.currency}
-          {total.toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}
+        <Text
+          style={[
+            graniteTemplateStyles.totalsLabel,
+            graniteTemplateStyles.totalsLastText,
+          ]}
+        >
+          Total:
+        </Text>
+        <Text
+          style={[
+            graniteTemplateStyles.value,
+            graniteTemplateStyles.totalsLastText,
+          ]}
+        >
+          {formatCurrency(total, currency, decimalSep, thousandSep)}
         </Text>
       </View>
     </View>

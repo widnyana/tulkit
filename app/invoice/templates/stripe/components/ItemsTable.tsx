@@ -1,5 +1,5 @@
 import type { InvoiceData } from "@/lib/invoice/types";
-import { formatNumber } from "@/lib/invoice/formatNumber";
+import { formatCurrency } from "@/lib/invoice/formatCurrency";
 import { Text, View } from "@react-pdf/renderer";
 import { stripeTemplateStyles as s } from "../styles";
 
@@ -46,10 +46,9 @@ export const StripeTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
               { flex: 1, textAlign: "right", fontWeight: 500 },
             ]}
           >
-            {currency}
-            {formatNumber(
+            {formatCurrency(
               (item.quantity || 0) * (item.unitPrice || 0),
-              2,
+              currency,
               decimalSep,
               thousandSep,
             )}

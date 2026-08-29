@@ -1,3 +1,4 @@
+import { formatCurrency as formatMoney } from "@/lib/invoice/formatCurrency";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { Text, View } from "@react-pdf/renderer";
 import { apexTemplateStyles as s } from "../styles";
@@ -13,11 +14,8 @@ export const ApexTemplateTotalsSection = ({
   const decimalSep = invoiceData.decimalSeparator || ",";
   const thousandSep = invoiceData.thousandSeparator || ".";
 
-  const formatCurrency = (amount: number) => {
-    const parts = amount.toFixed(2).split(".");
-    const integerPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandSep);
-    return `${currency}${integerPart}${decimalSep}${parts[1]}`;
-  };
+  const formatCurrency = (amount: number) =>
+    formatMoney(amount, currency, decimalSep, thousandSep);
 
   const subtotal = invoiceData.items.reduce(
     (sum, item) => sum + item.quantity * item.unitPrice,

@@ -3,7 +3,9 @@ import { StyleSheet } from "@react-pdf/renderer";
 // Improved Granite Ledger template styles
 export const graniteTemplateStyles = StyleSheet.create({
   page: {
-    padding: 30,
+    paddingTop: 30,
+    paddingBottom: 56, // clears the fixed footer
+    paddingHorizontal: 30,
     fontFamily: "Helvetica",
     fontSize: 10,
     backgroundColor: "#FFFFFF",
@@ -12,7 +14,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   // Enhanced header with better typography and visual weight (modernized - no border radius)
   header: {
     backgroundColor: "#2C3E50", // Deeper granite blue-gray
-    padding: 20,
+    padding: 14,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
@@ -47,8 +49,8 @@ export const graniteTemplateStyles = StyleSheet.create({
   // Enhanced main content container (modernized - no border)
   container: {
     backgroundColor: "#FFFFFF",
-    paddingTop: 20, // Reduced from 24 to account for header spacing
-    paddingBottom: 24,
+    paddingTop: 8,
+    paddingBottom: 8,
     paddingHorizontal: 24,
   },
 
@@ -56,8 +58,8 @@ export const graniteTemplateStyles = StyleSheet.create({
   detailsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 28,
-    paddingBottom: 20,
+    marginBottom: 12,
+    paddingBottom: 4,
   },
 
   leftColumn: {
@@ -83,8 +85,8 @@ export const graniteTemplateStyles = StyleSheet.create({
 
   value: {
     fontSize: 11,
-    marginBottom: 5,
-    lineHeight: 1.5,
+    marginBottom: 3,
+    lineHeight: 1.4,
     color: "#2C3E50", // Dark granite for readability
     fontFamily: "Helvetica",
   },
@@ -100,7 +102,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   // Enhanced table with better spacing and visual hierarchy (modernized - no border)
   table: {
     width: "100%",
-    marginBottom: 24,
+    marginBottom: 10,
     borderRadius: 4,
     overflow: "hidden",
   },
@@ -115,7 +117,7 @@ export const graniteTemplateStyles = StyleSheet.create({
 
   descriptionColHeader: {
     width: "50%",
-    padding: 12,
+    padding: 8,
     textAlign: "left" as const,
     fontWeight: "bold",
     fontSize: 9,
@@ -127,7 +129,7 @@ export const graniteTemplateStyles = StyleSheet.create({
 
   narrowColHeader: {
     width: "16.66%",
-    padding: 12,
+    padding: 8,
     textAlign: "center" as const,
     fontWeight: "bold",
     fontSize: 9,
@@ -139,7 +141,7 @@ export const graniteTemplateStyles = StyleSheet.create({
 
   descriptionCol: {
     width: "50%",
-    padding: 12,
+    padding: 7,
     textAlign: "left" as const,
     fontSize: 10,
     fontFamily: "Helvetica",
@@ -147,7 +149,7 @@ export const graniteTemplateStyles = StyleSheet.create({
 
   narrowCol: {
     width: "16.66%",
-    padding: 12,
+    padding: 7,
     textAlign: "center" as const,
     fontSize: 10,
     fontFamily: "Helvetica",
@@ -165,13 +167,13 @@ export const graniteTemplateStyles = StyleSheet.create({
   // Enhanced notes and totals container with better balance
   notesAndTotalsContainer: {
     flexDirection: "row",
-    marginTop: 24,
+    marginTop: 10,
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
 
   notes: {
-    padding: 20,
+    padding: 12,
     backgroundColor: "#F8F9FA",
     borderRadius: 4,
     width: "55%",
@@ -203,15 +205,24 @@ export const graniteTemplateStyles = StyleSheet.create({
   totalsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 12,
+    padding: 6,
   },
 
   totalsLastRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 14,
+    padding: 8,
     backgroundColor: "#2C3E50", // Deep granite accent
     fontWeight: "bold",
+    fontSize: 12,
+    color: "#FFFFFF",
+    fontFamily: "Helvetica-Bold",
+  },
+
+  // The last totals row paints a dark background; react-pdf does not inherit
+  // `color` into a child Text that sets its own, so the grand total needs its
+  // own light style or it renders navy-on-navy (invisible).
+  totalsLastText: {
     fontSize: 12,
     color: "#FFFFFF",
     fontFamily: "Helvetica-Bold",
@@ -247,8 +258,8 @@ export const graniteTemplateStyles = StyleSheet.create({
 
   // Payment information section
   paymentSection: {
-    marginTop: 24,
-    padding: 20,
+    marginTop: 10,
+    padding: 12,
     backgroundColor: "#F8F9FA",
     borderRadius: 4,
   },
@@ -256,7 +267,7 @@ export const graniteTemplateStyles = StyleSheet.create({
   paymentTitle: {
     fontSize: 11,
     fontWeight: "bold",
-    marginBottom: 16,
+    marginBottom: 8,
     textTransform: "uppercase",
     color: "#2C3E50",
     letterSpacing: 0.8,
@@ -265,7 +276,7 @@ export const graniteTemplateStyles = StyleSheet.create({
 
   paymentRow: {
     flexDirection: "row",
-    marginBottom: 10,
+    marginBottom: 4,
   },
 
   paymentLabel: {

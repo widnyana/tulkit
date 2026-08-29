@@ -1,4 +1,4 @@
-import { formatNumber } from "@/lib/invoice/formatNumber";
+import { formatCurrency } from "@/lib/invoice/formatCurrency";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { Text, View } from "@react-pdf/renderer";
 import { stripeTemplateStyles as s } from "../styles";
@@ -20,16 +20,6 @@ export const StripeTemplateDueAmount = ({ invoiceData }: DueAmountProps) => {
   const decimalSep = invoiceData.decimalSeparator || ",";
   const thousandSep = invoiceData.thousandSeparator || ".";
 
-  console.log(
-    `subtotal: ${subtotal} | taxAmount: ${taxAmount} | total: ${total}`,
-  );
-  console.log(`invoiceData.taxRate: ${invoiceData.taxRate}`);
-  console.log(
-    `invoiceData.currency: ${invoiceData.currency} x ${formatNumber(total, 2, decimalSep, thousandSep)}`,
-  );
-  console.log(
-    `ini harusnya yang keluar ${currency} ${formatNumber(total, 2, decimalSep, thousandSep)}`,
-  );
   return (
     <View style={[s.spaceBetween, s.mb8]}>
       <View style={{ flex: 1 }} />
@@ -60,8 +50,7 @@ export const StripeTemplateDueAmount = ({ invoiceData }: DueAmountProps) => {
               fontWeight: 700,
             }}
           >
-            {currency}
-            {formatNumber(total, 2, decimalSep, thousandSep)}
+            {formatCurrency(total, currency, decimalSep, thousandSep)}
           </Text>
         </View>
       </View>

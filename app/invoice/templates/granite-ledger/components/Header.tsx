@@ -14,7 +14,7 @@ export const GraniteTemplateHeader: React.FC<GraniteTemplateHeaderProps> = ({
 
   return (
     <View style={graniteTemplateStyles.header}>
-      <View>
+      <View style={{ flex: 1, paddingRight: 12 }}>
         {hasLogo && (
           <Image src={invoiceData.logo} style={graniteTemplateStyles.logo} />
         )}
@@ -22,7 +22,7 @@ export const GraniteTemplateHeader: React.FC<GraniteTemplateHeaderProps> = ({
           {invoiceData.sender.name || "Company Name"}
         </Text>
       </View>
-      <View style={{ width: "auto", alignItems: "flex-end" }}>
+      <View style={{ flexShrink: 1, alignItems: "flex-end" }}>
         <Text style={graniteTemplateStyles.headerTitle}>INVOICE</Text>
         <Text style={graniteTemplateStyles.headerInvoiceNumber}>
           #{invoiceData.invoiceNumber}
