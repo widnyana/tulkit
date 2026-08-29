@@ -70,4 +70,3 @@ export function clearInvoice(): void {
     console.error("Error clearing invoice data from storage", error);
   }
 }
-

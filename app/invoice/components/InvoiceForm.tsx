@@ -975,7 +975,9 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               ) : (
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <Upload className="w-8 h-8 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground mt-2">Upload QR</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Upload QR
+                  </p>
                 </div>
               )}
               <input
