@@ -35,7 +35,9 @@ describe("parseIpAddress (IPv6)", () => {
   it("parses all-zeros and loopback", () => {
     assert.equal(parseIpAddress("::")?.value, 0n);
     assert.equal(parseIpAddress("::1")?.value, 1n);
-    assert.equal(formatIpAddress(parseIpAddress("::")!), "::");
+    const zero = parseIpAddress("::");
+    assert.ok(zero);
+    assert.equal(formatIpAddress(zero), "::");
   });
 
   it("rejects malformed IPv6", () => {

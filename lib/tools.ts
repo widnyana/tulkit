@@ -139,6 +139,11 @@ export function getTool(href: string): Tool | undefined {
   return tools.find((t) => t.href === href);
 }
 
+export function requireTool(href: string): Tool {
+  const tool = getTool(href);
+  if (!tool) throw new Error(`Unknown tool: ${href}`);
+  return tool;
+}
 /**
  * Build per-tool page metadata. Route layouts call this so each is two lines.
  * Relative `url`/`canonical` resolve against `metadataBase` from the root layout.
