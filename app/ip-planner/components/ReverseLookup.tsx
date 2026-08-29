@@ -2,7 +2,7 @@
 
 import { useState, useId } from "react";
 import type { SubnetInfo } from "../types";
-import { formatHosts, reverseLookup } from "../utils";
+import { formatHosts, reverseLookup } from "@/lib/ip/core";
 
 export default function ReverseLookup() {
   const [ipAddress, setIPAddress] = useState("192.168.1.55");

@@ -1,27 +1,38 @@
-import type {
-  BoundaryCheckResult,
-  CollisionCheck,
-  SubnetInfo,
-  VLSMResult,
-} from "./types";
-
 /**
- * Family-generic IPv4/IPv6 subnet math.
+ * Family-generic IPv4/IPv6 subnet math, shared by /ipcalc and /ip-planner.
  *
  * Internal representation: a 32-bit or 128-bit BigInt plus an address-family
  * tag. All addresses parse at the boundary (parseIpAddress/parseCidr) and
  * format on the way out; everything downstream is trusted bigint arithmetic.
+ * Family-specific parsing/formatting/classification lives in ./ipv4.ts and
+ * ./ipv6.ts; this module dispatches and holds the operations.
  *
  * ponytail: VLSM/suggestMask host counts are Number-safe integers (<= 2^53-1).
  * Planning allocations larger than that is prefix math, not host counting.
  */
 
-export type IpFamily = "ipv4" | "ipv6";
+import type {
+  BasicCalcResult,
+  BoundaryCheckResult,
+  CollisionCheck,
+  DeaggregationResult,
+  IpAddress,
+  IpFamily,
+  SubnetInfo,
+  SubnetResult,
+  SupernetResult,
+  VLSMResult,
+} from "./types.ts";
+import {
+  classifyV4Class,
+  classifyV4Type,
+  dottedMaskToCidr,
+  formatV4,
+  parseV4Value,
+} from "./ipv4.ts";
+import { classifyV6, formatMaskV6, formatV6, parseV6Value } from "./ipv6.ts";
 
-export interface IpAddress {
-  family: IpFamily;
-  value: bigint;
-}
+export * from "./types.ts";
 
 const FAMILY_BITS: Record<IpFamily, number> = { ipv4: 32, ipv6: 128 };
 const FAMILY_MAX: Record<IpFamily, bigint> = {
@@ -29,10 +40,11 @@ const FAMILY_MAX: Record<IpFamily, bigint> = {
   ipv6: (1n << 128n) - 1n,
 };
 
-const MAX_SAFE_HOST_COUNT = Number.MAX_SAFE_INTEGER;
+/** Host counts are Number-safe integers; larger allocations are prefix math. */
+export const MAX_SAFE_HOST_COUNT = Number.MAX_SAFE_INTEGER;
 
-const HEX_GROUP = /^[0-9a-fA-F]{1,4}$/;
-const DECIMAL_OCTET = /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
+/** Subnet generation shows at most this many rows (IPv6 counts explode fast). */
+export const MAX_SUBNET_ROWS = 1000;
 
 function bitLength(n: bigint): number {
   return n.toString(2).length;
@@ -67,64 +79,6 @@ export function formatHosts(n: number | string): string {
 // ---------------------------------------------------------------------------
 // Parsing (the only untrusted→trusted crossing in this module)
 // ---------------------------------------------------------------------------
-
-function parseV4Value(s: string): bigint | null {
-  const parts = s.split(".");
-  if (parts.length !== 4) return null;
-  let out = 0n;
-  for (const part of parts) {
-    if (!DECIMAL_OCTET.test(part)) return null;
-    out = (out << 8n) | BigInt(part);
-  }
-  return out;
-}
-
-function parseV6Value(input: string): bigint | null {
-  if (!input || input.includes("%")) return null; // no zone IDs
-
-  let s = input;
-  // Embedded IPv4 → rewrite as two hex groups.
-  if (s.includes(".")) {
-    const idx = s.lastIndexOf(":");
-    if (idx === -1) return null;
-    const v4 = parseV4Value(s.slice(idx + 1));
-    if (v4 === null) return null;
-    const hi = ((v4 >> 16n) & 0xffffn).toString(16);
-    const lo = (v4 & 0xffffn).toString(16);
-    s = `${s.slice(0, idx + 1)}${hi}:${lo}`;
-  }
-
-  const pieces = s.split("::");
-  if (pieces.length > 2) return null; // more than one "::"
-
-  if (pieces.length === 2) {
-    const left = pieces[0] ? pieces[0].split(":") : [];
-    const right = pieces[1] ? pieces[1].split(":") : [];
-    // "::" must cover at least one group and every explicit group must be hex.
-    if (left.length + right.length > 7) return null;
-    let head = 0n;
-    for (const g of left) {
-      if (!HEX_GROUP.test(g)) return null;
-      head = (head << 16n) | BigInt(Number.parseInt(g, 16));
-    }
-    let tail = 0n;
-    for (const g of right) {
-      if (!HEX_GROUP.test(g)) return null;
-      tail = (tail << 16n) | BigInt(Number.parseInt(g, 16));
-    }
-    // head is leftmost: shift so its lowest group sits above fill+right groups.
-    return (head << (BigInt(8 - left.length) * 16n)) | tail;
-  }
-
-  const groups = s.split(":");
-  if (groups.length !== 8) return null;
-  let out = 0n;
-  for (const g of groups) {
-    if (!HEX_GROUP.test(g)) return null;
-    out = (out << 16n) | BigInt(Number.parseInt(g, 16));
-  }
-  return out;
-}
 
 /**
  * Parse an IPv4 (dotted-quad) or IPv6 (RFC 4291, RFC 5952-compatible input)
@@ -162,58 +116,13 @@ export function parseCidr(
 // Formatting
 // ---------------------------------------------------------------------------
 
-function formatV4(value: bigint): string {
-  return [
-    (value >> 24n) & 0xffn,
-    (value >> 16n) & 0xffn,
-    (value >> 8n) & 0xffn,
-    value & 0xffn,
-  ].join(".");
-}
-
-function formatV6(value: bigint): string {
-  const groups: string[] = [];
-  for (let i = 7; i >= 0; i--) {
-    groups.push(((value >> BigInt(i * 16)) & 0xffffn).toString(16));
-  }
-  // RFC 5952: compress the longest (first, on ties) run of >= 2 zero groups.
-  let bestStart = -1;
-  let bestLen = 0;
-  let curStart = -1;
-  let curLen = 0;
-  groups.forEach((g, i) => {
-    if (g === "0") {
-      if (curStart === -1) curStart = i;
-      curLen++;
-      if (curLen > bestLen) {
-        bestLen = curLen;
-        bestStart = curStart;
-      }
-    } else {
-      curStart = -1;
-      curLen = 0;
-    }
-  });
-  if (bestLen < 2) return groups.join(":");
-  const head = groups.slice(0, bestStart).join(":");
-  const tail = groups.slice(bestStart + bestLen).join(":");
-  return `${head}::${tail}`;
-}
-
 export function formatIpAddress(addr: IpAddress): string {
   return addr.family === "ipv4" ? formatV4(addr.value) : formatV6(addr.value);
 }
 
 function formatMask(family: IpFamily, mask: bigint): string {
   if (family === "ipv4") return formatV4(mask);
-  // v6 has no dotted masks; emit the full expanded 128-bit mask.
-  const groups: string[] = [];
-  for (let i = 7; i >= 0; i--) {
-    groups.push(
-      ((mask >> BigInt(i * 16)) & 0xffffn).toString(16).padStart(4, "0"),
-    );
-  }
-  return groups.join(":");
+  return formatMaskV6(mask); // expanded 128-bit mask
 }
 
 // ---------------------------------------------------------------------------
@@ -229,7 +138,7 @@ export function validateCIDR(cidr: string): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Operations
+// Operations — ip-planner
 // ---------------------------------------------------------------------------
 
 function subnetInfoFrom(
@@ -413,5 +322,197 @@ export function detectCollisions(
       overlapping.length > 0
         ? `Collision detected with ${overlapping.length} subnet(s)`
         : "No collision detected - subnet is safe to use",
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Operations — ipcalc
+// ---------------------------------------------------------------------------
+
+/**
+ * Full breakdown of an address + netmask. IPv4 accepts a dotted mask or a
+ * CIDR number (a leading "/" is stripped); IPv6 accepts a CIDR number only.
+ */
+export function calculateBasicInfo(
+  address: string,
+  netmask: string,
+): BasicCalcResult | null {
+  const parsed = parseIpAddress(address);
+  if (!parsed) return null;
+
+  const bits = FAMILY_BITS[parsed.family];
+  const tail = netmask.trim().replace(/^\//, "");
+  let cidr: number;
+  let maskStr: string;
+
+  if (parsed.family === "ipv4" && tail.includes(".")) {
+    const fromMask = dottedMaskToCidr(tail);
+    if (fromMask === null) return null;
+    cidr = fromMask;
+    maskStr = tail;
+  } else {
+    if (!/^\d+$/.test(tail)) return null;
+    cidr = Number(tail);
+    if (cidr < 0 || cidr > bits) return null;
+    maskStr = formatMask(parsed.family, maskInto(cidr, parsed.family));
+  }
+
+  const mask = maskInto(cidr, parsed.family);
+  const network = parsed.value & mask;
+  const last = network | (~mask & FAMILY_MAX[parsed.family]);
+  const wildcard = ~mask & FAMILY_MAX[parsed.family];
+  // /31 (RFC 3021) and /127 (RFC 6164): network and broadcast are both usable.
+  const hostMin = cidr >= bits - 1 ? network : network + 1n;
+  const hostMax = cidr >= bits - 1 ? last : last - 1n;
+  const fmt = (v: bigint) =>
+    formatIpAddress({ family: parsed.family, value: v });
+
+  return {
+    family: parsed.family,
+    address: fmt(parsed.value),
+    netmask: maskStr,
+    netmaskCIDR: cidr,
+    wildcard: fmt(wildcard),
+    network: fmt(network),
+    broadcast: fmt(last),
+    hostMin: fmt(hostMin),
+    hostMax: fmt(hostMax),
+    hostsNet: usableHosts(cidr, parsed.family),
+    networkClass:
+      parsed.family === "ipv4" ? classifyV4Class(parsed.value) : undefined,
+    networkType:
+      parsed.family === "ipv4"
+        ? classifyV4Type(network, last, cidr)
+        : classifyV6(parsed.value),
+    cidrNotation: `${fmt(network)}/${cidr}`,
+  };
+}
+
+/**
+ * Generate the subnets produced by moving to a larger prefix. At most
+ * MAX_SUBNET_ROWS rows are returned (IPv6 counts can exceed 2^50).
+ */
+export function calculateSubnets(
+  baseNetwork: string,
+  baseCIDR: number,
+  newCIDR: number,
+): SubnetResult[] | null {
+  const parsed = parseIpAddress(baseNetwork);
+  if (!parsed) return null;
+
+  const bits = FAMILY_BITS[parsed.family];
+  if (newCIDR <= baseCIDR || newCIDR > bits) return null;
+
+  const network = parsed.value & maskInto(baseCIDR, parsed.family);
+  const size = 1n << BigInt(bits - newCIDR);
+  const count = 1n << BigInt(newCIDR - baseCIDR);
+  const shown =
+    count > BigInt(MAX_SUBNET_ROWS) ? MAX_SUBNET_ROWS : Number(count);
+  const fmt = (v: bigint) =>
+    formatIpAddress({ family: parsed.family, value: v });
+
+  const results: SubnetResult[] = [];
+  for (let i = 0n; i < BigInt(shown); i++) {
+    const net = network + i * size;
+    const last = net + size - 1n;
+    const hostMin = newCIDR >= bits - 1 ? net : net + 1n;
+    const hostMax = newCIDR >= bits - 1 ? last : last - 1n;
+
+    results.push({
+      family: parsed.family,
+      network: fmt(net),
+      cidr: newCIDR,
+      mask: formatMask(parsed.family, maskInto(newCIDR, parsed.family)),
+      broadcast: fmt(last),
+      hostMin: fmt(hostMin),
+      hostMax: fmt(hostMax),
+      hostsNet: usableHosts(newCIDR, parsed.family),
+      cidrNotation: `${fmt(net)}/${newCIDR}`,
+    });
+  }
+
+  return results;
+}
+
+/** Calculate the supernet when moving to a smaller prefix (larger network). */
+export function calculateSupernet(
+  baseNetwork: string,
+  baseCIDR: number,
+  newCIDR: number,
+): SupernetResult | null {
+  const parsed = parseIpAddress(baseNetwork);
+  if (!parsed) return null;
+
+  const bits = FAMILY_BITS[parsed.family];
+  if (newCIDR >= baseCIDR || newCIDR < 0 || baseCIDR > bits) return null;
+
+  const mask = maskInto(newCIDR, parsed.family);
+  const network = parsed.value & maskInto(baseCIDR, parsed.family) & mask;
+  const wildcard = ~mask & FAMILY_MAX[parsed.family];
+  const last = network | wildcard;
+  const fmt = (v: bigint) =>
+    formatIpAddress({ family: parsed.family, value: v });
+  const hostMin = newCIDR >= bits - 1 ? network : network + 1n;
+  const hostMax = newCIDR >= bits - 1 ? last : last - 1n;
+
+  return {
+    family: parsed.family,
+    network: fmt(network),
+    cidr: newCIDR,
+    mask: formatMask(parsed.family, mask),
+    wildcard: fmt(wildcard),
+    broadcast: fmt(last),
+    hostMin: fmt(hostMin),
+    hostMax: fmt(hostMax),
+    hostsNet: usableHosts(newCIDR, parsed.family),
+    cidrNotation: `${fmt(network)}/${newCIDR}`,
+  };
+}
+
+function trailingZeros(n: bigint, bits: number): number {
+  if (n === 0n) return bits;
+  return (n & -n).toString(2).length - 1;
+}
+
+/**
+ * Deaggregate an IP range (both addresses in the same family) into the
+ * optimal set of CIDR blocks. A range yields at most ~2×bits blocks, so the
+ * result is always bounded; totalIPs may exceed Number.MAX_SAFE_INTEGER for
+ * large IPv6 ranges and is returned as a decimal string then.
+ */
+export function deaggregate(
+  startIP: string,
+  endIP: string,
+): DeaggregationResult | null {
+  const a = parseIpAddress(startIP);
+  const b = parseIpAddress(endIP);
+  if (!a || !b || a.family !== b.family || a.value > b.value) return null;
+
+  const bits = FAMILY_BITS[a.family];
+  const fmt = (v: bigint) => formatIpAddress({ family: a.family, value: v });
+  let start = a.value;
+  const end = b.value;
+
+  const cidrBlocks: string[] = [];
+  let totalIPs = 0n;
+
+  while (start <= end) {
+    let step = trailingZeros(start, bits);
+    while (step > 0 && (start | ((1n << BigInt(step)) - 1n)) > end) step--;
+
+    const size = 1n << BigInt(step);
+    cidrBlocks.push(`${fmt(start)}/${bits - step}`);
+    totalIPs += size;
+    start += size;
+  }
+
+  return {
+    family: a.family,
+    cidrBlocks,
+    totalIPs:
+      totalIPs <= BigInt(Number.MAX_SAFE_INTEGER)
+        ? Number(totalIPs)
+        : totalIPs.toString(),
+    blockCount: cidrBlocks.length,
   };
 }

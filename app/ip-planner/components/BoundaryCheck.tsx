@@ -2,7 +2,7 @@
 
 import { useState, useId } from "react";
 import type { BoundaryCheckResult } from "../types";
-import { suggestSubnetMask } from "../utils";
+import { suggestSubnetMask } from "@/lib/ip/core";
 
 export default function BoundaryCheck() {
   const [startIP, setStartIP] = useState("192.168.1.0");
