@@ -5,6 +5,7 @@ import type React from "react";
 import { DefaultTemplateDetailsSection } from "./components/DetailsSection";
 import { DefaultTemplateHeader } from "./components/Header";
 import { DefaultTemplateItemsTable } from "./components/ItemsTable";
+import { DefaultTemplatePaymentInfo } from "./components/PaymentInfo";
 import { DefaultTemplateTotalsSection } from "./components/TotalsSection";
 import { defaultTemplateStyles } from "./styles";
 
@@ -33,8 +34,12 @@ const DefaultTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
         {/* Line items table */}
         <DefaultTemplateItemsTable invoiceData={invoiceData} />
 
-        {/* Notes and Totals container */}
-        <View style={defaultTemplateStyles.notesAndTotalsContainer}>
+        {/* Notes and Totals container - wrap={false} keeps the two boxes whole:
+            they used to be sliced by the page boundary and run under the footer */}
+        <View
+          style={defaultTemplateStyles.notesAndTotalsContainer}
+          wrap={false}
+        >
           {/* Notes section - Conditionally render to avoid positioning issues */}
           {hasNotes && (
             <View style={defaultTemplateStyles.notes}>
@@ -48,6 +53,8 @@ const DefaultTemplate: React.FC<{ invoiceData: InvoiceData }> = ({
           {/* Totals section - positioned on the right */}
           <DefaultTemplateTotalsSection invoiceData={invoiceData} />
         </View>
+
+        <DefaultTemplatePaymentInfo invoiceData={invoiceData} />
 
         {/* Footer */}
         <View style={defaultTemplateStyles.footer} fixed>
