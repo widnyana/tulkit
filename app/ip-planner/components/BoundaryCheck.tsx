@@ -17,7 +17,13 @@ export default function BoundaryCheck() {
     setError("");
     setResult(null);
 
-    const checkResult = suggestSubnetMask(startIP.trim(), requiredHosts);
+    let checkResult: BoundaryCheckResult | null;
+    try {
+      checkResult = suggestSubnetMask(startIP.trim(), requiredHosts);
+    } catch {
+      setError("Invalid IP address format");
+      return;
+    }
 
     if (!checkResult) {
       setError("Invalid IP address format");
@@ -51,7 +57,7 @@ export default function BoundaryCheck() {
               type="text"
               value={startIP}
               onChange={(e) => setStartIP(e.target.value)}
-              placeholder="e.g., 192.168.1.0"
+              placeholder="e.g., 192.168.1.0 or 2001:db8::"
               className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
@@ -97,7 +103,9 @@ export default function BoundaryCheck() {
           <div className="flex items-center gap-3 mb-4">
             <div
               className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                result.isValid ? "bg-green-100 dark:bg-green-950" : "bg-yellow-100 dark:bg-yellow-950"
+                result.isValid
+                  ? "bg-green-100 dark:bg-green-950"
+                  : "bg-yellow-100 dark:bg-yellow-950"
               }`}
             >
               <span className="text-2xl">{result.isValid ? "🟢" : "🟡"}</span>
@@ -109,14 +117,18 @@ export default function BoundaryCheck() {
 
           {result.warning && (
             <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 dark:bg-yellow-950 dark:border-yellow-900 rounded-lg">
-              <p className="text-sm text-yellow-800 dark:text-yellow-300">{result.warning}</p>
+              <p className="text-sm text-yellow-800 dark:text-yellow-300">
+                {result.warning}
+              </p>
             </div>
           )}
 
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-muted-foreground">Suggested Subnet Mask</p>
+                <p className="text-sm text-muted-foreground">
+                  Suggested Subnet Mask
+                </p>
                 <p className="text-lg font-mono font-semibold text-purple-600">
                   /{result.suggestedMask}
                 </p>
@@ -135,13 +147,17 @@ export default function BoundaryCheck() {
               </p>
               <div className="bg-muted rounded-lg p-4 space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Network:</span>
+                  <span className="text-sm text-muted-foreground">
+                    Network:
+                  </span>
                   <span className="text-sm font-mono text-foreground">
                     {result.network}/{result.suggestedMask}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Broadcast:</span>
+                  <span className="text-sm text-muted-foreground">
+                    Broadcast:
+                  </span>
                   <span className="text-sm font-mono text-foreground">
                     {result.broadcast}
                   </span>
