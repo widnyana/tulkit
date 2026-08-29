@@ -7,10 +7,8 @@ import {
 import { exportInvoiceJson, loadInvoice } from "@/lib/invoice/storage";
 import type { InvoiceData } from "@/lib/invoice/types";
 import { invoiceDataSchema } from "@/lib/invoice/validation";
-import { FileDown, FileUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "./components/ui/button";
 import InvoiceDownloadButton from "./components/InvoiceDownloadButton";
 import InvoiceForm from "./components/InvoiceForm";
 import InvoicePDFPreview from "./components/InvoicePDFPreview";
@@ -106,31 +104,18 @@ const InvoicePage = () => {
           data stays in your browser; nothing gets sent to a server.
         </p>
 
-        <div className="flex gap-2 mb-4">
-          <Button variant="outline" size="sm" onClick={handleExportJson}>
-            <FileDown className="w-4 h-4 mr-2" />
-            Export JSON
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <FileUp className="w-4 h-4 mr-2" />
-            Import JSON
-          </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="application/json,.json"
-            className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) handleImportJson(file);
-              e.target.value = "";
-            }}
-          />
-        </div>
+        {/* hidden input lives here; its trigger button is in InvoiceForm's toolbar row */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="application/json,.json"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleImportJson(file);
+            e.target.value = "";
+          }}
+        />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-150px)]">
           <div className="bg-card rounded-lg shadow-md overflow-y-auto">
@@ -138,6 +123,8 @@ const InvoicePage = () => {
               key={formVersion}
               initialData={invoiceData}
               onDataChange={setInvoiceData}
+              onExportJson={handleExportJson}
+              onImportClick={() => fileInputRef.current?.click()}
             />
           </div>
 

@@ -8,20 +8,38 @@ import type { InvoiceData } from "@/lib/invoice/types";
 import { SITE_HOST } from "@/lib/site";
 import { invoiceDataSchema } from "@/lib/invoice/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Trash2, Upload, X } from "lucide-react";
+import {
+  FileDown,
+  FileUp,
+  Plus,
+  RotateCcw,
+  Sparkles,
+  Trash2,
+  Upload,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface InvoiceFormProps {
   initialData: InvoiceData;
   onDataChange: (data: InvoiceData) => void;
+  onExportJson: () => void;
+  onImportClick: () => void;
 }
 
 const InvoiceForm: React.FC<InvoiceFormProps> = ({
   initialData,
   onDataChange,
+  onExportJson,
+  onImportClick,
 }) => {
   const [logoPreview, setLogoPreview] = useState<string | null>(
     initialData.logo || null,
@@ -211,21 +229,61 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
   return (
     <form className="space-y-6 p-4 text-foreground">
-      <div className="flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={handleReset}
-          className="px-4 py-1.5 text-sm font-medium border border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300 rounded-lg transition-colors hover:bg-red-100 dark:hover:bg-red-900"
-        >
-          Reset
-        </button>
-        <button
-          type="button"
-          onClick={handleLoadSample}
-          className="px-4 py-1.5 text-sm font-medium border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300 rounded-lg transition-colors hover:bg-blue-100 dark:hover:bg-blue-900"
-        >
-          Load sample
-        </button>
+      <div className="flex flex-wrap gap-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={onExportJson}
+              className="shrink-0 inline-flex items-center whitespace-nowrap px-4 py-1.5 text-sm font-medium border border-green-200 bg-green-50 text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-300 rounded-lg transition-colors hover:bg-green-100 dark:hover:bg-green-900"
+            >
+              <FileDown className="w-4 h-4 mr-2" />
+              Export JSON
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Download invoice data as a JSON file</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={onImportClick}
+              className="shrink-0 inline-flex items-center whitespace-nowrap px-4 py-1.5 text-sm font-medium border border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300 rounded-lg transition-colors hover:bg-amber-100 dark:hover:bg-amber-900"
+            >
+              <FileUp className="w-4 h-4 mr-2" />
+              Import JSON
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Load invoice data from a JSON file</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="shrink-0 inline-flex items-center whitespace-nowrap ml-auto px-4 py-1.5 text-sm font-medium border border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300 rounded-lg transition-colors hover:bg-red-100 dark:hover:bg-red-900"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reset
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>
+            Clear all fields and start a fresh invoice
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={handleLoadSample}
+              className="shrink-0 inline-flex items-center whitespace-nowrap px-4 py-1.5 text-sm font-medium border border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-300 rounded-lg transition-colors hover:bg-blue-100 dark:hover:bg-blue-900"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Load sample
+            </button>
+          </TooltipTrigger>
+          <TooltipContent>Fill the form with example data</TooltipContent>
+        </Tooltip>
       </div>
 
       {/* Template and Currency Settings */}
