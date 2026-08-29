@@ -178,3 +178,60 @@ design, roughly 40 lines each:
 Rewriting them from this document takes about ten minutes. Keeping them in the
 repo would mean maintaining a second test suite that only runs by hand; the
 method is the thing worth keeping.
+
+## Results — 2026-08-30 sweep of all five templates
+
+23 cases per template (item sweep 1–12, 20 and 34 to force a multi-page table,
+plus `unbreakable`, `mixed`, `full` and six currency symbols). All five now pass
+the seven criteria. Page-one item capacity, measured on the same payload:
+
+| template | capacity before | after | defects fixed |
+| --- | --- | --- | --- |
+| evergreen | 12 | 12 | 2 |
+| granite | 6 | 10 | 4 |
+| default | 9 | 9 | 5 |
+| stripe | 11 | 11 | 4 |
+| apex | 10 | 9 | 4 |
+
+Three defect classes accounted for most of it, and all three are worth checking
+first in any new template:
+
+**A `fixed` header repeats over its parent's page range, not the Page's.**
+`splitNodes` duplicates a fixed node into every fragment its immediate parent is
+split into (`@react-pdf/layout` `splitNodes`, the `isFixed` branch). Put the
+header inside a wrapper View holding header + rows only, and keep the totals a
+sibling *after* that wrapper: the header then lands on exactly the pages the
+table spans. All five templates now do this; before the sweep only granite tried,
+and it used a plain `fixed` that leaked onto the totals page.
+
+**Trailing margin on a table wrapper costs a page.** `getEndOfMinPresenceAhead`
+adds `box.marginBottom` before asking whether a node fits, so a table that filled
+the page exactly was judged too tall and moved whole — printing a blank first
+page. Granite (`marginBottom: 10`), default (`30`) and apex (`24`) all hit it.
+Put the spacing on the block below instead.
+
+**A nested wrapper turns a table split into a table jump.** Granite wrapped every
+section in a `container` View. Splitting that nested container moved the whole
+table to the next page rather than breaking it, so a five-item invoice printed an
+almost empty first page. Sections belong directly on the `Page`, as the other
+four templates already had them.
+
+Also fixed: rows without a wrap guard splitting so the quantity/price/amount
+stayed on one page while the description moved to the next (granite, default,
+stripe, apex); notes/totals and payment clusters sliced at the boundary (default,
+stripe, apex); page padding smaller than the fixed footer, letting body content
+run underneath it (default, apex); evergreen's 50pt price column, which wrapped
+`EUR1 480.00` onto two lines and collided with the quantity column; and the
+default template never rendering `paymentInfo` at all.
+
+Two checks were added to the harness after eyes caught what measurement missed:
+a **column-collision** test (pdftotext merges two words into one token when their
+boxes touch, so a token carrying two currency marks means a column overflowed
+sideways) and a **footer-guard** of 10pt (a footer with its own top padding
+starts above its text baseline). The dropped-content test reads body words only —
+using plain `pdftotext` output makes a word hyphenated across a page break look
+dropped, because the footer text sits between its halves.
+
+Still out of scope, unchanged: `₹` and other symbols outside WinAnsi render as a
+stray mark with the non-embedded standard-14 font. Confirmed again on all five.
+Embedding a font is the only fix, and that is a product decision.
