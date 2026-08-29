@@ -50,7 +50,9 @@ export default function DeployPanel({
   return (
     <section className="bg-card rounded-lg shadow-lg border border-border p-4 sm:p-6">
       <h2 className="text-base font-semibold text-foreground">Deploy</h2>
-      <p className="mt-0.5 text-sm text-muted-foreground">Ready-to-paste output</p>
+      <p className="mt-0.5 text-sm text-muted-foreground">
+        Ready-to-paste output
+      </p>
 
       <div className="mt-4">
         <label
@@ -98,7 +100,9 @@ export default function DeployPanel({
               className="mb-2 block text-sm font-medium text-foreground"
             >
               Run as user{" "}
-              <span className="text-muted-foreground">(required in /etc/cron.d)</span>
+              <span className="text-muted-foreground">
+                (required in /etc/cron.d)
+              </span>
             </label>
             <input
               id={userId}
@@ -116,7 +120,8 @@ export default function DeployPanel({
               htmlFor={fileNameId}
               className="mb-2 block text-sm font-medium text-foreground"
             >
-              File name <span className="text-muted-foreground">(no dots allowed)</span>
+              File name{" "}
+              <span className="text-muted-foreground">(no dots allowed)</span>
             </label>
             <input
               id={fileNameId}

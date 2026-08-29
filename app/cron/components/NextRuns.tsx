@@ -35,7 +35,9 @@ export default function NextRuns({
       </p>
 
       {isShortcut ? (
-        <p className="mt-2 text-sm text-muted-foreground">No fixed next run time.</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          No fixed next run time.
+        </p>
       ) : upcoming.length > 0 && now !== null ? (
         <div data-testid="cron-next-runs" className="mt-2 text-sm">
           {upcoming.map((d) => (
