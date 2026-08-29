@@ -3,7 +3,11 @@ import { StyleSheet } from "@react-pdf/renderer";
 // Template-specific styles for the default template
 export const defaultTemplateStyles = StyleSheet.create({
   page: {
-    padding: 40,
+    paddingTop: 40,
+    paddingHorizontal: 40,
+    // the fixed footer is ~41pt tall (20 offset + 10 padding + rule + text),
+    // so a 40pt bottom padding let body content run underneath it
+    paddingBottom: 56,
     fontFamily: "Helvetica",
     fontSize: 11,
   },
@@ -77,7 +81,6 @@ export const defaultTemplateStyles = StyleSheet.create({
   },
   table: {
     width: "auto",
-    marginBottom: 30,
     borderStyle: "solid",
     borderWidth: 1,
     borderColor: "#cbd5e1",
@@ -136,7 +139,7 @@ export const defaultTemplateStyles = StyleSheet.create({
   },
   notesAndTotalsContainer: {
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 30,
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
@@ -191,6 +194,34 @@ export const defaultTemplateStyles = StyleSheet.create({
   },
   totalsLabel: {
     fontWeight: "bold",
+    color: "#1e293b",
+  },
+  paymentSection: {
+    marginTop: 20,
+    padding: 12,
+    backgroundColor: "#f1f5f9",
+    borderRadius: 4,
+  },
+  paymentTitle: {
+    fontSize: 9,
+    fontWeight: "bold",
+    marginBottom: 8,
+    textTransform: "uppercase",
+    color: "#475569",
+    letterSpacing: 0.5,
+  },
+  paymentRow: {
+    flexDirection: "row",
+    marginBottom: 4,
+  },
+  paymentLabel: {
+    fontSize: 9,
+    color: "#64748b",
+    width: "35%",
+  },
+  paymentValue: {
+    fontSize: 10,
+    flex: 1,
     color: "#1e293b",
   },
   footer: {

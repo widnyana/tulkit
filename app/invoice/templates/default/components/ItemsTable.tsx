@@ -16,8 +16,9 @@ export const DefaultTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
 
   return (
     <View style={styles.table}>
-      {/* Table Header Row */}
-      <View style={[styles.tableRow, styles.headerRow]}>
+      {/* Table Header Row - fixed inside the table wrapper, so it repeats on
+          every page the table spans and on no page after it */}
+      <View style={[styles.tableRow, styles.headerRow]} fixed>
         <Text style={styles.descriptionColHeader}>Description</Text>
         <Text style={styles.narrowColHeader}>Qty</Text>
         <Text style={styles.narrowColHeader}>Price</Text>
@@ -26,7 +27,9 @@ export const DefaultTemplateItemsTable = ({ invoiceData }: ItemsTableProps) => {
 
       {/* Table Body Rows */}
       {invoiceData.items.map((item) => (
-        <View key={item.id} style={styles.tableRow}>
+        // wrap={false}: a split row leaves qty/price/amount on one page and
+        // the description on the next
+        <View key={item.id} style={styles.tableRow} wrap={false}>
           <Text style={styles.descriptionCol}>
             {item.description || ""}
             {item.notes && (
