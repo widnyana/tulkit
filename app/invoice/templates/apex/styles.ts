@@ -10,7 +10,11 @@ export const apexTemplateStyles = StyleSheet.create({
   page: {
     flexDirection: "column",
     backgroundColor: "#FFFFFF",
-    padding: 40,
+    paddingTop: 40,
+    paddingHorizontal: 40,
+    // the fixed footer sits 24pt from the bottom and is ~10pt tall, so a flat
+    // 40pt padding let body content reach into it
+    paddingBottom: 52,
     fontFamily: "Helvetica",
   },
 
