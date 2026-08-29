@@ -47,9 +47,9 @@ export function AndNodeView({ node, level }: AndNodeViewProps) {
 
       {isExpanded && (
         <div className="ml-6 mt-2 space-y-1">
-          {node.nodes.map((childNode, index) => (
+          {node.nodes.map((childNode) => (
             <NodeRenderer
-              key={`and-${index}-${childNode.sourcePath}`}
+              key={`and-${childNode.sourcePath}`}
               node={childNode}
               level={level + 1}
             />

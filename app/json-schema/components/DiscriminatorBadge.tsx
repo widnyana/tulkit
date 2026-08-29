@@ -53,7 +53,9 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
             <tbody>
               {mappingEntries.map(([value, branchIndex]) => (
                 <tr key={value}>
-                  <td className="pr-3 text-muted-foreground break-all">{value}</td>
+                  <td className="pr-3 text-muted-foreground break-all">
+                    {value}
+                  </td>
                   <td className="text-muted-foreground">→</td>
                   <td className="pl-3 text-indigo-600">
                     branch [{branchIndex}]

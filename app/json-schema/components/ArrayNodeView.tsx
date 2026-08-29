@@ -37,7 +37,9 @@ export function ArrayNodeView({ node, level }: ArrayNodeViewProps) {
           <span className="text-xs font-mono px-2 py-1 rounded border bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-900">
             array
           </span>
-          <span className="text-xs text-muted-foreground">items schema below</span>
+          <span className="text-xs text-muted-foreground">
+            items schema below
+          </span>
         </div>
 
         {/* Constraints */}
@@ -63,7 +65,9 @@ export function ArrayNodeView({ node, level }: ArrayNodeViewProps) {
       {/* Items schema */}
       {isExpanded && (
         <div className="ml-10 mt-2 border-l-2 border-border pl-3">
-          <div className="text-xs font-semibold text-muted-foreground mb-1">Items:</div>
+          <div className="text-xs font-semibold text-muted-foreground mb-1">
+            Items:
+          </div>
           <NodeRenderer node={node.items} level={level + 1} />
         </div>
       )}

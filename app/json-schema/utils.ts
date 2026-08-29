@@ -644,7 +644,9 @@ function resolveJsonPointer(
       }
     } else {
       // Type-safe property access with type assertion
-      current = (current as any)[part];
+      current = (current as Record<string, unknown>)[
+        part
+      ] as JSONSchemaProperty;
     }
   }
 

@@ -209,9 +209,9 @@ export function SchemaTree({
       {/* Children */}
       {isExpanded && hasChildren && (
         <div className="border-l-2 border-border ml-3">
-          {node.children?.map((child, index) => (
+          {node.children?.map((child) => (
             <SchemaTree
-              key={`${child.path}-${index}`}
+              key={`${child.path}`}
               node={child}
               level={level + 1}
               expandAll={expandAll}

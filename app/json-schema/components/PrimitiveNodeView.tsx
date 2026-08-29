@@ -92,7 +92,9 @@ export function PrimitiveNodeView({ node }: PrimitiveNodeViewProps) {
       {/* Enum values */}
       {node.enum && (
         <div className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded border-l-2 border-border ml-10 mb-2">
-          <span className="font-semibold text-foreground">Accepted values:</span>{" "}
+          <span className="font-semibold text-foreground">
+            Accepted values:
+          </span>{" "}
           <code className="font-mono break-all">{formatEnumValues()}</code>
           {node.enum.length > 5 && (
             <button

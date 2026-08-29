@@ -50,10 +50,7 @@ export function XorNodeView({ node, level }: XorNodeViewProps) {
       {isExpanded && (
         <div className="ml-6 mt-2 space-y-1">
           {node.nodes.map((childNode, index) => (
-            <div
-              key={`xor-${index}-${childNode.sourcePath}`}
-              className="relative"
-            >
+            <div key={`xor-${childNode.sourcePath}`} className="relative">
               <div className="absolute left-0 top-0 bottom-0 w-8 flex items-center justify-center">
                 <span className="text-xs font-mono text-muted-foreground">
                   [{index}]
