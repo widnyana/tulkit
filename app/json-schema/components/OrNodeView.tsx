@@ -47,9 +47,9 @@ export function OrNodeView({ node, level }: OrNodeViewProps) {
 
       {isExpanded && (
         <div className="ml-6 mt-2 space-y-1">
-          {node.nodes.map((childNode, index) => (
+          {node.nodes.map((childNode) => (
             <NodeRenderer
-              key={`or-${index}-${childNode.sourcePath}`}
+              key={`or-${childNode.sourcePath}`}
               node={childNode}
               level={level + 1}
             />
