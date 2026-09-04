@@ -43,7 +43,8 @@ export const invoiceItemSchema = z.object({
 export const invoiceSenderSchema = z.object({
   name: shortText(500, "Company name is required"),
   address: shortText(1000, "Address is required"),
-  email: z.string().email("Invalid email").max(320),
+  // Email optional like the recipient's: empty string means "not provided".
+  email: z.string().email("Invalid email").max(320).or(z.literal("")),
   phone: shortText(50, "Phone is required"),
 }) satisfies z.ZodSchema<InvoiceSender>;
 
@@ -98,7 +99,8 @@ export const invoiceDataSchema = z.object({
     .default(","),
   thousandSeparator: z
     .string()
-    .length(1, "Thousand separator must be 1 character")
+    // "" is valid: the UI "None" option means no grouping; formatNumber handles it.
+    .max(1, "Thousand separator must be at most 1 character")
     .optional()
     .default("."),
   paymentInfo: paymentInformationSchema.optional(),

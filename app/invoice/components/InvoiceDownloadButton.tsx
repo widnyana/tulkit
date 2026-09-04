@@ -4,7 +4,7 @@ import type { InvoiceData } from "@/lib/invoice/types";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import { Download } from "lucide-react";
 import type React from "react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { toast } from "sonner";
 import { InvoiceDocument } from "../invoice-document";
 import { Button } from "./ui/button";
@@ -16,18 +16,14 @@ interface InvoiceDownloadButtonProps {
 const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
   invoiceData,
 }) => {
-  const [isGenerating, setIsGenerating] = useState(false);
-
   // Check if we have valid data to generate
   const hasValidData = invoiceData.sender.name && invoiceData.recipient.name;
 
   const handleDownloadStart = () => {
-    setIsGenerating(true);
     toast.info("Preparing your PDF...");
   };
 
   const handleDownloadError = () => {
-    setIsGenerating(false);
     toast.error("Failed to generate PDF. Please try again.");
   };
 
@@ -87,13 +83,11 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
       >
         {({ loading }) => (
           <Button
-            disabled={loading || isGenerating}
+            disabled={loading}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-base shadow-sm transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-5 h-5 mr-2" />
-            {loading || isGenerating
-              ? "Generating PDF..."
-              : "Download Invoice PDF"}
+            {loading ? "Generating PDF..." : "Download Invoice PDF"}
           </Button>
         )}
       </PDFDownloadLink>

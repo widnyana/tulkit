@@ -90,7 +90,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           saveInvoice(validated.data);
           onDataChange(validated.data);
         }
-      }, 500); // 300ms debounce
+      }, 500); // 500ms debounce
 
       return () => clearTimeout(timeoutId);
     });
@@ -417,6 +417,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="text"
+                    maxLength={500}
                     className={`w-full px-3 py-2 border rounded-md ${errors.sender?.name ? "border-red-500" : "border-input"}`}
                     placeholder="Your company name"
                   />
@@ -439,6 +440,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <textarea
                     {...field}
                     rows={3}
+                    maxLength={1000}
                     className={`w-full px-3 py-2 border rounded-md ${errors.sender?.address ? "border-red-500" : "border-input"}`}
                     placeholder="Your address"
                   />
@@ -461,6 +463,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="email"
+                    maxLength={320}
                     className={`w-full px-3 py-2 border rounded-md ${errors.sender?.email ? "border-red-500" : "border-input"}`}
                     placeholder="your@email.com"
                   />
@@ -483,6 +486,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="tel"
+                    maxLength={50}
                     className={`w-full px-3 py-2 border rounded-md ${errors.sender?.phone ? "border-red-500" : "border-input"}`}
                     placeholder="Your phone number"
                   />
@@ -512,6 +516,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="text"
+                    maxLength={500}
                     className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.name ? "border-red-500" : "border-input"}`}
                     placeholder="Client name"
                   />
@@ -534,6 +539,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <textarea
                     {...field}
                     rows={3}
+                    maxLength={1000}
                     className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.address ? "border-red-500" : "border-input"}`}
                     placeholder="Client address"
                   />
@@ -556,6 +562,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="email"
+                    maxLength={320}
                     className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.email ? "border-red-500" : "border-input"}`}
                     placeholder="client@email.com"
                   />
@@ -578,6 +585,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="tel"
+                    maxLength={50}
                     className={`w-full px-3 py-2 border rounded-md ${errors.recipient?.phone ? "border-red-500" : "border-input"}`}
                     placeholder="Client phone number"
                   />
@@ -612,6 +620,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <input
                   {...field}
                   type="text"
+                  maxLength={100}
                   className={`w-full px-3 py-2 border rounded-md ${errors.invoiceNumber ? "border-red-500" : "border-input"}`}
                   placeholder="INV-001"
                 />
@@ -752,12 +761,20 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                         name={`items.${index}.description`}
                         control={control}
                         render={({ field }) => (
-                          <input
-                            {...field}
-                            type="text"
-                            className="w-full px-2 py-1 border border-input rounded"
-                            placeholder="Item description"
-                          />
+                          <div>
+                            <input
+                              {...field}
+                              type="text"
+                              maxLength={2000}
+                              className={`w-full px-2 py-1 border rounded ${errors.items?.[index]?.description ? "border-red-500" : "border-input"}`}
+                              placeholder="Item description"
+                            />
+                            {errors.items?.[index]?.description && (
+                              <p className="text-red-500 text-xs mt-1">
+                                {errors.items[index]?.description?.message}
+                              </p>
+                            )}
+                          </div>
                         )}
                       />
                     </td>
@@ -826,6 +843,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                           <input
                             {...field}
                             type="text"
+                            maxLength={2000}
                             className="w-full px-2 py-1 border border-input rounded text-xs"
                             placeholder="Notes (optional)"
                           />
@@ -920,6 +938,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="text"
+                    maxLength={500}
                     className="w-full px-3 py-2 border border-input rounded-md"
                     placeholder="e.g., Chase Bank"
                   />
@@ -941,6 +960,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="text"
+                    maxLength={100}
                     className="w-full px-3 py-2 border border-input rounded-md"
                     placeholder="e.g., 1234567890"
                   />
@@ -962,6 +982,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     {...field}
                     type="text"
+                    maxLength={100}
                     className="w-full px-3 py-2 border border-input rounded-md"
                     placeholder="e.g., CHASUS33"
                   />
@@ -1174,6 +1195,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <textarea
                   {...field}
                   rows={3}
+                  maxLength={5000}
                   className="w-full px-3 py-2 border border-input rounded-md"
                   placeholder="Additional notes or terms"
                 />
