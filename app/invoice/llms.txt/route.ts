@@ -49,12 +49,12 @@ The table below is the human summary of that schema.
 
 | Field | Type | Default | Notes |
 | ----- | ---- | ------- | ----- |
-| sender | object | required | \`{ name, address, email, phone }\` — all four required and non-empty; email must parse |
+| sender | object | required | \`{ name, address, email, phone }\` — name, address, phone required and non-empty; email optional: empty string or a valid address |
 | recipient | object | required | \`{ name, address, email?, phone? }\` — name and address required and non-empty; email, if given, must parse or be \`""\` |
 | invoiceNumber | string | required | non-empty |
 | issueDate | string | required | yyyy-mm-dd, e.g. "2025-06-01" |
 | dueDate | string | required | yyyy-mm-dd, e.g. "2025-06-08" |
-| items | array | required | each: \`{ id, description, quantity, unitPrice, notes? }\` — \`id\` is a required string (any value unique within the invoice), \`description\` non-empty, \`quantity\` and \`unitPrice\` numbers >= 0 |
+| items | array | required | each: \`{ id, description, quantity, unitPrice, notes? }\` — \`id\` is a required string, \`description\` non-empty, \`quantity\` and \`unitPrice\` numbers >= 0 |
 | taxEnabled | boolean | required | |
 | taxRate | number | required | percent, 0–100 |
 | templateKey | string | "default" | one of: default, stripe, apex, granite, evergreen |

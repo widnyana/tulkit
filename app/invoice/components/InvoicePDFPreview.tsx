@@ -23,7 +23,6 @@ const InvoicePDFPreview: React.FC<InvoicePDFPreviewProps> = ({
     // required sender fields
     invoiceData.sender?.name?.trim() &&
     invoiceData.sender?.address?.trim() &&
-    invoiceData.sender?.email?.trim() &&
     // required recipient fields
     invoiceData.recipient?.name?.trim() &&
     invoiceData.recipient?.address?.trim() &&

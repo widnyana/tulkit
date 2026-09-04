@@ -31,12 +31,51 @@ describe("invoiceDataSchema", () => {
     }
   });
 
+  it("treats an empty sender email as not-provided (valid)", () => {
+    const r = invoiceDataSchema.safeParse({
+      ...validInvoice,
+      sender: { name: "Acme", address: "1 St", email: "", phone: "555" },
+    });
+    assert.ok(r.success);
+  });
+
+  it("rejects a malformed sender email with invalid_format", () => {
+    const r = invoiceDataSchema.safeParse({
+      ...validInvoice,
+      sender: {
+        name: "Acme",
+        address: "1 St",
+        email: "not-an-email",
+        phone: "555",
+      },
+    });
+    assert.ok(!r.success);
+    assert.ok(codes(r).includes("invalid_format"));
+  });
+
   it("treats an empty optional recipient email as not-provided (valid)", () => {
     const r = invoiceDataSchema.safeParse({
       ...validInvoice,
       recipient: { name: "Bob", address: "2 St", email: "", phone: "" },
     });
     assert.ok(r.success);
+  });
+
+  it("treats an empty thousand separator as no grouping (valid)", () => {
+    const r = invoiceDataSchema.safeParse({
+      ...validInvoice,
+      thousandSeparator: "",
+    });
+    assert.ok(r.success);
+  });
+
+  it("rejects a multi-character thousand separator", () => {
+    const r = invoiceDataSchema.safeParse({
+      ...validInvoice,
+      thousandSeparator: "..",
+    });
+    assert.ok(!r.success);
+    assert.ok(codes(r).includes("too_big"));
   });
 
   it("rejects a malformed recipient email with invalid_format", () => {
