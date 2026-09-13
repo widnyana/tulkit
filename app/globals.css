@@ -36,32 +36,41 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-signal: var(--signal);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* Motion curves (stronger than the CSS defaults) as both :root vars and
+   `ease-soft` / `ease-swift` utilities. */
+@theme {
+  --ease-soft: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-swift: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --radius: 0.5rem;
+  --background: oklch(0.982 0.003 85);
+  --foreground: oklch(0.215 0.006 75);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.215 0.006 75);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.215 0.006 75);
+  --primary: oklch(0.215 0.006 75);
+  --primary-foreground: oklch(0.982 0.003 85);
+  --secondary: oklch(0.952 0.004 85);
+  --secondary-foreground: oklch(0.215 0.006 75);
+  --muted: oklch(0.952 0.004 85);
+  --accent: oklch(0.945 0.005 85);
+  --accent-foreground: oklch(0.215 0.006 75);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: oklch(0.9 0.006 85);
+  --input: oklch(0.9 0.006 85);
+  --ring: oklch(0.6 0.01 75);
+  --signal: oklch(0.566 0.19 41);
+  --grid-line: oklch(0.215 0.006 75 / 4.5%);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -78,24 +87,25 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: oklch(0.165 0.004 75);
+  --foreground: oklch(0.955 0.003 85);
+  --card: oklch(0.205 0.004 75);
+  --card-foreground: oklch(0.955 0.003 85);
+  --popover: oklch(0.205 0.004 75);
+  --popover-foreground: oklch(0.955 0.003 85);
+  --primary: oklch(0.955 0.003 85);
+  --primary-foreground: oklch(0.205 0.004 75);
+  --secondary: oklch(0.248 0.005 75);
+  --secondary-foreground: oklch(0.955 0.003 85);
+  --muted: oklch(0.248 0.005 75);
+  --muted-foreground: oklch(0.705 0.008 75);
+  --accent: oklch(0.265 0.006 75);
+  --accent-foreground: oklch(0.955 0.003 85);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 12%);
   --ring: oklch(0.556 0 0);
+  --signal: oklch(0.727 0.174 46);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -117,5 +127,51 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Site shell: owns the page background. */
+.site-shell {
+  position: relative;
+  isolation: isolate;
+  @apply bg-background text-foreground;
+}
+
+/* One-shot page-load entrance. Kept on wrappers so hover/active transforms
+   on the elements inside are never frozen by animation fill mode. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero-enter {
+  animation: rise-in 500ms var(--ease-soft) both;
+}
+
+.tool-enter {
+  animation: rise-in 420ms var(--ease-soft) both;
+  animation-delay: calc(var(--i, 0) * 40ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-enter,
+  .tool-enter {
+    animation: fade-in 240ms ease both;
+    animation-delay: 0ms;
   }
 }

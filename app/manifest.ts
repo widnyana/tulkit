@@ -13,7 +13,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: SITE_DESCRIPTION,
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
+    background_color: "#faf8f5",
     theme_color: THEME_COLOR,
     // ponytail: favicon only; add 192/512 PNG icons if install-to-homescreen matters.
     icons: [{ src: "/favicon.ico", sizes: "any", type: "image/x-icon" }],

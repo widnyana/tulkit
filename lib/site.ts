@@ -18,7 +18,7 @@ export const SITE_DESCRIPTION =
 
 export const SITE_AUTHOR = "Widnyana";
 
-export const THEME_COLOR = "#0f172a";
+export const THEME_COLOR = "#171514";
 
 export const GITHUB_URL = "https://github.com/widnyana/tulkit";
 

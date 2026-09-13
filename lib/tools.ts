@@ -140,6 +140,20 @@ export const tools: Tool[] = [
       "agent",
     ],
   },
+  {
+    href: "/tire-pressure",
+    title: "Tire Pressure Calculator",
+    description:
+      "Recommended front/rear bicycle tire pressure (PSI + bar) from rider weight, bike type, tire width, tubeless setup, and ride style",
+    category: "Lifestyle",
+    keywords: [
+      "tire pressure",
+      "bike tire PSI",
+      "Berto 15% drop",
+      "tubeless pressure",
+      "cycling calculator",
+    ],
+  },
 ];
 
 export function getTool(href: string): Tool | undefined {

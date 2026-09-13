@@ -1,295 +1,269 @@
-import { Footer } from "@/components/Footer";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import { tools } from "@/lib/tools";
-import { SiteJsonLd } from "@/components/ToolJsonLd";
+import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import {
+  ArrowUpRight,
+  Binary,
+  Braces,
+  Calculator,
+  Clock,
+  Dices,
+  FileDiff,
+  Gauge,
+  Network,
+  QrCode,
+  ReceiptText,
+} from "lucide-react";
+import { SiteJsonLd } from "@/components/ToolJsonLd";
+import { qrcodegen } from "@/lib/qrcodegen";
+import { SITE_HOST, SITE_URL } from "@/lib/site";
+import { tools } from "@/lib/tools";
 
-/** Presentational icons keyed by tool href. Kept out of the shared data module. */
+/**
+ * Presentation icons keyed by tool href, kept out of the shared data module.
+ */
 const toolIcons: Record<string, ReactNode> = {
+  "/env-compare": <FileDiff className="size-[18px]" strokeWidth={1.75} />,
+  "/ip-planner": <Network className="size-[18px]" strokeWidth={1.75} />,
+  "/ipcalc": <Calculator className="size-[18px]" strokeWidth={1.75} />,
+  "/random-string": <Dices className="size-[18px]" strokeWidth={1.75} />,
+  "/invoice": <ReceiptText className="size-[18px]" strokeWidth={1.75} />,
+  "/qr-gen": <QrCode className="size-[18px]" strokeWidth={1.75} />,
+  "/json-schema": <Braces className="size-[18px]" strokeWidth={1.75} />,
+  "/cron": <Clock className="size-[18px]" strokeWidth={1.75} />,
+  "/base64": <Binary className="size-[18px]" strokeWidth={1.75} />,
+  "/tire-pressure": <Gauge className="size-[18px]" strokeWidth={1.75} />,
+};
+
+/** Real, scannable QR of the site URL for the featured card, built once. */
+function buildQrPath(value: string): { path: string; size: number } {
+  const qr = qrcodegen.QrCode.encodeText(value, qrcodegen.QrCode.Ecc.MEDIUM);
+  let path = "";
+  for (let y = 0; y < qr.size; y++) {
+    for (let x = 0; x < qr.size; x++) {
+      if (qr.getModule(x, y)) path += `M${x} ${y}h1v1h-1z`;
+    }
+  }
+  return { path, size: qr.size };
+}
+
+const homeQr = buildQrPath(SITE_URL);
+
+/**
+ * Static "display screen" specimens — a real-looking slice of each tool's
+ * output. Decorative only (the screen container is aria-hidden).
+ */
+const previews: Record<string, ReactNode> = {
   "/env-compare": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-      />
-    </svg>
+    <>
+      <p>
+        <span className="text-red-500/80 dark:text-red-400/80">- </span>
+        DEBUG=false
+      </p>
+      <p>
+        <span className="text-emerald-600/90 dark:text-emerald-400/90">+ </span>
+        DEBUG=true
+      </p>
+      <p>
+        <span className="text-muted-foreground/60">~ </span>PORT=3000
+      </p>
+    </>
   ),
   "/ip-planner": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
-      />
-    </svg>
+    <>
+      <p>10.0.0.0/8</p>
+      <p className="text-muted-foreground">├ 10.0.0.0/9</p>
+      <p className="text-muted-foreground">└ 10.128.0.0/9</p>
+    </>
   ),
   "/ipcalc": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-      />
-    </svg>
+    <>
+      <p>192.168.1.0/24</p>
+      <p>
+        <span className="text-muted-foreground">net </span>255.255.255.0
+      </p>
+      <p>
+        <span className="text-muted-foreground">hosts </span>254
+      </p>
+    </>
   ),
   "/random-string": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-      />
-    </svg>
+    <>
+      <p>Kp#9mXq2$vR7!tLw</p>
+      <p className="text-muted-foreground">Zq4&amp;nP8s^Wm3@kJd</p>
+    </>
   ),
   "/invoice": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-      />
-    </svg>
+    <>
+      <p className="flex justify-between gap-2">
+        <span>CONSULTING · 32H</span>
+        <span>$4,800.00</span>
+      </p>
+      <p className="flex justify-between gap-2">
+        <span>DESIGN RETAINER</span>
+        <span>$1,200.00</span>
+      </p>
+      <p className="mt-1 flex justify-between gap-2 border-t border-border/70 pt-1 text-foreground">
+        <span className="text-muted-foreground">TOTAL DUE</span>
+        <span>$6,000.00</span>
+      </p>
+    </>
   ),
   "/qr-gen": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-      />
-    </svg>
+    <div className="flex h-full items-center gap-4">
+      <svg
+        viewBox={`0 0 ${homeQr.size} ${homeQr.size}`}
+        shapeRendering="crispEdges"
+        className="h-full w-auto text-foreground/85"
+        aria-hidden="true"
+      >
+        <path d={homeQr.path} fill="currentColor" />
+      </svg>
+      <div className="min-w-0 space-y-1">
+        <p className="truncate">{SITE_HOST}</p>
+        <p className="text-muted-foreground">point a camera at it</p>
+      </div>
+    </div>
   ),
   "/json-schema": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-      />
-    </svg>
-  ),
-  "/base64": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M17 6l5 6-5 6M7 6l-5 6 5 6m6-15l-2 18"
-      />
-    </svg>
+    <>
+      <p>{'{ "type": "object",'}</p>
+      <p className="pl-3">{'"required": ["id"]'}</p>
+      <p>{"}"}</p>
+    </>
   ),
   "/cron": (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
+    <>
+      <p className="text-muted-foreground">0 9 * * 1-5</p>
+      <p>every weekday at 09:00</p>
+    </>
+  ),
+  "/base64": (
+    <>
+      <p className="text-muted-foreground">tulkit</p>
+      <p>dHVsa2l0</p>
+    </>
+  ),
+  "/tire-pressure": (
+    <>
+      <p>
+        <span className="text-muted-foreground">F </span>2.6 bar · 38 psi
+      </p>
+      <p>
+        <span className="text-muted-foreground">R </span>2.9 bar · 42 psi
+      </p>
+    </>
   ),
 };
 
-const comingSoonCard = {
-  title: "More Tools Coming",
-  description:
-    "Future utilities are currently trapped in the backlog. Please hold for your inevitable convenience.",
-  category: "Coming Soon",
-  href: undefined as string | undefined,
-  disabled: true,
-  icon: (
-    <svg
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      className="w-6 h-6"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 6V4m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-      />
-    </svg>
-  ),
-};
+function ToolCard({
+  tool,
+  index,
+}: {
+  tool: (typeof tools)[number];
+  index: number;
+}) {
+  const icon = toolIcons[tool.href];
+  const preview = previews[tool.href];
 
-const cards = [
-  ...tools.map((tool) => ({
-    ...tool,
-    disabled: false as boolean,
-    icon: toolIcons[tool.href],
-  })),
-  comingSoonCard,
-];
+  return (
+    <div className="tool-enter" style={{ "--i": index } as CSSProperties}>
+      <Link
+        href={tool.href}
+        className="group flex h-full flex-col rounded-lg border border-border/70 bg-card p-5 outline-offset-2 transition-[border-color,transform] duration-200 ease-soft hover:border-foreground/30 focus-visible:outline-2 active:scale-[0.99] sm:p-6"
+      >
+        <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+          <span className="tabular-nums transition-colors duration-200 ease-soft group-hover:text-signal">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span className="truncate">{tool.category}</span>
+        </div>
+        <div className="mt-5 flex items-center gap-2.5">
+          {icon && (
+            <span aria-hidden="true" className="text-foreground/60">
+              {icon}
+            </span>
+          )}
+          <h3 className="text-[17px] font-medium leading-snug tracking-tight text-foreground">
+            {tool.title}
+          </h3>
+          <ArrowUpRight
+            aria-hidden="true"
+            className="ml-auto size-4 shrink-0 -translate-x-1 translate-y-1 text-signal opacity-0 transition-[opacity,transform] duration-200 ease-soft group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100"
+          />
+        </div>
+        <p className="mt-2 min-h-[82px] pb-4 text-sm leading-[22px] text-muted-foreground">
+          {tool.description}
+        </p>
+        <div className="mt-auto h-24 overflow-hidden rounded-md border border-border/60 bg-muted/45 px-3.5 py-3.5">
+          <div className="flex h-full flex-col justify-center gap-1 font-mono text-[12px] leading-[18px] text-foreground/80 select-none">
+            {preview}
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+}
 
-const categoryColors: Record<string, string> = {
-  Development:
-    "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900",
-  Network:
-    "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-900",
-  Data: "bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-900",
-  Productivity:
-    "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-900",
-  "Coming Soon":
-    "bg-gray-100 text-gray-500 border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-800",
-};
+/** Quiet placeholder: dashed, muted, no facts (hero + footer own those). */
+function ComingSoonCard({ index }: { index: number }) {
+  return (
+    <div className="tool-enter" style={{ "--i": index } as CSSProperties}>
+      <div
+        aria-disabled="true"
+        className="flex h-full flex-col rounded-lg border border-dashed border-border/70 p-5 sm:p-6"
+      >
+        <div className="flex items-center justify-between gap-3 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+          <span>--</span>
+          <span>coming soon</span>
+        </div>
+        <h3 className="mt-5 text-[17px] font-medium leading-snug tracking-tight text-muted-foreground">
+          More Tools Coming
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground/80">
+          Future utilities are currently trapped in the backlog. Please hold for
+          your inevitable convenience.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <>
       <SiteJsonLd />
-      {/* Main Content */}
-      <main className="relative max-w-7xl mx-auto px-6 sm:px-8 py-16 sm:py-24">
-        {/* Header */}
-        <div className="mb-16 text-center space-y-4">
-          <h1 className="text-5xl sm:text-6xl font-bold tracking-tight bg-gradient-to-br from-slate-900 via-slate-800 to-slate-600 bg-clip-text text-transparent dark:from-slate-100 dark:via-slate-200 dark:to-slate-400">
-            tulkit
-          </h1>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            because apparently, you *do* need another random tool on the
-            internet. ¯\_(ツ)_/¯
-          </p>
-        </div>
-
-        {/* About tulkit */}
-        <p className="sr-only">
-          tulkit is a collection of focused developer utilities that run
-          entirely in your browser. No signups, no tracking, no "we reserve the
-          right to use your data for training." Just tools that do one thing
-          well and get out of your way. Whether you're comparing environment
-          configs before a deploy, generating a clean invoice for freelance
-          work, or sanity-checking an IP plan, each tool here is built to save
-          you a few minutes of friction. Because apparently, you *do* need
-          another random tool on the internet — might as well be one that
-          doesn't phone home. Everything stays local: your files, your configs,
-          your data. We just provide the interface.
+      <section className="hero-enter mx-auto w-full max-w-6xl px-5 pt-16 pb-14 sm:px-6 sm:pt-24 sm:pb-16">
+        <h1 className="text-6xl font-semibold tracking-tighter text-foreground sm:text-7xl">
+          tulkit
+        </h1>
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
+          because apparently, you *do* need another random tool on the internet.
+          ¯\_(ツ)_/¯
         </p>
+      </section>
 
-        {/* Tools Grid */}
-        <section>
-          <h2 className="sr-only">Tools</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cards.map((tool, index) => {
-              const CardWrapper: React.ElementType = tool.disabled
-                ? "div"
-                : Link;
-              const wrapperProps = tool.disabled
-                ? {}
-                : { href: tool.href as string };
+      <p className="sr-only">
+        tulkit is a collection of focused developer utilities that run entirely
+        in your browser. No signups, no tracking, no &quot;we reserve the right
+        to use your data for training.&quot; Just tools that do one thing well
+        and get out of your way. Whether you&apos;re comparing environment
+        configs before a deploy, generating a clean invoice for freelance work,
+        or sanity-checking an IP plan, each tool here is built to save you a few
+        minutes of friction. Because apparently, you *do* need another random
+        tool on the internet — might as well be one that doesn&apos;t phone
+        home. Everything stays local: your files, your configs, your data. We
+        just provide the interface.
+      </p>
 
-              return (
-                <CardWrapper key={tool.href || index} {...wrapperProps}>
-                  <Card
-                    className={cn(
-                      "h-full transition-all duration-200 border-slate-200/60 dark:border-slate-800",
-                      tool.disabled
-                        ? "opacity-60 cursor-not-allowed"
-                        : "hover:shadow-lg hover:-translate-y-1 cursor-pointer group",
-                    )}
-                  >
-                    <CardHeader className="space-y-4 pb-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div
-                          className={cn(
-                            "p-2.5 rounded-lg border border-slate-200/50 dark:border-slate-800/50",
-                            tool.disabled
-                              ? "bg-gray-100 dark:bg-gray-900"
-                              : "bg-gradient-to-br from-slate-100 to-slate-50 group-hover:from-slate-200 group-hover:to-slate-100 transition-colors dark:from-slate-900 dark:to-slate-950 dark:group-hover:from-slate-800 dark:group-hover:to-slate-900",
-                          )}
-                        >
-                          {tool.icon}
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "text-xs font-medium",
-                            categoryColors[tool.category],
-                          )}
-                        >
-                          {tool.category}
-                        </Badge>
-                      </div>
-                      <CardTitle className="text-xl leading-tight">
-                        {tool.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0 pb-6">
-                      <CardDescription className="text-sm leading-relaxed">
-                        {tool.description}
-                      </CardDescription>
-                    </CardContent>
-                  </Card>
-                </CardWrapper>
-              );
-            })}
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-    </div>
+      <section className="mx-auto w-full max-w-6xl px-5 pb-24 sm:px-6 sm:pb-28">
+        <h2 className="sr-only">Tools</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {tools.map((tool, index) => (
+            <ToolCard key={tool.href} tool={tool} index={index} />
+          ))}
+          <ComingSoonCard index={tools.length} />
+        </div>
+      </section>
+    </>
   );
 }
