@@ -173,6 +173,7 @@ export function ToolsPalette({ tools }: { tools: Tool[] }) {
         <p role="status" className="sr-only">
           {open ? statusText : ""}
         </p>
+        {open && (
         <div
           ref={listRef}
           className="max-h-[min(26rem,70vh)] overflow-y-auto p-2"
@@ -208,6 +209,7 @@ export function ToolsPalette({ tools }: { tools: Tool[] }) {
             </>
           )}
         </div>
+        )}
       </dialog>
     </>
   );
