@@ -61,9 +61,16 @@ Tailwind v4 is configured CSS-first in `app/globals.css` (`@import "tailwindcss"
 
 **State conventions.** Shareable URL state uses the `useQueryState` hook at `app/ipcalc/useQueryState.ts` (wraps `useSearchParams` + `useRouter().replace({scroll:false})`, deletes the param when empty). It is tool-local, not in `lib/` — copy it rather than reinventing. For `localStorage`, there is no single key convention: invoice uses `tulkit_invoice_data`, the json-schema cache uses `tulkit:jschcache:<sha256>`. Stay consistent within a tool.
 
-**"SEO content block"** (recent commit pattern) is not a component — it is a `<p className="text-gray-600 mb-4 leading-relaxed">…</p>` of ~70 words dropped into the tool's `page.tsx` `<header>`. Copy formula: what it does → features → use cases → privacy assurance ("runs in your browser; nothing is sent to a server").
+**"SEO content block"** is not a component — it is a short `<p className="text-gray-600 mb-4 leading-relaxed">…</p>` dropped into the tool's `page.tsx` `<header>`. Copy formula: what it does → features → use cases → privacy assurance ("runs in your browser; nothing is sent to a server").
 
-**Brand voice is a hard constraint.** The homepage hero (`<h1>tulkit</h1>` and the "because apparently you do need another random tool on the internet" subtitle) and the short branded `<title>` are intentionally playful and **not to be changed** without explicit approval. `docs/plans/` holds compound-engineering plan artifacts (frontmatter + R/KTD/U sections); the homepage-seo plan there locks two decisions not to undo: **R3** (brand voice wins over the SEO audit — homepage `<h1>`/subtitle/`<title>` stay) and **KTD1** (the `sr-only` `<h2>Tools</h2>` at `app/page.tsx:149` is a deliberate audit fix, not noise). Copy is drafted for approval, never invented-and-shipped.
+**No volatile counts anywhere — strictly.** Never write mutable quantities (tool counts, file counts, line numbers, benchmark figures, "recent commit" references) into any spec strip, doc, plan artifact, or copy. The spec strip must state stable facts only: what a thing is, what it does, where it lives — not how many or what number it currently is. Counts rot; restate as invariants or omit.
+
+**Brand voice is a hard constraint.** The homepage hero (`<h1>tulkit</h1>` and the "because apparently you do need another random tool on the internet" subtitle) and the short branded `<title>` are intentionally playful and **not to be changed** without explicit approval. `docs/plans/` holds compound-engineering plan artifacts (frontmatter + R/KTD/U sections); the homepage-seo plan there locks two decisions not to undo: **R3** (brand voice wins over the SEO audit — homepage `<h1>`/subtitle/`<title>` stay) and **KTD1** (the `sr-only` `<h2>Tools</h2>` in `app/page.tsx` is a deliberate audit fix, not noise). Copy is drafted for approval, never invented-and-shipped.
+
+**Design system.** The homepage and site chrome follow the "instrument panel"
+design language documented in `DESIGN.md` (tokens, motion budget, card
+anatomy, locked copy, no-volatile-counts rule). Read it before touching
+`app/globals.css`, `app/layout.tsx`, `app/page.tsx`, or shared chrome.
 
 **Supply-chain posture — do not bypass:**
 - `pnpm-workspace.yaml` sets `minimumReleaseAge: 10080` (7 days) — no freshly-published packages install.
@@ -73,10 +80,10 @@ Tailwind v4 is configured CSS-first in `app/globals.css` (`@import "tailwindcss"
 
 ## Gotchas
 
-- README lists 5 tools; the code has 7 (json-schema and qr-gen are missing from it). `lib/tools.ts` is the source of truth.
+- README's tool list can drift from the registry; `lib/tools.ts` is the source of truth.
 - `next-intl` and `@t3-oss/env-nextjs` are installed but **not wired** (no `middleware.ts`, no `env.ts`). `next-themes` **is** wired: `<ThemeProvider>` (`attribute="class"`, `defaultTheme="system"`, `enableSystem`) and the global `<ThemeToggle />` live in `app/layout.tsx`; storage key is `"theme"`; `useTheme()` in `components/ui/sonner.tsx` is live. Don't assume i18n is active. Env *validation* is off, but env *values* are live: `lib/site.ts` reads `NEXT_PUBLIC_SITE_URL` (fallback `https://tulkit.widnyana.web.id`) and it drives sitemap/robots/JSON-LD/OG; `app/api/fetch-schema/route.ts` reads `ALLOWED_ORIGINS` and `NODE_ENV`.
 - Only `pnpm-lock.yaml` is tracked; pnpm is canonical. `bun.lock` is not in the repo — if bun recreates it, don't commit it (no `.gitignore` rule currently catches it).
-- `components/ToolCard.tsx` is unused (homepage inlines its own card). `config.ts` is **dead code** (zero importers; `components/Footer.tsx` hardcodes the GitHub URL rather than importing `GITHUB_URL`). Site constants live in `lib/site.ts` — don't extend `config.ts`, treat it as removable.
+- `config.ts` is **dead code** (zero importers; `components/Footer.tsx` hardcodes the GitHub URL rather than importing `GITHUB_URL`). Site constants live in `lib/site.ts` — don't extend `config.ts`, treat it as removable.
 - `next.config.ts` gates `compiler.removeConsole` on `VERCEL_ENV === "production"`, but the app deploys to Netlify where `VERCEL_ENV` is unset — so `removeConsole` never fires and `console.log`s reach production (e.g. `app/qr-gen/page.tsx`). Strip logs manually or change the guard. There is no `netlify.toml`; deploy config lives in the Netlify dashboard.
 - `<Toaster>` is mounted once, globally, in `app/layout.tsx` (`top-center`, `richColors`) via the `components/ui/sonner.tsx` wrapper (theme-aware through `useTheme`). New tools should reuse it, not mount another.
 - `app/api/fetch-schema/` is hardened for SSRF/CORS only. Its `TODO` records that request-level auth (same-domain enforcement, timestamp/replay protection, HMAC signing) is **not** implemented — don't assume the endpoint is fully locked down.

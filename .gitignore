@@ -45,3 +45,4 @@ next-env.d.ts
 
 examples# codegraph local index
 .codegraph/
+docs/plans/*
