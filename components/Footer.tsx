@@ -1,56 +1,48 @@
-import { Separator } from "@/components/ui/separator";
-import { GITHUB_URL } from "@/lib/site";
+import Link from "next/link";
+import { GITHUB_URL, SITE_NAME } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="text-center mt-auto pt-16 pb-8 relative z-10">
-      <div className="flex flex-col items-center gap-3">
-        {/* Copyright Section */}
-        <p className="text-xs text-muted-foreground">
+    <footer className="border-t border-border/60">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between sm:px-6">
+        <div className="space-y-1">
+          <p className="text-sm font-semibold tracking-tight text-foreground">
+            {SITE_NAME}
+            <span aria-hidden="true" className="text-signal">
+              *
+            </span>
+            <span className="ml-2 font-normal text-muted-foreground">
+              © 2025 – now
+            </span>
+          </p>
+          <p className="max-w-sm text-xs leading-5 text-muted-foreground">
+            Solving your tiny, annoying problems so you can get back to the big
+            ones.
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-1.5 font-mono text-xs text-muted-foreground sm:items-end">
           <a
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold hover:text-muted-foreground transition-colors"
+            className="transition-colors hover:text-foreground"
           >
-            tulkit
+            source: github.com/widnyana/tulkit
           </a>
-          {" "}© 2025 – now — Solving your tiny, annoying problems so you can get back to the big ones.
-        </p>
-
-        <p className="text-xs text-muted-foreground">
-          AI agents:{" "}
-          <a
+          <Link
             href="/llms.txt"
-            className="font-semibold hover:text-muted-foreground transition-colors"
+            className="transition-colors hover:text-foreground"
           >
-            /llms.txt
-          </a>{" "}
-          lists every tool and its programmatic API.
-        </p>
-
-        <Separator className="w-48 h-px bg-border my-2" />
-
-        {/* Donation Section */}
-        <div className="inline-flex items-center gap-2 text-muted-foreground">
-          <svg
-            className="w-4 h-4 flex-shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
+            agents: /llms.txt
+          </Link>
+          <a
+            href="https://github.com/sponsors/widnyana"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-foreground"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            />
-          </svg>
-          <span className="text-xs">Support via EVM:</span>
-          <code className="text-xs font-mono text-muted-foreground hover:text-muted-foreground transition-colors">
-            0x0D9ef1907CE24C928b53c931D8f7E6C53B33ace1
-          </code>
+            tip jar: github.com/sponsors/widnyana
+          </a>
         </div>
       </div>
     </footer>
