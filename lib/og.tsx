@@ -21,8 +21,8 @@ export function renderOgCard({
         flexDirection: "column",
         justifyContent: "space-between",
         padding: "72px 80px",
-        background: "#171514",
-        color: "#f5f3ee",
+        background: "#0f1216",
+        color: "#e8ecf1",
         fontFamily: "sans-serif",
       }}
     >
@@ -32,11 +32,11 @@ export function renderOgCard({
           fontSize: 34,
           fontWeight: 700,
           letterSpacing: "-0.03em",
-          color: "#a39d92",
+          color: "#a5b0bd",
         }}
       >
         {SITE_NAME}
-        <span style={{ color: "#ff6b1a" }}>*</span>
+        <span style={{ color: "#a5b0bd" }}>*</span>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -57,7 +57,7 @@ export function renderOgCard({
               display: "flex",
               fontSize: 32,
               lineHeight: 1.35,
-              color: "#a39d92",
+              color: "#a5b0bd",
               maxWidth: "880px",
             }}
           >
@@ -72,7 +72,7 @@ export function renderOgCard({
             display: "flex",
             width: 56,
             height: 10,
-            background: "#ff6b1a",
+            background: "#56b4e9",
           }}
         />
         <div
@@ -80,7 +80,7 @@ export function renderOgCard({
             display: "flex",
             fontSize: 22,
             letterSpacing: "0.08em",
-            color: "#6e675e",
+            color: "#6b7784",
           }}
         >
           {SITE_HOST.toUpperCase()}

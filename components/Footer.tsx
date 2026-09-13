@@ -3,12 +3,12 @@ import { GITHUB_URL, SITE_NAME } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/60">
+    <footer className="border-t border-border">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-start sm:justify-between sm:px-6">
         <div className="space-y-1">
           <p className="text-sm font-semibold tracking-tight text-foreground">
             {SITE_NAME}
-            <span aria-hidden="true" className="text-signal">
+            <span aria-hidden="true" className="text-muted-foreground">
               *
             </span>
             <span className="ml-2 font-normal text-muted-foreground">
@@ -20,7 +20,7 @@ export function Footer() {
             ones.
           </p>
         </div>
-        <div className="flex flex-col items-start gap-1.5 font-mono text-xs text-muted-foreground sm:items-end">
+        <div className="flex flex-col items-start gap-1.5 text-xs text-muted-foreground sm:items-end">
           <a
             href={GITHUB_URL}
             target="_blank"
