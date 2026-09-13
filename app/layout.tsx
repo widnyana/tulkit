@@ -4,8 +4,10 @@ import Link from "next/link";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ToolsPalette } from "@/components/tools-palette";
 import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
+import { tools } from "@/lib/tools";
 import {
   SITE_AUTHOR,
   SITE_DESCRIPTION,
@@ -67,8 +69,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf8f5" },
-    { media: "(prefers-color-scheme: dark)", color: "#171514" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f1216" },
   ],
 };
 
@@ -85,25 +87,32 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <div className="site-shell flex min-h-screen flex-col">
-            <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-sm">
-              <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-5 sm:px-6">
+            <a
+              href="#main"
+              className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:border focus:border-border focus:bg-background focus:px-3.5 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground"
+            >
+              Skip to content
+            </a>
+            <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-sm">
+              <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-5 sm:px-6">
                 <Link
                   href="/"
-                  aria-label={`${SITE_NAME} home`}
-                  className="group inline-flex items-baseline text-lg font-semibold tracking-tighter text-foreground"
+                  className="text-base font-semibold tracking-tight text-foreground"
                 >
-                  {SITE_NAME}
-                  <span
-                    aria-hidden="true"
-                    className="ml-0.5 inline-block text-signal transition-transform duration-200 ease-soft group-hover:rotate-12"
-                  >
+                  tulkit
+                  <span aria-hidden="true" className="text-muted-foreground">
                     *
                   </span>
                 </Link>
-                <ThemeToggle />
+                <div className="flex items-center gap-2">
+                  <ToolsPalette tools={tools} />
+                  <ThemeToggle />
+                </div>
               </div>
             </header>
-            <main className="flex-1">{children}</main>
+            <main id="main" className="flex-1">
+              {children}
+            </main>
             <Footer />
             <Toaster position="top-center" richColors />
           </div>
