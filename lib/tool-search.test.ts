@@ -61,11 +61,18 @@ test("matchTool searches title, description, category and keywords", () => {
 
 test("filterTools matches every term and returns everything for an empty query", () => {
   const tools = [
-    makeTool({ href: "/cron", title: "Cron Expression Generator", category: "Development" }),
+    makeTool({
+      href: "/cron",
+      title: "Cron Expression Generator",
+      category: "Development",
+    }),
     makeTool({ href: "/base64", title: "Base64 Encoder / Decoder" }),
   ];
   assert.equal(filterTools(tools, "").length, 2);
-  assert.deepEqual(filterTools(tools, "cron").map((t) => t.href), ["/cron"]);
+  assert.deepEqual(
+    filterTools(tools, "cron").map((t) => t.href),
+    ["/cron"],
+  );
   assert.deepEqual(filterTools(tools, "zzz"), []);
 });
 
@@ -92,7 +99,9 @@ test("categoryNames starts with All and lists each category once", () => {
 });
 
 test("splitHighlight returns whole-text segment when there are no terms", () => {
-  assert.deepEqual(splitHighlight("tulkit", []), [{ text: "tulkit", match: false }]);
+  assert.deepEqual(splitHighlight("tulkit", []), [
+    { text: "tulkit", match: false },
+  ]);
 });
 
 test("splitHighlight is case-insensitive, longest-first and lossless", () => {
@@ -125,11 +134,16 @@ test("readRecentTools tolerates missing, corrupt and foreign data", () => {
     [],
   );
   assert.deepEqual(
-    readRecentTools(memoryStorage({ [RECENT_TOOLS_KEY]: '["/gone","/a"]' }), ["/a"]),
+    readRecentTools(memoryStorage({ [RECENT_TOOLS_KEY]: '["/gone","/a"]' }), [
+      "/a",
+    ]),
     ["/a"],
   );
   assert.deepEqual(
-    readRecentTools(memoryStorage({ [RECENT_TOOLS_KEY]: '["/a","/a","/b"]' }), ["/a", "/b"]),
+    readRecentTools(memoryStorage({ [RECENT_TOOLS_KEY]: '["/a","/a","/b"]' }), [
+      "/a",
+      "/b",
+    ]),
     ["/a", "/b"],
   );
   assert.deepEqual(
