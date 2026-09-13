@@ -79,7 +79,10 @@ export function splitHighlight(text: string, terms: string[]): TextSegment[] {
   while (cursor < text.length) {
     const hit = usable.find((term) => lower.startsWith(term, cursor));
     if (hit) {
-      segments.push({ text: text.slice(cursor, cursor + hit.length), match: true });
+      segments.push({
+        text: text.slice(cursor, cursor + hit.length),
+        match: true,
+      });
       cursor += hit.length;
       continue;
     }
@@ -107,7 +110,8 @@ export function readRecentTools(
     const seen = new Set<string>();
     const result: string[] = [];
     for (const value of parsed) {
-      if (typeof value !== "string" || !known.has(value) || seen.has(value)) continue;
+      if (typeof value !== "string" || !known.has(value) || seen.has(value))
+        continue;
       seen.add(value);
       result.push(value);
       if (result.length === RECENT_TOOLS_MAX) break;
@@ -119,7 +123,10 @@ export function readRecentTools(
 }
 
 /** Unshifts an href to the front of the recents list. Never throws. */
-export function addRecentTool(storage: WritableStorage | null, href: string): void {
+export function addRecentTool(
+  storage: WritableStorage | null,
+  href: string,
+): void {
   if (!storage) return;
   try {
     const raw = storage.getItem(RECENT_TOOLS_KEY);
@@ -139,7 +146,10 @@ export function addRecentTool(storage: WritableStorage | null, href: string): vo
 
 /** Chip labels: "All" then every category present, in display order. */
 export function categoryNames(tools: Tool[]): string[] {
-  return [ALL_CATEGORIES, ...groupToolsByCategory(tools).map((g) => g.category)];
+  return [
+    ALL_CATEGORIES,
+    ...groupToolsByCategory(tools).map((g) => g.category),
+  ];
 }
 
 export function scopeTools(tools: Tool[], category: string): Tool[] {
