@@ -22,7 +22,7 @@ export function ThemeToggle() {
     return (
       <div
         aria-hidden="true"
-        className="fixed top-4 right-4 z-50 h-9 w-[7.25rem] rounded-full border border-transparent"
+        className="h-9 w-[7.25rem] rounded-full border border-transparent"
       />
     );
   }
@@ -31,7 +31,7 @@ export function ThemeToggle() {
     <div
       role="group"
       aria-label="Color theme"
-      className="fixed top-4 right-4 z-50 flex items-center gap-0.5 rounded-full border border-border bg-background/80 p-1 shadow-sm backdrop-blur"
+      className="flex items-center gap-0.5 rounded-full border border-border bg-background/80 p-1 shadow-sm backdrop-blur"
     >
       {OPTIONS.map(({ value, label, Icon }) => {
         const active = theme === value;
@@ -42,7 +42,7 @@ export function ThemeToggle() {
             aria-label={`${label} theme`}
             aria-pressed={active}
             onClick={() => setTheme(value)}
-            className={`flex size-7 items-center justify-center rounded-full transition-colors ${
+            className={`flex size-7 items-center justify-center rounded-full transition-colors duration-200 ${
               active
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"

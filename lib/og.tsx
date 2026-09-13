@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { SITE_NAME } from "./site";
+import { SITE_HOST, SITE_NAME } from "./site";
 
 /** Shared config + renderer for OpenGraph/social cards (next/og, no deps). */
 export const size = { width: 1200, height: 630 };
@@ -20,33 +20,33 @@ export function renderOgCard({
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: "80px",
-        background:
-          "linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #334155 100%)",
-        color: "#f8fafc",
+        padding: "72px 80px",
+        background: "#171514",
+        color: "#f5f3ee",
         fontFamily: "sans-serif",
       }}
     >
       <div
         style={{
           display: "flex",
-          fontSize: 40,
+          fontSize: 34,
           fontWeight: 700,
-          letterSpacing: "-0.02em",
-          color: "#94a3b8",
+          letterSpacing: "-0.03em",
+          color: "#a39d92",
         }}
       >
         {SITE_NAME}
+        <span style={{ color: "#ff6b1a" }}>*</span>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
         <div
           style={{
             display: "flex",
-            fontSize: 84,
-            fontWeight: 800,
+            fontSize: 88,
+            fontWeight: 700,
             lineHeight: 1.05,
-            letterSpacing: "-0.03em",
+            letterSpacing: "-0.04em",
           }}
         >
           {title}
@@ -55,10 +55,10 @@ export function renderOgCard({
           <div
             style={{
               display: "flex",
-              fontSize: 34,
-              lineHeight: 1.3,
-              color: "#cbd5e1",
-              maxWidth: "900px",
+              fontSize: 32,
+              lineHeight: 1.35,
+              color: "#a39d92",
+              maxWidth: "880px",
             }}
           >
             {subtitle}
@@ -66,15 +66,26 @@ export function renderOgCard({
         ) : null}
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          height: "12px",
-          width: "220px",
-          borderRadius: "9999px",
-          background: "linear-gradient(90deg, #6366f1 0%, #a855f7 100%)",
-        }}
-      />
+      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        <div
+          style={{
+            display: "flex",
+            width: 56,
+            height: 10,
+            background: "#ff6b1a",
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            fontSize: 22,
+            letterSpacing: "0.08em",
+            color: "#6e675e",
+          }}
+        >
+          {SITE_HOST.toUpperCase()}
+        </div>
+      </div>
     </div>,
     { ...size },
   );

@@ -33,9 +33,12 @@ unchanged — every tool page depends on them.
 ## Component patterns
 
 **Tool card** (`app/page.tsx`): wrapper `div.tool-enter` → `Link` → index/category row →
-title row (18px icon, title, `ArrowUpRight` slides in on hover) → description →
-screen (`h-24`, `rounded-md`, `bg-muted/45`, hairline border). Every card
-shares this single anatomy — no special variants, including the QR tool.
+title row (18px icon, title, `ArrowUpRight` slides in on hover) → description
+block with FIXED 3-line height (`min-h-[82px]`, `leading-[22px]`) → screen
+(`h-24`, hairline border, bottom-pinned via `mt-auto`). Fixed space and
+placements: titles never shift between cards, screens never shift within a
+row. Every card shares this single anatomy — no special variants, including
+the QR tool.
 
 **Preview screens**: decorative (`aria-hidden`, `select-none`), mono 12px/18px,
 ≤3 lines, static content that looks like real tool output (env diff, subnet

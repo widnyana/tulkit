@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Footer } from "@/components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import {
   SITE_AUTHOR,
@@ -65,8 +67,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f8fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+    { media: "(prefers-color-scheme: light)", color: "#faf8f5" },
+    { media: "(prefers-color-scheme: dark)", color: "#171514" },
   ],
 };
 
@@ -82,9 +84,29 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
-          {children}
-          <ThemeToggle />
-          <Toaster position="top-center" richColors />
+          <div className="site-shell flex min-h-screen flex-col">
+            <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-sm">
+              <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-5 sm:px-6">
+                <Link
+                  href="/"
+                  aria-label={`${SITE_NAME} home`}
+                  className="group inline-flex items-baseline text-lg font-semibold tracking-tighter text-foreground"
+                >
+                  {SITE_NAME}
+                  <span
+                    aria-hidden="true"
+                    className="ml-0.5 inline-block text-signal transition-transform duration-200 ease-soft group-hover:rotate-12"
+                  >
+                    *
+                  </span>
+                </Link>
+                <ThemeToggle />
+              </div>
+            </header>
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <Toaster position="top-center" richColors />
+          </div>
         </ThemeProvider>
       </body>
     </html>

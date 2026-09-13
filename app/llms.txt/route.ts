@@ -15,12 +15,16 @@ const TOOL_GUIDES: Record<string, { doc: string; api: string }> = {
   "/invoice": { doc: "/invoice/llms.txt", api: "/api/invoice-pdf" },
   "/qr-gen": { doc: "/qr-gen/llms.txt", api: "/api/qr" },
   "/ip-planner": { doc: "/ip-planner/llms.txt", api: "/api/ip-planner" },
+  "/tire-pressure": { doc: "/tire-pressure/llms.txt", api: "" },
 };
 
 const guideLines = Object.entries(TOOL_GUIDES).map(([href, { doc, api }]) => {
   const tool = tools.find((t) => t.href === href);
   if (!tool) throw new Error(`TOOL_GUIDES references unknown tool: ${href}`);
-  return `- [${tool.title} usage & API](${SITE_URL}${doc}): full how-to; programmatic endpoint POST ${SITE_URL}${api}`;
+  const apiSuffix = api
+    ? `; programmatic endpoint POST ${SITE_URL}${api}`
+    : "; no API — the deterministic model is documented for direct agent use";
+  return `- [${tool.title} usage & API](${SITE_URL}${doc}): full how-to${apiSuffix}`;
 });
 
 const DOC = `# ${SITE_NAME}
