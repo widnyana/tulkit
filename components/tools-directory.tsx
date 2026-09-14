@@ -162,7 +162,7 @@ function DirectoryGroup({
       <h3 id={id} className="text-xs font-medium text-muted-foreground">
         {heading}
       </h3>
-      <ul className="mt-1.5">
+      <ul className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
         {tools.map((tool) => (
           <li key={`${id}-${tool.href}`}>
             <Link
@@ -170,27 +170,29 @@ function DirectoryGroup({
               aria-label={tool.title}
               onClick={() => addRecentTool(window.localStorage, tool.href)}
               className={cn(
-                "group -mx-3 flex items-start gap-3.5 rounded-lg px-3 py-3 transition-colors duration-150",
-                "hover:bg-muted active:bg-accent focus-visible:outline-2 focus-visible:outline-offset-2",
+                "group relative flex h-full flex-col gap-2.5 rounded-lg border border-border p-3",
+                "transition-[background-color,transform] duration-150",
+                "hover:bg-muted active:scale-[0.98] active:bg-accent",
+                "focus-visible:outline-2 focus-visible:outline-offset-2",
               )}
             >
               <span
                 aria-hidden="true"
-                className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-card text-muted-foreground"
+                className="flex size-9 shrink-0 items-center justify-center rounded-md border border-border bg-card text-muted-foreground"
               >
                 {toolIcon(tool.href)}
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-[15px] font-medium text-foreground">
+              <span className="min-w-0">
+                <span className="block pr-5 text-[15px] font-medium text-foreground">
                   {tool.title}
                 </span>
-                <span className="mt-0.5 block text-sm leading-relaxed text-muted-foreground line-clamp-2">
+                <span className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
                   {tool.description}
                 </span>
               </span>
               <ChevronRight
                 aria-hidden="true"
-                className="mt-2.5 size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity duration-200 ease-soft group-hover:opacity-100 group-focus-visible:opacity-100"
+                className="absolute top-3 right-3 size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity duration-200 ease-soft group-hover:opacity-100 group-focus-visible:opacity-100"
               />
             </Link>
           </li>
