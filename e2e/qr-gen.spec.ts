@@ -11,9 +11,11 @@ test.describe("QR code generator (QRCodeSVG)", () => {
 
     // QRCodeSVG renders the QR as an SVG. Discriminate from the lucide icons
     // (path-only) and the Next.js dev overlay (40x40, also has a rect) by
-    // requiring a <rect> and excluding the overlay's viewBox.
+    // requiring a <rect> and excluding the overlay's viewBox. Scoped to main:
+    // the global palette's closed dialog ships rect-bearing lucide icons in
+    // the header, so a page-wide match is ambiguous.
     const qrSvg = page.locator(
-      "svg:has(rect):not([viewBox='0 0 40 40'])",
+      "main svg:has(rect):not([viewBox='0 0 40 40'])",
     );
 
     // Enter content and confirm a QR with a real path is rendered.
