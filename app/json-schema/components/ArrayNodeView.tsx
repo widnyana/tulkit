@@ -7,69 +7,64 @@
 import { useState } from "react";
 import type { ArrayNode } from "../ast-types";
 import { NodeRenderer } from "./NodeRenderer";
+import {
+  CopyPathButton,
+  DescriptionBlock,
+  MetaBadge,
+  TreeChildren,
+  TreeRow,
+  TreeToggle,
+  TypeBadge,
+} from "./tree-ui";
 import { sanitizeText } from "../security";
 
 interface ArrayNodeViewProps {
   node: ArrayNode;
   level: number;
+  expandAll?: boolean;
 }
 
-export function ArrayNodeView({ node, level }: ArrayNodeViewProps) {
-  const [isExpanded, setIsExpanded] = useState(level < 2);
+export function ArrayNodeView({ node, level, expandAll }: ArrayNodeViewProps) {
+  const [isExpanded, setIsExpanded] = useState(expandAll ?? level < 2);
+  const toggle = () => setIsExpanded(!isExpanded);
 
   return (
-    <div className="border-l-2 border-transparent hover:border-orange-300 transition-colors">
-      <div className="grid grid-cols-[auto_1fr_auto] gap-3 items-start py-2 px-3 rounded hover:bg-muted">
-        {/* Expand/collapse */}
-        <div className="flex items-center w-6">
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            onClick={() => setIsExpanded(!isExpanded)}
-            aria-expanded={isExpanded}
-          >
-            {isExpanded ? "▼" : "▶"}
-          </button>
+    <div>
+      <TreeRow expandable onToggle={toggle}>
+        <div className="w-6 shrink-0 flex items-center justify-center">
+          <TreeToggle expanded={isExpanded} onToggle={toggle} />
         </div>
 
-        {/* Type badge */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-mono px-2 py-1 rounded border bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-300 dark:border-orange-900">
-            array
-          </span>
-          <span className="text-xs text-muted-foreground">
-            items schema below
-          </span>
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          <TypeBadge type="array" />
+          <MetaBadge>items schema below</MetaBadge>
         </div>
 
-        {/* Constraints */}
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2 ml-auto flex-wrap">
           {node.constraints?.map((constraint) => (
-            <span
+            <MetaBadge
               key={`${constraint.type}-${String(constraint.value)}`}
-              className="text-xs px-2 py-1 bg-muted text-foreground rounded border border-border font-mono"
+              mono
             >
               {constraint.type}: {String(constraint.value)}
-            </span>
+            </MetaBadge>
           ))}
+          <CopyPathButton path={node.sourcePath} />
         </div>
-      </div>
+      </TreeRow>
 
-      {/* Description */}
       {node.description && (
-        <div className="text-sm text-foreground bg-muted px-3 py-2 rounded border-l-2 border-orange-200 dark:border-orange-800 ml-10 mb-2">
-          {sanitizeText(node.description)}
-        </div>
+        <DescriptionBlock text={sanitizeText(node.description)} />
       )}
 
-      {/* Items schema */}
       {isExpanded && (
-        <div className="ml-10 mt-2 border-l-2 border-border pl-3">
-          <div className="text-xs font-semibold text-muted-foreground mb-1">
-            Items:
-          </div>
-          <NodeRenderer node={node.items} level={level + 1} />
-        </div>
+        <TreeChildren>
+          <NodeRenderer
+            node={node.items}
+            level={level + 1}
+            expandAll={expandAll}
+          />
+        </TreeChildren>
       )}
     </div>
   );

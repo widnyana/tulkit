@@ -7,46 +7,53 @@
 import { useState } from "react";
 import type { NotNode } from "../ast-types";
 import { NodeRenderer } from "./NodeRenderer";
+import {
+  DescriptionBlock,
+  MetaBadge,
+  TreeChildren,
+  TreeRow,
+  TreeToggle,
+} from "./tree-ui";
 import { sanitizeText } from "../security";
 
 interface NotNodeViewProps {
   node: NotNode;
   level: number;
+  expandAll?: boolean;
 }
 
-export function NotNodeView({ node, level }: NotNodeViewProps) {
-  const [isExpanded, setIsExpanded] = useState(level < 2);
+const COMBINER_BADGE =
+  "text-xs font-semibold px-2 py-0.5 rounded border whitespace-nowrap bg-red-100 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-800";
+
+export function NotNodeView({ node, level, expandAll }: NotNodeViewProps) {
+  const [isExpanded, setIsExpanded] = useState(expandAll ?? level < 2);
+  const toggle = () => setIsExpanded(!isExpanded);
 
   return (
-    <div className="border-l-2 border-red-300 pl-3 my-2">
-      <div className="flex items-center gap-3 py-2">
-        <button
-          type="button"
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="text-muted-foreground hover:text-foreground transition-colors"
-          aria-expanded={isExpanded}
-        >
-          {isExpanded ? "▼" : "▶"}
-        </button>
+    <div>
+      <TreeRow expandable onToggle={toggle}>
+        <div className="w-6 shrink-0 flex items-center justify-center">
+          <TreeToggle expanded={isExpanded} onToggle={toggle} />
+        </div>
 
         <div className="flex items-center gap-2">
-          <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded border border-red-200 dark:bg-red-950 dark:text-red-300 dark:border-red-900">
-            NOT
-          </span>
-          <span className="text-sm text-muted-foreground">Must NOT match</span>
+          <span className={COMBINER_BADGE}>NOT</span>
+          <MetaBadge>Must NOT match</MetaBadge>
         </div>
-      </div>
+      </TreeRow>
 
       {node.description && (
-        <div className="text-sm text-foreground bg-muted px-3 py-2 rounded border-l-2 border-red-200 dark:border-red-800 ml-6 mb-2">
-          {sanitizeText(node.description)}
-        </div>
+        <DescriptionBlock text={sanitizeText(node.description)} />
       )}
 
       {isExpanded && (
-        <div className="ml-6 mt-2">
-          <NodeRenderer node={node.node} level={level + 1} />
-        </div>
+        <TreeChildren>
+          <NodeRenderer
+            node={node.node}
+            level={level + 1}
+            expandAll={expandAll}
+          />
+        </TreeChildren>
       )}
     </div>
   );

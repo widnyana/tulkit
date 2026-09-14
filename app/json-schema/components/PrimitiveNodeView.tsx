@@ -4,8 +4,18 @@
  * Displays type, enum/const, default value, and constraints
  */
 
-import { useState } from "react";
 import type { PrimitiveNode } from "../ast-types";
+import {
+  ConstraintsBlock,
+  CopyPathButton,
+  DefaultBadge,
+  DescriptionBlock,
+  EnumValuesBlock,
+  LeafDot,
+  MetaBadge,
+  TreeRow,
+  TypeBadge,
+} from "./tree-ui";
 import { sanitizeText } from "../security";
 
 interface PrimitiveNodeViewProps {
@@ -13,113 +23,31 @@ interface PrimitiveNodeViewProps {
 }
 
 export function PrimitiveNodeView({ node }: PrimitiveNodeViewProps) {
-  const [showFullEnum, setShowFullEnum] = useState(false);
-
-  const getTypeColor = (type: string) => {
-    if (type === "string")
-      return "bg-green-100 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-900";
-    if (type === "number" || type === "integer")
-      return "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900";
-    if (type === "boolean")
-      return "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-900";
-    return "bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-800";
-  };
-
-  const formatEnumValues = () => {
-    if (!node.enum) return "";
-    const formatted = node.enum.map((v) => JSON.stringify(v));
-
-    if (formatted.length > 5 && !showFullEnum) {
-      return `${formatted.slice(0, 5).join(", ")}...`;
-    }
-    return formatted.join(", ");
-  };
-
-  const truncateString = (str: string, maxLength = 50) => {
-    if (str.length <= maxLength) return str;
-    return `${str.substring(0, maxLength)}...`;
-  };
-
   return (
-    <div className="border-l-2 border-transparent hover:border-border transition-colors">
-      <div className="grid grid-cols-[auto_1fr_auto] gap-3 items-start py-2 px-3 rounded hover:bg-muted">
-        {/* Icon */}
-        <div className="flex items-center w-6">
-          <span className="text-gray-300">•</span>
-        </div>
+    <div>
+      <TreeRow>
+        <LeafDot />
 
-        {/* Type badge */}
-        <div className="flex items-center gap-2">
-          <span
-            className={`text-xs font-mono px-2 py-1 rounded border ${getTypeColor(
-              node.type,
-            )}`}
-          >
-            {node.type}
-          </span>
-        </div>
-
-        {/* Badges */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {node.enum && (
-            <span className="text-xs px-2 py-1 bg-muted text-foreground rounded border border-border">
-              {node.enum.length} values
-            </span>
-          )}
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          <TypeBadge type={node.type} />
+          {node.enum && <MetaBadge>{node.enum.length} values</MetaBadge>}
           {node.const !== undefined && (
-            <span className="text-xs px-2 py-1 bg-muted text-foreground rounded border border-border font-mono">
-              const: {JSON.stringify(node.const)}
-            </span>
+            <MetaBadge mono>const: {JSON.stringify(node.const)}</MetaBadge>
           )}
-          {node.default !== undefined && (
-            <span
-              className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded border border-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:border-amber-900 font-mono max-w-xs truncate"
-              title={JSON.stringify(node.default)}
-            >
-              default: {truncateString(JSON.stringify(node.default), 50)}
-            </span>
-          )}
+          {node.default !== undefined && <DefaultBadge value={node.default} />}
         </div>
-      </div>
 
-      {/* Description */}
+        <div className="ml-auto">
+          <CopyPathButton path={node.sourcePath} />
+        </div>
+      </TreeRow>
+
       {node.description && (
-        <div className="text-sm text-foreground bg-muted px-3 py-2 rounded border-l-2 border-blue-200 dark:border-blue-800 ml-10 mb-2">
-          {sanitizeText(node.description)}
-        </div>
+        <DescriptionBlock text={sanitizeText(node.description)} />
       )}
-
-      {/* Enum values */}
-      {node.enum && (
-        <div className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded border-l-2 border-border ml-10 mb-2">
-          <span className="font-semibold text-foreground">
-            Accepted values:
-          </span>{" "}
-          <code className="font-mono break-all">{formatEnumValues()}</code>
-          {node.enum.length > 5 && (
-            <button
-              type="button"
-              onClick={() => setShowFullEnum(!showFullEnum)}
-              className="ml-2 text-blue-600 hover:text-blue-700 font-semibold"
-            >
-              {showFullEnum ? "Show less" : `Show all ${node.enum.length}`}
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Constraints */}
+      {node.enum && <EnumValuesBlock values={node.enum} />}
       {node.constraints && node.constraints.length > 0 && (
-        <div className="text-xs text-muted-foreground bg-muted px-3 py-2 rounded border-l-2 border-border ml-10 mb-2">
-          <span className="font-semibold text-foreground">Constraints:</span>{" "}
-          <span className="space-x-3 font-mono">
-            {node.constraints.map((constraint) => (
-              <span key={`${constraint.type}-${String(constraint.value)}`}>
-                {constraint.type}: {String(constraint.value)}
-              </span>
-            ))}
-          </span>
-        </div>
+        <ConstraintsBlock constraints={node.constraints} />
       )}
     </div>
   );

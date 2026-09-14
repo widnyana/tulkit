@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { NodeRenderer } from "./components/NodeRenderer";
 import { SchemaStats } from "./components/SchemaStats";
 import { SchemaCache } from "./schema-cache";
@@ -141,6 +142,16 @@ export default function JSONSchemaPage() {
   const [parsedSchema, setParsedSchema] = useState<ParsedSchema | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [zenMode, setZenMode] = useState(false);
+  // Tree expansion control: remounts the tree on change so every node re-seeds
+  // its initial expansion state from the new mode.
+  const [treeMode, setTreeMode] = useState<"default" | "all" | "none">(
+    "default",
+  );
+  const [treeVersion, setTreeVersion] = useState(0);
+  const setTree = (mode: "default" | "all" | "none") => {
+    setTreeMode(mode);
+    setTreeVersion((v) => v + 1);
+  };
   const [loadingProgress, setLoadingProgress] = useState<{
     stage: "idle" | "main" | "external" | "parsing" | "complete";
     current?: number;
@@ -461,7 +472,7 @@ export default function JSONSchemaPage() {
                 loadingProgress.stage !== "complete" && (
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-950 dark:border-blue-900">
                     <div className="flex items-center gap-2">
-                      <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full" />
+                      <div className="animate-spin h-4 w-4 border-2 border-ring border-t-transparent rounded-full" />
                       <span className="text-sm text-blue-900 font-medium dark:text-blue-300">
                         {loadingProgress.message}
                       </span>
@@ -542,13 +553,37 @@ export default function JSONSchemaPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>Schema Structure</CardTitle>
-                    <Button
-                      variant={zenMode ? "secondary" : "outline"}
-                      size="sm"
-                      onClick={() => setZenMode(!zenMode)}
-                    >
-                      {zenMode ? "✕ Exit Zen" : "🧘 Zen Mode"}
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          setTree(treeMode === "all" ? "default" : "all")
+                        }
+                        aria-pressed={treeMode === "all"}
+                      >
+                        <ChevronsUpDown className="size-4" />
+                        Expand all
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          setTree(treeMode === "none" ? "default" : "none")
+                        }
+                        aria-pressed={treeMode === "none"}
+                      >
+                        <ChevronsDownUp className="size-4" />
+                        Collapse all
+                      </Button>
+                      <Button
+                        variant={zenMode ? "secondary" : "outline"}
+                        size="sm"
+                        onClick={() => setZenMode(!zenMode)}
+                      >
+                        {zenMode ? "✕ Exit Zen" : "🧘 Zen Mode"}
+                      </Button>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -557,7 +592,13 @@ export default function JSONSchemaPage() {
                       zenMode ? "h-[calc(100vh-160px)]" : "max-h-[1000px]"
                     }`}
                   >
-                    <NodeRenderer node={parsedSchema.ast} />
+                    <NodeRenderer
+                      key={treeVersion}
+                      node={parsedSchema.ast}
+                      expandAll={
+                        treeMode === "default" ? undefined : treeMode === "all"
+                      }
+                    />
                   </div>
                 </CardContent>
               </Card>

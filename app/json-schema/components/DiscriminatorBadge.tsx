@@ -39,7 +39,7 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
       <button
         type="button"
         onClick={() => setShowMapping(!showMapping)}
-        className="text-xs text-blue-600 hover:text-blue-700 font-semibold"
+        className="text-xs text-ring hover:text-ring/80 font-semibold"
       >
         {showMapping ? "Hide" : "Show"} mapping
       </button>
@@ -57,7 +57,7 @@ export function DiscriminatorBadge({ discriminator }: DiscriminatorBadgeProps) {
                     {value}
                   </td>
                   <td className="text-muted-foreground">→</td>
-                  <td className="pl-3 text-indigo-600">
+                  <td className="pl-3 text-indigo-600 dark:text-indigo-400">
                     branch [{branchIndex}]
                   </td>
                 </tr>
