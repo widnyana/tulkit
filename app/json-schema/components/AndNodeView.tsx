@@ -50,9 +50,9 @@ export function AndNodeView({ node, level, expandAll }: AndNodeViewProps) {
 
       {isExpanded && (
         <TreeChildren>
-          {node.nodes.map((childNode) => (
+          {node.nodes.map((childNode, index) => (
             <NodeRenderer
-              key={`and-${childNode.sourcePath}`}
+              key={`and-${index}`}
               node={childNode}
               level={level + 1}
               expandAll={expandAll}
