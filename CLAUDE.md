@@ -36,6 +36,16 @@ This repo is indexed by CodeGraph (`.codegraph/` at root). Reach for it BEFORE g
 
 The index lags writes ~1s via the file watcher. `callers`/`callees`/`impact`/`affected`/`sync`/`status` are CLI-only — not exposed as MCP tools.
 
+## Code navigation is mandatory — no blind grepping
+
+All agents MUST locate and understand code through structured tooling, not raw text search. In strict order of preference:
+
+1. **CodeGraph** (see section above) — first stop for finding or understanding symbols, call sites, and blast radius.
+2. **LSP** — for exact type info, go-to-definition, find-references, hover, and renames. If no TypeScript language server is running, install/start one (`pnpm exec tsserver` is available via the existing deps; or `mise use -g typescript@latest` / `npm i -g typescript-language-server typescript`), don't skip it. The repo also has Biome's daemon (`biome lsp-proxy`) as a capable TS-aware LSP.
+3. **AST parsing** — for structural queries LSP/CodeGraph can't answer (e.g. every JSX prop of a name, every import of a module). Use the already-installed toolchain: `pnpm exec biome` (has AST queries), `node --experimental-strip-types` with `ts-morph`/`typescript` compiler API, or `npx ast-grep`.
+
+Plain `grep`/`rg`/`Read` are a last resort for things none of the above can express (plain strings, config values, comments). Never guess a symbol's signature, callers, or location from memory — verify with one of these tools first, every time.
+
 ## Architecture
 
 **Single source of truth: `lib/tools.ts`.** Exports the `Tool` interface, the `tools[]` array, `getTool(href)`, and `buildToolMetadata(href)`. The registry drives the homepage grid, `app/sitemap.ts`, per-tool metadata, per-tool OG images (`app/<tool>/opengraph-image.tsx`), and JSON-LD. Root `app/opengraph-image.tsx`, `app/manifest.ts`, and `app/robots.ts` are **site-level** (constants from `lib/site.ts`), not registry-driven. **Never hand-write per-tool metadata** — add a registry entry and call the helpers.
@@ -67,16 +77,22 @@ Tailwind v4 is configured CSS-first in `app/globals.css` (`@import "tailwindcss"
 
 **Brand voice is a hard constraint.** The homepage hero (`<h1>tulkit</h1>` and the "because apparently you do need another random tool on the internet" subtitle) and the short branded `<title>` are intentionally playful and **not to be changed** without explicit approval. `docs/plans/` holds compound-engineering plan artifacts (frontmatter + R/KTD/U sections); the homepage-seo plan there locks two decisions not to undo: **R3** (brand voice wins over the SEO audit — homepage `<h1>`/subtitle/`<title>` stay) and **KTD1** (the `sr-only` `<h2>Tools</h2>` in `app/page.tsx` is a deliberate audit fix, not noise). Copy is drafted for approval, never invented-and-shipped.
 
-**Design system.** The homepage and site chrome follow the "instrument panel"
-design language documented in `DESIGN.md` (tokens, motion budget, card
-anatomy, locked copy, no-volatile-counts rule). Read it before touching
-`app/globals.css`, `app/layout.tsx`, `app/page.tsx`, or shared chrome.
+**Design system.** The homepage and site chrome follow the "directory + palette"
+design language documented in `DESIGN.md` (palette, measured contrast table,
+motion budget, component anatomy, locked copy, no-volatile-counts rule). Read it
+before touching `app/globals.css`, `app/layout.tsx`, `app/page.tsx`,
+`components/tools-palette.tsx`, `components/tools-directory.tsx`, or
+`components/Footer.tsx`.
 
 **Supply-chain posture — do not bypass:**
 - `pnpm-workspace.yaml` sets `minimumReleaseAge: 10080` (7 days) — no freshly-published packages install.
 - `allowBuilds` permits only `@parcel/watcher`, `@swc/core`, `sharp`. New build-script deps go through `pnpm approve-builds`.
 - `overrides.picomatch: ^2.3.2` is a forced ReDoS patch (pnpm 11 reads overrides here, not `package.json`).
 - CI (`.github/workflows/supply-chain.yml`) runs `pnpm audit --audit-level=high` and flags install/build scripts. There is **no CI build/lint/typecheck job** — those run locally and on Netlify.
+
+## Work ethic — be meticulous
+
+Rushed work is rejected work. Before editing any file: read the whole file (not the excerpt), trace every caller and callee of what you touch (CodeGraph `impact`), and check sibling callers for the same bug. After editing: run `pnpm typecheck` and `pnpm lint`, run the relevant tests (`pnpm test`, `pnpm test:e2e <file>`), and re-read your diff as if reviewing someone else's PR. Never leave a half-migrated state, a stale comment, or a dangling import. Prefer finishing one thing completely over starting three things. When unsure about behavior, verify against the actual code — "it probably works" is not verification.
 
 ## Gotchas
 
