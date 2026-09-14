@@ -53,7 +53,7 @@ export default function ReverseLookup() {
               value={ipAddress}
               onChange={(e) => setIPAddress(e.target.value)}
               placeholder="e.g., 192.168.1.55 or 2001:db8::1"
-              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
 
@@ -71,7 +71,7 @@ export default function ReverseLookup() {
               max="128"
               value={cidr}
               onChange={(e) => setCIDR(Number(e.target.value))}
-              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
             <p className="text-xs text-muted-foreground mt-1">
               Common values: /24 (254 hosts), /25 (126 hosts), /26 (62 hosts);
@@ -82,7 +82,7 @@ export default function ReverseLookup() {
           <button
             type="button"
             onClick={handleLookup}
-            className="px-6 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+            className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
           >
             Lookup Subnet
           </button>
@@ -111,7 +111,7 @@ export default function ReverseLookup() {
               <p className="text-sm text-muted-foreground mb-1">
                 Complete CIDR Notation
               </p>
-              <p className="text-2xl font-mono font-bold text-purple-700 dark:text-purple-300">
+              <p className="text-2xl font-mono font-bold text-ring dark:text-purple-300">
                 {result.cidrNotation}
               </p>
             </div>

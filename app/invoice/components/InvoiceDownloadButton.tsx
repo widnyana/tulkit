@@ -84,7 +84,7 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
         {({ loading }) => (
           <Button
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-base shadow-sm transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-6 text-base shadow-sm transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Download className="w-5 h-5 mr-2" />
             {loading ? "Generating PDF..." : "Download Invoice PDF"}

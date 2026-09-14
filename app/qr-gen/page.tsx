@@ -270,19 +270,19 @@ export default function QRGeneratorPage() {
                   dispatch({ type: "SET_TEXT", payload: e.target.value })
                 }
                 placeholder={`Examples:\n• ${SITE_URL}/\n• tel:+1-555-0123\n• mailto:hello@example.com\n• WiFi password, menu, contact info, or any text!`}
-                className="w-full h-32 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full h-32 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
               />
               <div className="flex items-center justify-between mt-2">
                 <p className="text-xs text-muted-foreground">
                   {state.text.length} characters
                 </p>
                 {isLong && !isVeryLong && (
-                  <p className="text-xs text-amber-600">
+                  <p className="text-xs text-amber-700 dark:text-amber-400">
                     Shorter text scans more reliably
                   </p>
                 )}
                 {isVeryLong && (
-                  <p className="text-xs text-red-600">
+                  <p className="text-xs text-red-700 dark:text-red-400">
                     Long text may reduce scan reliability
                   </p>
                 )}
@@ -310,7 +310,7 @@ export default function QRGeneratorPage() {
                   }
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
                     state.errorLevel === "LOW"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      ? "border-ring bg-highlight"
                       : "border-border hover:border-border"
                   }`}
                 >
@@ -337,7 +337,7 @@ export default function QRGeneratorPage() {
                   }
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
                     state.errorLevel === "MEDIUM"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      ? "border-ring bg-highlight"
                       : "border-border hover:border-border"
                   }`}
                 >
@@ -364,7 +364,7 @@ export default function QRGeneratorPage() {
                   }
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
                     state.errorLevel === "QUARTILE"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      ? "border-ring bg-highlight"
                       : "border-border hover:border-border"
                   }`}
                 >
@@ -391,7 +391,7 @@ export default function QRGeneratorPage() {
                   }
                   className={`p-4 border-2 rounded-lg text-left transition-all ${
                     state.errorLevel === "HIGH"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                      ? "border-ring bg-highlight"
                       : "border-border hover:border-border"
                   }`}
                 >
@@ -428,7 +428,7 @@ export default function QRGeneratorPage() {
                     Customize shapes, colors, and add logos
                   </p>
                 </div>
-                <span className="text-blue-600 font-medium">
+                <span className="text-ring font-medium">
                   {state.showStyling ? "▼ Hide" : "▶ Show"}
                 </span>
               </button>
@@ -478,7 +478,7 @@ export default function QRGeneratorPage() {
                       />
                       {state.logoImage && (
                         <div className="mt-2 flex items-center gap-2">
-                          <p className="text-sm text-green-600">
+                          <p className="text-sm text-green-700 dark:text-green-400">
                             Logo uploaded
                           </p>
                           <button
@@ -486,7 +486,7 @@ export default function QRGeneratorPage() {
                             onClick={() =>
                               dispatch({ type: "SET_LOGO_IMAGE", payload: "" })
                             }
-                            className="text-sm text-red-600 hover:text-red-700"
+                            className="text-sm text-red-700 dark:text-red-400 hover:text-red-700"
                           >
                             Remove
                           </button>
@@ -498,7 +498,7 @@ export default function QRGeneratorPage() {
                   <button
                     type="button"
                     onClick={() => dispatch({ type: "TOGGLE_ADVANCED" })}
-                    className="mt-4 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="mt-4 text-sm text-ring hover:text-ring/80 font-medium"
                   >
                     {state.showAdvanced ? "▼ Hide" : "▶ Show"} Advanced Settings
                   </button>
@@ -598,14 +598,14 @@ export default function QRGeneratorPage() {
                         })
                       }
                       placeholder="qr-code"
-                      className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                     />
                   </div>
 
                   <button
                     type="button"
                     onClick={handleDownload}
-                    className="w-full px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors text-lg"
+                    className="w-full px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors text-lg"
                   >
                     Download QR Code
                   </button>

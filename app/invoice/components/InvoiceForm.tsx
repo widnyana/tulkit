@@ -422,7 +422,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="Your company name"
                   />
                   {errors.sender?.name && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       {errors.sender.name.message}
                     </p>
                   )}
@@ -445,7 +445,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="Your address"
                   />
                   {errors.sender?.address && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       {errors.sender.address.message}
                     </p>
                   )}
@@ -468,7 +468,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="your@email.com"
                   />
                   {errors.sender?.email && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       {errors.sender.email.message}
                     </p>
                   )}
@@ -491,7 +491,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="Your phone number"
                   />
                   {errors.sender?.phone && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       {errors.sender.phone.message}
                     </p>
                   )}
@@ -521,7 +521,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="Client name"
                   />
                   {errors.recipient?.name && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       {errors.recipient.name.message}
                     </p>
                   )}
@@ -544,7 +544,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="Client address"
                   />
                   {errors.recipient?.address && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       {errors.recipient.address.message}
                     </p>
                   )}
@@ -567,7 +567,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="client@email.com"
                   />
                   {errors.recipient?.email && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       {errors.recipient.email.message}
                     </p>
                   )}
@@ -590,7 +590,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                     placeholder="Client phone number"
                   />
                   {errors.recipient?.phone && (
-                    <p className="text-red-500 text-sm mt-1">
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                       {errors.recipient.phone.message}
                     </p>
                   )}
@@ -625,7 +625,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   placeholder="INV-001"
                 />
                 {errors.invoiceNumber && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                     {errors.invoiceNumber.message}
                   </p>
                 )}
@@ -646,7 +646,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   className={`w-full px-3 py-2 border rounded-md ${errors.issueDate ? "border-red-500" : "border-input"}`}
                 />
                 {errors.issueDate && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                     {errors.issueDate.message}
                   </p>
                 )}
@@ -667,7 +667,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   className={`w-full px-3 py-2 border rounded-md ${errors.dueDate ? "border-red-500" : "border-input"}`}
                 />
                 {errors.dueDate && (
-                  <p className="text-red-500 text-sm mt-1">
+                  <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                     {errors.dueDate.message}
                   </p>
                 )}
@@ -709,7 +709,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <button
                 type="button"
                 onClick={removeLogo}
-                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-full"
+                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-full"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -725,7 +725,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           <button
             type="button"
             onClick={addItem}
-            className="flex items-center px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            className="flex items-center px-3 py-1 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
           >
             <Plus className="w-4 h-4 mr-1" />
             Add Item
@@ -770,7 +770,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                               placeholder="Item description"
                             />
                             {errors.items?.[index]?.description && (
-                              <p className="text-red-500 text-xs mt-1">
+                              <p className="text-red-600 dark:text-red-400 text-xs mt-1">
                                 {errors.items[index]?.description?.message}
                               </p>
                             )}
@@ -828,7 +828,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       <button
                         type="button"
                         onClick={() => removeItem(index)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-600 dark:text-red-400 hover:text-red-700"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -873,7 +873,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <input
                     type="checkbox"
                     checked={field.value}
-                    className="h-4 w-4 text-blue-600 rounded"
+                    className="h-4 w-4 text-ring rounded"
                     onChange={(e) => field.onChange(e.target.checked)}
                     onBlur={field.onBlur}
                     name={field.name}
@@ -907,7 +907,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                     {errors.taxRate && (
-                      <p className="text-red-500 text-sm mt-1">
+                      <p className="text-red-600 dark:text-red-400 text-sm mt-1">
                         {errors.taxRate.message}
                       </p>
                     )}
@@ -1014,7 +1014,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   <label className="flex items-center space-x-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      className="h-4 w-4 text-blue-600 rounded"
+                      className="h-4 w-4 text-ring rounded"
                       checked={field.value?.includes(method) || false}
                       onChange={(e) => {
                         const currentMethods = field.value || [];
@@ -1145,7 +1145,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                   setValue("paymentInfo.paymentQRCode", undefined);
                   toast.success("QR code removed");
                 }}
-                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950 rounded-full"
+                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 rounded-full"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1215,7 +1215,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <input
                 type="checkbox"
                 checked={field.value !== false}
-                className="h-4 w-4 text-blue-600 rounded"
+                className="h-4 w-4 text-ring rounded"
                 onChange={(e) => field.onChange(e.target.checked)}
                 onBlur={field.onBlur}
                 name={field.name}

@@ -73,7 +73,7 @@ export default function VLSMSplitter() {
               value={parentBlock}
               onChange={(e) => setParentBlock(e.target.value)}
               placeholder="e.g., 10.10.0.0/22 or 2001:db8::/48"
-              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
 
@@ -90,7 +90,7 @@ export default function VLSMSplitter() {
               value={requiredSizesInput}
               onChange={(e) => setRequiredSizesInput(e.target.value)}
               placeholder="e.g., 500, 200, 100, 50"
-              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
             <p className="text-xs text-muted-foreground mt-1">
               Enter the number of usable hosts needed for each subnet
@@ -101,7 +101,7 @@ export default function VLSMSplitter() {
             <button
               type="button"
               onClick={handleCalculate}
-              className="px-6 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+              className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
             >
               Calculate Subnets
             </button>
@@ -109,7 +109,7 @@ export default function VLSMSplitter() {
               <button
                 type="button"
                 onClick={copyResults}
-                className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Copy Results
               </button>

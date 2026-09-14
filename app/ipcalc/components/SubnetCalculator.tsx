@@ -106,7 +106,7 @@ export default function SubnetCalculator() {
               onChange={(e) => setBaseNetwork(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., 192.168.1.0 or 2001:db8::"
-              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
 
@@ -124,7 +124,7 @@ export default function SubnetCalculator() {
               onChange={(e) => setBaseMask(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="24 or /64"
-              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
 
@@ -142,7 +142,7 @@ export default function SubnetCalculator() {
               onChange={(e) => setNewMask(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="26 or /80"
-              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function SubnetCalculator() {
         <button
           type="button"
           onClick={handleCalculate}
-          className="w-full md:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="w-full md:w-auto px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           Calculate
         </button>
@@ -194,7 +194,7 @@ export default function SubnetCalculator() {
                   <td className="px-4 py-3 text-sm font-mono text-foreground">
                     {supernet.network}
                   </td>
-                  <td className="px-4 py-3 text-sm font-mono text-blue-600 font-semibold">
+                  <td className="px-4 py-3 text-sm font-mono text-ring font-semibold">
                     /{supernet.cidr}
                   </td>
                   <td className="px-4 py-3 text-sm font-mono text-foreground">
@@ -272,7 +272,7 @@ export default function SubnetCalculator() {
                     <td className="px-4 py-3 text-sm font-mono text-foreground">
                       {subnet.network}
                     </td>
-                    <td className="px-4 py-3 text-sm font-mono text-blue-600 font-semibold">
+                    <td className="px-4 py-3 text-sm font-mono text-ring font-semibold">
                       /{subnet.cidr}
                     </td>
                     <td className="px-4 py-3 text-sm font-mono text-foreground">

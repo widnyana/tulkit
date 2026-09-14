@@ -70,7 +70,7 @@ export default function BasicCalculator() {
               onChange={(e) => setAddress(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., 192.168.1.1 or 2001:db8::1"
-              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
 
@@ -88,7 +88,7 @@ export default function BasicCalculator() {
               onChange={(e) => setNetmask(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="24, 255.255.255.0, or /64"
-              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function BasicCalculator() {
         <button
           type="button"
           onClick={handleCalculate}
-          className="w-full md:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="w-full md:w-auto px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           Calculate
         </button>
@@ -183,7 +183,7 @@ function InfoRow({
       </span>
       <span
         className={`text-sm font-mono ${
-          highlight ? "text-blue-600 font-semibold" : "text-foreground"
+          highlight ? "text-ring font-semibold" : "text-foreground"
         }`}
       >
         {value}

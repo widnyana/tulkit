@@ -61,7 +61,7 @@ export function StyleControls({
               onClick={() => onShapeOptionsChange({ ...shapeOptions, shape })}
               className={`p-3 border-2 rounded-lg transition-all ${
                 shapeOptions.shape === shape
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                  ? "border-ring bg-highlight"
                   : "border-border hover:border-border"
               }`}
             >
@@ -90,7 +90,7 @@ export function StyleControls({
               }
               className={`p-3 border-2 rounded-lg transition-all ${
                 shapeOptions.eyePatternShape === shape
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                  ? "border-ring bg-highlight"
                   : "border-border hover:border-border"
               }`}
             >
@@ -175,7 +175,7 @@ export function StyleControls({
                     const newColors = colors.filter((_, i) => i !== index);
                     onColorsChange(newColors);
                   }}
-                  className="text-red-600 hover:text-red-700"
+                  className="text-red-700 dark:text-red-400 hover:text-red-700"
                 >
                   ×
                 </button>
@@ -207,7 +207,7 @@ export function StyleControls({
               onClick={() => onGradientTypeChange(type)}
               className={`p-3 border-2 rounded-lg transition-all ${
                 gradientType === type
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+                  ? "border-ring bg-highlight"
                   : "border-border hover:border-border"
               }`}
             >

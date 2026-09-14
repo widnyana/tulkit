@@ -36,7 +36,7 @@ export default function CopyableOutput({
                 onClick={() => setFormat(f)}
                 className={`px-3 py-1 transition-colors ${
                   format === f
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-primary-foreground"
                     : "bg-background text-muted-foreground hover:bg-muted"
                 }`}
               >

@@ -84,7 +84,7 @@ function IPCalcContent() {
               onClick={() => setActiveTab("basic")}
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === "basic"
-                  ? "border-blue-500 text-blue-600"
+                  ? "border-ring text-ring"
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >
@@ -95,7 +95,7 @@ function IPCalcContent() {
               onClick={() => setActiveTab("subnet")}
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === "subnet"
-                  ? "border-blue-500 text-blue-600"
+                  ? "border-ring text-ring"
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >
@@ -106,7 +106,7 @@ function IPCalcContent() {
               onClick={() => setActiveTab("deaggregator")}
               className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === "deaggregator"
-                  ? "border-blue-500 text-blue-600"
+                  ? "border-ring text-ring"
                   : "border-transparent text-muted-foreground hover:text-foreground hover:border-border"
               }`}
             >
@@ -150,7 +150,7 @@ function IPCalcContent() {
                 href="http://jodies.de/ipcalc"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline"
+                className="text-ring hover:text-ring/80 underline"
               >
                 ipcalc
               </a>{" "}

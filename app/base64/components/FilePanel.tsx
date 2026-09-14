@@ -61,7 +61,7 @@ export function FilePanel() {
           onClick={() => setDir("encode")}
           className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
             dir === "encode"
-              ? "bg-blue-600 text-white"
+              ? "bg-primary text-primary-foreground"
               : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
           }`}
         >
@@ -72,7 +72,7 @@ export function FilePanel() {
           onClick={() => setDir("decode")}
           className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
             dir === "decode"
-              ? "bg-blue-600 text-white"
+              ? "bg-primary text-primary-foreground"
               : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
           }`}
         >
@@ -90,7 +90,7 @@ export function FilePanel() {
               const file = e.dataTransfer.files[0];
               if (file) readFile(file);
             }}
-            className="flex flex-col items-center justify-center border-2 border-dashed border-input rounded-lg p-8 text-muted-foreground cursor-pointer hover:border-blue-400 hover:text-foreground transition-colors"
+            className="flex flex-col items-center justify-center border-2 border-dashed border-input rounded-lg p-8 text-muted-foreground cursor-pointer hover:border-ring/50 hover:text-foreground transition-colors"
           >
             <span className="text-sm">
               Drop a file here, or click to choose
@@ -124,7 +124,7 @@ export function FilePanel() {
                 <button
                   type="button"
                   onClick={() => navigator.clipboard.writeText(output)}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white font-medium rounded hover:bg-blue-700 transition-colors"
+                  className="px-3 py-1 text-xs bg-primary text-primary-foreground font-medium rounded hover:bg-primary/90 transition-colors"
                 >
                   Copy
                 </button>
@@ -159,19 +159,21 @@ export function FilePanel() {
                 type="text"
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
-                className="px-4 py-2 text-foreground border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 text-foreground border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
             <button
               type="button"
               onClick={download}
               disabled={decodeInput === ""}
-              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Download
             </button>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && (
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          )}
         </div>
       )}
     </div>

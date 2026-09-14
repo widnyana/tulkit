@@ -7,23 +7,23 @@ import { FIELD_LABELS, FIELD_ORDER, type FieldName } from "../utils";
 const FIELD_ACCENTS: Record<FieldName, { chip: string; focus: string }> = {
   minute: {
     chip: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-900",
-    focus: "focus:ring-blue-500 focus:border-blue-500",
+    focus: "focus:ring-ring focus:border-ring",
   },
   hour: {
     chip: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-300 dark:border-green-900",
-    focus: "focus:ring-green-500 focus:border-green-500",
+    focus: "focus:ring-ring focus:border-ring",
   },
   dom: {
-    chip: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-900",
-    focus: "focus:ring-purple-500 focus:border-purple-500",
+    chip: "bg-purple-50 text-ring border-purple-200 dark:bg-purple-950 dark:text-purple-300 dark:border-purple-900",
+    focus: "focus:ring-ring focus:border-ring",
   },
   month: {
     chip: "bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-950 dark:text-pink-300 dark:border-pink-900",
-    focus: "focus:ring-pink-500 focus:border-pink-500",
+    focus: "focus:ring-ring focus:border-ring",
   },
   dow: {
     chip: "bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-950 dark:text-cyan-300 dark:border-cyan-900",
-    focus: "focus:ring-cyan-500 focus:border-cyan-500",
+    focus: "focus:ring-ring focus:border-ring",
   },
 };
 
@@ -86,7 +86,10 @@ export default function FieldGrid({
                 }`}
               />
               {error && (
-                <p role="alert" className="mt-1 text-xs text-red-600">
+                <p
+                  role="alert"
+                  className="mt-1 text-xs text-red-600 dark:text-red-400"
+                >
                   {error}
                 </p>
               )}

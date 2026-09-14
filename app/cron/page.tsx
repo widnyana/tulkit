@@ -229,7 +229,7 @@ function CronEditor() {
                   onClick={() =>
                     copy(parsed.shortcut ?? normalized, "Expression")
                   }
-                  className="text-xs font-medium text-muted-foreground hover:text-blue-700 transition-colors"
+                  className="text-xs font-medium text-muted-foreground hover:text-ring/80 transition-colors"
                 >
                   copy
                 </button>
@@ -248,7 +248,7 @@ function CronEditor() {
               placeholder="* * * * *   (minute hour day month weekday)"
               aria-invalid={parsed.error ? true : undefined}
               data-testid="cron-expression"
-              className={`w-full px-4 py-3 font-mono text-xl rounded-lg border outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-4 py-3 font-mono text-xl rounded-lg border outline-none focus:ring-2 focus:ring-ring focus:border-transparent ${
                 parsed.error
                   ? "border-red-300 bg-red-50/30 dark:border-red-800 dark:bg-red-950/30"
                   : "border-input"
@@ -258,7 +258,7 @@ function CronEditor() {
             {parsed.error && (
               <p
                 role="alert"
-                className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 dark:bg-red-950 dark:border-red-900 dark:text-red-400"
+                className="mt-4 text-sm text-red-600 dark:text-red-400 bg-red-50 border border-red-200 rounded-lg p-3 dark:bg-red-950 dark:border-red-900 dark:text-red-400"
               >
                 {parsed.error}
               </p>
