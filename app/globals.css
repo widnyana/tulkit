@@ -70,6 +70,8 @@
   --input: #6f7a88;
   --ring: #0072b2;
   --highlight: #dcebf5;
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: #ffffff;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -105,6 +107,7 @@
   --ring: #56b4e9;
   --highlight: #14313f;
   --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: #ffffff;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);

@@ -49,7 +49,7 @@ export default function CollisionDetector() {
               onChange={(e) => setExistingSubnets(e.target.value)}
               rows={8}
               placeholder="e.g.,&#10;10.10.0.0/24&#10;2001:db8:1::/48&#10;192.168.0.0/16"
-              className="w-full px-4 py-2 text-foreground font-mono text-sm border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground font-mono text-sm border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
             <p className="text-xs text-muted-foreground mt-1">
               List all currently active subnets in CIDR notation
@@ -69,14 +69,14 @@ export default function CollisionDetector() {
               value={newSubnet}
               onChange={(e) => setNewSubnet(e.target.value)}
               placeholder="e.g., 10.10.3.0/24 or 2001:db8:2::/48"
-              className="w-full px-4 py-2 text-foreground font-mono border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground font-mono border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
 
           <button
             type="button"
             onClick={handleCheck}
-            className="px-6 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+            className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
           >
             Check for Collisions
           </button>

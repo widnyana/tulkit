@@ -31,7 +31,7 @@ export default function CadenceCards({ active, onSelect }: CadenceCardsProps) {
               className={`rounded-lg border px-3 py-2 text-left transition-colors ${
                 isActive
                   ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500 dark:bg-blue-950"
-                  : "border-border bg-card hover:border-blue-400"
+                  : "border-border bg-card hover:border-ring/50"
               }`}
             >
               <span

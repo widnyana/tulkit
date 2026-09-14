@@ -9,12 +9,12 @@ const Input = React.memo(
           type={type}
           autoComplete="off"
           className={cn(
-            "h-8 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-slate-950 shadow-sm shadow-black/5 transition-shadow placeholder:text-slate-500/70 focus-visible:border-indigo-500 focus-visible:ring focus-visible:ring-indigo-200 focus-visible:ring-opacity-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50 dark:placeholder:text-slate-400/70 dark:focus-visible:border-slate-300 dark:focus-visible:ring-slate-300/20 [&[aria-readonly=true]]:cursor-not-allowed [&[aria-readonly=true]]:bg-slate-50 [&[aria-readonly=true]]:opacity-50 [&[aria-readonly=true]]:dark:bg-slate-900",
+            "h-8 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50 aria-readonly:cursor-not-allowed aria-readonly:opacity-50 aria-readonly:bg-muted/50",
             type === "date" && "w-auto",
             type === "search" &&
               "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
             type === "file" &&
-              "p-0 pr-3 italic text-slate-500/70 file:me-3 file:h-full file:border-0 file:border-r file:border-solid file:border-slate-200 file:bg-transparent file:px-3 file:text-sm file:font-medium file:not-italic file:text-slate-950 dark:text-slate-400/70 dark:file:border-slate-800 dark:file:text-slate-50",
+              "p-0 pr-3 italic text-muted-foreground file:me-3 file:h-full file:border-0 file:border-r file:border-solid file:border-input file:bg-transparent file:px-3 file:text-sm file:font-medium file:not-italic file:text-foreground",
             className,
           )}
           ref={ref}

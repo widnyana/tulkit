@@ -146,7 +146,7 @@ export default function Base64Page() {
                 onClick={() => switchMode(m.id)}
                 className={`px-6 py-2 font-medium rounded-lg transition-colors ${
                   mode === m.id
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-primary-foreground"
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                 }`}
               >
@@ -166,7 +166,7 @@ export default function Base64Page() {
                     onClick={() => setHexDir("toBase64")}
                     className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                       hexDir === "toBase64"
-                        ? "bg-blue-600 text-white"
+                        ? "bg-primary text-primary-foreground"
                         : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     }`}
                   >
@@ -177,7 +177,7 @@ export default function Base64Page() {
                     onClick={() => setHexDir("toHex")}
                     className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                       hexDir === "toHex"
-                        ? "bg-blue-600 text-white"
+                        ? "bg-primary text-primary-foreground"
                         : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     }`}
                   >
@@ -250,7 +250,7 @@ export default function Base64Page() {
                           if (Number.isNaN(val) || val < 4) setLineWidth(4);
                           else if (val > 120) setLineWidth(120);
                         }}
-                        className="w-24 px-4 py-2 text-foreground border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-24 px-4 py-2 text-foreground border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
                       />
                     </div>
                   )}
@@ -269,14 +269,16 @@ export default function Base64Page() {
                 <button
                   type="button"
                   onClick={() => copy(text.output)}
-                  className="px-3 py-1 text-xs bg-blue-600 text-white font-medium rounded hover:bg-blue-700 transition-colors"
+                  className="px-3 py-1 text-xs bg-primary text-primary-foreground font-medium rounded hover:bg-primary/90 transition-colors"
                 >
                   Copy
                 </button>
               )}
             </div>
             {text.error ? (
-              <p className="text-sm text-red-600">{text.error}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {text.error}
+              </p>
             ) : (
               <>
                 <Textarea
@@ -297,13 +299,15 @@ export default function Base64Page() {
 
         {mode === "jwt" && (
           <div className="bg-card rounded-lg shadow-lg p-6 border border-border">
-            <p className="text-sm text-amber-600 mb-4">
+            <p className="text-sm text-amber-700 dark:text-amber-400 mb-4">
               Signature is decoded for display only —{" "}
               <strong>not verified</strong>. Verifying a JWT requires the
               signing key, which this tool does not have.
             </p>
             {jwt?.error ? (
-              <p className="text-sm text-red-600">{jwt.error}</p>
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {jwt.error}
+              </p>
             ) : jwt?.data ? (
               <div className="space-y-4">
                 <JwtField
@@ -353,7 +357,7 @@ function JwtField({
         <button
           type="button"
           onClick={() => onCopy(value)}
-          className="px-3 py-1 text-xs bg-blue-600 text-white font-medium rounded hover:bg-blue-700 transition-colors"
+          className="px-3 py-1 text-xs bg-primary text-primary-foreground font-medium rounded hover:bg-primary/90 transition-colors"
         >
           Copy
         </button>

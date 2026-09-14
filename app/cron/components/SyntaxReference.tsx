@@ -72,7 +72,7 @@ export default function SyntaxReference({ onShortcut }: SyntaxReferenceProps) {
             onClick={() => onShortcut(s)}
             title={SHORTCUT_MEANINGS[s]}
             data-testid="cron-shortcut"
-            className="rounded-full border border-border bg-background px-2 py-0.5 font-mono text-xs text-foreground transition-colors hover:border-blue-400 hover:text-blue-700"
+            className="rounded-full border border-border bg-background px-2 py-0.5 font-mono text-xs text-foreground transition-colors hover:border-ring/50 hover:text-ring/80"
           >
             {s}
           </button>

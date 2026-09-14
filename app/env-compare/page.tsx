@@ -123,7 +123,7 @@ export default function EnvComparePage() {
               value={env1Name}
               onChange={(e) => setEnv1Name(e.target.value)}
               placeholder="e.g., Production, Staging, Development"
-              className="w-full px-4 py-2 mb-3 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 mb-3 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
             <label
               htmlFor={env1Id}
@@ -135,7 +135,7 @@ export default function EnvComparePage() {
               id={env1Id}
               value={env1}
               onChange={(e) => setEnv1(e.target.value)}
-              className="w-full h-96 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-96 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
               placeholder="DATABASE_URL=postgres://localhost:5432/db&#10;API_KEY=your-api-key&#10;NODE_ENV=production"
             />
           </div>
@@ -153,7 +153,7 @@ export default function EnvComparePage() {
               value={env2Name}
               onChange={(e) => setEnv2Name(e.target.value)}
               placeholder="e.g., Production, Staging, Development"
-              className="w-full px-4 py-2 mb-3 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 mb-3 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
             <label
               htmlFor={env2Id}
@@ -165,7 +165,7 @@ export default function EnvComparePage() {
               id={env2Id}
               value={env2}
               onChange={(e) => setEnv2(e.target.value)}
-              className="w-full h-96 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-96 p-4 font-mono text-sm text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
               placeholder="DATABASE_URL=postgres://staging:5432/db&#10;API_KEY=staging-key&#10;DEBUG=true"
             />
           </div>
@@ -176,7 +176,7 @@ export default function EnvComparePage() {
             type="button"
             onClick={handleCompare}
             disabled={!env1.trim() || !env2.trim()}
-            className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-muted/60 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed transition-colors"
           >
             Compare
           </button>
@@ -202,7 +202,7 @@ export default function EnvComparePage() {
                     onClick={() =>
                       copyKeys(result.onlyInFirst.map((item) => item.key))
                     }
-                    className="px-4 py-1.5 text-sm bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                    className="px-4 py-1.5 text-sm bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
                   >
                     Copy Keys
                   </button>
@@ -211,7 +211,7 @@ export default function EnvComparePage() {
                   {result.onlyInFirst.map((item) => (
                     <div
                       key={item.key}
-                      className="bg-card border border-blue-300 rounded p-3 font-mono text-sm"
+                      className="bg-card border border-blue-300 dark:border-blue-800 rounded p-3 font-mono text-sm"
                     >
                       <span className="font-medium text-foreground">
                         {item.key}
@@ -235,7 +235,7 @@ export default function EnvComparePage() {
                     onClick={() =>
                       copyKeys(result.onlyInSecond.map((item) => item.key))
                     }
-                    className="px-4 py-1.5 text-sm bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+                    className="px-4 py-1.5 text-sm bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
                   >
                     Copy Keys
                   </button>
@@ -244,7 +244,7 @@ export default function EnvComparePage() {
                   {result.onlyInSecond.map((item) => (
                     <div
                       key={item.key}
-                      className="bg-card border border-purple-300 rounded p-3 font-mono text-sm"
+                      className="bg-card border border-purple-300 dark:border-purple-800 rounded p-3 font-mono text-sm"
                     >
                       <span className="font-medium text-foreground">
                         {item.key}
@@ -266,7 +266,7 @@ export default function EnvComparePage() {
                   {result.identical.map((item) => (
                     <div
                       key={item.key}
-                      className="bg-card border border-green-300 rounded p-2 font-mono text-sm text-foreground"
+                      className="bg-card border border-green-300 dark:border-green-800 rounded p-2 font-mono text-sm text-foreground"
                     >
                       {item.key}
                     </div>
@@ -283,7 +283,7 @@ export default function EnvComparePage() {
                   {result.differences.map((diff) => (
                     <div
                       key={diff.key}
-                      className="bg-card border border-yellow-300 rounded p-3"
+                      className="bg-card border border-yellow-300 dark:border-yellow-800 rounded p-3"
                     >
                       <div className="font-mono text-sm font-medium text-foreground mb-2">
                         {diff.key}

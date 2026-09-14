@@ -76,7 +76,7 @@ export default function Deaggregator() {
               onChange={(e) => setStartIP(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., 192.168.1.10 or 2001:db8::1"
-              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full text-foreground px-4 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
 
@@ -94,7 +94,7 @@ export default function Deaggregator() {
               onChange={(e) => setEndIP(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="e.g., 192.168.1.100 or 2001:db8::ff"
-              className="w-full px-4 text-foreground py-2 border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 text-foreground py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
         </div>
@@ -102,7 +102,7 @@ export default function Deaggregator() {
         <button
           type="button"
           onClick={handleCalculate}
-          className="w-full md:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="w-full md:w-auto px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           Calculate CIDR Blocks
         </button>

@@ -59,7 +59,7 @@ export default function BoundaryCheck() {
               value={startIP}
               onChange={(e) => setStartIP(e.target.value)}
               placeholder="e.g., 192.168.1.0 or 2001:db8::"
-              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
           </div>
 
@@ -76,7 +76,7 @@ export default function BoundaryCheck() {
               min="1"
               value={requiredHosts}
               onChange={(e) => setRequiredHosts(Number(e.target.value))}
-              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
             />
             <p className="text-xs text-muted-foreground mt-1">
               The number of usable IP addresses needed
@@ -86,7 +86,7 @@ export default function BoundaryCheck() {
           <button
             type="button"
             onClick={handleCheck}
-            className="px-6 py-2 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors"
+            className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
           >
             Check Boundary
           </button>
@@ -130,7 +130,7 @@ export default function BoundaryCheck() {
                 <p className="text-sm text-muted-foreground">
                   Suggested Subnet Mask
                 </p>
-                <p className="text-lg font-mono font-semibold text-purple-600">
+                <p className="text-lg font-mono font-semibold text-purple-700 dark:text-purple-400">
                   /{result.suggestedMask}
                 </p>
               </div>

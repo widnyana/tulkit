@@ -109,7 +109,7 @@ function IPPlannerContent() {
                   flex items-center gap-2 px-4 py-3 font-medium text-sm rounded-t-lg transition-colors
                   ${
                     activeTab === tab.id
-                      ? "bg-background text-purple-700 border-b-2 border-purple-700"
+                      ? "bg-background text-ring border-b-2 border-ring"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   }
                 `}

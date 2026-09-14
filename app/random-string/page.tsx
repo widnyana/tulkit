@@ -117,7 +117,7 @@ export default function RandomStringPage() {
                   if (Number.isNaN(val) || val < 1) setCount(1);
                   else if (val > 50) setCount(50);
                 }}
-                className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
 
@@ -148,7 +148,7 @@ export default function RandomStringPage() {
                   if (Number.isNaN(val) || val < 4) setLength(4);
                   else if (val > 255) setLength(255);
                 }}
-                className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 text-foreground border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
           </div>
@@ -200,7 +200,7 @@ export default function RandomStringPage() {
             <button
               type="button"
               onClick={handleGenerate}
-              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
             >
               Generate
             </button>
@@ -209,7 +209,7 @@ export default function RandomStringPage() {
                 <button
                   type="button"
                   onClick={copyAll}
-                  className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+                  className="px-6 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   Copy All
                 </button>
@@ -244,7 +244,7 @@ export default function RandomStringPage() {
                   <button
                     type="button"
                     onClick={() => copySingle(item.value)}
-                    className="ml-4 px-3 py-1 text-xs bg-blue-600 text-white font-medium rounded hover:bg-blue-700 transition-colors flex-shrink-0"
+                    className="ml-4 px-3 py-1 text-xs bg-primary text-primary-foreground font-medium rounded hover:bg-primary/90 transition-colors flex-shrink-0"
                   >
                     Copy
                   </button>
