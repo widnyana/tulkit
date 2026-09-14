@@ -53,6 +53,7 @@ export function XorNodeView({ node, level, expandAll }: XorNodeViewProps) {
       {isExpanded && (
         <TreeChildren>
           {node.nodes.map((childNode, index) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: static parsed schema children never reorder
             <div key={`xor-${index}`} className="relative">
               <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center">
                 <span className="text-xs font-mono text-muted-foreground">
