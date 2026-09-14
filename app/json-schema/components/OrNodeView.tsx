@@ -52,6 +52,7 @@ export function OrNodeView({ node, level, expandAll }: OrNodeViewProps) {
         <TreeChildren>
           {node.nodes.map((childNode, index) => (
             <NodeRenderer
+              // biome-ignore lint/suspicious/noArrayIndexKey: static parsed schema children never reorder
               key={`or-${index}`}
               node={childNode}
               level={level + 1}
