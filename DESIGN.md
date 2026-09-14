@@ -59,7 +59,7 @@ accessible, because text labels already carry that information.
   footnote joke. It carries no state and uses no accent colour; it opted out of the
   accent economy rather than reviving the orange signal system it used to render in.
 - Scale: `h1` 36/48 `font-semibold tracking-tight`; group labels 12px `font-medium`
-  `text-muted-foreground`; row title 15px `font-medium`; row description 14px with
+  `text-muted-foreground`; tile title 15px `font-medium`; tile description 12px with
   `line-clamp-2`; status 12px.
 - Body column `mx-auto w-full max-w-4xl px-5 sm:px-6` (narrow column = scannable list).
   Chrome containers stay `max-w-6xl` so they align with the wide tool pages.
@@ -96,11 +96,14 @@ hover/focus.
 indicator — `transform` plus width/height on one tiny absolutely-positioned element, so no
 content reflows; re-measured on resize, on row scroll and after `document.fonts.ready`),
 a live status line, "Recently used" (shown only when unfiltered and non-empty), then one
-section per category.
+section per category, each rendered as a tile grid (`grid-cols-2 sm:grid-cols-3`).
 
-**Directory row**: 64px-tall link, 36px icon tile, title, `line-clamp-2` description,
-chevron on hover/focus. Hover fill `--muted`, press `--accent`, focus outline at
-`--ring` with `outline-offset-2`.
+**Directory tile**: bordered square link, 36px icon tile, title, `line-clamp-2`
+description, chevron top-right on hover/focus. Hover fill `--muted`, press `--accent`
+plus a `scale-[0.98]` press transform (100–160ms range per the motion budget), focus
+outline at `--ring` with `outline-offset-2`. The border is the tile's own boundary, not a
+hover/press state carrier — state is fill and transform only, per the colour-redundancy
+rule above.
 
 **Footer**: hairline top border, `tulkit*` wordmark (same muted asterisk as the header),
 quiet meta links in Geist Sans (source, `agents: /llms.txt`, tip jar).
@@ -112,6 +115,9 @@ quiet meta links in Geist Sans (source, `agents: /llms.txt`, tip jar).
   behaviour — it is used many times a day).
 - Hover/press colour changes: `transition-colors duration-150`.
 - Chevron reveal: `transition-opacity duration-200 ease-soft`.
+- Tile press: `active:scale-[0.98]`, `duration-150` — the only transform-based feedback
+  in the system, reserved for the directory tiles because they are pressed, not just
+  hovered.
 - Chips indicator: `transition-[transform,width,height] duration-300 ease-soft`,
   `motion-reduce:transition-none` (reduced motion snaps instead of sliding).
 - `prefers-reduced-motion` also disables nothing else — there is nothing else.
@@ -140,7 +146,7 @@ quiet meta links in Geist Sans (source, `agents: /llms.txt`, tip jar).
 ## Accessibility checklist
 
 - Skip link first in tab order; `#main` on every page.
-- Every tool row is a real link with `aria-label` equal to its visible title (clean
+- Every tool tile is a real link with `aria-label` equal to its visible title (clean
   link lists in screen readers, no duplicated description text in the name).
 - Chips are `<button aria-pressed>` inside a labelled group; the active chip differs by
   fill, border and weight, not hue.
@@ -148,5 +154,5 @@ quiet meta links in Geist Sans (source, `agents: /llms.txt`, tip jar).
   region; results are links, so Tab and arrow keys both work.
 - Focus is always visible: 2px outline at `--ring` with offset 2 (never removed, never
   colour-only), plus a fill change on palette rows.
-- Hit targets: rows ≥64px, chips 36px, header controls 36px.
+- Hit targets: directory tiles ≥88px tall, chips 36px, header controls 36px.
 - Contrast: see the measured table above; do not ship a token change without re-measuring.
