@@ -72,30 +72,6 @@ export interface SchemaMetadata {
   types: Record<string, number>;
 }
 
-export interface SchemaNode {
-  name: string;
-  path: string;
-  type: string | string[];
-  required?: boolean;
-  description?: string;
-  enum?: unknown[];
-  defaultValue?: unknown;
-  constraints?: PropertyConstraints;
-  children?: SchemaNode[];
-}
-
-export interface PropertyConstraints {
-  minimum?: number;
-  maximum?: number;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: string;
-  format?: string;
-  minItems?: number;
-  maxItems?: number;
-  uniqueItems?: boolean;
-}
-
 export interface ExternalRefContext {
   baseUrl: string;
   cache: import("./schema-cache").SchemaCache;

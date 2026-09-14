@@ -3,9 +3,7 @@ import type {
   JSONSchema,
   JSONSchemaProperty,
   ParsedSchema,
-  PropertyConstraints,
   SchemaMetadata,
-  SchemaNode,
   ExternalRefContext,
 } from "./types";
 import { SchemaCache } from "./schema-cache";
@@ -305,107 +303,6 @@ function analyzeSchema(schema: JSONSchema): SchemaMetadata {
     metadata.totalProperties - metadata.requiredProperties;
 
   return metadata;
-}
-
-function _buildSchemaTree(schema: JSONSchema): SchemaNode {
-  const resolvedSchema = resolveReferences(
-    schema as JSONSchemaProperty,
-    schema,
-  );
-  return {
-    name: schema.title || "root",
-    path: "",
-    type: schema.type || "object",
-    description: schema.description,
-    children: buildChildren(resolvedSchema as JSONSchemaProperty, "", schema),
-  };
-}
-
-function buildChildren(
-  node: JSONSchemaProperty,
-  basePath: string,
-  rootSchema: JSONSchema,
-): SchemaNode[] {
-  const children: SchemaNode[] = [];
-
-  if (node.properties) {
-    Object.entries(node.properties).forEach(([key, prop]) => {
-      const path = basePath ? `${basePath}.${key}` : key;
-      const childNode = buildPropertyNode(key, path, prop, rootSchema);
-      children.push(childNode);
-    });
-  }
-
-  // Handle combined schemas
-  ["anyOf", "allOf", "oneOf"].forEach((combiner) => {
-    const schemas = (node as Record<string, unknown>)[combiner];
-    if (Array.isArray(schemas)) {
-      schemas.forEach((schema: JSONSchemaProperty, index: number) => {
-        const name = `${combiner}[${index}]`;
-        const path = basePath ? `${basePath}.${name}` : name;
-        const childNode = buildPropertyNode(name, path, schema, rootSchema);
-        children.push(childNode);
-      });
-    }
-  });
-
-  return children;
-}
-
-function buildPropertyNode(
-  name: string,
-  path: string,
-  prop: JSONSchemaProperty,
-  rootSchema: JSONSchema,
-): SchemaNode {
-  // Resolve $ref before creating node
-  const resolvedProp = prop.$ref
-    ? resolveReferences(prop, rootSchema, new Set())
-    : prop;
-
-  // Cast to JSONSchemaProperty since we're working with property schemas
-  const propertySchema = resolvedProp as JSONSchemaProperty;
-
-  const node: SchemaNode = {
-    name,
-    path,
-    type: propertySchema.type || "unknown",
-    required: false, // Will be determined by parent
-    description: propertySchema.description,
-    enum: propertySchema.enum,
-    defaultValue: propertySchema.default,
-    constraints: getConstraints(propertySchema),
-  };
-
-  // Build children recursively with resolved schema
-  node.children = buildChildren(propertySchema, path, rootSchema);
-
-  return node;
-}
-
-function getConstraints(
-  prop: JSONSchemaProperty,
-): PropertyConstraints | undefined {
-  const constraints: PropertyConstraints = {};
-
-  // Only check constraints if not a $ref
-  if (!prop.$ref) {
-    if (prop.minimum !== undefined) constraints.minimum = prop.minimum;
-    if (prop.maximum !== undefined) constraints.maximum = prop.maximum;
-    if (prop.minLength !== undefined) constraints.minLength = prop.minLength;
-    if (prop.maxLength !== undefined) constraints.maxLength = prop.maxLength;
-    if (prop.pattern !== undefined) constraints.pattern = prop.pattern;
-    if (prop.format !== undefined) constraints.format = prop.format;
-    if (typeof prop.items === "object") {
-      const items = prop.items;
-      if (items.minItems !== undefined) constraints.minItems = items.minItems;
-      if (items.maxItems !== undefined) constraints.maxItems = items.maxItems;
-      if (items.uniqueItems !== undefined)
-        constraints.uniqueItems = items.uniqueItems;
-    }
-  }
-
-  return Object.keys(constraints).length > 0 ? constraints : undefined;
 }
 
 /**

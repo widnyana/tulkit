@@ -17,22 +17,28 @@ import { PrimitiveNodeView } from "./PrimitiveNodeView";
 interface NodeRendererProps {
   node: ASTNode;
   level?: number;
+  /** undefined = default (expand top two levels); true/false = force. */
+  expandAll?: boolean;
 }
 
-export function NodeRenderer({ node, level = 0 }: NodeRendererProps) {
+export function NodeRenderer({
+  node,
+  level = 0,
+  expandAll,
+}: NodeRendererProps) {
   switch (node.kind) {
     case "and":
-      return <AndNodeView node={node} level={level} />;
+      return <AndNodeView node={node} level={level} expandAll={expandAll} />;
     case "or":
-      return <OrNodeView node={node} level={level} />;
+      return <OrNodeView node={node} level={level} expandAll={expandAll} />;
     case "xor":
-      return <XorNodeView node={node} level={level} />;
+      return <XorNodeView node={node} level={level} expandAll={expandAll} />;
     case "not":
-      return <NotNodeView node={node} level={level} />;
+      return <NotNodeView node={node} level={level} expandAll={expandAll} />;
     case "object":
-      return <ObjectNodeView node={node} level={level} />;
+      return <ObjectNodeView node={node} level={level} expandAll={expandAll} />;
     case "array":
-      return <ArrayNodeView node={node} level={level} />;
+      return <ArrayNodeView node={node} level={level} expandAll={expandAll} />;
     case "primitive":
       return <PrimitiveNodeView node={node} />;
   }

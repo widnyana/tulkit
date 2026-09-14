@@ -12,7 +12,7 @@ export function SchemaStats({ metadata }: SchemaStatsProps) {
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <Card>
         <CardContent className="p-4">
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
             {formatNumber(metadata.totalProperties)}
           </div>
           <div className="text-sm text-muted-foreground">Total Properties</div>
@@ -21,7 +21,7 @@ export function SchemaStats({ metadata }: SchemaStatsProps) {
 
       <Card>
         <CardContent className="p-4">
-          <div className="text-2xl font-bold text-green-600">
+          <div className="text-2xl font-bold text-green-700 dark:text-green-400">
             {formatNumber(metadata.requiredProperties)}
           </div>
           <div className="text-sm text-muted-foreground">Required</div>
@@ -30,7 +30,7 @@ export function SchemaStats({ metadata }: SchemaStatsProps) {
 
       <Card>
         <CardContent className="p-4">
-          <div className="text-2xl font-bold text-orange-600">
+          <div className="text-2xl font-bold text-orange-700 dark:text-orange-400">
             {formatNumber(metadata.optionalProperties)}
           </div>
           <div className="text-sm text-muted-foreground">Optional</div>
@@ -39,7 +39,7 @@ export function SchemaStats({ metadata }: SchemaStatsProps) {
 
       <Card>
         <CardContent className="p-4">
-          <div className="text-2xl font-bold text-purple-600">
+          <div className="text-2xl font-bold text-purple-700 dark:text-purple-400">
             {metadata.depth}
           </div>
           <div className="text-sm text-muted-foreground">Max Depth</div>
