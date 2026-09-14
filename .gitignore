@@ -46,3 +46,10 @@ next-env.d.ts
 examples# codegraph local index
 .codegraph/
 docs/plans/*
+
+# agent-local tooling & artifacts
+.agents/
+.omp/
+.pi/
+design-graph.graph
+skills-lock.json
