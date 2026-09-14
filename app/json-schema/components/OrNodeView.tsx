@@ -50,9 +50,9 @@ export function OrNodeView({ node, level, expandAll }: OrNodeViewProps) {
 
       {isExpanded && (
         <TreeChildren>
-          {node.nodes.map((childNode) => (
+          {node.nodes.map((childNode, index) => (
             <NodeRenderer
-              key={`or-${childNode.sourcePath}`}
+              key={`or-${index}`}
               node={childNode}
               level={level + 1}
               expandAll={expandAll}
