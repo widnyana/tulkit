@@ -132,13 +132,13 @@ export function CopyPathButton({ path }: { path?: string }) {
         setTimeout(() => setCopied(false), 1500);
       }}
       className="opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-ring/60 transition-opacity duration-150 text-muted-foreground hover:text-foreground"
+      aria-label="Copy path"
     >
       {copied ? (
         <Check className="size-3.5 text-green-600 dark:text-green-400" />
       ) : (
         <Copy className="size-3.5" />
       )}
-      <span className="sr-only">Copy path</span>
     </button>
   );
 }
