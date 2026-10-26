@@ -8,7 +8,19 @@ import { analyze } from "./../utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+async function cameraPermissionGranted(): Promise<boolean> {
+  try {
+    const status = await navigator.permissions.query({
+      name: "camera" as PermissionName,
+    });
+    return status.state === "granted";
+  } catch {
+    return false;
+  }
+}
+
 const CAPTURE_MS = 10000;
+const OPEN_TIMEOUT_MS = 10000;
 
 export function CameraPanel(props: {
   side: Side;
@@ -33,6 +45,20 @@ export function CameraPanel(props: {
   const lastTRef = useRef(0);
   const startTRef = useRef(0);
   const recordingRef = useRef(false);
+  const openIdRef = useRef(0);
+
+  const stopStream = useCallback(() => {
+    if (streamRef.current) {
+      for (const track of streamRef.current.getTracks()) track.stop();
+      streamRef.current = null;
+    }
+    const video = videoRef.current;
+    if (video) {
+      video.srcObject = null;
+      video.load();
+    }
+    setCameraOn(false);
+  }, []);
 
   const stopAll = useCallback(() => {
     if (rafRef.current !== null) {
@@ -133,69 +159,132 @@ export function CameraPanel(props: {
     startLoop();
   }, [startLoop]);
 
-  const openCamera = useCallback(async (isCancelled: () => boolean) => {
-    setStatus("loading");
-    setMessage("Asking for camera access...");
-    let stream: MediaStream;
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false,
-      });
-    } catch (err) {
-      const msg =
-        err instanceof DOMException && err.name === "NotAllowedError"
-          ? "Camera permission denied. Allow it in the browser address bar, then press Start camera."
-          : err instanceof DOMException && err.name === "NotFoundError"
-            ? "No camera found."
-            : "Could not open the camera.";
-      setStatus("error");
-      setMessage(msg);
-      toast.error(msg);
-      setCameraOn(false);
-      return;
-    }
-    if (isCancelled()) {
-      for (const track of stream.getTracks()) track.stop();
-      return;
-    }
-    streamRef.current = stream;
-    const video = videoRef.current;
-    if (video) {
-      video.srcObject = stream;
-      try {
-        await video.play();
-      } catch {
-        // Play can fail before user interaction; preview still works once it can.
-      }
-    }
-    setCameraOn(true);
-    if (trackerRef.current === null) {
+  const openCamera = useCallback(
+    async (isCancelled: () => boolean) => {
       setStatus("loading");
-      setMessage("Loading pose model...");
+      setMessage("Asking for camera access...");
+      let stream: MediaStream;
+      const id = ++openIdRef.current;
+      const isDead = () => isCancelled() || id !== openIdRef.current;
       try {
-        trackerRef.current = await createTracker();
-      } catch {
-        setStatus("error");
+        const granted = await cameraPermissionGranted();
+        const pending = navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false,
+        });
+        if (!granted) {
+          stream = await pending;
+        } else {
+          let timer: ReturnType<typeof setTimeout> | undefined;
+          try {
+            stream = await Promise.race([
+              pending,
+              new Promise<never>((_, reject) => {
+                timer = setTimeout(
+                  () => reject(new DOMException("timeout", "TimeoutError")),
+                  OPEN_TIMEOUT_MS,
+                );
+              }),
+            ]);
+          } catch (err) {
+            if (err instanceof DOMException && err.name === "TimeoutError") {
+              pending
+                .then((s) => {
+                  for (const t of s.getTracks()) t.stop();
+                })
+                .catch(() => {});
+            }
+            throw err;
+          } finally {
+            clearTimeout(timer);
+          }
+        }
+        if (isDead()) {
+          for (const track of stream.getTracks()) track.stop();
+          return;
+        }
+      } catch (err) {
         const msg =
-          "Could not load the pose model. Check your connection and reload.";
+          err instanceof DOMException && err.name === "NotAllowedError"
+            ? "Camera permission denied. Allow it in the browser address bar, then press Reset camera."
+            : err instanceof DOMException && err.name === "NotFoundError"
+              ? "No camera found. Plug one in, then press Reset camera."
+              : err instanceof DOMException && err.name === "TimeoutError"
+                ? "Camera did not respond. Close other apps that use it, then press Reset camera."
+                : "Could not open the camera.";
+        setStatus("error");
         setMessage(msg);
         toast.error(msg);
+        setCameraOn(false);
         return;
       }
-      if (isCancelled()) {
-        trackerRef.current.close();
-        trackerRef.current = null;
+      for (const track of stream.getVideoTracks()) {
+        track.addEventListener("ended", () => {
+          if (streamRef.current !== stream) return;
+          if (rafRef.current !== null) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+          }
+          recordingRef.current = false;
+          propsRef.current.onResult(null);
+          framesRef.current = [];
+          stopStream();
+          setStatus("error");
+          const msg = "Camera disconnected. Press Reset camera.";
+          setMessage(msg);
+          toast.error(msg);
+        });
+      }
+      streamRef.current = stream;
+      const video = videoRef.current;
+      if (video) {
+        video.srcObject = stream;
+        try {
+          await video.play();
+        } catch {
+          // Play can fail before user interaction; preview still works once it can.
+        }
+      }
+      setCameraOn(true);
+      if (trackerRef.current === null) {
+        setStatus("loading");
+        setMessage("Loading pose model...");
+        let tracker: Tracker;
+        try {
+          tracker = await createTracker();
+        } catch {
+          setStatus("error");
+          const msg =
+            "Could not load the pose model. Check your connection and reload.";
+          setMessage(msg);
+          toast.error(msg);
+          return;
+        }
+        if (isDead()) {
+          tracker.close();
+          if (trackerRef.current === tracker) trackerRef.current = null;
+          return;
+        }
+        trackerRef.current = tracker;
+      }
+      if (isDead()) {
+        for (const track of stream.getTracks()) track.stop();
         return;
       }
-    }
-    setStatus("ready");
-    setMessage("Camera ready. Get in position, then press Record.");
-  }, []);
+      setStatus("ready");
+      setMessage("Camera ready. Get in position, then press Record.");
+    },
+    [stopStream],
+  );
 
   const startFile = useCallback(
     (file: File) => {
-      if (!trackerRef.current) return;
+      if (!trackerRef.current) {
+        toast.error(
+          "Pose model not loaded. Press Reset camera, then try again.",
+        );
+        return;
+      }
       const video = videoRef.current;
       if (!video) return;
       if (streamRef.current) {
@@ -225,6 +314,31 @@ export function CameraPanel(props: {
     },
     [finish, startLoop],
   );
+
+  const resetCamera = useCallback(() => {
+    openIdRef.current += 1;
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    const wasRecording = recordingRef.current;
+    recordingRef.current = false;
+    if (wasRecording) {
+      propsRef.current.onResult(null);
+      framesRef.current = [];
+    }
+    if (urlRef.current !== null) {
+      URL.revokeObjectURL(urlRef.current);
+      urlRef.current = null;
+      const video = videoRef.current;
+      if (video) video.removeAttribute("src");
+    }
+    stopStream();
+    trackerRef.current?.close();
+    trackerRef.current = null;
+    setProgress(0);
+    void openCamera(() => false);
+  }, [openCamera, stopStream]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
   useEffect(() => {
@@ -264,14 +378,9 @@ export function CameraPanel(props: {
         >
           Record 10 s
         </Button>
-        {!cameraOn && status !== "loading" && status !== "recording" && (
-          <Button
-            variant="outline"
-            onClick={() => {
-              void openCamera(() => false);
-            }}
-          >
-            Start camera
+        {status !== "loading" && (
+          <Button variant="outline" onClick={resetCamera}>
+            {!cameraOn ? "Start camera" : "Reset camera"}
           </Button>
         )}
         <Button
