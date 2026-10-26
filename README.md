@@ -27,6 +27,7 @@ tulkit is the opposite bet: a handful of single-purpose tools that do exactly on
 | [Cron Expression Generator](https://tulkit.widnyana.web.id/cron) | Write cron schedules and read them back in plain English |
 | [Mermaid Editor](https://tulkit.widnyana.web.id/mermaid-editor) | Write Mermaid diagrams with live preview, export SVG or PNG |
 | [Tire Pressure Calculator](https://tulkit.widnyana.web.id/tire-pressure) | Pressure conversion and sizing for your tires |
+| [Bike Fit Check](https://tulkit.widnyana.web.id/bike-fit) | Estimate saddle height from a side-view webcam clip, all in your browser |
 
 ## Where your data goes
 
