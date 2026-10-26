@@ -8,6 +8,14 @@ export const TARGET_FLEXION_MAX = 40;
 export const MIN_VISIBILITY = 0.5;
 /** Minimum kept frames required to attempt an analysis. */
 export const MIN_FRAMES = 30;
+/** How long the rider must stay fully visible before recording starts. */
+export const READY_MS = 1000;
+/** Length of the recent window checked for pedalling motion. */
+export const PEDAL_WINDOW_MS = 1500;
+/** Minimum direction reversals of ankle motion to count as pedalling. */
+export const MIN_REVERSALS = 2;
+/** Minimum ankle vertical travel in the window to count as pedalling. */
+export const MIN_ANKLE_TRAVEL = 0.02;
 
 /** Knee flexion in degrees (0 = straight leg) from hip, knee and ankle points. */
 export function kneeFlexionDeg(hip: Point, knee: Point, ankle: Point): number {
@@ -49,6 +57,56 @@ export function classifyFlexion(deg: number): FitHint {
   if (deg > TARGET_FLEXION_MAX) return "raise";
   if (deg < TARGET_FLEXION_MIN) return "lower";
   return "ok";
+}
+
+/** True when the last `ms` of frames all have fully visible hip, knee and ankle. */
+export function legVisibleFor(frames: LegFrame[], ms: number): boolean {
+  if (frames.length === 0) return false;
+  let i = frames.length - 1;
+  while (
+    i >= 0 &&
+    frames[i].hip.visibility >= MIN_VISIBILITY &&
+    frames[i].knee.visibility >= MIN_VISIBILITY &&
+    frames[i].ankle.visibility >= MIN_VISIBILITY
+  ) {
+    i--;
+  }
+  const run = frames.slice(i + 1);
+  if (run.length === 0) return false;
+  return run[run.length - 1].t - run[0].t >= ms;
+}
+
+/** True when recent fully visible frames show ankle travel with enough reversals. */
+export function isPedalling(
+  frames: LegFrame[],
+  windowMs = PEDAL_WINDOW_MS,
+): boolean {
+  if (frames.length === 0) return false;
+  const last = frames[frames.length - 1];
+  const recent = frames.filter(
+    (f) =>
+      f.t >= last.t - windowMs &&
+      f.hip.visibility >= MIN_VISIBILITY &&
+      f.knee.visibility >= MIN_VISIBILITY &&
+      f.ankle.visibility >= MIN_VISIBILITY,
+  );
+  if (recent.length < 10) return false;
+  const ys = movingAverage(
+    recent.map((f) => f.ankle.y),
+    3,
+  );
+  const travel = Math.max(...ys) - Math.min(...ys);
+  if (travel < MIN_ANKLE_TRAVEL) return false;
+  let reversals = 0;
+  let prevSign = 0;
+  for (let i = 1; i < ys.length; i++) {
+    const d = ys[i] - ys[i - 1];
+    if (Math.abs(d) < 0.0005) continue;
+    const sign = d > 0 ? 1 : -1;
+    if (prevSign !== 0 && sign !== prevSign) reversals++;
+    prevSign = sign;
+  }
+  return reversals >= MIN_REVERSALS;
 }
 
 /** Analyze pedal cycles and estimate knee flexion at bottom dead center. */

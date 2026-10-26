@@ -3,7 +3,9 @@ import { describe, it } from "node:test";
 import {
   analyze,
   classifyFlexion,
+  isPedalling,
   kneeFlexionDeg,
+  legVisibleFor,
   median,
   movingAverage,
 } from "./utils.ts";
@@ -77,6 +79,64 @@ describe("classifyFlexion", () => {
     assert.equal(classifyFlexion(30), "ok");
     assert.equal(classifyFlexion(40), "ok");
     assert.equal(classifyFlexion(40.1), "raise");
+  });
+});
+
+describe("legVisibleFor", () => {
+  it("passes when the last 1.3 s are fully visible", () => {
+    assert.equal(legVisibleFor(makeFrames(35, 40), 1000), true);
+  });
+
+  it("fails when the visible run is shorter than requested", () => {
+    assert.equal(legVisibleFor(makeFrames(35, 20), 1000), false);
+  });
+
+  it("fails on empty input", () => {
+    assert.equal(legVisibleFor([], 1000), false);
+  });
+
+  it("fails when the last frame is not fully visible", () => {
+    const frames = makeFrames(35, 40);
+    for (let i = frames.length - 10; i < frames.length; i++) {
+      frames[i].knee.visibility = 0.1;
+    }
+    assert.equal(legVisibleFor(frames, 1000), false);
+  });
+
+  it("fails for 0.97 s of visibility at 1000 ms but passes at 900 ms", () => {
+    const frames = makeFrames(35, 40);
+    for (let i = 0; i < 10; i++) {
+      frames[i].knee.visibility = 0.1;
+    }
+    assert.equal(legVisibleFor(frames, 1000), false);
+    assert.equal(legVisibleFor(frames, 900), true);
+  });
+});
+
+describe("isPedalling", () => {
+  it("detects pedalling on synthetic strokes", () => {
+    assert.equal(isPedalling(makeFrames(35, 60)), true);
+  });
+
+  it("fails on empty input", () => {
+    assert.equal(isPedalling([]), false);
+  });
+
+  it("fails on static frames", () => {
+    const frames: LegFrame[] = [];
+    for (let i = 0; i < 60; i++) {
+      frames.push({
+        t: i * 33.3,
+        hip: p(0.5, 0.2),
+        knee: p(0.5, 0.5),
+        ankle: p(0.5, 0.8),
+      });
+    }
+    assert.equal(isPedalling(frames), false);
+  });
+
+  it("fails when visibility is too low", () => {
+    assert.equal(isPedalling(makeFrames(35, 60, 0.1)), false);
   });
 });
 
