@@ -4,7 +4,14 @@ import type { ReactElement } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { BikeFitResult, LegFrame, Side } from "./../types";
 import { createTracker, type Tracker } from "./../tracker";
-import { analyze } from "./../utils";
+import {
+  analyze,
+  isPedalling,
+  legVisibleFor,
+  MIN_VISIBILITY,
+  PEDAL_WINDOW_MS,
+  READY_MS,
+} from "./../utils";
 import { beep, unlockAudio } from "./../cue";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -24,19 +31,29 @@ const CAPTURE_MS = 10000;
 const DELAYS = [0, 10, 20, 30, 60] as const;
 const DELAY_KEY = "tulkit_bike_fit_delay";
 const OPEN_TIMEOUT_MS = 10000;
+const ARM_TIMEOUT_MS = 120000;
+const LOST_MS = 2000;
 
 export function CameraPanel(props: {
   side: Side;
   onResult: (result: BikeFitResult | null) => void;
 }): ReactElement {
   const [status, setStatus] = useState<
-    "idle" | "loading" | "ready" | "countdown" | "recording" | "done" | "error"
+    | "idle"
+    | "loading"
+    | "ready"
+    | "countdown"
+    | "armed"
+    | "recording"
+    | "done"
+    | "error"
   >("idle");
   const [message, setMessage] = useState("");
   const [progress, setProgress] = useState(0);
   const [cameraOn, setCameraOn] = useState(false);
   const [countLeft, setCountLeft] = useState(0);
   const [delaySec, setDelaySec] = useState<number>(30);
+  const [lastResult, setLastResult] = useState<BikeFitResult | null>(null);
 
   const propsRef = useRef(props);
   propsRef.current = props;
@@ -52,6 +69,11 @@ export function CameraPanel(props: {
   const recordingRef = useRef(false);
   const openIdRef = useRef(0);
   const countRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const windowRef = useRef<LegFrame[]>([]);
+  const armedRef = useRef(false);
+  const armedAtRef = useRef(0);
+  const sessionRef = useRef(false);
+  const lostSinceRef = useRef<number | null>(null);
 
   const clearCountdown = useCallback(() => {
     if (countRef.current !== null) {
@@ -79,6 +101,8 @@ export function CameraPanel(props: {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
+    armedRef.current = false;
+    sessionRef.current = false;
     if (streamRef.current) {
       for (const track of streamRef.current.getTracks()) track.stop();
       streamRef.current = null;
@@ -98,6 +122,8 @@ export function CameraPanel(props: {
       rafRef.current = null;
     }
     recordingRef.current = false;
+    armedRef.current = false;
+    sessionRef.current = false;
     const video = videoRef.current;
     if (urlRef.current !== null) {
       if (urlRef.current) {
@@ -112,6 +138,7 @@ export function CameraPanel(props: {
     const result = analyze(framesRef.current);
     propsRef.current.onResult(result);
     beep(988, 250);
+    setLastResult(result);
     setStatus("done");
     if (result) {
       setMessage("Analysis complete.");
@@ -125,6 +152,67 @@ export function CameraPanel(props: {
     }
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: stable callbacks captured once
+  const startArmLoop = useCallback(() => {
+    if (!trackerRef.current || !streamRef.current) return;
+    windowRef.current = [];
+    armedRef.current = true;
+    armedAtRef.current = performance.now();
+    sessionRef.current = true;
+    setStatus("armed");
+    setMessage(
+      "Start pedalling. Recording starts when your leg is in frame and moving.",
+    );
+    const loop = (t: number) => {
+      if (!armedRef.current) return;
+      const video = videoRef.current;
+      if (!video || video.readyState < 2 || t <= lastTRef.current) {
+        rafRef.current = requestAnimationFrame(loop);
+        return;
+      }
+      lastTRef.current = t;
+      const frame = trackerRef.current?.detect(video, propsRef.current.side, t);
+      if (frame) {
+        windowRef.current.push(frame);
+        windowRef.current = windowRef.current.filter(
+          (f) => f.t >= t - (PEDAL_WINDOW_MS + READY_MS),
+        );
+      } else {
+        windowRef.current = [];
+      }
+      if (
+        legVisibleFor(windowRef.current, READY_MS) &&
+        isPedalling(windowRef.current)
+      ) {
+        armedRef.current = false;
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+        beep(880, 300);
+        record(true);
+        return;
+      }
+      if (t - armedAtRef.current > ARM_TIMEOUT_MS) {
+        armedRef.current = false;
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+        sessionRef.current = false;
+        setStatus("ready");
+        setMessage(
+          "No pedalling seen for 2 minutes. Press Start to try again.",
+        );
+        beep(330, 400);
+        return;
+      }
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+  }, []);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startArmLoop is stable
   const startLoop = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -144,6 +232,31 @@ export function CameraPanel(props: {
       const frame = trackerRef.current?.detect(v, propsRef.current.side, t);
       if (frame) framesRef.current.push(frame);
 
+      if (sessionRef.current && urlRef.current === null) {
+        const visible =
+          !!frame &&
+          frame.hip.visibility >= MIN_VISIBILITY &&
+          frame.knee.visibility >= MIN_VISIBILITY &&
+          frame.ankle.visibility >= MIN_VISIBILITY;
+        if (visible) {
+          lostSinceRef.current = null;
+        } else if (lostSinceRef.current === null) {
+          lostSinceRef.current = t;
+        } else if (t - lostSinceRef.current > LOST_MS) {
+          if (rafRef.current !== null) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+          }
+          recordingRef.current = false;
+          framesRef.current = [];
+          propsRef.current.onResult(null);
+          beep(330, 300);
+          startArmLoop();
+          setMessage("Lost your leg. Waiting for you to pedal again...");
+          return;
+        }
+      }
+
       if (urlRef.current === null) {
         const p = Math.min(1, (t - startTRef.current) / CAPTURE_MS);
         setProgress(p);
@@ -159,28 +272,35 @@ export function CameraPanel(props: {
     rafRef.current = requestAnimationFrame(loop);
   }, [finish]);
 
-  const record = useCallback(() => {
-    if (!trackerRef.current || !streamRef.current) return;
-    const video = videoRef.current;
-    if (!video) return;
-    framesRef.current = [];
-    propsRef.current.onResult(null);
-    setProgress(0);
-    lastTRef.current = 0;
-    setStatus("recording");
-    setMessage("Pedal at a steady pace, side view...");
-    startTRef.current = performance.now();
-    recordingRef.current = true;
-    startLoop();
-  }, [startLoop]);
+  const record = useCallback(
+    (fromSession = false) => {
+      if (!trackerRef.current || !streamRef.current) return;
+      const video = videoRef.current;
+      if (!video) return;
+      sessionRef.current = fromSession;
+      lostSinceRef.current = null;
+      setLastResult(null);
+      framesRef.current = [];
+      propsRef.current.onResult(null);
+      setProgress(0);
+      lastTRef.current = 0;
+      setStatus("recording");
+      setMessage("Pedal at a steady pace, side view...");
+      startTRef.current = performance.now();
+      recordingRef.current = true;
+      startLoop();
+    },
+    [startLoop],
+  );
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: startArmLoop is stable
   const startSession = useCallback(() => {
     if (!trackerRef.current || !streamRef.current) return;
     unlockAudio();
     propsRef.current.onResult(null);
     setProgress(0);
     if (delaySec === 0) {
-      record();
+      startArmLoop();
       return;
     }
     setStatus("countdown");
@@ -194,13 +314,19 @@ export function CameraPanel(props: {
       if (left <= 0) {
         clearCountdown();
         beep(880, 300);
-        record();
+        startArmLoop();
       }
     }, 1000);
-  }, [clearCountdown, delaySec, record]);
+  }, [clearCountdown, delaySec, startArmLoop]);
 
   const cancelSession = useCallback(() => {
     clearCountdown();
+    armedRef.current = false;
+    sessionRef.current = false;
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
     setStatus("ready");
     setMessage("Cancelled. Camera ready.");
   }, [clearCountdown]);
@@ -389,6 +515,8 @@ export function CameraPanel(props: {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
+    armedRef.current = false;
+    sessionRef.current = false;
     const wasRecording = recordingRef.current;
     recordingRef.current = false;
     if (wasRecording) {
@@ -418,7 +546,15 @@ export function CameraPanel(props: {
     };
   }, []);
 
-  const disabled = status === "loading" || status === "recording";
+  const disabled =
+    status === "loading" || status === "recording" || status === "armed";
+
+  const hintText =
+    lastResult?.hint === "raise"
+      ? "Raise the saddle"
+      : lastResult?.hint === "lower"
+        ? "Lower the saddle"
+        : "Within range";
 
   return (
     <div className="flex flex-col gap-3">
@@ -438,6 +574,15 @@ export function CameraPanel(props: {
             <span className="text-2xl">Get on the bike</span>
           </div>
         )}
+        {status === "armed" && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-black/45 text-center text-white"
+          >
+            <span className="text-5xl font-bold">Start pedalling</span>
+            <span className="text-xl">Waiting for your leg...</span>
+          </div>
+        )}
         {status === "recording" && urlRef.current === null && (
           <div
             aria-hidden="true"
@@ -447,6 +592,17 @@ export function CameraPanel(props: {
               {Math.max(0, Math.ceil((1 - progress) * (CAPTURE_MS / 1000)))}
             </span>
             <span className="text-2xl">Recording</span>
+          </div>
+        )}
+        {status === "done" && lastResult && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-3 top-3 rounded-lg bg-black/60 px-4 py-2 text-white"
+          >
+            <div className="text-5xl font-bold tabular-nums">
+              {Math.round(lastResult.flexionAtBdcDeg)}°
+            </div>
+            <div className="text-xl">{hintText}</div>
           </div>
         )}
       </div>
@@ -469,7 +625,11 @@ export function CameraPanel(props: {
             size="sm"
             variant={delaySec === d ? "default" : "outline"}
             aria-pressed={delaySec === d}
-            disabled={status === "countdown" || status === "recording"}
+            disabled={
+              status === "countdown" ||
+              status === "recording" ||
+              status === "armed"
+            }
             onClick={() => chooseDelay(d)}
           >
             {d === 0 ? "Now" : `${d} s`}
@@ -485,12 +645,12 @@ export function CameraPanel(props: {
         </Button>
         <Button
           variant="outline"
-          onClick={record}
+          onClick={() => record()}
           disabled={!cameraOn || !(status === "ready" || status === "done")}
         >
           Record now
         </Button>
-        {status === "countdown" && (
+        {(status === "countdown" || status === "armed") && (
           <Button variant="outline" onClick={cancelSession}>
             Cancel
           </Button>
