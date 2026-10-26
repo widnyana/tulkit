@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { BikeFitResult, LegFrame, Side } from "./../types";
 import { createTracker, type Tracker } from "./../tracker";
 import { analyze } from "./../utils";
+import { beep, unlockAudio } from "./../cue";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -20,6 +21,8 @@ async function cameraPermissionGranted(): Promise<boolean> {
 }
 
 const CAPTURE_MS = 10000;
+const DELAYS = [0, 10, 20, 30, 60] as const;
+const DELAY_KEY = "tulkit_bike_fit_delay";
 const OPEN_TIMEOUT_MS = 10000;
 
 export function CameraPanel(props: {
@@ -27,11 +30,13 @@ export function CameraPanel(props: {
   onResult: (result: BikeFitResult | null) => void;
 }): ReactElement {
   const [status, setStatus] = useState<
-    "idle" | "loading" | "ready" | "recording" | "done" | "error"
+    "idle" | "loading" | "ready" | "countdown" | "recording" | "done" | "error"
   >("idle");
   const [message, setMessage] = useState("");
   const [progress, setProgress] = useState(0);
   const [cameraOn, setCameraOn] = useState(false);
+  const [countLeft, setCountLeft] = useState(0);
+  const [delaySec, setDelaySec] = useState<number>(30);
 
   const propsRef = useRef(props);
   propsRef.current = props;
@@ -46,6 +51,14 @@ export function CameraPanel(props: {
   const startTRef = useRef(0);
   const recordingRef = useRef(false);
   const openIdRef = useRef(0);
+  const countRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const clearCountdown = useCallback(() => {
+    if (countRef.current !== null) {
+      clearInterval(countRef.current);
+      countRef.current = null;
+    }
+  }, []);
 
   const stopStream = useCallback(() => {
     if (streamRef.current) {
@@ -61,6 +74,7 @@ export function CameraPanel(props: {
   }, []);
 
   const stopAll = useCallback(() => {
+    clearCountdown();
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
@@ -76,7 +90,7 @@ export function CameraPanel(props: {
     trackerRef.current?.close();
     trackerRef.current = null;
     recordingRef.current = false;
-  }, []);
+  }, [clearCountdown]);
 
   const finish = useCallback(() => {
     if (rafRef.current !== null) {
@@ -97,6 +111,7 @@ export function CameraPanel(props: {
     }
     const result = analyze(framesRef.current);
     propsRef.current.onResult(result);
+    beep(988, 250);
     setStatus("done");
     if (result) {
       setMessage("Analysis complete.");
@@ -158,6 +173,58 @@ export function CameraPanel(props: {
     recordingRef.current = true;
     startLoop();
   }, [startLoop]);
+
+  const startSession = useCallback(() => {
+    if (!trackerRef.current || !streamRef.current) return;
+    unlockAudio();
+    propsRef.current.onResult(null);
+    setProgress(0);
+    if (delaySec === 0) {
+      record();
+      return;
+    }
+    setStatus("countdown");
+    setCountLeft(delaySec);
+    setMessage("Get on the bike. Recording starts when the countdown ends.");
+    let left = delaySec;
+    countRef.current = setInterval(() => {
+      left -= 1;
+      setCountLeft(left);
+      if (left > 0 && left <= 3) beep(660, 120);
+      if (left <= 0) {
+        clearCountdown();
+        beep(880, 300);
+        record();
+      }
+    }, 1000);
+  }, [clearCountdown, delaySec, record]);
+
+  const cancelSession = useCallback(() => {
+    clearCountdown();
+    setStatus("ready");
+    setMessage("Cancelled. Camera ready.");
+  }, [clearCountdown]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DELAY_KEY);
+      if (raw !== null) {
+        const value = Number(raw);
+        if ((DELAYS as readonly number[]).includes(value)) setDelaySec(value);
+      }
+    } catch {
+      // Ignore storage failures.
+    }
+  }, []);
+
+  const chooseDelay = useCallback((sec: number) => {
+    setDelaySec(sec);
+    try {
+      localStorage.setItem(DELAY_KEY, String(sec));
+    } catch {
+      // Ignore storage failures.
+    }
+  }, []);
 
   const openCamera = useCallback(
     async (isCancelled: () => boolean) => {
@@ -316,6 +383,7 @@ export function CameraPanel(props: {
   );
 
   const resetCamera = useCallback(() => {
+    clearCountdown();
     openIdRef.current += 1;
     if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
@@ -338,7 +406,7 @@ export function CameraPanel(props: {
     trackerRef.current = null;
     setProgress(0);
     void openCamera(() => false);
-  }, [openCamera, stopStream]);
+  }, [clearCountdown, openCamera, stopStream]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
   useEffect(() => {
@@ -354,12 +422,34 @@ export function CameraPanel(props: {
 
   return (
     <div className="flex flex-col gap-3">
-      <video
-        ref={videoRef}
-        playsInline
-        muted
-        className="aspect-video max-h-[75vh] w-full rounded-lg bg-black/80 object-contain"
-      />
+      <div className="relative">
+        <video
+          ref={videoRef}
+          playsInline
+          muted
+          className="aspect-video max-h-[75vh] w-full rounded-lg bg-black/80 object-contain"
+        />
+        {status === "countdown" && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-black/45 text-center text-white"
+          >
+            <span className="text-9xl font-bold tabular-nums">{countLeft}</span>
+            <span className="text-2xl">Get on the bike</span>
+          </div>
+        )}
+        {status === "recording" && urlRef.current === null && (
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-2 rounded-lg bg-black/45 text-center text-white"
+          >
+            <span className="text-7xl font-bold tabular-nums">
+              {Math.max(0, Math.ceil((1 - progress) * (CAPTURE_MS / 1000)))}
+            </span>
+            <span className="text-2xl">Recording</span>
+          </div>
+        )}
+      </div>
       <p role="status" className="text-sm text-muted-foreground">
         {message}
       </p>
@@ -371,13 +461,40 @@ export function CameraPanel(props: {
           />
         </div>
       )}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-sm font-medium">Start delay</span>
+        {DELAYS.map((d) => (
+          <Button
+            key={d}
+            size="sm"
+            variant={delaySec === d ? "default" : "outline"}
+            aria-pressed={delaySec === d}
+            disabled={status === "countdown" || status === "recording"}
+            onClick={() => chooseDelay(d)}
+          >
+            {d === 0 ? "Now" : `${d} s`}
+          </Button>
+        ))}
+      </div>
       <div className="flex flex-wrap gap-2">
         <Button
+          onClick={startSession}
+          disabled={!cameraOn || !(status === "ready" || status === "done")}
+        >
+          Start
+        </Button>
+        <Button
+          variant="outline"
           onClick={record}
           disabled={!cameraOn || !(status === "ready" || status === "done")}
         >
-          Record 10 s
+          Record now
         </Button>
+        {status === "countdown" && (
+          <Button variant="outline" onClick={cancelSession}>
+            Cancel
+          </Button>
+        )}
         {status !== "loading" && (
           <Button variant="outline" onClick={resetCamera}>
             {!cameraOn ? "Start camera" : "Reset camera"}
@@ -385,7 +502,7 @@ export function CameraPanel(props: {
         )}
         <Button
           variant="outline"
-          disabled={disabled}
+          disabled={disabled || status === "countdown"}
           onClick={() => {
             document.getElementById("camera-panel-file")?.click();
           }}
