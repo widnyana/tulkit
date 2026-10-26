@@ -10,7 +10,9 @@ const JOINTS = {
 } as const;
 
 export interface Tracker {
-  /** Returns the tracked leg for this frame, or null when no person is found. */
+  /** Returns the tracked leg for this frame, or null when no person is found.
+   *  Coordinates are isotropic: x is scaled by the video aspect ratio, y is in 0-1 of the frame height.
+   */
   detect(video: HTMLVideoElement, side: Side, tMs: number): LegFrame | null;
   close(): void;
 }
@@ -42,9 +44,13 @@ export async function createTracker(): Promise<Tracker> {
       const result = landmarker.detectForVideo(video, tMs);
       const landmarks = result.landmarks[0];
       if (!landmarks) return null;
+      const aspect =
+        video.videoWidth > 0 && video.videoHeight > 0
+          ? video.videoWidth / video.videoHeight
+          : 1;
       const toPoint = (index: number): Point => {
         const lm = landmarks[index];
-        return { x: lm.x, y: lm.y, visibility: lm.visibility ?? 0 };
+        return { x: lm.x * aspect, y: lm.y, visibility: lm.visibility ?? 0 };
       };
       const joints = JOINTS[side];
       return {

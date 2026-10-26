@@ -1,6 +1,6 @@
 export type Side = "left" | "right";
 
-/** Normalized image coordinates (0-1, y grows downward) plus MediaPipe visibility (0-1). */
+/** Isotropic image coordinates (y in 0-1 of frame height, x scaled by aspect ratio, y grows downward) plus MediaPipe visibility (0-1). */
 export interface Point {
   x: number;
   y: number;
