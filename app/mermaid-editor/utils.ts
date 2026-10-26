@@ -5,6 +5,62 @@ export const SAMPLE = `graph TD
     B -->|Yes| C[OK]
     B -->|No| D[End]`;
 
+export type TokenKind =
+  | "comment"
+  | "type"
+  | "keyword"
+  | "string"
+  | "label"
+  | "arrow"
+  | "hex"
+  | "punct";
+
+export interface Token {
+  start: number;
+  text: string;
+  kind: TokenKind | null;
+}
+
+const TYPES =
+  "graph|flowchart|sequenceDiagram|classDiagram|stateDiagram-v2|stateDiagram|erDiagram|journey|gantt|pie|gitGraph|mindmap|timeline|quadrantChart|requirementDiagram|sankey-beta|xychart-beta|block-beta|C4Context|architecture-beta";
+const KEYWORDS =
+  "subgraph|end|direction|participant|actor|loop|alt|else|opt|par|and|critical|break|rect|note|Note|autonumber|activate|deactivate|title|section|class|classDef|style|linkStyle|click|state|as|over|of|left|right|TD|TB|LR|RL|BT";
+
+// Order matters: first matching alternative wins at each position.
+const TOKEN_RE = new RegExp(
+  [
+    "(?<comment>%%[^\\n]*)",
+    '(?<string>"[^"\\n]*")',
+    "(?<label>\\|[^|\\n]*\\|)",
+    "(?<hex>#[0-9a-fA-F]{3,8}\\b)",
+    "(?<arrow>[<xo]?(?:-\\.+->?|-{2,}[>xo]?|={2,}>?|-{1,2}>>?|--[>xo]))",
+    `(?<type>\\b(?:${TYPES})(?![\\w-]))`,
+    `(?<keyword>\\b(?:${KEYWORDS})\\b)`,
+    "(?<punct>[()[\\]{}])",
+  ].join("|"),
+  "g",
+);
+
+/** Split mermaid source into spans for the highlight layer. Plain text between
+ *  matches becomes `kind: null`. Concatenating `text` gives back the input. */
+export function highlightMermaid(code: string): Token[] {
+  const tokens: Token[] = [];
+  let last = 0;
+  for (const m of code.matchAll(TOKEN_RE)) {
+    const start = m.index ?? 0;
+    if (start > last) {
+      tokens.push({ start: last, text: code.slice(last, start), kind: null });
+    }
+    const kind = Object.entries(m.groups ?? {}).find(([, v]) => v)?.[0];
+    tokens.push({ start, text: m[0], kind: kind as TokenKind });
+    last = start + m[0].length;
+  }
+  if (last < code.length) {
+    tokens.push({ start: last, text: code.slice(last), kind: null });
+  }
+  return tokens;
+}
+
 /** Mermaid "base" theme variables. Only `base` is customizable and only hex
  *  colors are honored (no names, rgba or "transparent"). Mermaid derives many
  *  colors from primaryColor, so every color a diagram type reads is set

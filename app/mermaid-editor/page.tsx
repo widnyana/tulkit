@@ -5,18 +5,32 @@ import { useTheme } from "next-themes";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import {
   downloadPNG,
   downloadSVG,
+  highlightMermaid,
   mermaidThemeVariables,
   SAMPLE,
   STORAGE_KEY,
+  type TokenKind,
 } from "./utils";
 
 const ZOOM_MIN = 25;
 const ZOOM_MAX = 500;
 const ZOOM_STEP = 10;
+
+const EDITOR_TEXT = "font-mono text-sm leading-5 px-3 py-2 whitespace-pre";
+
+const TOKEN_CLASS: Record<TokenKind, string> = {
+  comment: "italic text-slate-500 dark:text-slate-400",
+  type: "font-semibold text-violet-700 dark:text-violet-300",
+  keyword: "text-blue-700 dark:text-sky-300",
+  string: "text-emerald-700 dark:text-emerald-300",
+  label: "text-teal-700 dark:text-teal-300",
+  arrow: "text-orange-600 dark:text-orange-300",
+  hex: "text-pink-600 dark:text-pink-300",
+  punct: "text-slate-500 dark:text-slate-400",
+};
 
 const clampZoom = (z: number) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
 
@@ -26,6 +40,7 @@ export default function MermaidEditorPage() {
   const previewRef = useRef<HTMLDivElement>(null);
   const previewBoxRef = useRef<HTMLElement>(null);
   const gridRef = useRef<HTMLCanvasElement>(null);
+  const highlightRef = useRef<HTMLPreElement>(null);
   const [boxSize, setBoxSize] = useState({ w: 0, h: 0 });
   const renderSeq = useRef(0);
   const drag = useRef<{ x: number; y: number } | null>(null);
@@ -238,14 +253,42 @@ export default function MermaidEditorPage() {
             >
               Mermaid Code
             </label>
-            <Textarea
-              id={codeId}
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              spellCheck={false}
-              placeholder={SAMPLE}
-              className="font-mono text-sm min-h-96 flex-1 resize-y"
-            />
+            {/* Highlight layer sits under a transparent textarea; both share the
+                same font metrics and no-wrap so glyphs line up. */}
+            <div className="relative flex-1 min-h-96 rounded-md border border-input bg-background shadow-sm focus-within:ring-1 focus-within:ring-ring">
+              <pre
+                ref={highlightRef}
+                aria-hidden="true"
+                className={`${EDITOR_TEXT} absolute inset-0 overflow-hidden pointer-events-none m-0`}
+              >
+                {highlightMermaid(code).map((t) => (
+                  <span
+                    key={t.start}
+                    className={t.kind ? TOKEN_CLASS[t.kind] : undefined}
+                  >
+                    {t.text}
+                  </span>
+                ))}
+                {/* The space keeps the HTML parser from dropping a lone leading
+                    newline in <pre> (empty code at SSR), which broke hydration. */}
+                {" \n"}
+              </pre>
+              <textarea
+                id={codeId}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                onScroll={(e) => {
+                  const pre = highlightRef.current;
+                  if (!pre) return;
+                  pre.scrollTop = e.currentTarget.scrollTop;
+                  pre.scrollLeft = e.currentTarget.scrollLeft;
+                }}
+                spellCheck={false}
+                wrap="off"
+                placeholder={SAMPLE}
+                className={`${EDITOR_TEXT} absolute inset-0 w-full h-full resize-none overflow-auto bg-transparent text-transparent caret-foreground placeholder:text-muted-foreground focus-visible:outline-none`}
+              />
+            </div>
             <div className="flex flex-wrap gap-3 mt-4">
               <Button type="button" variant="outline" onClick={copyCode}>
                 Copy Code
