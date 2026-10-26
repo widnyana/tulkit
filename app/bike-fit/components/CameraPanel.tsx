@@ -358,7 +358,7 @@ export function CameraPanel(props: {
         ref={videoRef}
         playsInline
         muted
-        className="aspect-video w-full rounded-lg bg-black/80 object-contain"
+        className="aspect-video max-h-[75vh] w-full rounded-lg bg-black/80 object-contain"
       />
       <p role="status" className="text-sm text-muted-foreground">
         {message}

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { CameraPanel } from "./components/CameraPanel";
 import type { BikeFitResult, Side } from "./types";
@@ -10,10 +11,33 @@ import { TARGET_FLEXION_MAX, TARGET_FLEXION_MIN } from "./utils";
 export default function BikeFitPage() {
   const [side, setSide] = useState<Side>("right");
   const [result, setResult] = useState<BikeFitResult | null>(null);
+  const [canFullscreen, setCanFullscreen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const stageRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setCanFullscreen(document.fullscreenEnabled === true);
+    const onChange = () =>
+      setIsFullscreen(document.fullscreenElement === stageRef.current);
+    document.addEventListener("fullscreenchange", onChange);
+    return () => document.removeEventListener("fullscreenchange", onChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+      return;
+    }
+    stageRef.current
+      ?.requestFullscreen()
+      .catch(() =>
+        toast.error("Full screen is not available in this browser."),
+      );
+  };
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto max-w-6xl px-5 pb-28 pt-10 sm:px-6 sm:pt-14 lg:pb-12">
+      <div className="mx-auto max-w-[1800px] px-5 pb-28 pt-10 sm:px-6 sm:pt-14 lg:pb-12">
         <Link
           href="/"
           className="inline-flex items-center gap-2 rounded-lg text-sm text-muted-foreground transition-colors duration-200 ease-soft hover:text-foreground"
@@ -50,7 +74,10 @@ export default function BikeFitPage() {
           </p>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <div
+          ref={stageRef}
+          className="grid gap-6 bg-background lg:grid-cols-[minmax(0,3fr)_minmax(0,1fr)] [&:fullscreen]:overflow-auto [&:fullscreen]:p-6"
+        >
           <section className="rounded-lg border border-border/70 bg-card p-5 sm:p-6">
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium">Leg facing the camera</span>
@@ -70,6 +97,16 @@ export default function BikeFitPage() {
               >
                 Right
               </Button>
+              {canFullscreen && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto"
+                  onClick={toggleFullscreen}
+                >
+                  {isFullscreen ? "Exit full screen" : "Full screen"}
+                </Button>
+              )}
             </div>
             <div className="mt-4">
               <CameraPanel side={side} onResult={setResult} />
