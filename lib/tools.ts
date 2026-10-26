@@ -141,6 +141,20 @@ export const tools: Tool[] = [
     ],
   },
   {
+    href: "/mermaid-editor",
+    title: "Mermaid Editor",
+    description:
+      "Write Mermaid diagrams with a live preview, pan and zoom, and export to SVG or PNG",
+    category: "Development",
+    keywords: [
+      "mermaid",
+      "mermaid editor",
+      "diagram editor",
+      "flowchart",
+      "sequence diagram",
+    ],
+  },
+  {
     href: "/tire-pressure",
     title: "Tire Pressure Calculator",
     description:
