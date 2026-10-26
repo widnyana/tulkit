@@ -15,10 +15,14 @@ export function CameraPanel(props: {
   onResult: (result: BikeFitResult | null) => void;
 }): ReactElement {
   const [status, setStatus] = useState<
-    "idle" | "loading" | "recording" | "done" | "error"
+    "idle" | "loading" | "ready" | "recording" | "done" | "error"
   >("idle");
   const [message, setMessage] = useState("");
   const [progress, setProgress] = useState(0);
+  const [cameraOn, setCameraOn] = useState(false);
+
+  const propsRef = useRef(props);
+  propsRef.current = props;
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const trackerRef = useRef<Tracker | null>(null);
@@ -48,22 +52,25 @@ export function CameraPanel(props: {
     recordingRef.current = false;
   }, []);
 
-  useEffect(() => {
-    return () => {
-      stopAll();
-    };
-  }, [stopAll]);
-
   const finish = useCallback(() => {
-    stopAll();
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    recordingRef.current = false;
     const video = videoRef.current;
-    if (video) {
-      video.pause();
-      video.srcObject = null;
-      video.removeAttribute("src");
+    if (urlRef.current !== null) {
+      if (urlRef.current) {
+        URL.revokeObjectURL(urlRef.current);
+        urlRef.current = null;
+      }
+      if (video) {
+        video.pause();
+        video.removeAttribute("src");
+      }
     }
     const result = analyze(framesRef.current);
-    props.onResult(result);
+    propsRef.current.onResult(result);
     setStatus("done");
     if (result) {
       setMessage("Analysis complete.");
@@ -75,17 +82,97 @@ export function CameraPanel(props: {
         "Not enough clear leg frames. Check the setup tips and try again.",
       );
     }
-  }, [props, stopAll]);
+  }, []);
 
-  const start = useCallback(
-    async (source: "camera" | "file", file?: File) => {
-      framesRef.current = [];
-      props.onResult(null);
+  const startLoop = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const loop = () => {
+      if (!recordingRef.current) return;
+      const v = videoRef.current;
+      if (!v || v.readyState < 2) {
+        rafRef.current = requestAnimationFrame(loop);
+        return;
+      }
+      const t = performance.now();
+      if (t <= lastTRef.current) {
+        rafRef.current = requestAnimationFrame(loop);
+        return;
+      }
+      lastTRef.current = t;
+      const frame = trackerRef.current?.detect(v, propsRef.current.side, t);
+      if (frame) framesRef.current.push(frame);
+
+      if (urlRef.current === null) {
+        const p = Math.min(1, (t - startTRef.current) / CAPTURE_MS);
+        setProgress(p);
+        if (p >= 1) {
+          finish();
+          return;
+        }
+      } else if (Number.isFinite(v.duration) && v.duration > 0) {
+        setProgress(v.currentTime / v.duration);
+      }
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+  }, [finish]);
+
+  const record = useCallback(() => {
+    if (!trackerRef.current || !streamRef.current) return;
+    const video = videoRef.current;
+    if (!video) return;
+    framesRef.current = [];
+    propsRef.current.onResult(null);
+    setProgress(0);
+    lastTRef.current = 0;
+    setStatus("recording");
+    setMessage("Pedal at a steady pace, side view...");
+    startTRef.current = performance.now();
+    recordingRef.current = true;
+    startLoop();
+  }, [startLoop]);
+
+  const openCamera = useCallback(async (isCancelled: () => boolean) => {
+    setStatus("loading");
+    setMessage("Asking for camera access...");
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false,
+      });
+    } catch (err) {
+      const msg =
+        err instanceof DOMException && err.name === "NotAllowedError"
+          ? "Camera permission denied. Allow it in the browser address bar, then press Start camera."
+          : err instanceof DOMException && err.name === "NotFoundError"
+            ? "No camera found."
+            : "Could not open the camera.";
+      setStatus("error");
+      setMessage(msg);
+      toast.error(msg);
+      setCameraOn(false);
+      return;
+    }
+    if (isCancelled()) {
+      for (const track of stream.getTracks()) track.stop();
+      return;
+    }
+    streamRef.current = stream;
+    const video = videoRef.current;
+    if (video) {
+      video.srcObject = stream;
+      try {
+        await video.play();
+      } catch {
+        // Play can fail before user interaction; preview still works once it can.
+      }
+    }
+    setCameraOn(true);
+    if (trackerRef.current === null) {
       setStatus("loading");
       setMessage("Loading pose model...");
-      setProgress(0);
-      lastTRef.current = 0;
-
       try {
         trackerRef.current = await createTracker();
       } catch {
@@ -96,87 +183,58 @@ export function CameraPanel(props: {
         toast.error(msg);
         return;
       }
-
-      const video = videoRef.current;
-      if (!video) {
-        stopAll();
+      if (isCancelled()) {
+        trackerRef.current.close();
+        trackerRef.current = null;
         return;
       }
+    }
+    setStatus("ready");
+    setMessage("Camera ready. Get in position, then press Record.");
+  }, []);
 
-      if (source === "camera") {
-        let stream: MediaStream;
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-            audio: false,
-          });
-        } catch (err) {
-          const msg =
-            err instanceof DOMException && err.name === "NotAllowedError"
-              ? "Camera permission denied."
-              : err instanceof DOMException && err.name === "NotFoundError"
-                ? "No camera found."
-                : "Could not open the camera.";
-          setStatus("error");
-          setMessage(msg);
-          toast.error(msg);
-          trackerRef.current?.close();
-          trackerRef.current = null;
-          return;
-        }
-        streamRef.current = stream;
-        video.srcObject = stream;
-      } else if (file) {
-        urlRef.current = URL.createObjectURL(file);
-        video.src = urlRef.current;
-        video.onended = () => {
-          finish();
-        };
+  const startFile = useCallback(
+    (file: File) => {
+      if (!trackerRef.current) return;
+      const video = videoRef.current;
+      if (!video) return;
+      if (streamRef.current) {
+        for (const track of streamRef.current.getTracks()) track.stop();
+        streamRef.current = null;
+        video.srcObject = null;
+        setCameraOn(false);
       }
-
-      try {
-        await video.play();
-      } catch {
-        // Play can fail if the user pauses quickly; recording state still follows the loop.
-      }
-
+      const url = URL.createObjectURL(file);
+      urlRef.current = url;
+      video.src = url;
+      video.onended = () => {
+        finish();
+      };
+      void video.play().catch(() => {
+        // Ignore play failures; the loop follows the video state.
+      });
+      framesRef.current = [];
+      propsRef.current.onResult(null);
+      setProgress(0);
+      lastTRef.current = 0;
       setStatus("recording");
       setMessage("Pedal at a steady pace, side view...");
       startTRef.current = performance.now();
       recordingRef.current = true;
-
-      const loop = () => {
-        if (!recordingRef.current) return;
-        const v = videoRef.current;
-        if (!v || v.readyState < 2) {
-          rafRef.current = requestAnimationFrame(loop);
-          return;
-        }
-        const t = performance.now();
-        if (t <= lastTRef.current) {
-          rafRef.current = requestAnimationFrame(loop);
-          return;
-        }
-        lastTRef.current = t;
-        const frame = trackerRef.current?.detect(v, props.side, t);
-        if (frame) framesRef.current.push(frame);
-
-        if (urlRef.current === null) {
-          const p = Math.min(1, (t - startTRef.current) / CAPTURE_MS);
-          setProgress(p);
-          if (p >= 1) {
-            finish();
-            return;
-          }
-        } else if (Number.isFinite(v.duration) && v.duration > 0) {
-          setProgress(v.currentTime / v.duration);
-        }
-        rafRef.current = requestAnimationFrame(loop);
-      };
-      rafRef.current = requestAnimationFrame(loop);
+      startLoop();
     },
-    [finish, props, stopAll],
+    [finish, startLoop],
   );
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount
+  useEffect(() => {
+    let cancelled = false;
+    void openCamera(() => cancelled);
+    return () => {
+      cancelled = true;
+      stopAll();
+    };
+  }, []);
 
   const disabled = status === "loading" || status === "recording";
 
@@ -201,13 +259,21 @@ export function CameraPanel(props: {
       )}
       <div className="flex flex-wrap gap-2">
         <Button
-          onClick={() => {
-            void start("camera");
-          }}
-          disabled={disabled}
+          onClick={record}
+          disabled={!cameraOn || !(status === "ready" || status === "done")}
         >
-          Start camera
+          Record 10 s
         </Button>
+        {!cameraOn && status !== "loading" && status !== "recording" && (
+          <Button
+            variant="outline"
+            onClick={() => {
+              void openCamera(() => false);
+            }}
+          >
+            Start camera
+          </Button>
+        )}
         <Button
           variant="outline"
           disabled={disabled}
@@ -224,7 +290,7 @@ export function CameraPanel(props: {
           className="hidden"
           onChange={(event) => {
             const file = event.target.files?.[0];
-            if (file) void start("file", file);
+            if (file) startFile(file);
             event.target.value = "";
           }}
         />
