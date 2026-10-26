@@ -8,6 +8,7 @@ import {
   FileDiff,
   Gauge,
   Network,
+  Workflow,
   QrCode,
   ReceiptText,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const ICONS: Record<string, ReactNode> = {
   "/json-schema": <Braces className="size-[18px]" strokeWidth={1.75} />,
   "/cron": <Clock className="size-[18px]" strokeWidth={1.75} />,
   "/base64": <Binary className="size-[18px]" strokeWidth={1.75} />,
+  "/mermaid-editor": <Workflow className="size-[18px]" strokeWidth={1.75} />,
   "/tire-pressure": <Gauge className="size-[18px]" strokeWidth={1.75} />,
 };
 

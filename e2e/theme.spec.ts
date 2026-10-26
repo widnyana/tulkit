@@ -43,6 +43,7 @@ const TOOL_ROUTES = [
   "/random-string",
   "/json-schema",
   "/invoice",
+  "/mermaid-editor",
 ];
 
 test.describe("theme toggle", () => {
