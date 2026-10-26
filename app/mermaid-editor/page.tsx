@@ -391,7 +391,6 @@ export default function MermaidEditorPage() {
             >
               <canvas
                 ref={gridRef}
-                aria-hidden="true"
                 className="absolute inset-0 w-full h-full pointer-events-none"
               />
               <div
