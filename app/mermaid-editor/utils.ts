@@ -5,6 +5,95 @@ export const SAMPLE = `graph TD
     B -->|Yes| C[OK]
     B -->|No| D[End]`;
 
+/** Mermaid "base" theme variables. Only `base` is customizable and only hex
+ *  colors are honored (no names, rgba or "transparent"). Mermaid derives many
+ *  colors from primaryColor, so every color a diagram type reads is set
+ *  explicitly to keep the result predictable. */
+export function mermaidThemeVariables(dark: boolean) {
+  const c = dark
+    ? {
+        text: "#e2e8f0",
+        line: "#94a3b8",
+        node: "#312e81",
+        nodeBorder: "#818cf8",
+        nodeText: "#e0e7ff",
+        alt: "#134e4a",
+        altBorder: "#2dd4bf",
+        altText: "#ccfbf1",
+        warm: "#451a03",
+        warmBorder: "#fbbf24",
+        warmText: "#fef3c7",
+        cluster: "#1e293b",
+        clusterBorder: "#475569",
+        label: "#0f172a",
+        actor: "#1e1b4b",
+        activation: "#3730a3",
+      }
+    : {
+        text: "#0f172a",
+        line: "#64748b",
+        node: "#e0e7ff",
+        nodeBorder: "#6366f1",
+        nodeText: "#1e1b4b",
+        alt: "#ccfbf1",
+        altBorder: "#14b8a6",
+        altText: "#134e4a",
+        warm: "#fef3c7",
+        warmBorder: "#f59e0b",
+        warmText: "#451a03",
+        cluster: "#f1f5f9",
+        clusterBorder: "#cbd5e1",
+        label: "#ffffff",
+        actor: "#eff6ff",
+        activation: "#dbeafe",
+      };
+  return {
+    darkMode: dark,
+    fontFamily: "ui-sans-serif, system-ui, sans-serif",
+    textColor: c.text,
+    lineColor: c.line,
+    primaryColor: c.node,
+    primaryBorderColor: c.nodeBorder,
+    primaryTextColor: c.nodeText,
+    secondaryColor: c.alt,
+    secondaryBorderColor: c.altBorder,
+    secondaryTextColor: c.altText,
+    tertiaryColor: c.warm,
+    tertiaryBorderColor: c.warmBorder,
+    tertiaryTextColor: c.warmText,
+    // flowchart
+    mainBkg: c.node,
+    nodeBorder: c.nodeBorder,
+    nodeTextColor: c.nodeText,
+    clusterBkg: c.cluster,
+    clusterBorder: c.clusterBorder,
+    defaultLinkColor: c.line,
+    titleColor: c.text,
+    edgeLabelBackground: c.label,
+    // sequence
+    actorBkg: c.actor,
+    actorBorder: c.nodeBorder,
+    actorTextColor: c.nodeText,
+    actorLineColor: c.line,
+    signalColor: c.text,
+    signalTextColor: c.text,
+    labelBoxBkgColor: c.cluster,
+    labelBoxBorderColor: c.clusterBorder,
+    labelTextColor: c.text,
+    loopTextColor: c.text,
+    activationBkgColor: c.activation,
+    activationBorderColor: c.nodeBorder,
+    sequenceNumberColor: c.label,
+    noteBkgColor: c.warm,
+    noteTextColor: c.warmText,
+    noteBorderColor: c.warmBorder,
+    // state / class
+    labelColor: c.nodeText,
+    altBackground: c.cluster,
+    classText: c.nodeText,
+  };
+}
+
 function saveBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

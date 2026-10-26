@@ -6,16 +6,27 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { downloadPNG, downloadSVG, SAMPLE, STORAGE_KEY } from "./utils";
+import {
+  downloadPNG,
+  downloadSVG,
+  mermaidThemeVariables,
+  SAMPLE,
+  STORAGE_KEY,
+} from "./utils";
 
 const ZOOM_MIN = 25;
 const ZOOM_MAX = 500;
 const ZOOM_STEP = 10;
 
+const clampZoom = (z: number) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z));
+
 export default function MermaidEditorPage() {
   const { resolvedTheme } = useTheme();
   const codeId = useId();
   const previewRef = useRef<HTMLDivElement>(null);
+  const previewBoxRef = useRef<HTMLElement>(null);
+  const gridRef = useRef<HTMLCanvasElement>(null);
+  const [boxSize, setBoxSize] = useState({ w: 0, h: 0 });
   const renderSeq = useRef(0);
   const drag = useRef<{ x: number; y: number } | null>(null);
 
@@ -63,7 +74,8 @@ export default function MermaidEditorPage() {
         mermaid.initialize({
           startOnLoad: false,
           securityLevel: "strict",
-          theme: resolvedTheme === "dark" ? "dark" : "default",
+          theme: "base",
+          themeVariables: mermaidThemeVariables(resolvedTheme === "dark"),
           htmlLabels: false,
           flowchart: { htmlLabels: false },
         });
@@ -115,12 +127,79 @@ export default function MermaidEditorPage() {
     }
   };
 
-  const zoomBy = (delta: number) =>
-    setZoom((z) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, z + delta)));
+  const zoomBy = (delta: number) => setZoom((z) => clampZoom(z + delta));
+
+  useEffect(() => {
+    const box = previewBoxRef.current;
+    if (!box) return;
+    const ro = new ResizeObserver(([entry]) =>
+      setBoxSize({
+        w: entry.contentRect.width,
+        h: entry.contentRect.height,
+      }),
+    );
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, []);
+
+  // Canvas dot-grid backdrop: follows pan and zoom so the diagram feels anchored.
+  useEffect(() => {
+    const canvas = gridRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(boxSize.w * dpr);
+    canvas.height = Math.round(boxSize.h * dpr);
+    ctx.scale(dpr, dpr);
+    const step = Math.max(8, (24 * zoom) / 100);
+    const ox = ((pan.x % step) + step) % step;
+    const oy = ((pan.y % step) + step) % step;
+    ctx.fillStyle =
+      resolvedTheme === "dark"
+        ? "rgba(148,163,184,0.28)"
+        : "rgba(100,116,139,0.3)";
+    for (let x = ox; x < boxSize.w; x += step) {
+      for (let y = oy; y < boxSize.h; y += step)
+        ctx.fillRect(x - 1, y - 1, 2, 2);
+    }
+  }, [boxSize, zoom, pan, resolvedTheme]);
+
+  // Only the preview box goes full screen; wheel zoom and drag keep working,
+  // Esc exits (so the header buttons need not be shown there).
+  const enterFullscreen = async () => {
+    try {
+      await previewBoxRef.current?.requestFullscreen();
+    } catch {
+      toast.error("Full screen is not available");
+    }
+  };
+
+  // Native listener: React's onWheel is passive, so it cannot preventDefault
+  // and the page would scroll while zooming. Touchpad pinch arrives as a wheel
+  // event with ctrlKey set.
+  useEffect(() => {
+    const box = previewBoxRef.current;
+    if (!box) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const next = clampZoom(
+        zoom * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.002)),
+      );
+      const rect = box.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      const ratio = next / zoom;
+      // keep the content point under the cursor fixed
+      setPan({ x: px - (px - pan.x) * ratio, y: py - (py - pan.y) * ratio });
+      setZoom(next);
+    };
+    box.addEventListener("wheel", onWheel, { passive: false });
+    return () => box.removeEventListener("wheel", onWheel);
+  }, [zoom, pan]);
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto">
+      <div>
         <Link
           href="/"
           className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
@@ -179,7 +258,7 @@ export default function MermaidEditorPage() {
                 Load Sample
               </Button>
               <a
-                href="https://mermaid.js.org/intro/"
+                href="https://mermaid.ai/open-source/intro/index.html"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="ml-auto self-center text-sm text-muted-foreground underline hover:text-foreground"
@@ -206,7 +285,7 @@ export default function MermaidEditorPage() {
                   className="text-sm text-foreground min-w-12 text-center"
                   aria-live="polite"
                 >
-                  {zoom}%
+                  {Math.round(zoom)}%
                 </span>
                 <Button
                   type="button"
@@ -228,6 +307,14 @@ export default function MermaidEditorPage() {
                 >
                   Reset
                 </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={enterFullscreen}
+                >
+                  Full screen
+                </Button>
               </div>
             </div>
 
@@ -241,8 +328,9 @@ export default function MermaidEditorPage() {
             )}
 
             <section
+              ref={previewBoxRef}
               aria-label="Diagram preview"
-              className="flex-1 min-h-96 overflow-hidden rounded-md border border-border bg-background cursor-grab active:cursor-grabbing select-none touch-none"
+              className="relative flex-1 min-h-96 overflow-hidden rounded-md border border-border bg-background cursor-grab active:cursor-grabbing select-none touch-none"
               onPointerDown={(e) => {
                 e.currentTarget.setPointerCapture(e.pointerId);
                 drag.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
@@ -258,16 +346,21 @@ export default function MermaidEditorPage() {
                 drag.current = null;
               }}
             >
+              <canvas
+                ref={gridRef}
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full pointer-events-none"
+              />
               <div
                 ref={previewRef}
-                className="p-4 origin-top-left"
+                className="relative p-4 origin-top-left"
                 style={{
                   transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom / 100})`,
                 }}
               />
             </section>
             <p className="text-xs text-muted-foreground mt-2">
-              Drag to pan, use the buttons to zoom.
+              Drag to pan, scroll or pinch to zoom. Esc exits full screen.
             </p>
 
             <div className="flex flex-wrap gap-3 mt-4">
