@@ -23,6 +23,13 @@ const corsHeaders = {
   "Access-Control-Max-Age": "86400",
 };
 
+// Restrict outbound schema fetches to trusted hosts only (server-controlled)
+const ALLOWED_SCHEMA_HOSTS = (
+  process.env.ALLOWED_SCHEMA_HOSTS?.split(",") || [new URL(SITE_URL).hostname]
+)
+  .map((host) => host.trim().toLowerCase())
+  .filter(Boolean);
+
 // Handle CORS preflight requests
 export async function OPTIONS() {
   return new NextResponse(null, { headers: corsHeaders });
@@ -59,8 +66,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Block private/internal network ranges
-    const hostname = urlObj.hostname;
+    const hostname = urlObj.hostname.toLowerCase();
+
+    // Allow outbound requests only to trusted hostnames
+    if (!ALLOWED_SCHEMA_HOSTS.includes(hostname)) {
+      return NextResponse.json(
+        { error: "Host is not in the allowed schema host list" },
+        { status: 400, headers: corsHeaders },
+      );
+    }
+
+    // Block private/internal network ranges (defense in depth)
     const isPrivateNetwork =
       hostname === "localhost" ||
       hostname.startsWith("127.") ||
@@ -80,7 +96,7 @@ export async function GET(request: NextRequest) {
 
     // Validate content length limit (prevent DoS)
     const MAX_RESPONSE_SIZE = 10 * 1024 * 1024; // 10MB
-    const response = await fetch(schemaUrl, {
+    const response = await fetch(urlObj.toString(), {
       headers: {
         "User-Agent": `Tulkit/1.0 ${SITE_URL}`,
         Accept: "application/json, application/schema+json, */*",
