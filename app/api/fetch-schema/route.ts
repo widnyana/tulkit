@@ -25,10 +25,47 @@ const corsHeaders = {
 
 // Restrict outbound schema fetches to trusted hosts only (server-controlled)
 const ALLOWED_SCHEMA_HOSTS = (
-  process.env.ALLOWED_SCHEMA_HOSTS?.split(",") || [new URL(SITE_URL).hostname]
+  process.env.ALLOWED_SCHEMA_HOSTS?.split(",") || [
+    new URL(SITE_URL).hostname,
+    "raw.githubusercontent.com",
+    "gist.githubusercontent.com",
+    "json.schemastore.org",
+    "www.schemastore.org",
+  ]
 )
   .map((host) => host.trim().toLowerCase())
   .filter(Boolean);
+
+// Only allow HTTP/HTTPS, trusted hosts, and block private/internal networks
+const checkUrl = (u: URL): string | null => {
+  if (!["http:", "https:"].includes(u.protocol)) {
+    return "Only HTTP and HTTPS URLs are allowed";
+  }
+
+  const hostname = u.hostname.toLowerCase();
+
+  // Allow outbound requests only to trusted hostnames
+  if (!ALLOWED_SCHEMA_HOSTS.includes(hostname)) {
+    return "Host is not in the allowed schema host list";
+  }
+
+  // Block private/internal network ranges (defense in depth)
+  const isPrivateNetwork =
+    hostname === "localhost" ||
+    hostname.startsWith("127.") ||
+    hostname.startsWith("10.") ||
+    hostname.startsWith("192.168.") ||
+    /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) || // 172.16-31.x.x
+    hostname.startsWith("169.254.") ||
+    hostname.endsWith(".local") ||
+    hostname.endsWith(".localhost");
+
+  if (isPrivateNetwork) {
+    return "Access to private/internal networks is not allowed";
+  }
+
+  return null;
+};
 
 // Handle CORS preflight requests
 export async function OPTIONS() {
@@ -58,52 +95,65 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Only allow HTTP/HTTPS and block private/internal networks
-    if (!["http:", "https:"].includes(urlObj.protocol)) {
+    const validationError = checkUrl(urlObj);
+    if (validationError) {
       return NextResponse.json(
-        { error: "Only HTTP and HTTPS URLs are allowed" },
-        { status: 400, headers: corsHeaders },
-      );
-    }
-
-    const hostname = urlObj.hostname.toLowerCase();
-
-    // Allow outbound requests only to trusted hostnames
-    if (!ALLOWED_SCHEMA_HOSTS.includes(hostname)) {
-      return NextResponse.json(
-        { error: "Host is not in the allowed schema host list" },
-        { status: 400, headers: corsHeaders },
-      );
-    }
-
-    // Block private/internal network ranges (defense in depth)
-    const isPrivateNetwork =
-      hostname === "localhost" ||
-      hostname.startsWith("127.") ||
-      hostname.startsWith("10.") ||
-      hostname.startsWith("192.168.") ||
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) || // 172.16-31.x.x
-      hostname.startsWith("169.254.") ||
-      hostname.endsWith(".local") ||
-      hostname.endsWith(".localhost");
-
-    if (isPrivateNetwork) {
-      return NextResponse.json(
-        { error: "Access to private/internal networks is not allowed" },
+        { error: validationError },
         { status: 400, headers: corsHeaders },
       );
     }
 
     // Validate content length limit (prevent DoS)
     const MAX_RESPONSE_SIZE = 10 * 1024 * 1024; // 10MB
-    const response = await fetch(urlObj.toString(), {
+
+    // Follow redirects manually so each hop is re-validated
+    let currentUrl = urlObj;
+    let response = await fetch(currentUrl.toString(), {
       headers: {
         "User-Agent": `Tulkit/1.0 ${SITE_URL}`,
         Accept: "application/json, application/schema+json, */*",
       },
       // Set a timeout to prevent hanging
       signal: AbortSignal.timeout(10000),
+      redirect: "manual",
     });
+
+    for (let redirects = 0; redirects < 3; redirects++) {
+      if (response.status < 300 || response.status >= 400) {
+        break;
+      }
+
+      const location = response.headers.get("location");
+      if (!location) {
+        break;
+      }
+
+      currentUrl = new URL(location, currentUrl);
+      const redirectError = checkUrl(currentUrl);
+      if (redirectError) {
+        return NextResponse.json(
+          { error: redirectError },
+          { status: 400, headers: corsHeaders },
+        );
+      }
+
+      response = await fetch(currentUrl.toString(), {
+        headers: {
+          "User-Agent": `Tulkit/1.0 ${SITE_URL}`,
+          Accept: "application/json, application/schema+json, */*",
+        },
+        // Set a timeout to prevent hanging
+        signal: AbortSignal.timeout(10000),
+        redirect: "manual",
+      });
+    }
+
+    if (response.status >= 300 && response.status < 400) {
+      return NextResponse.json(
+        { error: "Too many redirects" },
+        { status: 400, headers: corsHeaders },
+      );
+    }
 
     if (!response.ok) {
       return NextResponse.json(
