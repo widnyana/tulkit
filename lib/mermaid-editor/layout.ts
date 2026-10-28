@@ -154,10 +154,10 @@ export function groupBounds(
       const pos = model.pos[member];
       if (!pos) continue;
       const size = sizes[member] ?? { w: 120, h: 40 };
-      minX = Math.min(minX, pos[0] - size.w / 2);
-      minY = Math.min(minY, pos[1] - size.h / 2);
-      maxX = Math.max(maxX, pos[0] + size.w / 2);
-      maxY = Math.max(maxY, pos[1] + size.h / 2);
+      minX = Math.min(minX, pos[0]);
+      minY = Math.min(minY, pos[1]);
+      maxX = Math.max(maxX, pos[0] + size.w);
+      maxY = Math.max(maxY, pos[1] + size.h);
     }
     if (!Number.isFinite(minX)) continue;
     result.push({

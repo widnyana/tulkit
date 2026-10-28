@@ -87,16 +87,6 @@ export function FlowchartCanvas({
   }, []);
   useEffect(() => () => roRef.current?.disconnect(), []);
 
-  const toCanvas = useCallback((clientX: number, clientY: number) => {
-    const el = canvasRef.current;
-    if (!el) return { x: 0, y: 0 };
-    const r = el.getBoundingClientRect();
-    return {
-      x: clientX - r.left + el.scrollLeft,
-      y: clientY - r.top + el.scrollTop,
-    };
-  }, []);
-
   const posOf = useCallback(
     (id: string): [number, number] => dragPos[id] ?? placed.pos[id] ?? [0, 0],
     [dragPos, placed],
@@ -167,6 +157,68 @@ export function FlowchartCanvas({
     [placed, commit, say],
   );
 
+  const placedWithDrag = useMemo(
+    () => ({ ...placed, pos: { ...placed.pos, ...dragPos } }),
+    [placed, dragPos],
+  );
+  const boxes = useMemo(
+    () => groupBounds(placedWithDrag, sizes),
+    [placedWithDrag, sizes],
+  );
+
+  // Shift everything right/down so negative positions still render on-canvas.
+  const offset = useMemo(() => {
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    for (const n of placed.nodes) {
+      const [x, y] = posOf(n.id);
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+    }
+    for (const b of boxes) {
+      minX = Math.min(minX, b.x);
+      minY = Math.min(minY, b.y);
+    }
+    if (!Number.isFinite(minX)) {
+      minX = 0;
+      minY = 0;
+    }
+    return { x: Math.max(0, 16 - minX), y: Math.max(0, 16 - minY) };
+  }, [placed, posOf, boxes]);
+
+  // Content box sized to the node extent plus headroom.
+  const boxSize = useMemo(() => {
+    let maxRight = 0;
+    let maxBottom = 0;
+    for (const n of placed.nodes) {
+      const [x, y] = posOf(n.id);
+      const s = sizes[n.id] ?? { w: 120, h: 40 };
+      maxRight = Math.max(maxRight, x + s.w);
+      maxBottom = Math.max(maxBottom, y + s.h);
+    }
+    for (const b of boxes) {
+      maxRight = Math.max(maxRight, b.x + b.w);
+      maxBottom = Math.max(maxBottom, b.y + b.h);
+    }
+    return {
+      w: Math.max(400, maxRight) + offset.x + 200,
+      h: Math.max(300, maxBottom) + offset.y + 200,
+    };
+  }, [placed, posOf, sizes, boxes, offset]);
+
+  const toCanvas = useCallback(
+    (clientX: number, clientY: number) => {
+      const el = canvasRef.current;
+      if (!el) return { x: 0, y: 0 };
+      const r = el.getBoundingClientRect();
+      return {
+        x: clientX - r.left + el.scrollLeft - offset.x,
+        y: clientY - r.top + el.scrollTop - offset.y,
+      };
+    },
+    [offset],
+  );
+
   const finishConnect = useCallback(
     (clientX: number, clientY: number) => {
       const from = connectRef.current?.from;
@@ -218,26 +270,14 @@ export function FlowchartCanvas({
     [placed, toCanvas, commit, say],
   );
 
-  const placedWithDrag = useMemo(
-    () => ({ ...placed, pos: { ...placed.pos, ...dragPos } }),
-    [placed, dragPos],
-  );
-  const boxes = useMemo(
-    () => groupBounds(placedWithDrag, sizes),
-    [placedWithDrag, sizes],
-  );
-
-  // Content box sized to the node extent plus headroom.
-  const boxSize = useMemo(() => {
-    let maxX = 400;
-    let maxY = 300;
-    for (const n of placed.nodes) {
-      const [x, y] = posOf(n.id);
-      maxX = Math.max(maxX, x + 60);
-      maxY = Math.max(maxY, y + 40);
-    }
-    return { w: maxX + 200, h: maxY + 200 };
-  }, [placed, posOf]);
+  const panRef = useRef<{
+    startX: number;
+    startY: number;
+    left: number;
+    top: number;
+    moved: boolean;
+    pointerId: number;
+  } | null>(null);
 
   if (placed.nodes.length === 0) {
     return (
@@ -249,7 +289,7 @@ export function FlowchartCanvas({
         />
         <div
           data-testid="flowchart-canvas"
-          className="flex min-h-24 flex-1 items-center justify-center rounded-md border border-dashed border-border"
+          className="flex min-h-96 flex-1 items-center justify-center rounded-md border border-dashed border-border"
         >
           <p className="text-sm text-muted-foreground">
             Drag a shape here, or tap one in the palette.
@@ -272,7 +312,51 @@ export function FlowchartCanvas({
       <div
         ref={canvasRef}
         data-testid="flowchart-canvas"
-        className="relative min-h-24 min-w-0 flex-1 overflow-auto rounded-md border border-border bg-indigo-50/40 dark:bg-indigo-950/30"
+        className="relative min-h-96 min-w-0 flex-1 cursor-grab overflow-auto rounded-md border border-border bg-indigo-50/40 active:cursor-grabbing dark:bg-indigo-950/30"
+        onPointerDown={(e) => {
+          if (e.button !== 0) return;
+          const t = e.target as HTMLElement;
+          if (
+            t.closest(
+              "[data-node-id],[data-handle],[data-group-handle],input,button,[role='button]",
+            )
+          ) {
+            return;
+          }
+          e.currentTarget.setPointerCapture(e.pointerId);
+          panRef.current = {
+            startX: e.clientX,
+            startY: e.clientY,
+            left: e.currentTarget.scrollLeft,
+            top: e.currentTarget.scrollTop,
+            moved: false,
+            pointerId: e.pointerId,
+          };
+        }}
+        onPointerMove={(e) => {
+          const p = panRef.current;
+          if (!p || p.pointerId !== e.pointerId) return;
+          const dx = e.clientX - p.startX;
+          const dy = e.clientY - p.startY;
+          if (Math.abs(dx) >= 3 || Math.abs(dy) >= 3) p.moved = true;
+          e.currentTarget.scrollLeft = p.left - dx;
+          e.currentTarget.scrollTop = p.top - dy;
+        }}
+        onPointerUp={(e) => {
+          const p = panRef.current;
+          panRef.current = null;
+          if (p && e.currentTarget.hasPointerCapture(p.pointerId)) {
+            e.currentTarget.releasePointerCapture(p.pointerId);
+          }
+          if (p && !p.moved) setSel(null);
+        }}
+        onPointerCancel={(e) => {
+          const p = panRef.current;
+          panRef.current = null;
+          if (p && e.currentTarget.hasPointerCapture(p.pointerId)) {
+            e.currentTarget.releasePointerCapture(p.pointerId);
+          }
+        }}
         onDragOver={(e) => {
           if (e.dataTransfer.types.includes("application/x-tulkit-shape")) {
             e.preventDefault();
@@ -314,7 +398,12 @@ export function FlowchartCanvas({
               data-group-id={box.id}
               aria-label={`Group ${box.title}`}
               className="absolute rounded-lg border border-dashed border-slate-300 bg-slate-50/60 dark:border-slate-600 dark:bg-slate-900/40"
-              style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
+              style={{
+                left: box.x + offset.x,
+                top: box.y + offset.y,
+                width: box.w,
+                height: box.h,
+              }}
             >
               <div
                 data-group-handle
@@ -390,10 +479,14 @@ export function FlowchartCanvas({
             </defs>
             {ghost && connectRef.current && (
               <line
-                x1={posOf(connectRef.current.from)[0] + FALLBACK_HALF.w}
-                y1={posOf(connectRef.current.from)[1] + FALLBACK_HALF.h}
-                x2={ghost.x}
-                y2={ghost.y}
+                x1={
+                  posOf(connectRef.current.from)[0] + FALLBACK_HALF.w + offset.x
+                }
+                y1={
+                  posOf(connectRef.current.from)[1] + FALLBACK_HALF.h + offset.y
+                }
+                x2={ghost.x + offset.x}
+                y2={ghost.y + offset.y}
                 stroke="currentColor"
                 strokeDasharray="4 4"
               />
@@ -422,8 +515,8 @@ export function FlowchartCanvas({
               const selected = sel?.kind === "edge" && sel.id === String(i);
               const width = edge.style === "thick" ? 3 : 1.5;
               const selfLoop = edge.from === edge.to;
-              const loopX = b[0] + hb.w;
-              const loopY = b[1] + hb.h;
+              const loopX = b[0] + hb.w + offset.x;
+              const loopY = b[1] + hb.h + offset.y;
               const d = selfLoop
                 ? `M ${loopX} ${loopY - 6} C ${loopX + 40} ${loopY - 30}, ${loopX + 40} ${loopY + 30}, ${loopX} ${loopY + 6}`
                 : undefined;
@@ -470,17 +563,17 @@ export function FlowchartCanvas({
                   ) : (
                     <>
                       <line
-                        x1={start.x}
-                        y1={start.y}
-                        x2={end.x}
-                        y2={end.y}
+                        x1={start.x + offset.x}
+                        y1={start.y + offset.y}
+                        x2={end.x + offset.x}
+                        y2={end.y + offset.y}
                         {...visibleAttrs}
                       />
                       <line
-                        x1={start.x}
-                        y1={start.y}
-                        x2={end.x}
-                        y2={end.y}
+                        x1={start.x + offset.x}
+                        y1={start.y + offset.y}
+                        x2={end.x + offset.x}
+                        y2={end.y + offset.y}
                         stroke="transparent"
                         strokeWidth={12}
                         style={{ pointerEvents: "stroke" }}
@@ -488,15 +581,15 @@ export function FlowchartCanvas({
                       {edge.label && (
                         <>
                           <rect
-                            x={mid.x - edge.label.length * 3.2 - 3}
-                            y={mid.y - 8}
+                            x={mid.x - edge.label.length * 3.2 - 3 + offset.x}
+                            y={mid.y - 8 + offset.y}
                             width={edge.label.length * 6.4 + 6}
                             height={16}
                             className="fill-background"
                           />
                           <text
-                            x={mid.x}
-                            y={mid.y + 4}
+                            x={mid.x + offset.x}
+                            y={mid.y + 4 + offset.y}
                             textAnchor="middle"
                             className="fill-current text-[10px]"
                           >
@@ -518,8 +611,8 @@ export function FlowchartCanvas({
                   )}
                   {editing?.kind === "edge" && editing.id === String(i) && (
                     <foreignObject
-                      x={mid.x - 45}
-                      y={mid.y - 10}
+                      x={mid.x - 45 + offset.x}
+                      y={mid.y - 10 + offset.y}
                       width={90}
                       height={20}
                     >
@@ -584,7 +677,7 @@ export function FlowchartCanvas({
                 } ${node.shape === "diamond" ? "h-14 w-20" : "min-w-[60px] min-h-[20px]"} ${
                   dragging ? "z-10" : ""
                 } ${node.shape === "diamond" ? "[clip-path:polygon(50%_0,100%_50%,50%_100%,0_50%)]" : ""}`}
-                style={{ left: x, top: y }}
+                style={{ left: x + offset.x, top: y + offset.y }}
                 onPointerDown={(e) => {
                   if (connectRef.current) return;
                   e.currentTarget.setPointerCapture(e.pointerId);
@@ -729,8 +822,8 @@ export function FlowchartCanvas({
           {editing?.kind === "node" && (
             <LabelEditor
               value={placed.nodes.find((n) => n.id === editing.id)?.label ?? ""}
-              x={posOf(editing.id)[0]}
-              y={posOf(editing.id)[1]}
+              x={posOf(editing.id)[0] + offset.x}
+              y={posOf(editing.id)[1] + offset.y}
               width={88}
               onCommit={(text) => {
                 const trimmed = text.trim();
