@@ -45,84 +45,6 @@ test.describe("Mermaid editor", () => {
     );
   });
 
-  test("visual mode shows canvas stub or parse-gate lock card", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill(
-        "flowchart TD\n    subgraph One\n        subgraph Two\n        end\n    end",
-      );
-    await page.getByRole("tab", { name: "Visual" }).click();
-    const lock = page.getByRole("status");
-    await expect(lock).toContainText("line 3", { timeout: 15_000 });
-
-    await lock.getByRole("button", { name: "Back to Text" }).click();
-    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
-      "flowchart TD\n    subgraph One\n        subgraph Two\n        end\n    end",
-    );
-  });
-
-  test("picking a text-only template selects the Text tab", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-
-    await page.getByRole("button", { name: "New diagram" }).click();
-    await page.getByRole("button", { name: /Gantt/ }).click();
-    await expect(page.getByRole("tab", { name: "Text" })).toHaveAttribute(
-      "aria-selected",
-      "true",
-    );
-    await expect(page.getByLabel("Mermaid Code")).toHaveValue(/gantt/);
-  });
-
-  test("palette click adds a node that serializes to the text tab", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-
-    page.once("dialog", (d) => d.accept());
-    await page.getByRole("button", { name: "New diagram" }).click();
-    await page.getByRole("button", { name: /Flowchart/ }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    await page.getByRole("button", { name: "Box" }).click();
-    await page.getByRole("tab", { name: "Text" }).click();
-    await expect(page.getByLabel("Mermaid Code")).toHaveValue(/\[Node\]/);
-  });
-
-  test("sequence canvas builds a participant that serializes to the text tab", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-
-    page.once("dialog", (d) => d.accept());
-    await page.getByRole("button", { name: "New diagram" }).click();
-    await page.getByRole("button", { name: /Sequence/ }).click();
-    await expect(page.getByTestId("sequence-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    await page
-      .getByTestId("palette")
-      .getByRole("button", { name: "Participant" })
-      .click();
-    await page.getByLabel("Label").press("Enter");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await expect(page.getByLabel("Mermaid Code")).toHaveValue(/participant P1/);
-  });
-
   test("each picker card renders a preview without errors", async ({
     page,
   }) => {
@@ -155,234 +77,10 @@ test.describe("Mermaid editor", () => {
     }
   });
 
-  test("dragging the connect handle onto a node creates an edge", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill("flowchart TD\n    A[One]\n    B[Two]");
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    const a = page.locator('[data-node-id="A"]');
-    const b = page.locator('[data-node-id="B"]');
-    const handle = await a.locator("[data-handle]").boundingBox();
-    const target = await b.boundingBox();
-    expect(handle).not.toBeNull();
-    expect(target).not.toBeNull();
-    await page.mouse.move(
-      handle!.x + handle!.width / 2,
-      handle!.y + handle!.height / 2,
-    );
-    await page.mouse.down();
-    await page.mouse.move(
-      target!.x + target!.width / 2,
-      target!.y + target!.height / 2,
-      { steps: 10 },
-    );
-    await page.mouse.up();
-
-    await page.getByRole("tab", { name: "Text" }).click();
-    await expect(page.getByLabel("Mermaid Code")).toHaveValue(/A --> B/);
-  });
-
-  test("dropping the connect handle on empty canvas creates a node and edge", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill("flowchart TD\n    A[One]\n    B[Two]\n    A --> B");
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    const canvas = page.getByTestId("flowchart-canvas");
-    const a = page.locator('[data-node-id="A"]');
-    const handle = await a.locator("[data-handle]").boundingBox();
-    const box = await canvas.boundingBox();
-    expect(handle).not.toBeNull();
-    expect(box).not.toBeNull();
-    await page.mouse.move(
-      handle!.x + handle!.width / 2,
-      handle!.y + handle!.height / 2,
-    );
-    await page.mouse.down();
-    await page.mouse.move(box!.x + box!.width - 30, box!.y + box!.height - 30, {
-      steps: 10,
-    });
-    await page.mouse.up();
-
-    await page.getByRole("tab", { name: "Text" }).click();
-    const value = await page.getByLabel("Mermaid Code").inputValue();
-    expect(value).toMatch(/C\[/);
-    expect(value).toMatch(/A --> B/);
-    expect(value).toMatch(/A --> C/);
-  });
-
-  test("renaming a node in text mode shows in the visual canvas", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill("flowchart TD\n    A[Renamed]\n    B[Two]");
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-    await expect(page.locator('[data-node-id="A"]')).toContainText("Renamed", {
-      timeout: 15_000,
-    });
-  });
-
-  test("moving a node persists its layout across reloads", async ({ page }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill("flowchart TD\n    A[One]\n    B[Two]");
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    const a = page.locator('[data-node-id="A"]');
-    await expect(a).toBeVisible({ timeout: 15_000 });
-    const before = await a.boundingBox();
-    expect(before).not.toBeNull();
-    await page.mouse.move(
-      before!.x + before!.width / 2,
-      before!.y + before!.height / 2,
-    );
-    await page.mouse.down();
-    await page.mouse.move(
-      before!.x + before!.width / 2 + 80,
-      before!.y + before!.height / 2,
-      { steps: 10 },
-    );
-    await page.mouse.up();
-
-    await page.reload();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-    await page.getByRole("tab", { name: "Text" }).click();
-    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
-      /%% tulkit-layout/,
-    );
-
-    await page.getByRole("tab", { name: "Visual" }).click();
-    const after = await page.locator('[data-node-id="A"]').boundingBox();
-    expect(after).not.toBeNull();
-    expect(Math.abs(after!.x - (before!.x + 80))).toBeLessThanOrEqual(10);
-  });
-
-  test("deleting a node removes its edges from the text", async ({ page }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill("flowchart TD\n    A[One]\n    B[Two]\n    A --> B");
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    const a = page.locator('[data-node-id="A"]');
-    await a.click();
-    await a.press("Delete");
-
-    await page.getByRole("tab", { name: "Text" }).click();
-    const value = await page.getByLabel("Mermaid Code").inputValue();
-    expect(value).not.toMatch(/A --> /);
-    expect(value).not.toMatch(/A\[/);
-  });
-
-  test("undo restores the previous text and redo reapplies", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill("flowchart TD\n    A[One]\n    B[Two]");
-    const before = await page.getByLabel("Mermaid Code").inputValue();
-
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-    await page
-      .getByTestId("palette")
-      .getByRole("button", { name: "Box" })
-      .click();
-    await page.getByRole("tab", { name: "Text" }).click();
-    const changed = await page.getByLabel("Mermaid Code").inputValue();
-    expect(changed).not.toBe(before);
-
-    // The Undo/Redo buttons only render while the Visual tab is active.
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await page.getByRole("button", { name: "Undo" }).click();
-    await page.getByRole("tab", { name: "Text" }).click();
-    await expect(page.getByLabel("Mermaid Code")).toHaveValue(before);
-
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await page.getByRole("button", { name: "Redo" }).click();
-    await page.getByRole("tab", { name: "Text" }).click();
-    await expect(page.getByLabel("Mermaid Code")).toHaveValue(changed);
-  });
-
-  test("dragging a participant header reorders the participants", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill(
-        "sequenceDiagram\n    participant A\n    participant B\n    A->>B: hi",
-      );
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("sequence-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    const headerA = page.locator('[data-party-id="A"]');
-    const headerB = page.locator('[data-party-id="B"]');
-    const from = await headerA.boundingBox();
-    const to = await headerB.boundingBox();
-    expect(from).not.toBeNull();
-    expect(to).not.toBeNull();
-    await page.mouse.move(
-      from!.x + from!.width / 2,
-      from!.y + from!.height / 2,
-    );
-    await page.mouse.down();
-    await page.mouse.move(to!.x + to!.width / 2, to!.y + to!.height / 2, {
-      steps: 10,
-    });
-    await page.mouse.up();
-
-    await page.getByRole("tab", { name: "Text" }).click();
-    const value = await page.getByLabel("Mermaid Code").inputValue();
-    expect(value.indexOf("participant B")).toBeLessThan(
-      value.indexOf("participant A"),
-    );
-  });
-
   test("dismissing the replace confirm keeps the current text", async ({
     page,
   }) => {
     await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
     const custom = "flowchart TD\n    A[Keep me]";
     await page.getByLabel("Mermaid Code").fill(custom);
 
@@ -390,200 +88,6 @@ test.describe("Mermaid editor", () => {
     page.once("dialog", (d) => d.dismiss());
     await page.getByRole("button", { name: /Gantt/ }).click();
     await expect(page.getByLabel("Mermaid Code")).toHaveValue(custom);
-  });
-
-  test("keyboard moves a node and deletes it", async ({ page }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill("flowchart TD\n    A[One]\n    B[Two]");
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(page.getByTestId("flowchart-canvas")).toBeVisible({
-      timeout: 15_000,
-    });
-
-    const a = page.locator('[data-node-id="A"]');
-    await a.click();
-    await a.press("ArrowRight");
-
-    await page.getByRole("tab", { name: "Text" }).click();
-    const value = await page.getByLabel("Mermaid Code").inputValue();
-    const match = /%% tulkit-layout \{.*"A":\[(\d+),/s.exec(value);
-    expect(match).not.toBeNull();
-    const xAfter = Number(match![1]);
-
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await a.click();
-    await a.press("ArrowLeft");
-    await page.getByRole("tab", { name: "Text" }).click();
-    const back = await page.getByLabel("Mermaid Code").inputValue();
-    const backMatch = /%% tulkit-layout \{.*"A":\[(\d+),/s.exec(back);
-    expect(backMatch).not.toBeNull();
-    expect(xAfter - Number(backMatch![1])).toBe(10);
-
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await a.click();
-    await a.press("Delete");
-    await page.getByRole("tab", { name: "Text" }).click();
-    const finalValue = await page.getByLabel("Mermaid Code").inputValue();
-    expect(finalValue).not.toMatch(/A\[/);
-  });
-
-  // The page hydrates its textarea after mount (localStorage ?? SAMPLE); a
-  // fill issued before that effect runs gets overwritten, so wait it out.
-  async function fillWhenHydrated(
-    page: import("@playwright/test").Page,
-    value: string,
-  ): Promise<void> {
-    const ta = page.getByLabel("Mermaid Code");
-    await expect(ta).toBeVisible();
-    await expect(ta).not.toBeEmpty();
-    await ta.fill(value);
-  }
-
-  test("architecture fixture renders groups in visual mode", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-    const fixture = readFileSync(
-      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
-      "utf8",
-    );
-    await fillWhenHydrated(page, fixture);
-    await page.getByRole("tab", { name: "Visual" }).click();
-    await expect(
-      page.getByTestId("flowchart-canvas"),
-    ).toBeVisible({ timeout: 30_000 });
-    await expect(
-      page.getByRole("button", { name: "Back to Text" }),
-    ).toHaveCount(0);
-    await expect(page.locator("[data-group-id]")).toHaveCount(6);
-  });
-
-  test("architecture fixture shows all groups without negative scroll", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-    const fixture = readFileSync(
-      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
-      "utf8",
-    );
-    await fillWhenHydrated(page, fixture);
-    await page.getByRole("tab", { name: "Visual" }).click();
-    const canvas = page.getByTestId("flowchart-canvas");
-    await expect(canvas).toBeVisible({ timeout: 30_000 });
-    await expect(page.locator("[data-group-id]")).toHaveCount(6);
-    const box = await canvas.boundingBox();
-    expect(box).not.toBeNull();
-    expect(box!.height).toBeGreaterThanOrEqual(384);
-    await canvas.evaluate((el) => {
-      el.scrollLeft = 0;
-      el.scrollTop = 0;
-    });
-    const groups = await page.locator("[data-group-id]").all();
-    expect(groups.length).toBe(6);
-    for (const g of groups) {
-      const gb = await g.boundingBox();
-      expect(gb).not.toBeNull();
-      expect(gb!.y).toBeGreaterThanOrEqual(box!.y);
-      expect(gb!.x).toBeGreaterThanOrEqual(box!.x);
-    }
-  });
-
-  test("dragging the canvas background pans without changing the model", async ({
-    page,
-  }) => {
-    await page.goto("/mermaid-editor");
-    const fixture = readFileSync(
-      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
-      "utf8",
-    );
-    await fillWhenHydrated(page, fixture);
-    await page.getByRole("tab", { name: "Text" }).click();
-    const before = await page.getByLabel("Mermaid Code").inputValue();
-    await page.getByRole("tab", { name: "Visual" }).click();
-    const canvas = page.getByTestId("flowchart-canvas");
-    await expect(canvas).toBeVisible({ timeout: 30_000 });
-    const box = await canvas.boundingBox();
-    expect(box).not.toBeNull();
-    const px = box!.x + 8;
-    const py = box!.y + 8;
-    const tag = await page.evaluate(
-      ([x, y]) => {
-        const el = document.elementFromPoint(x, y);
-        const container = document.querySelector('[data-testid="flowchart-canvas"]');
-        return el && container && (el === container || container.contains(el))
-          ? el.tagName
-          : null;
-      },
-      [px, py],
-    );
-    expect(tag).not.toBeNull();
-    await page.mouse.move(px, py);
-    await page.mouse.down();
-    for (let i = 1; i <= 10; i++) {
-      await page.mouse.move(px - i * 20, py);
-    }
-    await page.mouse.up();
-    const scrollLeft = await canvas.evaluate((el) => el.scrollLeft);
-    expect(scrollLeft).toBeGreaterThan(0);
-    await page.getByRole("tab", { name: "Text" }).click();
-    const after = await page.getByLabel("Mermaid Code").inputValue();
-    expect(after).toBe(before);
-  });
-
-  test("deleting a grouped node cleans its class entry", async ({ page }) => {
-    await page.goto("/mermaid-editor");
-    const fixture = readFileSync(
-      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
-      "utf8",
-    );
-    await fillWhenHydrated(page, fixture);
-    await page.getByRole("tab", { name: "Visual" }).click();
-    const dlq = page.locator('[data-node-id="DLQ"]');
-    await expect(dlq).toBeVisible({ timeout: 30_000 });
-    await dlq.click();
-    await dlq.press("Delete");
-
-    await page.getByRole("tab", { name: "Text" }).click();
-    const value = await page.getByLabel("Mermaid Code").inputValue();
-    expect(value).toContain("class Reject bad");
-    expect(value).not.toContain("DLQ");
-  });
-
-  test("dropping a node into a group adds it as a member", async ({ page }) => {
-    await page.goto("/mermaid-editor");
-    await page.getByRole("tab", { name: "Text" }).click();
-    await page
-      .getByLabel("Mermaid Code")
-      .fill(
-        'flowchart TD\n    subgraph G["Group"]\n        A[One]\n    end\n    B[Two]',
-      );
-    await page.getByRole("tab", { name: "Visual" }).click();
-    const b = page.locator('[data-node-id="B"]');
-    await expect(b).toBeVisible({ timeout: 15_000 });
-    const box = await page.locator('[data-group-id="G"]').boundingBox();
-    const from = await b.boundingBox();
-    expect(box).not.toBeNull();
-    expect(from).not.toBeNull();
-    await page.mouse.move(
-      from!.x + from!.width / 2,
-      from!.y + from!.height / 2,
-    );
-    await page.mouse.down();
-    await page.mouse.move(
-      box!.x + box!.width / 2,
-      box!.y + box!.height / 2,
-      { steps: 10 },
-    );
-    await page.mouse.up();
-
-    await page.getByRole("tab", { name: "Text" }).click();
-    const value = await page.getByLabel("Mermaid Code").inputValue();
-    const subgraph = /subgraph G[^\n]*\n([\s\S]*?)\n    end/.exec(value);
-    expect(subgraph).not.toBeNull();
-    expect(subgraph![1]).toContain("B[Two]");
   });
 
   test("preview svg exposes element ids for editing", async ({ page }) => {
@@ -787,4 +291,62 @@ test.describe("Mermaid editor", () => {
     await page.keyboard.press("Delete");
     await expect(page.getByLabel("Mermaid Code")).not.toHaveValue(/Alice/);
   });
+
+  test("picking a template sets edit mode", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    page.once("dialog", (d) => d.accept());
+    await page.getByRole("button", { name: "New diagram" }).click();
+    await page.getByRole("button", { name: /^Sequence / }).click();
+    const edit = page.getByRole("button", { name: "Edit" });
+    await expect(edit).toHaveAttribute("aria-pressed", "true");
+
+    await page.getByRole("button", { name: "New diagram" }).click();
+    await page.getByRole("button", { name: /^Gantt / }).click();
+    await expect(edit).toBeDisabled();
+  });
+
+  test("preview undo and redo", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(page, "graph TD\n    A[Start]");
+    await expect(node(page, "A")).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Edit" }).click();
+    await page
+      .getByTestId("palette")
+      .getByRole("button", { name: "Box" })
+      .click();
+    const label = page.getByLabel("Label");
+    await expect(label).toBeVisible();
+    await label.press("Enter");
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(/B\[Node\]/);
+    await page.getByRole("button", { name: "Undo" }).click();
+    await expect(page.getByLabel("Mermaid Code")).not.toHaveValue(/B\[/);
+    await page.getByRole("button", { name: "Redo" }).click();
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(/B\[Node\]/);
+  });
+
+  test("architecture fixture is editable in the preview", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    const fixture = readFileSync(
+      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
+      "utf8",
+    );
+    const preview = page.getByLabel("Diagram preview");
+    await fillWhenHydrated(page, fixture);
+    await expect(preview.locator("g.cluster")).toHaveCount(6, {
+      timeout: 30_000,
+    });
+    await expect(page.getByRole("button", { name: "Edit" })).toBeEnabled();
+  });
+
+  // The page hydrates its textarea after mount (localStorage ?? SAMPLE); a
+  // fill issued before that effect runs gets overwritten, so wait it out.
+  async function fillWhenHydrated(
+    page: import("@playwright/test").Page,
+    value: string,
+  ): Promise<void> {
+    const ta = page.getByLabel("Mermaid Code");
+    await expect(ta).toBeVisible();
+    await expect(ta).not.toBeEmpty();
+    await ta.fill(value);
+  }
 });

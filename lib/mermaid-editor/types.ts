@@ -40,7 +40,6 @@ export type FlowModel = {
   dir: Direction;
   nodes: FlowNode[];
   edges: FlowEdge[];
-  pos: Record<string, [number, number]>;
   groups: FlowGroup[];
   classDefs: string[];
   classes: { ids: string[]; name: string }[];

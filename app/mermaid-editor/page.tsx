@@ -5,11 +5,9 @@ import { useTheme } from "next-themes";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { DiagramPicker } from "./components/DiagramPicker";
-import { VisualPanel } from "./components/VisualPanel";
 import { usePreviewEditor } from "./components/PreviewEditor";
 import { useSequencePreviewEditor } from "./components/SequencePreviewEditor";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DIAGRAM_TEMPLATES } from "@/lib/mermaid-editor/templates";
 import {
   downloadPNG,
@@ -52,26 +50,11 @@ export default function MermaidEditorPage() {
   const drag = useRef<{ x: number; y: number } | null>(null);
 
   const [code, setCode] = useState("");
-  const [mode, setMode] = useState<"visual" | "text">("text");
   const [editing, setEditing] = useState(false);
   const [renderTick, setRenderTick] = useState(0);
   const renderNow = useRef(false);
-  // Visual-edit history (4.9): text edits clear redo; switching to Visual
-  // pushes a checkpoint so undo can return to the text state.
   const [past, setPast] = useState<string[]>([]);
   const [future, setFuture] = useState<string[]>([]);
-
-  const switchMode = useCallback(
-    (next: "visual" | "text") => {
-      setMode((current) => {
-        if (next === "visual" && current !== "visual") {
-          setPast((p) => (p[p.length - 1] === code ? p : [...p, code]));
-        }
-        return next;
-      });
-    },
-    [code],
-  );
 
   const commitVisual = useCallback(
     (next: string) => {
@@ -109,8 +92,8 @@ export default function MermaidEditorPage() {
   }, [editing, editor.model]);
 
   const undo = useCallback(() => {
-    // Skip stale checkpoints equal to the current code (e.g. re-entering the
-    // Visual tab after a commit) so one Undo returns to the previous state.
+    // Skips checkpoints equal to the current code so one Undo returns to the
+    // previous state.
     let i = past.length - 1;
     while (i >= 0 && past[i] === code) i -= 1;
     if (i < 0) return;
@@ -137,7 +120,7 @@ export default function MermaidEditorPage() {
         return;
       }
       setCode(next);
-      setMode(visual ? "visual" : "text");
+      setEditing(visual);
     },
     [code],
   );
@@ -150,22 +133,11 @@ export default function MermaidEditorPage() {
   useEffect(() => {
     try {
       setCode(localStorage.getItem(STORAGE_KEY) ?? SAMPLE);
-      const storedMode = localStorage.getItem("mermaid-diagram:mode");
-      if (storedMode === "visual") setMode("visual");
     } catch {
       setCode(SAMPLE);
     }
     setLoaded(true);
   }, []);
-
-  useEffect(() => {
-    if (!loaded) return;
-    try {
-      localStorage.setItem("mermaid-diagram:mode", mode);
-    } catch {
-      // storage unavailable (private mode, quota): the editor still works
-    }
-  }, [mode, loaded]);
 
   useEffect(() => {
     if (!loaded) return;
@@ -356,119 +328,76 @@ export default function MermaidEditorPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <section className="bg-card rounded-lg shadow-lg p-6 border border-border flex flex-col">
-            <Tabs
-              value={mode}
-              onValueChange={(v) => switchMode(v as "visual" | "text")}
-              className="flex flex-col flex-1"
+            <label
+              htmlFor={codeId}
+              className="text-lg font-semibold text-foreground mb-4"
             >
-              <TabsList className="mb-4 self-start">
-                <TabsTrigger value="visual">Visual</TabsTrigger>
-                <TabsTrigger value="text">Text</TabsTrigger>
-              </TabsList>
-              <TabsContent
-                value="visual"
-                className="flex flex-col flex-1 outline-none"
-              >
-                <div
-                  onKeyDown={(e) => {
-                    if (!(e.ctrlKey || e.metaKey)) return;
-                    if (e.key === "z" && !e.shiftKey) {
-                      e.preventDefault();
-                      undo();
-                    } else if ((e.key === "z" && e.shiftKey) || e.key === "y") {
-                      e.preventDefault();
-                      redo();
-                    }
-                  }}
-                  className="flex flex-col flex-1"
-                >
-                  <VisualPanel
-                    code={code}
-                    onCommit={commitVisual}
-                    onBackToText={() => switchMode("text")}
-                  />
-                </div>
-              </TabsContent>
-              <TabsContent
-                value="text"
-                className="flex flex-col flex-1 outline-none"
-              >
-                <label
-                  htmlFor={codeId}
-                  className="text-lg font-semibold text-foreground mb-4"
-                >
-                  Mermaid Code
-                </label>
-                {/* Highlight layer sits under a transparent textarea; both share the
+              Mermaid Code
+            </label>
+            {/* Highlight layer sits under a transparent textarea; both share the
                 same font metrics and no-wrap so glyphs line up. */}
-                <div className="relative flex-1 min-h-96 rounded-md border border-input bg-background shadow-sm focus-within:ring-1 focus-within:ring-ring">
-                  <pre
-                    ref={highlightRef}
-                    aria-hidden="true"
-                    className={`${EDITOR_TEXT} absolute inset-0 overflow-hidden pointer-events-none m-0`}
+            <div className="relative flex-1 min-h-96 rounded-md border border-input bg-background shadow-sm focus-within:ring-1 focus-within:ring-ring">
+              <pre
+                ref={highlightRef}
+                aria-hidden="true"
+                className={`${EDITOR_TEXT} absolute inset-0 overflow-hidden pointer-events-none m-0`}
+              >
+                {highlightMermaid(code).map((t) => (
+                  <span
+                    key={t.start}
+                    className={t.kind ? TOKEN_CLASS[t.kind] : undefined}
                   >
-                    {highlightMermaid(code).map((t) => (
-                      <span
-                        key={t.start}
-                        className={t.kind ? TOKEN_CLASS[t.kind] : undefined}
-                      >
-                        {t.text}
-                      </span>
-                    ))}
-                    {/* The space keeps the HTML parser from dropping a lone leading
+                    {t.text}
+                  </span>
+                ))}
+                {/* The space keeps the HTML parser from dropping a lone leading
                     newline in <pre> (empty code at SSR), which broke hydration. */}
-                    {" \n"}
-                  </pre>
-                  <textarea
-                    id={codeId}
-                    value={code}
-                    onChange={(e) => {
-                      setCode(e.target.value);
-                      // A text edit forks the visual history: redo is gone.
-                      setFuture([]);
-                      // Persist synchronously so an immediate reload cannot lose
-                      // the edit before the save effect below runs.
-                      try {
-                        localStorage.setItem(STORAGE_KEY, e.target.value);
-                      } catch {
-                        // storage unavailable: the editor still works
-                      }
-                    }}
-                    onScroll={(e) => {
-                      const pre = highlightRef.current;
-                      if (!pre) return;
-                      pre.scrollTop = e.currentTarget.scrollTop;
-                      pre.scrollLeft = e.currentTarget.scrollLeft;
-                    }}
-                    spellCheck={false}
-                    wrap="off"
-                    placeholder={SAMPLE}
-                    className={`${EDITOR_TEXT} absolute inset-0 w-full h-full resize-none overflow-auto bg-transparent text-transparent caret-foreground placeholder:text-muted-foreground focus-visible:outline-none`}
-                  />
-                </div>
-              </TabsContent>
-            </Tabs>
+                {" \n"}
+              </pre>
+              <textarea
+                id={codeId}
+                value={code}
+                onChange={(e) => {
+                  setCode(e.target.value);
+                  // A text edit forks the visual history: redo is gone.
+                  setFuture([]);
+                  // Persist synchronously so an immediate reload cannot lose
+                  // the edit before the save effect below runs.
+                  try {
+                    localStorage.setItem(STORAGE_KEY, e.target.value);
+                  } catch {
+                    // storage unavailable: the editor still works
+                  }
+                }}
+                onScroll={(e) => {
+                  const pre = highlightRef.current;
+                  if (!pre) return;
+                  pre.scrollTop = e.currentTarget.scrollTop;
+                  pre.scrollLeft = e.currentTarget.scrollLeft;
+                }}
+                spellCheck={false}
+                wrap="off"
+                placeholder={SAMPLE}
+                className={`${EDITOR_TEXT} absolute inset-0 w-full h-full resize-none overflow-auto bg-transparent text-transparent caret-foreground placeholder:text-muted-foreground focus-visible:outline-none`}
+              />
+            </div>
             <div className="flex flex-wrap gap-3 mt-4">
-              {mode === "visual" && (
-                <>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={undo}
-                    disabled={past.length === 0}
-                  >
-                    Undo
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={redo}
-                    disabled={future.length === 0}
-                  >
-                    Redo
-                  </Button>
-                </>
-              )}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={undo}
+                disabled={past.length === 0}
+              >
+                Undo
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={redo}
+                disabled={future.length === 0}
+              >
+                Redo
+              </Button>
               <Button type="button" variant="outline" onClick={copyCode}>
                 Copy Code
               </Button>
@@ -484,7 +413,26 @@ export default function MermaidEditorPage() {
             </div>
           </section>
 
-          <section className="bg-card rounded-lg shadow-lg p-6 border border-border flex flex-col">
+          <section
+            className="bg-card rounded-lg shadow-lg p-6 border border-border flex flex-col"
+            onKeyDown={(e) => {
+              if (!editing) return;
+              const target = e.target as HTMLElement;
+              if (
+                target instanceof HTMLInputElement ||
+                target instanceof HTMLTextAreaElement
+              )
+                return;
+              if (!(e.ctrlKey || e.metaKey)) return;
+              if (e.key === "z" && !e.shiftKey) {
+                e.preventDefault();
+                undo();
+              } else if ((e.key === "z" && e.shiftKey) || e.key === "y") {
+                e.preventDefault();
+                redo();
+              }
+            }}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-foreground">Preview</h2>
               <div className="flex items-center gap-2">

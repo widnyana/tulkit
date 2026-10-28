@@ -34,7 +34,6 @@ export function parseAny(code: string): ParseResult {
         dir: "TD",
         nodes: [],
         edges: [],
-        pos: {},
         groups: [],
         classDefs: [],
         classes: [],
