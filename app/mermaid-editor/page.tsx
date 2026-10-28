@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { DiagramPicker } from "./components/DiagramPicker";
 import { VisualPanel } from "./components/VisualPanel";
 import { usePreviewEditor } from "./components/PreviewEditor";
+import { useSequencePreviewEditor } from "./components/SequencePreviewEditor";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DIAGRAM_TEMPLATES } from "@/lib/mermaid-editor/templates";
@@ -90,14 +91,18 @@ export default function MermaidEditorPage() {
     [commitVisual],
   );
 
-  const editor = usePreviewEditor({
+  const editorOpts = {
     code,
     enabled: editing,
     svgHost: previewRef,
     box: previewBoxRef,
     renderTick,
     onCommit: commitFromPreview,
-  });
+  };
+
+  const flowEditor = usePreviewEditor(editorOpts);
+  const seqEditor = useSequencePreviewEditor(editorOpts);
+  const editor = flowEditor.model ? flowEditor : seqEditor;
 
   useEffect(() => {
     if (editing && !editor.model) setEditing(false);
@@ -588,7 +593,9 @@ export default function MermaidEditorPage() {
             </section>
             <p className="text-xs text-muted-foreground mt-2">
               {editing
-                ? "Drag from a node to connect, double-click to rename, Delete removes. Drag the background to pan."
+                ? seqEditor.model
+                  ? "Drag from one participant to another to add a message, double-click to rename, Delete removes."
+                  : "Drag from a node to connect, double-click to rename, Delete removes. Drag the background to pan."
                 : "Drag to pan, scroll or pinch to zoom. Esc exits full screen."}
             </p>
 

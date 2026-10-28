@@ -71,7 +71,7 @@ export function usePreviewEditor(opts: {
   const reason: string | null = parsed.ok
     ? parsed.model.kind === "flowchart"
       ? null
-      : "Preview editing supports flowcharts for now."
+      : "Preview editing is not available for this diagram type yet."
     : parsed.reason;
 
   const active = enabled && model !== null;
