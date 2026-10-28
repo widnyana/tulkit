@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
+import { DiagramPicker } from "./components/DiagramPicker";
 import { Button } from "@/components/ui/button";
+import { DIAGRAM_TEMPLATES } from "@/lib/mermaid-editor/templates";
 import {
   downloadPNG,
   downloadSVG,
@@ -46,6 +48,21 @@ export default function MermaidEditorPage() {
   const drag = useRef<{ x: number; y: number } | null>(null);
 
   const [code, setCode] = useState("");
+
+  const pickTemplate = useCallback(
+    (next: string) => {
+      if (
+        code.trim() &&
+        code !== SAMPLE &&
+        !DIAGRAM_TEMPLATES.some((t) => t.code === code) &&
+        !window.confirm("Replace the current diagram?")
+      ) {
+        return;
+      }
+      setCode(next);
+    },
+    [code],
+  );
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(100);
@@ -276,7 +293,16 @@ export default function MermaidEditorPage() {
               <textarea
                 id={codeId}
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
+                onChange={(e) => {
+                  setCode(e.target.value);
+                  // Persist synchronously so an immediate reload cannot lose
+                  // the edit before the save effect below runs.
+                  try {
+                    localStorage.setItem(STORAGE_KEY, e.target.value);
+                  } catch {
+                    // storage unavailable: the editor still works
+                  }
+                }}
                 onScroll={(e) => {
                   const pre = highlightRef.current;
                   if (!pre) return;
@@ -293,13 +319,7 @@ export default function MermaidEditorPage() {
               <Button type="button" variant="outline" onClick={copyCode}>
                 Copy Code
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCode(SAMPLE)}
-              >
-                Load Sample
-              </Button>
+              <DiagramPicker onPick={pickTemplate} />
               <a
                 href="https://mermaid.ai/open-source/intro/index.html"
                 target="_blank"
