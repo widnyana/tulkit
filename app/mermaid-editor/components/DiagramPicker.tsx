@@ -29,7 +29,11 @@ const ICONS: Record<string, typeof Workflow> = {
   gitgraph: GitBranch,
 };
 
-export function DiagramPicker({ onPick }: { onPick: (code: string) => void }) {
+export function DiagramPicker({
+  onPick,
+}: {
+  onPick: (code: string, visual: boolean) => void;
+}) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -75,7 +79,7 @@ export function DiagramPicker({ onPick }: { onPick: (code: string) => void }) {
                   key={t.key}
                   type="button"
                   onClick={() => {
-                    onPick(t.code);
+                    onPick(t.code, t.visual);
                     setOpen(false);
                   }}
                   className="flex flex-col items-start gap-1 rounded-md border border-border p-2 text-left hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
