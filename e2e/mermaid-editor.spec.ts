@@ -705,4 +705,86 @@ test.describe("Mermaid editor", () => {
       /A\[Start\] --> B\[End\]/,
     );
   });
+
+  test("preview edit adds a participant", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(
+      page,
+      "sequenceDiagram\n    participant Alice\n    participant Bob\n    Alice ->> Bob: Hi",
+    );
+    const alice = page
+      .getByLabel("Diagram preview")
+      .locator('[data-et="participant"][data-id="Alice"]')
+      .first();
+    await expect(alice).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Edit" }).click();
+    await page.getByTestId("palette").getByRole("button", { name: "Participant" }).click();
+    const labelInput = page.getByLabel("Label");
+    await expect(labelInput).toBeVisible();
+    await labelInput.fill("Carol");
+    await labelInput.press("Enter");
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
+      /participant P1 as Carol/,
+    );
+  });
+
+  test("preview edit adds a message by dragging", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(
+      page,
+      "sequenceDiagram\n    participant Alice\n    participant Bob\n    Alice ->> Bob: Hi",
+    );
+    const preview = page.getByLabel("Diagram preview");
+    const alice = preview
+      .locator('[data-et="participant"][data-id="Alice"]')
+      .first();
+    const bob = preview
+      .locator('[data-et="participant"][data-id="Bob"]')
+      .first();
+    await expect(alice).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Edit" }).click();
+    const a = await alice.boundingBox();
+    const b = await bob.boundingBox();
+    if (!a || !b) throw new Error("participants not rendered");
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, { steps: 10 });
+    await page.mouse.up();
+    const labelInput = page.getByLabel("Label");
+    await expect(labelInput).toBeVisible();
+    await labelInput.fill("Ping");
+    await labelInput.press("Enter");
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
+      /Alice ->> Bob: Ping/,
+    );
+  });
+
+  test("preview edit renames and deletes participants", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(
+      page,
+      "sequenceDiagram\n    participant Alice\n    participant Bob\n    Alice ->> Bob: Hi",
+    );
+    const preview = page.getByLabel("Diagram preview");
+    const alice = preview
+      .locator('[data-et="participant"][data-id="Alice"]')
+      .first();
+    const bob = preview
+      .locator('[data-et="participant"][data-id="Bob"]')
+      .first();
+    await expect(alice).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Edit" }).click();
+    await bob.dblclick();
+    const labelInput = page.getByLabel("Label");
+    await expect(labelInput).toBeVisible();
+    await labelInput.fill("Robert");
+    await labelInput.press("Enter");
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
+      /participant Bob as Robert/,
+    );
+    await expect(alice).toBeVisible({ timeout: 30_000 });
+    await alice.click();
+    await page.keyboard.press("Delete");
+    await expect(page.getByLabel("Mermaid Code")).not.toHaveValue(/Alice/);
+  });
 });
