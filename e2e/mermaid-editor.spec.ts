@@ -611,4 +611,98 @@ test.describe("Mermaid editor", () => {
     ).toBeVisible();
     await expect(preview.locator('[data-et="message"]')).toHaveCount(1);
   });
+
+  const node = (page: import("@playwright/test").Page, id: string) =>
+    page
+      .getByLabel("Diagram preview")
+      .locator(`g.node[id*="-flowchart-${id}-"]`);
+
+  test("preview edit adds a node from the palette", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(page, "graph TD\n    A[Start] --> B[End]");
+    await expect(node(page, "B")).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Edit" }).click();
+    await page
+      .getByTestId("palette")
+      .getByRole("button", { name: "Box" })
+      .click();
+    const label = page.getByLabel("Label");
+    await expect(label).toBeVisible();
+    await label.fill("Third");
+    await label.press("Enter");
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
+      /C\[Third\]/,
+    );
+  });
+
+  test("preview edit connects two nodes by dragging", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(page, "graph TD\n    A[Start]\n    B[End]");
+    await expect(node(page, "A")).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Edit" }).click();
+    const a = await node(page, "A").boundingBox();
+    const b = await node(page, "B").boundingBox();
+    if (!a || !b) throw new Error("nodes not rendered");
+    await page.mouse.move(a.x + a.width / 2, a.y + a.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2, {
+      steps: 10,
+    });
+    await page.mouse.up();
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
+      /A --> B/,
+    );
+  });
+
+  test("preview edit renames and deletes nodes", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(page, "graph TD\n    A[Start] --> B[End]");
+    await expect(node(page, "A")).toBeVisible({ timeout: 30_000 });
+    await page.getByRole("button", { name: "Edit" }).click();
+    await node(page, "B").dblclick();
+    const label = page.getByLabel("Label");
+    await expect(label).toBeVisible();
+    await label.fill("Done");
+    await label.press("Enter");
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
+      /B\[Done\]/,
+    );
+    await expect(node(page, "A")).toBeVisible();
+    await node(page, "A").click();
+    await page.keyboard.press("Delete");
+    await expect(page.getByLabel("Mermaid Code")).not.toHaveValue(
+      /A\[Start\]/,
+    );
+  });
+
+  test("preview edit is disabled for text-only diagrams", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(
+      page,
+      'pie title Pets\n    "Dogs" : 3\n    "Cats" : 2',
+    );
+    await expect(page.getByRole("button", { name: "Edit" })).toBeDisabled({
+      timeout: 15_000,
+    });
+  });
+
+  test("edit off keeps drag to pan", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await fillWhenHydrated(page, "graph TD\n    A[Start] --> B[End]");
+    await expect(node(page, "A")).toBeVisible({ timeout: 30_000 });
+    const before = await node(page, "A").boundingBox();
+    if (!before) throw new Error("node A not rendered");
+    const box = await page.getByLabel("Diagram preview").boundingBox();
+    if (!box) throw new Error("preview not rendered");
+    await page.mouse.move(box.x + 10, box.y + 10);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 90, box.y + 10, { steps: 5 });
+    await page.mouse.up();
+    const after = await node(page, "A").boundingBox();
+    if (!after) throw new Error("node A not rendered");
+    expect(after.x).toBeGreaterThan(before.x + 40);
+    await expect(page.getByLabel("Mermaid Code")).toHaveValue(
+      /A\[Start\] --> B\[End\]/,
+    );
+  });
 });
