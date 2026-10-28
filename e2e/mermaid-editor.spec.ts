@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 
 test.describe("Mermaid editor", () => {
@@ -56,14 +58,16 @@ test.describe("Mermaid editor", () => {
     await page.getByRole("tab", { name: "Text" }).click();
     await page
       .getByLabel("Mermaid Code")
-      .fill("flowchart TD\n    subgraph One\n    end");
+      .fill(
+        "flowchart TD\n    subgraph One\n        subgraph Two\n        end\n    end",
+      );
     await page.getByRole("tab", { name: "Visual" }).click();
     const lock = page.getByRole("status");
-    await expect(lock).toContainText("line 2", { timeout: 15_000 });
+    await expect(lock).toContainText("line 3", { timeout: 15_000 });
 
     await lock.getByRole("button", { name: "Back to Text" }).click();
     await expect(page.getByLabel("Mermaid Code")).toHaveValue(
-      "flowchart TD\n    subgraph One\n    end",
+      "flowchart TD\n    subgraph One\n        subgraph Two\n        end\n    end",
     );
   });
 
@@ -424,5 +428,77 @@ test.describe("Mermaid editor", () => {
     await page.getByRole("tab", { name: "Text" }).click();
     const finalValue = await page.getByLabel("Mermaid Code").inputValue();
     expect(finalValue).not.toMatch(/A\[/);
+  });
+
+  test("architecture fixture renders groups in visual mode", async ({
+    page,
+  }) => {
+    await page.goto("/mermaid-editor");
+    const fixture = readFileSync(
+      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
+      "utf8",
+    );
+    await page.getByLabel("Mermaid Code").fill(fixture);
+    await page.getByRole("tab", { name: "Visual" }).click();
+    await expect(
+      page.getByTestId("flowchart-canvas"),
+    ).toBeVisible({ timeout: 30_000 });
+    await expect(
+      page.getByRole("button", { name: "Back to Text" }),
+    ).toHaveCount(0);
+    await expect(page.locator("[data-group-id]")).toHaveCount(6);
+  });
+
+  test("deleting a grouped node cleans its class entry", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    const fixture = readFileSync(
+      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
+      "utf8",
+    );
+    await page.getByLabel("Mermaid Code").fill(fixture);
+    await page.getByRole("tab", { name: "Visual" }).click();
+    const dlq = page.locator('[data-node-id="DLQ"]');
+    await expect(dlq).toBeVisible({ timeout: 30_000 });
+    await dlq.click();
+    await dlq.press("Delete");
+
+    await page.getByRole("tab", { name: "Text" }).click();
+    const value = await page.getByLabel("Mermaid Code").inputValue();
+    expect(value).toContain("class Reject bad");
+    expect(value).not.toContain("DLQ");
+  });
+
+  test("dropping a node into a group adds it as a member", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    await page.getByRole("tab", { name: "Text" }).click();
+    await page
+      .getByLabel("Mermaid Code")
+      .fill(
+        'flowchart TD\n    subgraph G["Group"]\n        A[One]\n    end\n    B[Two]',
+      );
+    await page.getByRole("tab", { name: "Visual" }).click();
+    const b = page.locator('[data-node-id="B"]');
+    await expect(b).toBeVisible({ timeout: 15_000 });
+    const box = await page.locator('[data-group-id="G"]').boundingBox();
+    const from = await b.boundingBox();
+    expect(box).not.toBeNull();
+    expect(from).not.toBeNull();
+    await page.mouse.move(
+      from!.x + from!.width / 2,
+      from!.y + from!.height / 2,
+    );
+    await page.mouse.down();
+    await page.mouse.move(
+      box!.x + box!.width / 2,
+      box!.y + box!.height / 2,
+      { steps: 10 },
+    );
+    await page.mouse.up();
+
+    await page.getByRole("tab", { name: "Text" }).click();
+    const value = await page.getByLabel("Mermaid Code").inputValue();
+    const subgraph = /subgraph G[^\n]*\n([\s\S]*?)\n    end/.exec(value);
+    expect(subgraph).not.toBeNull();
+    expect(subgraph![1]).toContain("B[Two]");
   });
 });

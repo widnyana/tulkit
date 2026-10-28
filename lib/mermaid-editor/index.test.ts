@@ -47,6 +47,10 @@ test("parseAny: comment-only text gives an empty flowchart model", () => {
     nodes: [],
     edges: [],
     pos: {},
+    groups: [],
+    classDefs: [],
+    classes: [],
+    styles: [],
   });
 });
 
@@ -57,6 +61,10 @@ test("serialize dispatches by model kind", () => {
     nodes: [{ id: "A", label: "Hi", shape: "rect" }],
     edges: [],
     pos: {},
+    groups: [],
+    classDefs: [],
+    classes: [],
+    styles: [],
   };
   assert.equal(serialize(flow), "flowchart LR\n    A[Hi]");
   const seq: SeqModel = {

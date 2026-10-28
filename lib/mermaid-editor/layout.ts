@@ -16,7 +16,7 @@ export function nextNodeId(existing: Iterable<string>): string {
   }
 }
 
-// ponytail: BFS ranks, no crossing minimization; upgrade path is a Sugiyama pass
+// ponytail: BFS ranks, no crossing minimization; no group-aware packing; upgrade path is a Sugiyama pass
 // (or dagre) if users ask for tidy auto-layout. The real render is mermaid's
 // own layout anyway; the canvas layout only has to be usable.
 export function autoPlace(model: FlowModel): FlowModel {
@@ -68,6 +68,23 @@ export function autoPlace(model: FlowModel): FlowModel {
     (byRank.get(r) as string[]).push(id);
   }
 
+  const groupIndex = new Map<string, number>();
+  model.groups.forEach((g, i) => {
+    for (const m of g.members) groupIndex.set(m, i);
+  });
+  for (const [, idsInRank] of byRank) {
+    idsInRank.sort((a, b) => {
+      const ga = groupIndex.get(a);
+      const gb = groupIndex.get(b);
+      if (ga !== gb) {
+        if (ga === undefined) return 1;
+        if (gb === undefined) return -1;
+        return ga - gb;
+      }
+      return order.indexOf(a) - order.indexOf(b);
+    });
+  }
+
   const occupied = new Set(Object.values(placed).map(([x, y]) => `${x},${y}`));
   const vertical =
     model.dir === "TD" || model.dir === "TB" || model.dir === "BT";
@@ -106,6 +123,53 @@ export function autoPlace(model: FlowModel): FlowModel {
   }
 
   return { ...model, pos: placed };
+}
+
+export function groupBounds(
+  model: FlowModel,
+  sizes: Record<string, { w: number; h: number }>,
+  pad = 24,
+): Array<{
+  id: string;
+  title: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}> {
+  const result: Array<{
+    id: string;
+    title: string;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  }> = [];
+  for (const group of model.groups) {
+    let minX = Number.POSITIVE_INFINITY;
+    let minY = Number.POSITIVE_INFINITY;
+    let maxX = Number.NEGATIVE_INFINITY;
+    let maxY = Number.NEGATIVE_INFINITY;
+    for (const member of group.members) {
+      const pos = model.pos[member];
+      if (!pos) continue;
+      const size = sizes[member] ?? { w: 120, h: 40 };
+      minX = Math.min(minX, pos[0] - size.w / 2);
+      minY = Math.min(minY, pos[1] - size.h / 2);
+      maxX = Math.max(maxX, pos[0] + size.w / 2);
+      maxY = Math.max(maxY, pos[1] + size.h / 2);
+    }
+    if (!Number.isFinite(minX)) continue;
+    result.push({
+      id: group.id,
+      title: group.title,
+      x: minX - pad,
+      y: minY - pad - 24,
+      w: maxX - minX + pad * 2,
+      h: maxY - minY + pad * 2 + 24,
+    });
+  }
+  return result;
 }
 
 export function clipToBox(

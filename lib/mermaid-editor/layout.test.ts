@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { autoPlace, clipToBox, nextNodeId } from "./layout.ts";
+import { autoPlace, clipToBox, groupBounds, nextNodeId } from "./layout.ts";
 import type { FlowModel } from "./types.ts";
 
 test("nextNodeId returns A on empty input", () => {
@@ -38,6 +38,10 @@ function makeModel(
       style: "solid",
     })),
     pos: {},
+    groups: [],
+    classDefs: [],
+    classes: [],
+    styles: [],
   };
 }
 
@@ -131,4 +135,41 @@ test("clipToBox clips a diagonal segment to the nearest border axis", () => {
 test("clipToBox returns the center for a zero-length vector", () => {
   const end = clipToBox({ x: 10, y: 20 }, { x: 10, y: 20 }, 50, 30);
   assert.deepEqual(end, { x: 10, y: 20 });
+});
+
+test("autoPlace orders rank by group index before first appearance", () => {
+  const model = makeModel(
+    "TD",
+    ["A", "B", "X", "Y"],
+    [
+      ["A", "X"],
+      ["B", "Y"],
+    ],
+  );
+  model.groups = [
+    { id: "G1", title: "G1", dir: null, members: ["Y"] },
+    { id: "G2", title: "G2", dir: null, members: ["X"] },
+  ];
+  const placed = autoPlace(model);
+  assert.ok(placed.pos.Y[0] < placed.pos.X[0]);
+});
+
+test("groupBounds computes padded union with title band", () => {
+  const model = makeModel("TD", ["A", "B"], []);
+  model.pos = { A: [100, 100], B: [300, 100] };
+  model.groups = [{ id: "G1", title: "G1", dir: null, members: ["A", "B"] }];
+  const bounds = groupBounds(model, {
+    A: { w: 100, h: 40 },
+    B: { w: 100, h: 40 },
+  });
+  assert.deepEqual(bounds, [
+    { id: "G1", title: "G1", x: 26, y: 32, w: 348, h: 112 },
+  ]);
+});
+
+test("groupBounds skips groups with no positioned members", () => {
+  const model = makeModel("TD", ["A"], []);
+  model.pos = {};
+  model.groups = [{ id: "G1", title: "G1", dir: null, members: ["A"] }];
+  assert.deepEqual(groupBounds(model, {}), []);
 });

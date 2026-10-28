@@ -7,6 +7,8 @@ export const SHAPES = [
   "diamond",
   "circle",
   "stadium",
+  "cylinder",
+  "hexagon",
 ] as const;
 export type Shape = (typeof SHAPES)[number];
 
@@ -26,12 +28,23 @@ export type FlowEdge = {
   style: EdgeStyle;
 };
 
+export type FlowGroup = {
+  id: string;
+  title: string;
+  dir: Direction | null;
+  members: string[];
+};
+
 export type FlowModel = {
   kind: "flowchart";
   dir: Direction;
   nodes: FlowNode[];
   edges: FlowEdge[];
   pos: Record<string, [number, number]>;
+  groups: FlowGroup[];
+  classDefs: string[];
+  classes: { ids: string[]; name: string }[];
+  styles: { id: string; rest: string }[];
 };
 
 export const ARROWS = ["->>", "-->>", "-x", "--x", "->", "-->"] as const;

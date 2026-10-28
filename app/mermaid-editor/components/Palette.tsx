@@ -9,6 +9,8 @@ const SHAPE_NAMES: Record<Shape, string> = {
   diamond: "Decision",
   circle: "Circle",
   stadium: "Stadium",
+  cylinder: "Cylinder",
+  hexagon: "Hexagon",
 };
 
 // Small palette-button look per shape; the canvas node uses the same classes.
@@ -18,6 +20,8 @@ const SHAPE_ICON: Record<Shape, string> = {
   diamond: "rounded-sm rotate-45 scale-75",
   circle: "rounded-full",
   stadium: "rounded-full",
+  cylinder: "rounded-sm",
+  hexagon: "rounded-sm",
 };
 
 const DIRECTION_OPTIONS = DIRECTIONS.filter((d) => d !== "TB");
