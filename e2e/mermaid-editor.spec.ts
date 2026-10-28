@@ -585,4 +585,30 @@ test.describe("Mermaid editor", () => {
     expect(subgraph).not.toBeNull();
     expect(subgraph![1]).toContain("B[Two]");
   });
+
+  test("preview svg exposes element ids for editing", async ({ page }) => {
+    await page.goto("/mermaid-editor");
+    const preview = page.getByLabel("Diagram preview");
+    await fillWhenHydrated(
+      page,
+      "graph TD\n    A[Start] --> B[End]\n    A --> B\n    subgraph G[\"Group\"]\n        C[In]\n    end",
+    );
+    await expect(
+      preview.locator('g.node[id$="-flowchart-A-0"]'),
+    ).toHaveCount(1, { timeout: 30_000 });
+    await expect(
+      preview.locator('[data-et="edge"][data-id="L_A_B_2"]'),
+    ).toHaveCount(1);
+    await expect(
+      preview.locator('g.cluster[id$="-G"]'),
+    ).toHaveCount(1);
+    await fillWhenHydrated(
+      page,
+      "sequenceDiagram\n    participant Alice\n    participant Bob\n    Alice ->> Bob: Hi",
+    );
+    await expect(
+      preview.locator('[data-et="participant"][data-id="Alice"]').first(),
+    ).toBeVisible();
+    await expect(preview.locator('[data-et="message"]')).toHaveCount(1);
+  });
 });
