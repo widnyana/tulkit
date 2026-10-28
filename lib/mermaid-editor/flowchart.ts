@@ -159,7 +159,6 @@ export function parseFlowchart(code: string): ParseResult {
   const classDefs: string[] = [];
   const classes: { ids: string[]; name: string }[] = [];
   const styles: { id: string; rest: string }[] = [];
-  const layout: Record<string, [number, number]> = {};
   let currentGroup: FlowGroup | null = null;
 
   const ensureNode = (id: string): FlowNode => {
@@ -180,34 +179,8 @@ export function parseFlowchart(code: string): ParseResult {
     if (src === "") continue;
 
     if (src.startsWith("%%")) {
-      const rest = src.slice(2);
-      const layoutMatch = /^\s*tulkit-layout\s+(\{.*\})\s*$/.exec(rest);
-      if (layoutMatch) {
-        try {
-          const parsed: unknown = JSON.parse(
-            // NaN is invalid JSON; treat it as null so only the bad entry is
-            // dropped instead of the whole layout line.
-            layoutMatch[1].replace(/\bNaN\b/g, "null"),
-          );
-          if (parsed !== null && typeof parsed === "object") {
-            for (const [id, value] of Object.entries(
-              parsed as Record<string, unknown>,
-            )) {
-              if (
-                Array.isArray(value) &&
-                value.length === 2 &&
-                Number.isFinite(value[0]) &&
-                Number.isFinite(value[1])
-              ) {
-                layout[id] = [value[0] as number, value[1] as number];
-              }
-            }
-          }
-        } catch {
-          // Invalid JSON layout is dropped without failing.
-        }
-        continue;
-      }
+      // A saved layout line is accepted and ignored; any other comment fails.
+      if (/^\s*tulkit-layout\s+\{.*\}\s*$/.test(src.slice(2))) continue;
       return fail(
         "Comments are not supported in the visual editor",
         lineNumber,
@@ -394,18 +367,11 @@ export function parseFlowchart(code: string): ParseResult {
   if (!sawHeader || !dir)
     return fail("Expected a flowchart header (graph TD)", 1);
 
-  const pos: Record<string, [number, number]> = {};
-  for (const node of nodes.values()) {
-    const entry = layout[node.id];
-    if (entry) pos[node.id] = entry;
-  }
-
   const model: FlowModel = {
     kind: "flowchart",
     dir,
     nodes: [...nodes.values()],
     edges,
-    pos,
     groups,
     classDefs,
     classes,
@@ -479,15 +445,6 @@ export function serializeFlowchart(model: FlowModel): string {
   for (const entry of model.styles) {
     out.push(`    style ${entry.id} ${entry.rest}`);
   }
-  const layoutEntries = model.nodes
-    .filter((node) => node.id in model.pos)
-    .map((node) => {
-      const [x, y] = model.pos[node.id];
-      return `${JSON.stringify(node.id)}:[${Math.round(x)},${Math.round(y)}]`;
-    });
-  if (layoutEntries.length > 0) {
-    out.push(`%% tulkit-layout {${layoutEntries.join(",")}}`);
-  }
   return out.join("\n");
 }
 
@@ -496,9 +453,6 @@ export function removeNode(model: FlowModel, id: string): FlowModel {
     ...model,
     nodes: model.nodes.filter((node) => node.id !== id),
     edges: model.edges.filter((edge) => edge.from !== id && edge.to !== id),
-    pos: Object.fromEntries(
-      Object.entries(model.pos).filter(([key]) => key !== id),
-    ),
     groups: model.groups.map((group) => ({
       ...group,
       members: group.members.filter((member) => member !== id),

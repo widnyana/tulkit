@@ -46,7 +46,7 @@ test("parseAny: comment-only text gives an empty flowchart model", () => {
     dir: "TD",
     nodes: [],
     edges: [],
-    pos: {},
+
     groups: [],
     classDefs: [],
     classes: [],
@@ -60,7 +60,7 @@ test("serialize dispatches by model kind", () => {
     dir: "LR",
     nodes: [{ id: "A", label: "Hi", shape: "rect" }],
     edges: [],
-    pos: {},
+
     groups: [],
     classDefs: [],
     classes: [],

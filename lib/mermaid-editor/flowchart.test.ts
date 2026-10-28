@@ -61,7 +61,7 @@ test("every shape and every edge style survives parse -> serialize -> parse", ()
       { from: "b", to: "c", label: null, style: "dotted" },
       { from: "c", to: "d", label: null, style: "thick" },
     ],
-    pos: {},
+
     groups: [],
     classDefs: [],
     classes: [],
@@ -103,7 +103,7 @@ test("quoted label with brackets and double quote round-trips via #quot;", () =>
     dir: "TD",
     nodes: [{ id: "a", label, shape: "rect" }],
     edges: [],
-    pos: {},
+
     groups: [],
     classDefs: [],
     classes: [],
@@ -123,7 +123,7 @@ test("edge label with pipe round-trips via #124;", () => {
       { id: "b", label: "", shape: "rect" },
     ],
     edges: [{ from: "a", to: "b", label: "yes | no", style: "solid" }],
-    pos: {},
+
     groups: [],
     classDefs: [],
     classes: [],
@@ -133,17 +133,21 @@ test("edge label with pipe round-trips via #124;", () => {
   assert.deepEqual(parsed, model);
 });
 
-test("layout line before node lines applies; bad entries are dropped", () => {
+test("layout line is accepted and ignored", () => {
   const code = [
     "graph TD",
-    '%% tulkit-layout {"a":[10,20],"ghost":[1,2],"bad":[1,"x"],"nan":[1.5,NaN]}',
+    '%% tulkit-layout {"a":[10,20]}',
     "    a[Alpha] --> b",
   ].join("\n");
-  const model = parseOk(code);
-  assert.deepEqual(model.pos, { a: [10, 20] });
+  const parsed = parseFlowchart(code);
+  assert.ok(parsed.ok);
+  assert.ok(
+    parsed.model.kind === "flowchart" &&
+      !serializeFlowchart(parsed.model).includes("tulkit-layout"),
+  );
 
   const modelInvalid = parseOk("graph TD\n%% tulkit-layout {not json}");
-  assert.deepEqual(modelInvalid.pos, {});
+  assert.ok(!serializeFlowchart(modelInvalid).includes("tulkit-layout"));
 });
 
 test("unsupported lines fail with the right 1-based line number", () => {
@@ -177,7 +181,7 @@ test("empty model serializes to flowchart TD only", () => {
     dir: "TD",
     nodes: [],
     edges: [],
-    pos: {},
+
     groups: [],
     classDefs: [],
     classes: [],
@@ -263,7 +267,7 @@ test("nested subgraph, stray end, and linkStyle fail closed", () => {
   assert.equal(linkStyle.line, 3);
 });
 
-test("removeNode drops node, edges, pos, membership, style and class entries", () => {
+test("removeNode drops node, edges, membership, style and class entries", () => {
   const withoutDlq = removeNode(FIXTURE_MODEL, "DLQ");
   assert.ok(!withoutDlq.nodes.some((node) => node.id === "DLQ"));
   assert.ok(
