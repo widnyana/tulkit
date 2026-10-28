@@ -29,7 +29,17 @@ export function parseAny(code: string): ParseResult {
   if (first === undefined) {
     return {
       ok: true,
-      model: { kind: "flowchart", dir: "TD", nodes: [], edges: [], pos: {} },
+      model: {
+        kind: "flowchart",
+        dir: "TD",
+        nodes: [],
+        edges: [],
+        pos: {},
+        groups: [],
+        classDefs: [],
+        classes: [],
+        styles: [],
+      },
     };
   }
 

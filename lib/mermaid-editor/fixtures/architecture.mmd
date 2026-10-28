@@ -1,0 +1,78 @@
+flowchart LR
+  subgraph Client["Client Tier"]
+    direction TB
+    Web["Web App (Next.js)"]
+    Mobile["Mobile App"]
+    CLI["CLI Tool"]
+  end
+
+  subgraph Edge["Edge"]
+    CDN["CDN"]
+    WAF["WAF"]
+    LB["Load Balancer"]
+  end
+
+  subgraph Gateway["API Gateway"]
+    direction TB
+    Auth{"Token valid?"}
+    RL["Rate Limiter"]
+    Router["Router"]
+  end
+
+  subgraph Services["Services"]
+    direction TB
+    Users["User Service"]
+    Orders["Order Service"]
+    Pay["Payment Service"]
+    Notify["Notification Service"]
+    Search["Search Service"]
+  end
+
+  subgraph Data["Data Tier"]
+    direction TB
+    PGP[("Postgres Primary")]
+    PGR[("Postgres Replica")]
+    Redis[("Redis Cache")]
+    ES[("Elasticsearch")]
+    S3[("Object Storage")]
+  end
+
+  subgraph Async["Async"]
+    direction TB
+    Bus{{"Event Bus"}}
+    Worker["Worker Pool"]
+    DLQ["Dead Letter Queue"]
+  end
+
+  Web --> CDN
+  Mobile --> WAF
+  CLI --> WAF
+  CDN --> WAF
+  WAF --> LB
+  LB --> Auth
+  Auth -- yes --> RL
+  Auth -- no --> Reject["401 Unauthorized"]
+  RL --> Router
+  Router --> Users & Orders & Pay & Search
+
+  Users --> Redis
+  Users --> PGP
+  Orders --> PGP
+  Orders -. reads .-> PGR
+  Orders --> Bus
+  Pay --> Bus
+  Search --> ES
+  PGP == replication ==> PGR
+
+  Bus --> Worker
+  Worker --> Notify
+  Worker --> S3
+  Worker -- retries exhausted --> DLQ
+  DLQ -.-> Bus
+
+  Notify -->|email, push| Mobile
+
+  classDef store fill:#e8f0fe,stroke:#4a6fa5,stroke-width:1px,color:#0f172a
+  classDef bad fill:#fde8e8,stroke:#c0392b,stroke-width:1px,color:#0f172a
+  class PGP,PGR,Redis,ES,S3 store
+  class Reject,DLQ bad

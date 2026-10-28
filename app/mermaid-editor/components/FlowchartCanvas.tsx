@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { autoPlace, clipToBox, nextNodeId } from "@/lib/mermaid-editor/layout";
+import {
+  autoPlace,
+  clipToBox,
+  groupBounds,
+  nextNodeId,
+} from "@/lib/mermaid-editor/layout";
+import { removeNode } from "@/lib/mermaid-editor/flowchart";
 import { SHAPES } from "@/lib/mermaid-editor/types";
 import type { EdgeStyle, FlowModel, Shape } from "@/lib/mermaid-editor/types";
 import { LabelEditor } from "./LabelEditor";
@@ -19,6 +25,15 @@ type DragState = {
   startY: number;
   origX: number;
   origY: number;
+  moved: boolean;
+  pointerId: number;
+};
+
+type GroupDragState = {
+  groupId: string;
+  startX: number;
+  startY: number;
+  origins: Record<string, [number, number]>;
   moved: boolean;
   pointerId: number;
 };
@@ -47,6 +62,7 @@ export function FlowchartCanvas({
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragState | null>(null);
+  const groupDragRef = useRef<GroupDragState | null>(null);
   const connectRef = useRef<{ from: string } | null>(null);
 
   const roRef = useRef<ResizeObserver | null>(null);
@@ -130,14 +146,7 @@ export function FlowchartCanvas({
 
   const deleteNode = useCallback(
     (id: string) => {
-      commit({
-        ...placed,
-        nodes: placed.nodes.filter((n) => n.id !== id),
-        edges: placed.edges.filter((e) => e.from !== id && e.to !== id),
-        pos: Object.fromEntries(
-          Object.entries(placed.pos).filter(([k]) => k !== id),
-        ),
-      });
+      commit(removeNode(placed, id));
       setSel(null);
       setEditing(null);
       say("Deleted");
@@ -209,6 +218,15 @@ export function FlowchartCanvas({
     [placed, toCanvas, commit, say],
   );
 
+  const placedWithDrag = useMemo(
+    () => ({ ...placed, pos: { ...placed.pos, ...dragPos } }),
+    [placed, dragPos],
+  );
+  const boxes = useMemo(
+    () => groupBounds(placedWithDrag, sizes),
+    [placedWithDrag, sizes],
+  );
+
   // Content box sized to the node extent plus headroom.
   const boxSize = useMemo(() => {
     let maxX = 400;
@@ -278,6 +296,10 @@ export function FlowchartCanvas({
               dragRef.current = null;
               setDragPos({});
             }
+            if (groupDragRef.current) {
+              groupDragRef.current = null;
+              setDragPos({});
+            }
           }
         }}
       >
@@ -285,6 +307,69 @@ export function FlowchartCanvas({
           className="relative"
           style={{ width: boxSize.w, height: boxSize.h }}
         >
+          {boxes.map((box) => (
+            <div
+              key={box.id}
+              role="group"
+              data-group-id={box.id}
+              aria-label={`Group ${box.title}`}
+              className="absolute rounded-lg border border-dashed border-slate-300 bg-slate-50/60 dark:border-slate-600 dark:bg-slate-900/40"
+              style={{ left: box.x, top: box.y, width: box.w, height: box.h }}
+            >
+              <div
+                data-group-handle
+                className="h-6 cursor-move select-none truncate rounded-t-lg px-2 text-xs font-medium leading-6 text-slate-600 dark:text-slate-300"
+                onPointerDown={(e) => {
+                  if (connectRef.current) return;
+                  const group = placed.groups.find((g) => g.id === box.id);
+                  if (!group) return;
+                  e.currentTarget.setPointerCapture(e.pointerId);
+                  const origins: Record<string, [number, number]> = {};
+                  for (const m of group.members) {
+                    const p = placedWithDrag.pos[m];
+                    if (p) origins[m] = [p[0], p[1]];
+                  }
+                  groupDragRef.current = {
+                    groupId: box.id,
+                    startX: e.clientX,
+                    startY: e.clientY,
+                    origins,
+                    moved: false,
+                    pointerId: e.pointerId,
+                  };
+                }}
+                onPointerMove={(e) => {
+                  const gd = groupDragRef.current;
+                  if (!gd || gd.groupId !== box.id) return;
+                  const dx = e.clientX - gd.startX;
+                  const dy = e.clientY - gd.startY;
+                  if (!gd.moved && Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+                  gd.moved = true;
+                  const next: Record<string, [number, number]> = {};
+                  for (const [id, [ox, oy]] of Object.entries(gd.origins)) {
+                    next[id] = [clamp(ox + dx), clamp(oy + dy)];
+                  }
+                  setDragPos(next);
+                }}
+                onPointerUp={(e) => {
+                  const gd = groupDragRef.current;
+                  if (!gd || gd.groupId !== box.id) return;
+                  groupDragRef.current = null;
+                  e.currentTarget.releasePointerCapture(gd.pointerId);
+                  if (!gd.moved) return;
+                  const pos = { ...placed.pos };
+                  for (const [id, [ox, oy]] of Object.entries(gd.origins)) {
+                    const p = dragPos[id] ?? [ox, oy];
+                    pos[id] = [clamp(p[0]), clamp(p[1])];
+                  }
+                  commit({ ...placed, pos });
+                }}
+              >
+                {box.title}
+              </div>
+            </div>
+          ))}
+
           <svg
             className="pointer-events-none absolute inset-0 text-indigo-600 dark:text-indigo-300"
             width={boxSize.w}
@@ -473,6 +558,9 @@ export function FlowchartCanvas({
               diamond: "",
               circle: "h-14 w-14 rounded-full",
               stadium: "rounded-full px-4",
+              cylinder: "rounded-[50%/12px]",
+              hexagon:
+                "[clip-path:polygon(12%_0,88%_0,100%_50%,88%_100%,12%_100%,0_50%)] px-6",
             };
             const common =
               "flex items-center justify-center border bg-indigo-50 border-indigo-400 text-indigo-950 dark:bg-indigo-950 dark:border-indigo-400 dark:text-indigo-100 transition-colors";
@@ -527,9 +615,37 @@ export function FlowchartCanvas({
                   dragRef.current = null;
                   if (d.moved) {
                     const p = dragPos[node.id] ?? [d.origX, d.origY];
+                    const half = halfOf(node.id);
+                    const cx = p[0] + half.w;
+                    const cy = p[1] + half.h;
+                    const posNoNode = { ...placedWithDrag.pos };
+                    delete posNoNode[node.id];
+                    const boxesNoNode = groupBounds(
+                      { ...placedWithDrag, pos: posNoNode },
+                      sizes,
+                    );
+                    const hit = boxesNoNode.find(
+                      (b) =>
+                        cx >= b.x &&
+                        cx <= b.x + b.w &&
+                        cy >= b.y &&
+                        cy <= b.y + b.h,
+                    );
+                    let groups = placed.groups.map((g) => ({
+                      ...g,
+                      members: g.members.filter((m) => m !== node.id),
+                    }));
+                    if (hit) {
+                      groups = groups.map((g) =>
+                        g.id === hit.id
+                          ? { ...g, members: [...g.members, node.id] }
+                          : g,
+                      );
+                    }
                     commit({
                       ...placed,
                       pos: { ...placed.pos, [node.id]: [p[0], p[1]] },
+                      groups,
                     });
                   } else {
                     setSel({ kind: "node", id: node.id });
