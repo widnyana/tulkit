@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { LabelEditor } from "./LabelEditor";
 import { Palette } from "./Palette";
 import { ARROWS } from "@/lib/mermaid-editor/types";
@@ -87,6 +88,35 @@ export function SequenceCanvas({
     moved: boolean;
     target: number;
   } | null>(null);
+  const panRef = useRef<{
+    startX: number;
+    startY: number;
+    left: number;
+    top: number;
+    moved: boolean;
+    pointerId: number;
+  } | null>(null);
+  const panFrom = useCallback((e: ReactPointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return false;
+    const t = e.target as HTMLElement;
+    if (
+      t.closest(
+        "[data-party-id],input,button,[role='button'],[data-reorder-grip]",
+      )
+    ) {
+      return false;
+    }
+    e.currentTarget.setPointerCapture(e.pointerId);
+    panRef.current = {
+      startX: e.clientX,
+      startY: e.clientY,
+      left: e.currentTarget.scrollLeft,
+      top: e.currentTarget.scrollTop,
+      moved: false,
+      pointerId: e.pointerId,
+    };
+    return true;
+  }, []);
 
   const { parties, messages } = model;
 
@@ -667,7 +697,31 @@ export function SequenceCanvas({
       <div
         ref={canvasRef}
         data-testid="sequence-canvas"
-        className="relative min-h-96 min-w-0 flex-1 overflow-auto rounded-md border border-border bg-indigo-50/40 dark:bg-indigo-950/30"
+        className="relative min-h-96 min-w-0 flex-1 cursor-grab overflow-auto rounded-md border border-border bg-indigo-50/40 active:cursor-grabbing dark:bg-indigo-950/30"
+        onPointerDown={panFrom}
+        onPointerMove={(e) => {
+          const p = panRef.current;
+          if (!p || p.pointerId !== e.pointerId) return;
+          const dx = e.clientX - p.startX;
+          const dy = e.clientY - p.startY;
+          if (Math.abs(dx) >= 3 || Math.abs(dy) >= 3) p.moved = true;
+          e.currentTarget.scrollLeft = p.left - dx;
+          e.currentTarget.scrollTop = p.top - dy;
+        }}
+        onPointerUp={(e) => {
+          const p = panRef.current;
+          panRef.current = null;
+          if (p && e.currentTarget.hasPointerCapture(p.pointerId)) {
+            e.currentTarget.releasePointerCapture(p.pointerId);
+          }
+        }}
+        onPointerCancel={(e) => {
+          const p = panRef.current;
+          panRef.current = null;
+          if (p && e.currentTarget.hasPointerCapture(p.pointerId)) {
+            e.currentTarget.releasePointerCapture(p.pointerId);
+          }
+        }}
       >
         {content}
       </div>

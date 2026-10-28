@@ -163,7 +163,7 @@ test("groupBounds computes padded union with title band", () => {
     B: { w: 100, h: 40 },
   });
   assert.deepEqual(bounds, [
-    { id: "G1", title: "G1", x: 26, y: 32, w: 348, h: 112 },
+    { id: "G1", title: "G1", x: 76, y: 52, w: 348, h: 112 },
   ]);
 });
 

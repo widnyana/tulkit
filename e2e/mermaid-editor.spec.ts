@@ -430,6 +430,18 @@ test.describe("Mermaid editor", () => {
     expect(finalValue).not.toMatch(/A\[/);
   });
 
+  // The page hydrates its textarea after mount (localStorage ?? SAMPLE); a
+  // fill issued before that effect runs gets overwritten, so wait it out.
+  async function fillWhenHydrated(
+    page: import("@playwright/test").Page,
+    value: string,
+  ): Promise<void> {
+    const ta = page.getByLabel("Mermaid Code");
+    await expect(ta).toBeVisible();
+    await expect(ta).not.toBeEmpty();
+    await ta.fill(value);
+  }
+
   test("architecture fixture renders groups in visual mode", async ({
     page,
   }) => {
@@ -438,7 +450,7 @@ test.describe("Mermaid editor", () => {
       path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
       "utf8",
     );
-    await page.getByLabel("Mermaid Code").fill(fixture);
+    await fillWhenHydrated(page, fixture);
     await page.getByRole("tab", { name: "Visual" }).click();
     await expect(
       page.getByTestId("flowchart-canvas"),
@@ -449,13 +461,85 @@ test.describe("Mermaid editor", () => {
     await expect(page.locator("[data-group-id]")).toHaveCount(6);
   });
 
+  test("architecture fixture shows all groups without negative scroll", async ({
+    page,
+  }) => {
+    await page.goto("/mermaid-editor");
+    const fixture = readFileSync(
+      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
+      "utf8",
+    );
+    await fillWhenHydrated(page, fixture);
+    await page.getByRole("tab", { name: "Visual" }).click();
+    const canvas = page.getByTestId("flowchart-canvas");
+    await expect(canvas).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator("[data-group-id]")).toHaveCount(6);
+    const box = await canvas.boundingBox();
+    expect(box).not.toBeNull();
+    expect(box!.height).toBeGreaterThanOrEqual(384);
+    await canvas.evaluate((el) => {
+      el.scrollLeft = 0;
+      el.scrollTop = 0;
+    });
+    const groups = await page.locator("[data-group-id]").all();
+    expect(groups.length).toBe(6);
+    for (const g of groups) {
+      const gb = await g.boundingBox();
+      expect(gb).not.toBeNull();
+      expect(gb!.y).toBeGreaterThanOrEqual(box!.y);
+      expect(gb!.x).toBeGreaterThanOrEqual(box!.x);
+    }
+  });
+
+  test("dragging the canvas background pans without changing the model", async ({
+    page,
+  }) => {
+    await page.goto("/mermaid-editor");
+    const fixture = readFileSync(
+      path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
+      "utf8",
+    );
+    await fillWhenHydrated(page, fixture);
+    await page.getByRole("tab", { name: "Text" }).click();
+    const before = await page.getByLabel("Mermaid Code").inputValue();
+    await page.getByRole("tab", { name: "Visual" }).click();
+    const canvas = page.getByTestId("flowchart-canvas");
+    await expect(canvas).toBeVisible({ timeout: 30_000 });
+    const box = await canvas.boundingBox();
+    expect(box).not.toBeNull();
+    const px = box!.x + 8;
+    const py = box!.y + 8;
+    const tag = await page.evaluate(
+      ([x, y]) => {
+        const el = document.elementFromPoint(x, y);
+        const container = document.querySelector('[data-testid="flowchart-canvas"]');
+        return el && container && (el === container || container.contains(el))
+          ? el.tagName
+          : null;
+      },
+      [px, py],
+    );
+    expect(tag).not.toBeNull();
+    await page.mouse.move(px, py);
+    await page.mouse.down();
+    for (let i = 1; i <= 10; i++) {
+      await page.mouse.move(px - i * 20, py);
+    }
+    await page.mouse.up();
+    const scrollLeft = await canvas.evaluate((el) => el.scrollLeft);
+    expect(scrollLeft).toBeGreaterThan(0);
+    await page.getByRole("tab", { name: "Text" }).click();
+    const after = await page.getByLabel("Mermaid Code").inputValue();
+    expect(after).toBe(before);
+  });
+
   test("deleting a grouped node cleans its class entry", async ({ page }) => {
     await page.goto("/mermaid-editor");
     const fixture = readFileSync(
       path.join(process.cwd(), "lib/mermaid-editor/fixtures/architecture.mmd"),
       "utf8",
     );
-    await page.getByLabel("Mermaid Code").fill(fixture);
+    await fillWhenHydrated(page, fixture);
     await page.getByRole("tab", { name: "Visual" }).click();
     const dlq = page.locator('[data-node-id="DLQ"]');
     await expect(dlq).toBeVisible({ timeout: 30_000 });
