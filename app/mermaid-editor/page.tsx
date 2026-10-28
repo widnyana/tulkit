@@ -6,6 +6,7 @@ import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { toast } from "sonner";
 import { DiagramPicker } from "./components/DiagramPicker";
 import { VisualPanel } from "./components/VisualPanel";
+import { usePreviewEditor } from "./components/PreviewEditor";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DIAGRAM_TEMPLATES } from "@/lib/mermaid-editor/templates";
@@ -51,6 +52,9 @@ export default function MermaidEditorPage() {
 
   const [code, setCode] = useState("");
   const [mode, setMode] = useState<"visual" | "text">("text");
+  const [editing, setEditing] = useState(false);
+  const [renderTick, setRenderTick] = useState(0);
+  const renderNow = useRef(false);
   // Visual-edit history (4.9): text edits clear redo; switching to Visual
   // pushes a checkpoint so undo can return to the text state.
   const [past, setPast] = useState<string[]>([]);
@@ -77,6 +81,27 @@ export default function MermaidEditorPage() {
     },
     [code],
   );
+
+  const commitFromPreview = useCallback(
+    (next: string) => {
+      renderNow.current = true;
+      commitVisual(next);
+    },
+    [commitVisual],
+  );
+
+  const editor = usePreviewEditor({
+    code,
+    enabled: editing,
+    svgHost: previewRef,
+    box: previewBoxRef,
+    renderTick,
+    onCommit: commitFromPreview,
+  });
+
+  useEffect(() => {
+    if (editing && !editor.model) setEditing(false);
+  }, [editing, editor.model]);
 
   const undo = useCallback(() => {
     // Skip stale checkpoints equal to the current code (e.g. re-entering the
@@ -150,6 +175,8 @@ export default function MermaidEditorPage() {
   useEffect(() => {
     if (!loaded) return;
     const seq = ++renderSeq.current;
+    const delay = renderNow.current ? 0 : 400;
+    renderNow.current = false;
     const timer = setTimeout(async () => {
       const host = previewRef.current;
       if (!host) return;
@@ -172,6 +199,7 @@ export default function MermaidEditorPage() {
         });
         const { svg } = await mermaid.render(id, code);
         if (seq !== renderSeq.current) return;
+        setRenderTick((t) => t + 1);
         host.innerHTML = svg;
         const el = host.querySelector("svg");
         if (el) {
@@ -185,7 +213,7 @@ export default function MermaidEditorPage() {
         if (seq !== renderSeq.current) return;
         setError(err instanceof Error ? err.message : "Unknown error");
       }
-    }, 400);
+    }, delay);
     return () => clearTimeout(timer);
   }, [code, loaded, resolvedTheme]);
 
@@ -492,6 +520,17 @@ export default function MermaidEditorPage() {
                 </Button>
                 <Button
                   type="button"
+                  variant={editing ? "default" : "outline"}
+                  size="sm"
+                  aria-pressed={editing}
+                  disabled={!editor.model}
+                  title={editor.reason ?? undefined}
+                  onClick={() => setEditing((v) => !v)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  type="button"
                   variant="outline"
                   size="sm"
                   onClick={enterFullscreen}
@@ -513,19 +552,24 @@ export default function MermaidEditorPage() {
             <section
               ref={previewBoxRef}
               aria-label="Diagram preview"
-              className="relative flex-1 min-h-96 overflow-hidden rounded-md border border-border bg-background cursor-grab active:cursor-grabbing select-none touch-none"
+              className="relative flex-1 min-h-96 overflow-hidden rounded-md border border-border bg-background cursor-grab active:cursor-grabbing select-none touch-none outline-none focus-visible:ring-2 focus-visible:ring-ring [&_[data-tulkit-selected]]:[filter:drop-shadow(0_0_4px_rgb(99_102_241))]"
+              tabIndex={editing ? 0 : undefined}
+              {...editor.boxProps}
               onPointerDown={(e) => {
+                if (editor.onPointerDown(e)) return;
                 e.currentTarget.setPointerCapture(e.pointerId);
                 drag.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
               }}
               onPointerMove={(e) => {
+                if (editor.onPointerMove(e)) return;
                 if (!drag.current) return;
                 setPan({
                   x: e.clientX - drag.current.x,
                   y: e.clientY - drag.current.y,
                 });
               }}
-              onPointerUp={() => {
+              onPointerUp={(e) => {
+                if (editor.onPointerUp(e)) return;
                 drag.current = null;
               }}
             >
@@ -540,9 +584,12 @@ export default function MermaidEditorPage() {
                   transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom / 100})`,
                 }}
               />
+              {editor.overlay}
             </section>
             <p className="text-xs text-muted-foreground mt-2">
-              Drag to pan, scroll or pinch to zoom. Esc exits full screen.
+              {editing
+                ? "Drag from a node to connect, double-click to rename, Delete removes. Drag the background to pan."
+                : "Drag to pan, scroll or pinch to zoom. Esc exits full screen."}
             </p>
 
             <div className="flex flex-wrap gap-3 mt-4">
