@@ -168,6 +168,21 @@ export const tools: Tool[] = [
       "cycling calculator",
     ],
   },
+  {
+    href: "/bike-fit",
+    title: "Bike Fit Check",
+    description:
+      "Estimate saddle height from a side-view webcam or video clip: knee angle at the bottom of the pedal stroke, measured in your browser",
+    category: "Lifestyle",
+    keywords: [
+      "bike fit",
+      "saddle height",
+      "knee angle",
+      "bike fitting",
+      "webcam",
+      "pose estimation",
+    ],
+  },
 ];
 
 export function getTool(href: string): Tool | undefined {

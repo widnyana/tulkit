@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import {
+  Bike,
   Binary,
   Braces,
   Calculator,
@@ -26,6 +27,7 @@ const ICONS: Record<string, ReactNode> = {
   "/base64": <Binary className="size-[18px]" strokeWidth={1.75} />,
   "/mermaid-editor": <Workflow className="size-[18px]" strokeWidth={1.75} />,
   "/tire-pressure": <Gauge className="size-[18px]" strokeWidth={1.75} />,
+  "/bike-fit": <Bike className="size-[18px]" strokeWidth={1.75} />,
 };
 
 export function toolIcon(href: string): ReactNode {
