@@ -1,6 +1,7 @@
 export interface LatLon {
   lat: number;
   lon: number;
+  ele?: number;
 }
 
 export interface Waypoint extends LatLon {

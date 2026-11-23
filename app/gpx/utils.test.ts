@@ -3,7 +3,13 @@ import { describe, it } from "node:test";
 import {
   allPoints,
   computeBounds,
+  distanceMeters,
+  elevationGain,
+  formatDistance,
+  LINE_PALETTE,
+  lineGroups,
   pathEndpoints,
+  totalDistanceMeters,
   trackSegmentCount,
 } from "./utils.ts";
 import type { ParsedGpx } from "./types.ts";
@@ -75,6 +81,173 @@ describe("trackSegmentCount", () => {
   });
 });
 
+describe("distanceMeters", () => {
+  it("measures one degree of latitude as about 111.2 km", () => {
+    const distance = distanceMeters({ lat: 0, lon: 0 }, { lat: 1, lon: 0 });
+    assert.ok(Math.abs(distance - 111195) < 1000);
+  });
+
+  it("is zero for identical points", () => {
+    assert.equal(distanceMeters({ lat: 12, lon: 34 }, { lat: 12, lon: 34 }), 0);
+  });
+
+  it("is zero when any coordinate is not finite", () => {
+    assert.equal(
+      distanceMeters({ lat: Number.NaN, lon: 0 }, { lat: 1, lon: 1 }),
+      0,
+    );
+  });
+});
+
+describe("formatDistance", () => {
+  it("renders metres below a kilometre and kilometres above it", () => {
+    assert.equal(formatDistance(0), "0 m");
+    assert.equal(formatDistance(999), "999 m");
+    assert.equal(formatDistance(1000), "1.0 km");
+    assert.equal(formatDistance(12400), "12.4 km");
+  });
+
+  it("renders zero for negative and non-finite input", () => {
+    assert.equal(formatDistance(-5), "0 m");
+    assert.equal(formatDistance(Number.NaN), "0 m");
+  });
+});
+
+describe("lineGroups", () => {
+  const parsed: ParsedGpx = {
+    ...empty,
+    tracks: [
+      {
+        name: "Climb",
+        segments: [
+          [
+            { lat: 0, lon: 0 },
+            { lat: 1, lon: 0 },
+          ],
+          [],
+        ],
+      },
+      { segments: [[{ lat: 2, lon: 2 }]] },
+    ],
+    routes: [
+      {
+        points: [
+          { lat: 3, lon: 3 },
+          { lat: 4, lon: 4 },
+        ],
+      },
+      { name: "Detour", points: [{ lat: 5, lon: 5 }] },
+    ],
+  };
+
+  it("lists tracks first, then routes, and drops empty geometry", () => {
+    const groups = lineGroups(parsed);
+    assert.equal(groups.length, 3);
+    assert.deepEqual(
+      groups.map((group) => group.id),
+      ["track-0", "track-1", "route-0"],
+    );
+    assert.deepEqual(
+      groups.map((group) => group.kind),
+      ["track", "track", "route"],
+    );
+    assert.equal(groups[0].segments.length, 1);
+  });
+
+  it("assigns palette colours in order", () => {
+    const groups = lineGroups(parsed);
+    assert.deepEqual(
+      groups.map((group) => group.color),
+      LINE_PALETTE.slice(0, groups.length),
+    );
+  });
+
+  it("uses the name when present and per-kind numbering otherwise", () => {
+    const unnamed = lineGroups({
+      ...empty,
+      tracks: [{ segments: [[{ lat: 0, lon: 0 }]] }],
+      routes: [
+        {
+          points: [
+            { lat: 1, lon: 1 },
+            { lat: 2, lon: 2 },
+          ],
+        },
+      ],
+    });
+    assert.deepEqual(
+      unnamed.map((group) => group.label),
+      ["Track 1", "Route 1"],
+    );
+
+    const named = lineGroups(parsed);
+    assert.equal(named[0].label, "Climb");
+    assert.equal(named[1].label, "Track 2");
+    assert.equal(named[2].label, "Route 1");
+  });
+
+  it("sums consecutive point distances within each group", () => {
+    const groups = lineGroups(parsed);
+    assert.ok(groups[0].distanceMeters > 111000);
+    assert.equal(groups[1].distanceMeters, 0);
+    assert.ok(groups[2].distanceMeters > 0);
+    assert.equal(
+      totalDistanceMeters(parsed),
+      groups.reduce((total, group) => total + group.distanceMeters, 0),
+    );
+  });
+});
+
+describe("elevationGain", () => {
+  it("sums only positive deltas", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      tracks: [
+        {
+          segments: [
+            [
+              { lat: 0, lon: 0, ele: 10 },
+              { lat: 0, lon: 1, ele: 25 },
+              { lat: 0, lon: 2, ele: 20 },
+              { lat: 0, lon: 3, ele: 40 },
+            ],
+          ],
+        },
+      ],
+    };
+    assert.equal(elevationGain(parsed), 35);
+  });
+
+  it("restarts the chain after a point without ele", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      tracks: [
+        {
+          segments: [
+            [
+              { lat: 0, lon: 0, ele: 10 },
+              { lat: 0, lon: 1, ele: 20 },
+              { lat: 0, lon: 2 },
+              { lat: 0, lon: 3, ele: 5 },
+              { lat: 0, lon: 4, ele: 15 },
+            ],
+          ],
+        },
+      ],
+    };
+    assert.equal(elevationGain(parsed), 20);
+  });
+
+  it("returns null with fewer than two elevation samples", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      tracks: [{ segments: [[{ lat: 0, lon: 0, ele: 10 }]] }],
+    };
+    assert.equal(elevationGain(parsed), null);
+    assert.equal(elevationGain(empty), null);
+  });
+});
+
 describe("pathEndpoints", () => {
   it("uses the first point of the first segment and the last point of the last", () => {
     const parsed: ParsedGpx = {
@@ -134,6 +307,28 @@ describe("pathEndpoints", () => {
     );
     assert.equal(
       pathEndpoints({ ...empty, routes: [{ points: [{ lat: 1, lon: 1 }] }] }),
+      null,
+    );
+  });
+
+  it("falls back to the first and last waypoint without ele", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      waypoints: [
+        { lat: 1, lon: 1, ele: 5 },
+        { lat: 2, lon: 2 },
+        { lat: 3, lon: 3, ele: 7 },
+      ],
+    };
+    assert.deepEqual(pathEndpoints(parsed), {
+      start: { lat: 1, lon: 1 },
+      end: { lat: 3, lon: 3 },
+    });
+  });
+
+  it("does not use the waypoint fallback with a single waypoint", () => {
+    assert.equal(
+      pathEndpoints({ ...empty, waypoints: [{ lat: 1, lon: 1 }] }),
       null,
     );
   });

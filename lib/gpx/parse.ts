@@ -32,11 +32,19 @@ function nameOf(el: Element | undefined): string | undefined {
 function toLatLon(source: {
   latitude: number;
   longitude: number;
+  elevation?: number | null;
 }): LatLon | undefined {
   if (!Number.isFinite(source.latitude) || !Number.isFinite(source.longitude)) {
     return undefined;
   }
-  return { lat: source.latitude, lon: source.longitude };
+  const point: LatLon = { lat: source.latitude, lon: source.longitude };
+  if (
+    typeof source.elevation === "number" &&
+    Number.isFinite(source.elevation)
+  ) {
+    point.ele = source.elevation;
+  }
+  return point;
 }
 
 export function isParseError(

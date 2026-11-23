@@ -22,6 +22,7 @@ describe("parseGpx — real-world fixtures", () => {
     assert.equal(result.routes.length, 0);
     assert.ok(result.tracks.length > 0);
     assert.ok(result.tracks[0].segments[0].length > 0);
+    assert.ok(Number.isFinite(result.tracks[0].segments[0][0].ele));
   });
 
   it("parses a ViewRanger GPX 1.0 waypoint-only export with a flat <url>", () => {
