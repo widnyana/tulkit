@@ -77,6 +77,15 @@ function markerElement(label: number): HTMLElement {
   return element;
 }
 
+function locationMarkerElement(): HTMLElement {
+  const element = document.createElement("div");
+  element.setAttribute("aria-label", "Selected location");
+  element.style.cssText =
+    "width:18px;height:18px;box-sizing:border-box;border:3px solid #fff;border-radius:50%;background:#ea580c;box-shadow:0 0 0 1px rgba(22,24,29,.45),0 0 0 6px rgba(234,88,12,.25)";
+  element.addEventListener("click", (event) => event.stopPropagation());
+  return element;
+}
+
 export function RoutePlannerMap({
   controlPoints,
   snappedPath,
@@ -93,6 +102,7 @@ export function RoutePlannerMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapInstance | null>(null);
   const markersRef = useRef<MapLibreMarker[]>([]);
+  const locationMarkerRef = useRef<MapLibreMarker | null>(null);
   const markerClassRef = useRef<MarkerConstructor | null>(null);
   const controlPointsRef = useRef<ReadonlyArray<LatLon>>(controlPoints);
   const onMapClickRef = useRef(onMapClick);
@@ -186,6 +196,8 @@ export function RoutePlannerMap({
       cancelled = true;
       for (const marker of markersRef.current) marker.remove();
       markersRef.current = [];
+      locationMarkerRef.current?.remove();
+      locationMarkerRef.current = null;
       mapRef.current = null;
       markerClassRef.current = null;
       map?.remove();
@@ -262,8 +274,17 @@ export function RoutePlannerMap({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (!map || !mapReady || !flyToCenter) return;
+    const Marker = markerClassRef.current;
+    if (!map || !mapReady || !flyToCenter || !Marker) return;
     map.flyTo({ center: [flyToCenter.lon, flyToCenter.lat], zoom: 13 });
+
+    locationMarkerRef.current?.remove();
+    locationMarkerRef.current = new Marker({
+      element: locationMarkerElement(),
+      draggable: false,
+    })
+      .setLngLat([flyToCenter.lon, flyToCenter.lat])
+      .addTo(map);
   }, [flyToCenter, mapReady]);
 
   return (
