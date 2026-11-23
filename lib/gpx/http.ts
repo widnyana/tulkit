@@ -18,11 +18,12 @@ export const DEFAULT_REQUEST_POLICY: RequestPolicy = {
   timeout: Duration.seconds(8),
 };
 
-export function requestJson(
+function requestWith<T>(
   url: string | URL,
   init: RequestInit,
-  policy: RequestPolicy = DEFAULT_REQUEST_POLICY,
-): Effect.Effect<unknown, GpxRequestError> {
+  policy: RequestPolicy,
+  read: (response: Response) => Effect.Effect<T, GpxRequestError>,
+): Effect.Effect<T, GpxRequestError> {
   const external = init.signal;
   return Effect.gen(function* () {
     const response = yield* Effect.tryPromise({
@@ -42,13 +43,7 @@ export function requestJson(
         }),
       );
     }
-    return yield* Effect.tryPromise({
-      try: () => response.json() as Promise<unknown>,
-      catch: () =>
-        new InvalidPayload({
-          message: "The service returned an invalid payload.",
-        }),
-    });
+    return yield* read(response);
   }).pipe(
     Effect.retry({
       schedule: policy.schedule,
@@ -57,5 +52,37 @@ export function requestJson(
         (error._tag === "ServiceRejected" && error.status >= 500),
     }),
     Effect.timeout(policy.timeout),
+  );
+}
+
+export function requestJson(
+  url: string | URL,
+  init: RequestInit,
+  policy: RequestPolicy = DEFAULT_REQUEST_POLICY,
+): Effect.Effect<unknown, GpxRequestError> {
+  return requestWith(url, init, policy, (response) =>
+    Effect.tryPromise({
+      try: () => response.json() as Promise<unknown>,
+      catch: () =>
+        new InvalidPayload({
+          message: "The service returned an invalid payload.",
+        }),
+    }),
+  );
+}
+
+export function requestText(
+  url: string | URL,
+  init: RequestInit,
+  policy: RequestPolicy = DEFAULT_REQUEST_POLICY,
+): Effect.Effect<string, GpxRequestError> {
+  return requestWith(url, init, policy, (response) =>
+    Effect.tryPromise({
+      try: () => response.text(),
+      catch: () =>
+        new InvalidPayload({
+          message: "The service returned an invalid payload.",
+        }),
+    }),
   );
 }
