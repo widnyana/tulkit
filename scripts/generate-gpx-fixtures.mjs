@@ -12,6 +12,8 @@ const REGIONS = {
     base: { lat: -6.87, lon: 107.6 },
     elevation: 900,
     amplitude: 320,
+    stepScale: 1.0,
+    turnScale: 1.0,
     trackName: "Bandung Utara Loop",
     routeName: "Bandung - Lembang - Tangkuban Perahu",
     places: [
@@ -26,6 +28,37 @@ const REGIONS = {
       "Cisarua",
       "Cimahi",
     ],
+    points: {
+      water: [
+        "Mata air Cikole",
+        "Mata air Maribaya",
+        "Sumur Dago",
+        "Mata air Ciater",
+      ],
+      camp: [
+        "Bumi Perkemahan Cikole",
+        "Bumi Perkemahan Ranca Upas",
+        "Bumi Perkemahan Maribaya",
+      ],
+      food: [
+        "Warung Nasi Ibu Imas",
+        "Kedai Kopi Ciumbuleuit",
+        "Saung Kabayan",
+        "Warung Lembang",
+      ],
+      repair: ["Bengkel Cimahi", "Toko Sepeda Dago", "Bengkel Ciater"],
+      hazard: [
+        "Tikungan Tajam Ciater",
+        "Turunan Cikole",
+        "Persimpangan Maribaya",
+      ],
+      medic: ["Pos Medis Lembang", "Pos Medis Ciater"],
+      control: [
+        "Pos Kontrol Cikole",
+        "Pos Kontrol Ciater",
+        "Pos Kontrol Lembang",
+      ],
+    },
   },
   bali: {
     label: "Bali",
@@ -33,6 +66,8 @@ const REGIONS = {
     base: { lat: -8.45, lon: 115.22 },
     elevation: 300,
     amplitude: 420,
+    stepScale: 1.15,
+    turnScale: 0.85,
     trackName: "Denpasar - Ubud Loop",
     routeName: "Denpasar - Kintamani - Ubud",
     places: [
@@ -47,6 +82,37 @@ const REGIONS = {
       "Tampaksiring",
       "Sanur",
     ],
+    points: {
+      water: [
+        "Mata Air Sebatu",
+        "Mata Air Tampaksiring",
+        "Sumur Ubud",
+        "Mata Air Tegenungan",
+      ],
+      camp: [
+        "Bumi Perkemahan Bedugul",
+        "Bumi Perkemahan Kintamani",
+        "Bumi Perkemahan Payangan",
+      ],
+      food: [
+        "Warung Babi Guling Bu Rosa",
+        "Warung Nasi Campur Men Weti",
+        "Kedai Kopi Ubud",
+        "Warung Kintamani",
+      ],
+      repair: ["Bengkel Denpasar", "Toko Sepeda Ubud", "Bengkel Kintamani"],
+      hazard: [
+        "Turunan Kintamani",
+        "Tikungan Tajam Tampaksiring",
+        "Persimpangan Sukawati",
+      ],
+      medic: ["Pos Medis Ubud", "Pos Medis Kintamani"],
+      control: [
+        "Pos Kontrol Ubud",
+        "Pos Kontrol Kintamani",
+        "Pos Kontrol Bedugul",
+      ],
+    },
   },
 };
 
@@ -79,52 +145,105 @@ function escapeXml(value) {
 }
 
 function coordinate(value) {
-  return value.toFixed(5);
+  return value.toFixed(6);
 }
 
 function jitter(rng, amount) {
   return (rng() * 2 - 1) * amount;
 }
 
-function trackPoints(region, rng, count) {
+function namePool(region, category) {
+  const names = region.points?.[category] ?? [];
+  let cursor = 0;
+  return (fallback) =>
+    names.length === 0 ? fallback : names[cursor++ % names.length];
+}
+
+const SYM_CATEGORIES = {
+  Camp: "camp",
+  "Drinking Water": "water",
+  Food: "food",
+  "Bike Repair": "repair",
+  "Danger Area": "hazard",
+  Medic: "medic",
+  Control: "control",
+};
+
+function symNamePool(region) {
+  const pools = {};
+  return (sym, fallback) => {
+    const category = SYM_CATEGORIES[sym];
+    if (!category) return fallback;
+    pools[category] ??= namePool(region, category);
+    return pools[category](fallback);
+  };
+}
+
+function normalizeAngle(angle) {
+  return Math.atan2(Math.sin(angle), Math.cos(angle));
+}
+
+function bearingBetween(fromLat, fromLon, toLat, toLon) {
+  const dLat = toLat - fromLat;
+  const dLon = (toLon - fromLon) * Math.cos((fromLat * Math.PI) / 180);
+  return Math.atan2(dLon, dLat);
+}
+
+function walkPoints(region, rng, count, options = {}) {
+  const stepScale = region.stepScale ?? 1;
+  const turnScale = region.turnScale ?? 1;
+  const target = options.target;
   const points = [];
-  const turns = 0.9 + rng() * 0.5;
-  const radiusLat = 0.085 + rng() * 0.04;
-  const radiusLon = 0.11 + rng() * 0.05;
+  let lat = region.base.lat;
+  let lon = region.base.lon;
+  let ele = region.elevation;
+  let climb = region.elevation;
+  let climbTarget = region.elevation + (rng() * 2 - 1) * region.amplitude;
+  let heading = target
+    ? bearingBetween(lat, lon, target.lat, target.lon)
+    : rng() * Math.PI * 2;
   for (let index = 0; index < count; index += 1) {
-    const t = count === 1 ? 0 : index / (count - 1);
-    const angle = t * Math.PI * 2 * turns;
-    const radius = 0.72 + 0.28 * Math.sin(t * Math.PI * 3);
-    points.push({
-      lat: region.base.lat + radiusLat * radius * Math.sin(angle) + jitter(rng, 0.0006),
-      lon: region.base.lon + radiusLon * radius * Math.cos(angle) + jitter(rng, 0.0006),
-      ele: Math.round(
-        region.elevation + region.amplitude * Math.sin(t * Math.PI * 2.2) + jitter(rng, 6),
-      ),
-    });
+    points.push({ lat, lon, ele: Math.round(ele) });
+    const roll = rng();
+    const turnBound = roll < 0.82 ? 0.06 : roll < 0.97 ? 0.5 : 1.8;
+    heading += (rng() - 0.5) * turnBound * turnScale;
+    if (target) {
+      const bearing = bearingBetween(lat, lon, target.lat, target.lon);
+      heading += normalizeAngle(bearing - heading) * 0.02;
+    }
+    if (Math.abs(lat - region.base.lat) > 0.12) {
+      heading += 0.15 * Math.sign(region.base.lat - lat);
+    }
+    if (Math.abs(lon - region.base.lon) > 0.18) {
+      heading += 0.15 * Math.sign(region.base.lon - lon);
+    }
+    const step = (region.elevation > 500 ? 6 + rng() * 6 : 4 + rng() * 5) * stepScale;
+    lat += (Math.cos(heading) * step) / 111320;
+    lon +=
+      (Math.sin(heading) * step) /
+      (111320 * Math.cos((lat * Math.PI) / 180));
+    if (rng() < 0.004) {
+      climbTarget = region.elevation + (rng() * 2 - 1) * region.amplitude;
+    }
+    climb += (climbTarget - climb) * 0.004;
+    ele = climb + (rng() - 0.5) * 1.5;
+    const limit = region.amplitude * 1.2;
+    ele = Math.min(
+      region.elevation + limit,
+      Math.max(region.elevation - limit, ele),
+    );
   }
   return points;
 }
 
+function trackPoints(region, rng, count) {
+  return walkPoints(region, rng, count);
+}
+
 function routePoints(region, rng, count) {
-  const points = [];
-  for (let index = 0; index < count; index += 1) {
-    const t = count === 1 ? 0 : index / (count - 1);
-    points.push({
-      lat:
-        region.base.lat +
-        0.1 * Math.sin(t * 2.2) +
-        0.06 * t +
-        jitter(rng, 0.0004),
-      lon:
-        region.base.lon +
-        0.16 * t +
-        0.03 * Math.cos(t * 3.1) +
-        jitter(rng, 0.0004),
-      ele: Math.round(region.elevation + region.amplitude * Math.sin(t * Math.PI * 1.4)),
-    });
-  }
-  return points;
+  return walkPoints(region, rng, count, {
+    target: { lat: region.base.lat + 0.1, lon: region.base.lon + 0.16 },
+  });
 }
 
 function trkpt(point) {
@@ -168,15 +287,18 @@ function wpt(point) {
   return `  <wpt ${parts.join(" ")}>${body.join("")}</wpt>`;
 }
 
-function poiPoint(region, rng, name, sym, desc) {
+function pathPoint(points, fraction, rng) {
+  const index = Math.round(fraction * (points.length - 1));
+  const point = points[index];
   return {
-    lat: region.base.lat + jitter(rng, 0.09),
-    lon: region.base.lon + jitter(rng, 0.12),
-    name,
-    ele: Math.round(region.elevation + jitter(rng, region.amplitude)),
-    sym,
-    desc,
+    lat: point.lat + jitter(rng, 0.00004),
+    lon: point.lon + jitter(rng, 0.00004),
+    ele: point.ele,
   };
+}
+
+function stop(region, rng, path, fraction, name, sym, desc) {
+  return { ...pathPoint(path, fraction, rng), name, sym, desc };
 }
 
 function documentXml(options) {
@@ -264,16 +386,24 @@ const SCENARIOS = [
         ["Bakso", 2],
         ["Warteg", 1],
       ];
+      const path = trackPoints(region, rng, 400);
       const points = [];
+      const nameFor = symNamePool(region);
       let index = 0;
       for (const [sym, count] of vocabulary) {
         for (let n = 0; n < count; n += 1) {
           index += 1;
+          const fraction = 0.02 + ((index - 1) * 0.96) / 24;
           points.push(
-            poiPoint(
+            stop(
               region,
               rng,
-              `${region.places[index % region.places.length]} ${index}`,
+              path,
+              fraction,
+              nameFor(
+                sym,
+                `${region.places[index % region.places.length]} ${index}`,
+              ),
               sym,
               `${sym} stop ${index} in ${region.label}`,
             ),
@@ -291,12 +421,15 @@ const SCENARIOS = [
     id: "waypoints-no-sym",
     note: "250 points with names only. Expect one Points group, 200 name labels, list cap note.",
     build(region, rng) {
+      const path = trackPoints(region, rng, 400);
       const points = [];
       for (let index = 1; index <= 250; index += 1) {
         points.push(
-          poiPoint(
+          stop(
             region,
             rng,
+            path,
+            (index - 1) / 249,
             `${region.places[index % region.places.length]} ${index}`,
           ),
         );
@@ -312,11 +445,20 @@ const SCENARIOS = [
     id: "waypoints-links",
     note: "Every point carries a GPX 1.1 link. Expect a popup anchor and a linked list entry.",
     build(region, rng) {
+      const path = trackPoints(region, rng, 400);
       const points = [];
+      const campName = namePool(region, "camp");
       for (let index = 1; index <= 20; index += 1) {
         const place = region.places[index % region.places.length];
         points.push({
-          ...poiPoint(region, rng, `${place} ${index}`, "Camp"),
+          ...stop(
+            region,
+            rng,
+            path,
+            (index - 1) / 19,
+            campName(`${place} ${index}`),
+            "Camp",
+          ),
           link: {
             href: `https://example.com/poi/${region.slug}-${index}`,
             text: `${place} campsite`,
@@ -334,12 +476,15 @@ const SCENARIOS = [
     id: "waypoints-legacy-1.0",
     note: "GPX 1.0 with flat url, urlname, root name and Camp symbols. Expect legacy link parsing and creator row.",
     build(region, rng) {
+      const path = trackPoints(region, rng, 400);
       const points = [];
       for (let index = 1; index <= 12; index += 1) {
         points.push({
-          ...poiPoint(
+          ...stop(
             region,
             rng,
+            path,
+            (index - 1) / 11,
             `${region.places[index % region.places.length]} municipal campsite ${index}`,
             "Camp",
             `Municipal campsite ${index}, ${region.label}`,
@@ -362,14 +507,22 @@ const SCENARIOS = [
     id: "waypoints-and-track",
     note: "Points of interest plus a track. Expect one line group, one POI group, start and finish rows.",
     build(region, rng) {
+      const track = trackPoints(region, rng, 300);
       const points = [];
+      const nameFor = symNamePool(region);
       for (let index = 1; index <= 10; index += 1) {
+        const sym = index % 2 === 0 ? "Camp" : "Drinking Water";
         points.push(
-          poiPoint(
+          stop(
             region,
             rng,
-            `${region.places[index % region.places.length]} ${index}`,
-            index % 2 === 0 ? "Camp" : "Drinking Water",
+            track,
+            (index - 1) / 9,
+            nameFor(
+              sym,
+              `${region.places[index % region.places.length]} ${index}`,
+            ),
+            sym,
           ),
         );
       }
@@ -378,7 +531,7 @@ const SCENARIOS = [
         creator: "QGIS",
         body: `${points
           .map((point) => wpt(point))
-          .join("\n")}\n${trk(region, { segments: [trackPoints(region, rng, 300)] })}`,
+          .join("\n")}\n${trk(region, { segments: [track] })}`,
       });
     },
   },
@@ -530,12 +683,15 @@ const SCENARIOS = [
         )
         .join("\n");
       const controls = [];
+      const controlName = namePool(region, "control");
       for (let index = 0; index < 6; index += 1) {
         controls.push(
-          poiPoint(
+          stop(
             region,
             rng,
-            `Control ${index + 1} - ${region.places[index]}`,
+            points,
+            index / 5,
+            controlName(`Control ${index + 1} - ${region.places[index]}`),
             "Control",
             `Open 0${index + 4}:00 Close 0${index + 5}:30`,
           ),
@@ -566,16 +722,49 @@ const SCENARIOS = [
         )
         .join("\n");
       const stops = [];
-      for (let index = 0; index < 3; index += 1) {
+      const foodName = namePool(region, "food");
+      const waterName = namePool(region, "water");
+      const repairName = namePool(region, "repair");
+      let index = 0;
+      for (let n = 0; n < 3; n += 1) {
         stops.push(
-          poiPoint(region, rng, `Feed station ${index + 1}`, "Food", `Feed station ${index + 1}`),
+          stop(
+            region,
+            rng,
+            points,
+            index / 7,
+            foodName(`Feed station ${n + 1}`),
+            "Food",
+            `Feed station ${n + 1}`,
+          ),
         );
+        index += 1;
       }
-      for (let index = 0; index < 3; index += 1) {
-        stops.push(poiPoint(region, rng, `Water ${index + 1}`, "Drinking Water"));
+      for (let n = 0; n < 3; n += 1) {
+        stops.push(
+          stop(
+            region,
+            rng,
+            points,
+            index / 7,
+            waterName(`Water ${n + 1}`),
+            "Drinking Water",
+          ),
+        );
+        index += 1;
       }
-      for (let index = 0; index < 2; index += 1) {
-        stops.push(poiPoint(region, rng, `Mechanic ${index + 1}`, "Bike Repair"));
+      for (let n = 0; n < 2; n += 1) {
+        stops.push(
+          stop(
+            region,
+            rng,
+            points,
+            index / 7,
+            repairName(`Mechanic ${n + 1}`),
+            "Bike Repair",
+          ),
+        );
+        index += 1;
       }
       return documentXml({
         version: "1.1",
@@ -594,30 +783,54 @@ const SCENARIOS = [
     id: "bikepacking-unsupported",
     note: "Unsupported bikepacking track: water, camp, resupply and summit points. Expect four POI groups including an unrecognised Resupply group.",
     build(region, rng) {
+      const track = trackPoints(region, rng, 600);
       const stops = [];
-      for (let index = 0; index < 4; index += 1) {
+      const waterName = namePool(region, "water");
+      const campName = namePool(region, "camp");
+      let index = 0;
+      for (let n = 0; n < 4; n += 1) {
         stops.push(
-          poiPoint(region, rng, `${region.places[index]} water`, "Drinking Water"),
+          stop(
+            region,
+            rng,
+            track,
+            index / 10,
+            waterName(`${region.places[n]} water`),
+            "Drinking Water",
+          ),
         );
+        index += 1;
       }
-      for (let index = 0; index < 3; index += 1) {
-        stops.push(poiPoint(region, rng, `${region.places[index + 3]} camp`, "Camp"));
-      }
-      for (let index = 0; index < 2; index += 1) {
+      for (let n = 0; n < 3; n += 1) {
         stops.push(
-          poiPoint(region, rng, `${region.places[index + 5]} resupply`, "Resupply"),
+          stop(
+            region,
+            rng,
+            track,
+            index / 10,
+            campName(`${region.places[n + 3]} camp`),
+            "Camp",
+          ),
         );
+        index += 1;
       }
-      for (let index = 0; index < 2; index += 1) {
+      for (let n = 0; n < 2; n += 1) {
         stops.push(
-          poiPoint(region, rng, `${region.places[index + 7]} summit`, "Summit"),
+          stop(region, rng, track, index / 10, `${region.places[n + 5]} resupply`, "Resupply"),
         );
+        index += 1;
+      }
+      for (let n = 0; n < 2; n += 1) {
+        stops.push(
+          stop(region, rng, track, index / 10, `${region.places[n + 7]} summit`, "Summit"),
+        );
+        index += 1;
       }
       return documentXml({
         version: "1.1",
         creator: "bikepacking.com",
         body: `${stops.map((point) => wpt(point)).join("\n")}\n${trk(region, {
-          segments: [trackPoints(region, rng, 600)],
+          segments: [track],
           desc: `Unsupported ride. No outside help. Resupply at warungs in ${region.label}.`,
         })}`,
       });
@@ -627,21 +840,35 @@ const SCENARIOS = [
     id: "mtb-technical",
     note: "Technical MTB loop with hazard, viewpoint and summit points. Expect three POI groups and a track brief.",
     build(region, rng) {
+      const track = trackPoints(region, rng, 400);
       const stops = [];
-      for (let index = 0; index < 3; index += 1) {
-        stops.push(poiPoint(region, rng, `Hazard ${index + 1}`, "Danger Area"));
-      }
-      for (let index = 0; index < 2; index += 1) {
+      const hazardName = namePool(region, "hazard");
+      let index = 0;
+      for (let n = 0; n < 3; n += 1) {
         stops.push(
-          poiPoint(region, rng, `${region.places[index]} viewpoint`, "Viewpoint"),
+          stop(
+            region,
+            rng,
+            track,
+            index / 5,
+            hazardName(`Hazard ${n + 1}`),
+            "Danger Area",
+          ),
         );
+        index += 1;
       }
-      stops.push(poiPoint(region, rng, `${region.places[2]} summit`, "Summit"));
+      for (let n = 0; n < 2; n += 1) {
+        stops.push(
+          stop(region, rng, track, index / 5, `${region.places[n]} viewpoint`, "Viewpoint"),
+        );
+        index += 1;
+      }
+      stops.push(stop(region, rng, track, index / 5, `${region.places[2]} summit`, "Summit"));
       return documentXml({
         version: "1.1",
         creator: "Trailforks",
         body: `${stops.map((point) => wpt(point)).join("\n")}\n${trk(region, {
-          segments: [trackPoints(region, rng, 400)],
+          segments: [track],
           desc: `Technical singletrack loop in ${region.label}.`,
         })}`,
       });
@@ -768,13 +995,16 @@ const SCENARIOS = [
     id: "single-waypoint",
     note: "One waypoint and nothing else. Expect a single marker and the waypoint fallback label.",
     build(region, rng) {
+      const path = trackPoints(region, rng, 200);
       return documentXml({
         version: "1.1",
         creator: "organicmaps",
         body: wpt(
-          poiPoint(
+          stop(
             region,
             rng,
+            path,
+            0.5,
             `${region.places[0]} meeting point`,
             "Viewpoint",
           ),
@@ -832,10 +1062,13 @@ const SCENARIOS = [
         "Warnet",
         "Bengkel",
       ];
+      const path = trackPoints(region, rng, 400);
       const points = symbols.map((sym, index) =>
-        poiPoint(
+        stop(
           region,
           rng,
+          path,
+          index / 8,
           `${region.places[index % region.places.length]} ${sym.toLowerCase()}`,
           sym,
         ),
@@ -851,7 +1084,8 @@ const SCENARIOS = [
     id: "full-legend",
     note: "Route with twelve marks and six waypoint categories: Camp, Water, Food, Repair, Medic and Hazard. Expect every legend row plus start and finish.",
     build(region, rng) {
-      const body = routePoints(region, rng, 120)
+      const points = routePoints(region, rng, 120);
+      const body = points
         .map((point, index) =>
           index % 10 === 0
             ? rtept(
@@ -862,35 +1096,94 @@ const SCENARIOS = [
         )
         .join("\n");
       const stops = [];
-      for (let index = 0; index < 2; index += 1) {
+      const names = {
+        camp: namePool(region, "camp"),
+        water: namePool(region, "water"),
+        food: namePool(region, "food"),
+        repair: namePool(region, "repair"),
+        medic: namePool(region, "medic"),
+        hazard: namePool(region, "hazard"),
+      };
+      let index = 0;
+      for (let n = 0; n < 2; n += 1) {
         stops.push(
-          poiPoint(region, rng, `${region.places[index]} camp`, "Camp", `Camp ${index + 1}`),
+          stop(
+            region,
+            rng,
+            points,
+            index / 12,
+            names.camp(`${region.places[n]} camp`),
+            "Camp",
+            `Camp ${n + 1}`,
+          ),
         );
+        index += 1;
       }
-      for (let index = 0; index < 3; index += 1) {
+      for (let n = 0; n < 3; n += 1) {
         stops.push(
-          poiPoint(region, rng, `${region.places[index + 2]} water`, "Drinking Water"),
+          stop(
+            region,
+            rng,
+            points,
+            index / 12,
+            names.water(`${region.places[n + 2]} water`),
+            "Drinking Water",
+          ),
         );
+        index += 1;
       }
-      for (let index = 0; index < 2; index += 1) {
+      for (let n = 0; n < 2; n += 1) {
         stops.push(
-          poiPoint(region, rng, `Feed station ${index + 1}`, "Food", `Feed ${index + 1}`),
+          stop(
+            region,
+            rng,
+            points,
+            index / 12,
+            names.food(`Feed station ${n + 1}`),
+            "Food",
+            `Feed ${n + 1}`,
+          ),
         );
+        index += 1;
       }
-      for (let index = 0; index < 2; index += 1) {
+      for (let n = 0; n < 2; n += 1) {
         stops.push(
-          poiPoint(region, rng, `Mechanic ${index + 1}`, "Bike Repair"),
+          stop(
+            region,
+            rng,
+            points,
+            index / 12,
+            names.repair(`Mechanic ${n + 1}`),
+            "Bike Repair",
+          ),
         );
+        index += 1;
       }
-      for (let index = 0; index < 2; index += 1) {
+      for (let n = 0; n < 2; n += 1) {
         stops.push(
-          poiPoint(region, rng, `Medic ${index + 1}`, "Medic"),
+          stop(
+            region,
+            rng,
+            points,
+            index / 12,
+            names.medic(`Medic ${n + 1}`),
+            "Medic",
+          ),
         );
+        index += 1;
       }
-      for (let index = 0; index < 2; index += 1) {
+      for (let n = 0; n < 2; n += 1) {
         stops.push(
-          poiPoint(region, rng, `Hazard ${index + 1}`, "Danger Area"),
+          stop(
+            region,
+            rng,
+            points,
+            index / 12,
+            names.hazard(`Hazard ${n + 1}`),
+            "Danger Area",
+          ),
         );
+        index += 1;
       }
       return documentXml({
         version: "1.1",

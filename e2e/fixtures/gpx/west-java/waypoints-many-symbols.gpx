@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="organicmaps" xmlns="http://www.topografix.com/GPX/1/1">
-  <wpt lat="-6.88277" lon="107.70934"><ele>988</ele><name>Lembang bakso</name><sym>Bakso</sym></wpt>
-  <wpt lat="-6.87341" lon="107.58967"><ele>1180</ele><name>Cikole warteg</name><sym>Warteg</sym></wpt>
-  <wpt lat="-6.80175" lon="107.62480"><ele>958</ele><name>Tangkuban Perahu sate</name><sym>Sate</sym></wpt>
-  <wpt lat="-6.90126" lon="107.68501"><ele>1170</ele><name>Ciater kopi</name><sym>Kopi</sym></wpt>
-  <wpt lat="-6.95982" lon="107.71212"><ele>1154</ele><name>Dago bakery</name><sym>Bakery</sym></wpt>
-  <wpt lat="-6.93705" lon="107.48246"><ele>1154</ele><name>Pasteur laundry</name><sym>Laundry</sym></wpt>
-  <wpt lat="-6.90582" lon="107.56039"><ele>1192</ele><name>Ciumbuleuit homestay</name><sym>Homestay</sym></wpt>
-  <wpt lat="-6.85910" lon="107.57938"><ele>997</ele><name>Maribaya warnet</name><sym>Warnet</sym></wpt>
-  <wpt lat="-6.94386" lon="107.69516"><ele>784</ele><name>Cisarua bengkel</name><sym>Bengkel</sym></wpt>
+  <wpt lat="-6.869976" lon="107.600007"><ele>900</ele><name>Lembang bakso</name><sym>Bakso</sym></wpt>
+  <wpt lat="-6.866944" lon="107.597548"><ele>892</ele><name>Cikole warteg</name><sym>Warteg</sym></wpt>
+  <wpt lat="-6.864652" lon="107.594318"><ele>884</ele><name>Tangkuban Perahu sate</name><sym>Sate</sym></wpt>
+  <wpt lat="-6.861635" lon="107.591657"><ele>880</ele><name>Ciater kopi</name><sym>Kopi</sym></wpt>
+  <wpt lat="-6.858025" lon="107.589779"><ele>875</ele><name>Dago bakery</name><sym>Bakery</sym></wpt>
+  <wpt lat="-6.855784" lon="107.592673"><ele>913</ele><name>Pasteur laundry</name><sym>Laundry</sym></wpt>
+  <wpt lat="-6.856101" lon="107.596364"><ele>952</ele><name>Ciumbuleuit homestay</name><sym>Homestay</sym></wpt>
+  <wpt lat="-6.856738" lon="107.593077"><ele>984</ele><name>Maribaya warnet</name><sym>Warnet</sym></wpt>
+  <wpt lat="-6.854647" lon="107.589757"><ele>1009</ele><name>Cisarua bengkel</name><sym>Bengkel</sym></wpt>
 </gpx>

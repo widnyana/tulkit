@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="ViewRanger" xmlns="http://www.topografix.com/GPX/1/1">
-  <wpt lat="-8.40275" lon="115.12939"><ele>207</ele><name>Ubud 1</name><sym>Camp</sym><link href="https://example.com/poi/bali-1"><text>Ubud campsite</text></link></wpt>
-  <wpt lat="-8.42920" lon="115.28044"><ele>608</ele><name>Kintamani 2</name><sym>Camp</sym><link href="https://example.com/poi/bali-2"><text>Kintamani campsite</text></link></wpt>
-  <wpt lat="-8.46911" lon="115.11638"><ele>16</ele><name>Bedugul 3</name><sym>Camp</sym><link href="https://example.com/poi/bali-3"><text>Bedugul campsite</text></link></wpt>
-  <wpt lat="-8.48629" lon="115.25821"><ele>-67</ele><name>Tegallalang 4</name><sym>Camp</sym><link href="https://example.com/poi/bali-4"><text>Tegallalang campsite</text></link></wpt>
-  <wpt lat="-8.40888" lon="115.21693"><ele>79</ele><name>Sukawati 5</name><sym>Camp</sym><link href="https://example.com/poi/bali-5"><text>Sukawati campsite</text></link></wpt>
-  <wpt lat="-8.50671" lon="115.26363"><ele>-109</ele><name>Bangli 6</name><sym>Camp</sym><link href="https://example.com/poi/bali-6"><text>Bangli campsite</text></link></wpt>
-  <wpt lat="-8.50921" lon="115.32347"><ele>510</ele><name>Payangan 7</name><sym>Camp</sym><link href="https://example.com/poi/bali-7"><text>Payangan campsite</text></link></wpt>
-  <wpt lat="-8.51501" lon="115.17715"><ele>569</ele><name>Tampaksiring 8</name><sym>Camp</sym><link href="https://example.com/poi/bali-8"><text>Tampaksiring campsite</text></link></wpt>
-  <wpt lat="-8.38036" lon="115.13294"><ele>618</ele><name>Sanur 9</name><sym>Camp</sym><link href="https://example.com/poi/bali-9"><text>Sanur campsite</text></link></wpt>
-  <wpt lat="-8.38919" lon="115.22994"><ele>-22</ele><name>Denpasar 10</name><sym>Camp</sym><link href="https://example.com/poi/bali-10"><text>Denpasar campsite</text></link></wpt>
-  <wpt lat="-8.46799" lon="115.18330"><ele>-67</ele><name>Ubud 11</name><sym>Camp</sym><link href="https://example.com/poi/bali-11"><text>Ubud campsite</text></link></wpt>
-  <wpt lat="-8.41415" lon="115.25883"><ele>149</ele><name>Kintamani 12</name><sym>Camp</sym><link href="https://example.com/poi/bali-12"><text>Kintamani campsite</text></link></wpt>
-  <wpt lat="-8.37714" lon="115.22926"><ele>129</ele><name>Bedugul 13</name><sym>Camp</sym><link href="https://example.com/poi/bali-13"><text>Bedugul campsite</text></link></wpt>
-  <wpt lat="-8.48702" lon="115.20997"><ele>363</ele><name>Tegallalang 14</name><sym>Camp</sym><link href="https://example.com/poi/bali-14"><text>Tegallalang campsite</text></link></wpt>
-  <wpt lat="-8.46595" lon="115.30974"><ele>92</ele><name>Sukawati 15</name><sym>Camp</sym><link href="https://example.com/poi/bali-15"><text>Sukawati campsite</text></link></wpt>
-  <wpt lat="-8.41947" lon="115.18734"><ele>424</ele><name>Bangli 16</name><sym>Camp</sym><link href="https://example.com/poi/bali-16"><text>Bangli campsite</text></link></wpt>
-  <wpt lat="-8.51461" lon="115.22293"><ele>461</ele><name>Payangan 17</name><sym>Camp</sym><link href="https://example.com/poi/bali-17"><text>Payangan campsite</text></link></wpt>
-  <wpt lat="-8.43422" lon="115.22839"><ele>216</ele><name>Tampaksiring 18</name><sym>Camp</sym><link href="https://example.com/poi/bali-18"><text>Tampaksiring campsite</text></link></wpt>
-  <wpt lat="-8.52169" lon="115.20543"><ele>501</ele><name>Sanur 19</name><sym>Camp</sym><link href="https://example.com/poi/bali-19"><text>Sanur campsite</text></link></wpt>
-  <wpt lat="-8.36494" lon="115.23353"><ele>663</ele><name>Denpasar 20</name><sym>Camp</sym><link href="https://example.com/poi/bali-20"><text>Denpasar campsite</text></link></wpt>
+  <wpt lat="-8.449972" lon="115.219998"><ele>300</ele><name>Bumi Perkemahan Bedugul</name><sym>Camp</sym><link href="https://example.com/poi/bali-1"><text>Ubud campsite</text></link></wpt>
+  <wpt lat="-8.449042" lon="115.221202"><ele>318</ele><name>Bumi Perkemahan Kintamani</name><sym>Camp</sym><link href="https://example.com/poi/bali-2"><text>Kintamani campsite</text></link></wpt>
+  <wpt lat="-8.448324" lon="115.222409"><ele>335</ele><name>Bumi Perkemahan Payangan</name><sym>Camp</sym><link href="https://example.com/poi/bali-3"><text>Bedugul campsite</text></link></wpt>
+  <wpt lat="-8.447384" lon="115.223494"><ele>349</ele><name>Bumi Perkemahan Bedugul</name><sym>Camp</sym><link href="https://example.com/poi/bali-4"><text>Tegallalang campsite</text></link></wpt>
+  <wpt lat="-8.446422" lon="115.224601"><ele>364</ele><name>Bumi Perkemahan Kintamani</name><sym>Camp</sym><link href="https://example.com/poi/bali-5"><text>Sukawati campsite</text></link></wpt>
+  <wpt lat="-8.446405" lon="115.225997"><ele>375</ele><name>Bumi Perkemahan Payangan</name><sym>Camp</sym><link href="https://example.com/poi/bali-6"><text>Bangli campsite</text></link></wpt>
+  <wpt lat="-8.446967" lon="115.227264"><ele>360</ele><name>Bumi Perkemahan Bedugul</name><sym>Camp</sym><link href="https://example.com/poi/bali-7"><text>Payangan campsite</text></link></wpt>
+  <wpt lat="-8.447589" lon="115.228523"><ele>333</ele><name>Bumi Perkemahan Kintamani</name><sym>Camp</sym><link href="https://example.com/poi/bali-8"><text>Tampaksiring campsite</text></link></wpt>
+  <wpt lat="-8.448441" lon="115.229534"><ele>309</ele><name>Bumi Perkemahan Payangan</name><sym>Camp</sym><link href="https://example.com/poi/bali-9"><text>Sanur campsite</text></link></wpt>
+  <wpt lat="-8.449620" lon="115.230453"><ele>287</ele><name>Bumi Perkemahan Bedugul</name><sym>Camp</sym><link href="https://example.com/poi/bali-10"><text>Denpasar campsite</text></link></wpt>
+  <wpt lat="-8.450942" lon="115.230904"><ele>267</ele><name>Bumi Perkemahan Kintamani</name><sym>Camp</sym><link href="https://example.com/poi/bali-11"><text>Ubud campsite</text></link></wpt>
+  <wpt lat="-8.451735" lon="115.232068"><ele>249</ele><name>Bumi Perkemahan Payangan</name><sym>Camp</sym><link href="https://example.com/poi/bali-12"><text>Kintamani campsite</text></link></wpt>
+  <wpt lat="-8.451761" lon="115.233491"><ele>232</ele><name>Bumi Perkemahan Bedugul</name><sym>Camp</sym><link href="https://example.com/poi/bali-13"><text>Bedugul campsite</text></link></wpt>
+  <wpt lat="-8.451644" lon="115.234791"><ele>216</ele><name>Bumi Perkemahan Kintamani</name><sym>Camp</sym><link href="https://example.com/poi/bali-14"><text>Tegallalang campsite</text></link></wpt>
+  <wpt lat="-8.451578" lon="115.236182"><ele>202</ele><name>Bumi Perkemahan Payangan</name><sym>Camp</sym><link href="https://example.com/poi/bali-15"><text>Sukawati campsite</text></link></wpt>
+  <wpt lat="-8.451287" lon="115.237446"><ele>189</ele><name>Bumi Perkemahan Bedugul</name><sym>Camp</sym><link href="https://example.com/poi/bali-16"><text>Bangli campsite</text></link></wpt>
+  <wpt lat="-8.451283" lon="115.238898"><ele>177</ele><name>Bumi Perkemahan Kintamani</name><sym>Camp</sym><link href="https://example.com/poi/bali-17"><text>Payangan campsite</text></link></wpt>
+  <wpt lat="-8.451399" lon="115.240307"><ele>165</ele><name>Bumi Perkemahan Payangan</name><sym>Camp</sym><link href="https://example.com/poi/bali-18"><text>Tampaksiring campsite</text></link></wpt>
+  <wpt lat="-8.451923" lon="115.241597"><ele>154</ele><name>Bumi Perkemahan Bedugul</name><sym>Camp</sym><link href="https://example.com/poi/bali-19"><text>Sanur campsite</text></link></wpt>
+  <wpt lat="-8.452698" lon="115.242736"><ele>145</ele><name>Bumi Perkemahan Kintamani</name><sym>Camp</sym><link href="https://example.com/poi/bali-20"><text>Denpasar campsite</text></link></wpt>
 </gpx>

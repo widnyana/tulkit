@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="organicmaps" xmlns="http://www.topografix.com/GPX/1/1">
-  <wpt lat="-8.37037" lon="115.25713"><ele>490</ele><name>Denpasar bakso</name><sym>Bakso</sym></wpt>
-  <wpt lat="-8.46529" lon="115.25216"><ele>8</ele><name>Ubud warteg</name><sym>Warteg</sym></wpt>
-  <wpt lat="-8.46895" lon="115.23858"><ele>159</ele><name>Kintamani sate</name><sym>Sate</sym></wpt>
-  <wpt lat="-8.42784" lon="115.13806"><ele>187</ele><name>Bedugul kopi</name><sym>Kopi</sym></wpt>
-  <wpt lat="-8.50387" lon="115.31197"><ele>476</ele><name>Tegallalang bakery</name><sym>Bakery</sym></wpt>
-  <wpt lat="-8.49747" lon="115.18545"><ele>675</ele><name>Sukawati laundry</name><sym>Laundry</sym></wpt>
-  <wpt lat="-8.47169" lon="115.28884"><ele>690</ele><name>Bangli homestay</name><sym>Homestay</sym></wpt>
-  <wpt lat="-8.52925" lon="115.33506"><ele>361</ele><name>Payangan warnet</name><sym>Warnet</sym></wpt>
-  <wpt lat="-8.39913" lon="115.24154"><ele>498</ele><name>Tampaksiring bengkel</name><sym>Bengkel</sym></wpt>
+  <wpt lat="-8.449993" lon="115.219978"><ele>300</ele><name>Denpasar bakso</name><sym>Bakso</sym></wpt>
+  <wpt lat="-8.450132" lon="115.217026"><ele>367</ele><name>Ubud warteg</name><sym>Warteg</sym></wpt>
+  <wpt lat="-8.446967" lon="115.217258"><ele>422</ele><name>Kintamani sate</name><sym>Sate</sym></wpt>
+  <wpt lat="-8.444324" lon="115.215118"><ele>468</ele><name>Bedugul kopi</name><sym>Kopi</sym></wpt>
+  <wpt lat="-8.442713" lon="115.212472"><ele>462</ele><name>Tegallalang bakery</name><sym>Bakery</sym></wpt>
+  <wpt lat="-8.440375" lon="115.210133"><ele>435</ele><name>Sukawati laundry</name><sym>Laundry</sym></wpt>
+  <wpt lat="-8.437837" lon="115.208378"><ele>425</ele><name>Bangli homestay</name><sym>Homestay</sym></wpt>
+  <wpt lat="-8.434688" lon="115.208986"><ele>363</ele><name>Payangan warnet</name><sym>Warnet</sym></wpt>
+  <wpt lat="-8.432976" lon="115.211797"><ele>279</ele><name>Tampaksiring bengkel</name><sym>Bengkel</sym></wpt>
 </gpx>

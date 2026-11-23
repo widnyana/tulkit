@@ -2,45 +2,45 @@
 <gpx version="1.1" creator="BaseCamp" xmlns="http://www.topografix.com/GPX/1/1">
   <rte>
     <name>Bandung - Lembang - Tangkuban Perahu</name>
-    <rtept lat="-6.86978" lon="107.63006"><name>Lembang stop 1</name><sym>Viewpoint</sym></rtept>
-    <rtept lat="-6.86302" lon="107.63432"><name>Cikole stop 2</name></rtept>
-    <rtept lat="-6.85576" lon="107.63808"><name>Tangkuban Perahu stop 3</name></rtept>
-    <rtept lat="-6.84864" lon="107.64146"><name>Ciater stop 4</name></rtept>
-    <rtept lat="-6.84163" lon="107.64497"><name>Dago stop 5</name></rtept>
-    <rtept lat="-6.83452" lon="107.64854"><name>Pasteur stop 6</name></rtept>
-    <rtept lat="-6.82746" lon="107.65106"><name>Ciumbuleuit stop 7</name></rtept>
-    <rtept lat="-6.82114" lon="107.65413"><name>Maribaya stop 8</name><sym>Drinking Water</sym></rtept>
-    <rtept lat="-6.81389" lon="107.65668"><name>Cisarua stop 9</name></rtept>
-    <rtept lat="-6.80723" lon="107.65923"><name>Cimahi stop 10</name></rtept>
-    <rtept lat="-6.80091" lon="107.66197"><name>Lembang stop 11</name></rtept>
-    <rtept lat="-6.79520" lon="107.66418"><name>Cikole stop 12</name></rtept>
-    <rtept lat="-6.78926" lon="107.66667"><name>Tangkuban Perahu stop 13</name></rtept>
-    <rtept lat="-6.78319" lon="107.66869"><name>Ciater stop 14</name></rtept>
-    <rtept lat="-6.77737" lon="107.67084"><name>Dago stop 15</name><sym>Summit</sym></rtept>
-    <rtept lat="-6.77172" lon="107.67276"><name>Pasteur stop 16</name></rtept>
-    <rtept lat="-6.76721" lon="107.67426"><name>Ciumbuleuit stop 17</name></rtept>
-    <rtept lat="-6.76233" lon="107.67598"><name>Maribaya stop 18</name></rtept>
-    <rtept lat="-6.75726" lon="107.67810"><name>Cisarua stop 19</name></rtept>
-    <rtept lat="-6.75291" lon="107.67959"><name>Cimahi stop 20</name></rtept>
-    <rtept lat="-6.74887" lon="107.68112"><name>Lembang stop 21</name></rtept>
-    <rtept lat="-6.74500" lon="107.68301"><name>Cikole stop 22</name><sym>Viewpoint</sym></rtept>
-    <rtept lat="-6.74129" lon="107.68523"><name>Tangkuban Perahu stop 23</name></rtept>
-    <rtept lat="-6.73858" lon="107.68704"><name>Ciater stop 24</name></rtept>
-    <rtept lat="-6.73565" lon="107.68830"><name>Dago stop 25</name></rtept>
-    <rtept lat="-6.73281" lon="107.69073"><name>Pasteur stop 26</name></rtept>
-    <rtept lat="-6.73070" lon="107.69218"><name>Ciumbuleuit stop 27</name></rtept>
-    <rtept lat="-6.72876" lon="107.69440"><name>Maribaya stop 28</name></rtept>
-    <rtept lat="-6.72671" lon="107.69683"><name>Cisarua stop 29</name><sym>Drinking Water</sym></rtept>
-    <rtept lat="-6.72532" lon="107.69913"><name>Cimahi stop 30</name></rtept>
-    <rtept lat="-6.72482" lon="107.70108"><name>Lembang stop 31</name></rtept>
-    <rtept lat="-6.72409" lon="107.70358"><name>Cikole stop 32</name></rtept>
-    <rtept lat="-6.72348" lon="107.70643"><name>Tangkuban Perahu stop 33</name></rtept>
-    <rtept lat="-6.72364" lon="107.70927"><name>Ciater stop 34</name></rtept>
-    <rtept lat="-6.72334" lon="107.71240"><name>Dago stop 35</name></rtept>
-    <rtept lat="-6.72413" lon="107.71573"><name>Pasteur stop 36</name><sym>Summit</sym></rtept>
-    <rtept lat="-6.72539" lon="107.71882"><name>Ciumbuleuit stop 37</name></rtept>
-    <rtept lat="-6.72633" lon="107.72205"><name>Maribaya stop 38</name></rtept>
-    <rtept lat="-6.72784" lon="107.72601"><name>Cisarua stop 39</name></rtept>
-    <rtept lat="-6.72901" lon="107.73027"><name>Cimahi stop 40</name></rtept>
+    <rtept lat="-6.870000" lon="107.600000"><name>Lembang stop 1</name><sym>Viewpoint</sym></rtept>
+    <rtept lat="-6.869944" lon="107.600086"><name>Cikole stop 2</name></rtept>
+    <rtept lat="-6.869906" lon="107.600145"><name>Tangkuban Perahu stop 3</name></rtept>
+    <rtept lat="-6.869874" lon="107.600204"><name>Ciater stop 4</name></rtept>
+    <rtept lat="-6.869822" lon="107.600292"><name>Dago stop 5</name></rtept>
+    <rtept lat="-6.869786" lon="107.600351"><name>Pasteur stop 6</name></rtept>
+    <rtept lat="-6.869741" lon="107.600424"><name>Ciumbuleuit stop 7</name></rtept>
+    <rtept lat="-6.869705" lon="107.600480"><name>Maribaya stop 8</name><sym>Drinking Water</sym></rtept>
+    <rtept lat="-6.869659" lon="107.600551"><name>Cisarua stop 9</name></rtept>
+    <rtept lat="-6.869623" lon="107.600609"><name>Cimahi stop 10</name></rtept>
+    <rtept lat="-6.869589" lon="107.600665"><name>Lembang stop 11</name></rtept>
+    <rtept lat="-6.869549" lon="107.600719"><name>Cikole stop 12</name></rtept>
+    <rtept lat="-6.869491" lon="107.600800"><name>Tangkuban Perahu stop 13</name></rtept>
+    <rtept lat="-6.869453" lon="107.600854"><name>Ciater stop 14</name></rtept>
+    <rtept lat="-6.869392" lon="107.600936"><name>Dago stop 15</name><sym>Summit</sym></rtept>
+    <rtept lat="-6.869343" lon="107.600998"><name>Pasteur stop 16</name></rtept>
+    <rtept lat="-6.869287" lon="107.601069"><name>Ciumbuleuit stop 17</name></rtept>
+    <rtept lat="-6.869239" lon="107.601134"><name>Maribaya stop 18</name></rtept>
+    <rtept lat="-6.869204" lon="107.601186"><name>Cisarua stop 19</name></rtept>
+    <rtept lat="-6.869143" lon="107.601274"><name>Cimahi stop 20</name></rtept>
+    <rtept lat="-6.869102" lon="107.601337"><name>Lembang stop 21</name></rtept>
+    <rtept lat="-6.869067" lon="107.601391"><name>Cikole stop 22</name><sym>Viewpoint</sym></rtept>
+    <rtept lat="-6.869034" lon="107.601446"><name>Tangkuban Perahu stop 23</name></rtept>
+    <rtept lat="-6.869003" lon="107.601498"><name>Ciater stop 24</name></rtept>
+    <rtept lat="-6.868961" lon="107.601567"><name>Dago stop 25</name></rtept>
+    <rtept lat="-6.868924" lon="107.601628"><name>Pasteur stop 26</name></rtept>
+    <rtept lat="-6.868885" lon="107.601705"><name>Ciumbuleuit stop 27</name></rtept>
+    <rtept lat="-6.868847" lon="107.601782"><name>Maribaya stop 28</name></rtept>
+    <rtept lat="-6.868821" lon="107.601832"><name>Cisarua stop 29</name><sym>Drinking Water</sym></rtept>
+    <rtept lat="-6.868785" lon="107.601900"><name>Cimahi stop 30</name></rtept>
+    <rtept lat="-6.868741" lon="107.601991"><name>Lembang stop 31</name></rtept>
+    <rtept lat="-6.868710" lon="107.602059"><name>Cikole stop 32</name></rtept>
+    <rtept lat="-6.868672" lon="107.602145"><name>Tangkuban Perahu stop 33</name></rtept>
+    <rtept lat="-6.868632" lon="107.602237"><name>Ciater stop 34</name></rtept>
+    <rtept lat="-6.868609" lon="107.602321"><name>Dago stop 35</name></rtept>
+    <rtept lat="-6.868589" lon="107.602385"><name>Pasteur stop 36</name><sym>Summit</sym></rtept>
+    <rtept lat="-6.868576" lon="107.602438"><name>Ciumbuleuit stop 37</name></rtept>
+    <rtept lat="-6.868554" lon="107.602533"><name>Maribaya stop 38</name></rtept>
+    <rtept lat="-6.868529" lon="107.602637"><name>Cisarua stop 39</name></rtept>
+    <rtept lat="-6.868508" lon="107.602730"><name>Cimahi stop 40</name></rtept>
   </rte>
 </gpx>
