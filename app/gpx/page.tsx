@@ -308,6 +308,8 @@ function GpxViewContent() {
     undefined,
   );
   const draftRestored = useRef(false);
+  const resultsRef = useRef<HTMLDivElement | null>(null);
+  const scrolledResult = useRef<ParsedGpx | null>(null);
   const rawInputId = useId();
   const fileInputId = useId();
   const mapsUrlInputId = useId();
@@ -355,6 +357,13 @@ function GpxViewContent() {
     },
     [],
   );
+
+  useEffect(() => {
+    if (state.kind !== "success") return;
+    if (scrolledResult.current === state.parsed) return;
+    scrolledResult.current = state.parsed;
+    resultsRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [state]);
 
   useEffect(() => {
     if (!urlId || appliedUrlId.current === urlId) return;
@@ -786,7 +795,11 @@ function GpxViewContent() {
               </p>
             )}
 
-            {state.kind === "success" && <ResultPanel parsed={state.parsed} />}
+            <div ref={resultsRef}>
+              {state.kind === "success" && (
+                <ResultPanel parsed={state.parsed} />
+              )}
+            </div>
           </TabsContent>
 
           <TabsContent value="maps" className="mt-4 space-y-4">
