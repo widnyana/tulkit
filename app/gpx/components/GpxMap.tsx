@@ -39,9 +39,15 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
     let cancelled = false;
 
     (async () => {
-      const { Map: MapLibreMap, Marker, Popup } = await import("maplibre-gl");
+      const {
+        Map: MapLibreMap,
+        Marker,
+        Popup,
+        config,
+      } = await import("maplibre-gl");
       if (cancelled) return;
 
+      config.WORKER_URL = "/api/maplibre-worker";
       const instance = new MapLibreMap({ container, style: STYLE_URL });
       map = instance;
 
