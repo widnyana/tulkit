@@ -3,6 +3,7 @@ import type { MapsTravelMode } from "./mapsLink.ts";
 
 const OSRM_BASE_URL = "https://router.project-osrm.org/route/v1";
 const ROUTE_FETCH_TIMEOUT_MS = 6000;
+const SNAP_RADIUS_METERS = 2000;
 
 const OSRM_PROFILE: Record<Exclude<MapsTravelMode, "transit">, string> = {
   driving: "driving",
@@ -28,7 +29,8 @@ export async function fetchRoadRoute(
   const coordinates = points
     .map((point) => `${point.lon},${point.lat}`)
     .join(";");
-  const url = `${OSRM_BASE_URL}/${OSRM_PROFILE[mode]}/${coordinates}?overview=full&geometries=geojson`;
+  const radiuses = points.map(() => SNAP_RADIUS_METERS).join(";");
+  const url = `${OSRM_BASE_URL}/${OSRM_PROFILE[mode]}/${coordinates}?geometries=geojson&radiuses=${radiuses}`;
 
   try {
     const response = await fetch(url, {

@@ -87,7 +87,7 @@ const SNAP_STATUS_LABELS: Record<SnapStatus, string> = {
   idle: "Add at least two points to snap to roads.",
   loading: "Snapping to roads...",
   ok: "Snapped to roads.",
-  failed: "Could not snap to roads; showing straight lines.",
+  failed: "A point is not on a road; move it closer to a road to export.",
 };
 
 interface PlanDraft {
@@ -866,7 +866,7 @@ function GpxViewContent() {
                     type="button"
                     className="ml-auto"
                     onClick={handleDownloadRouteGpx}
-                    disabled={planPoints.length < 2}
+                    disabled={planPoints.length < 2 || snappedPath === null}
                   >
                     Download GPX
                   </Button>

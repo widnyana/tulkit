@@ -8,7 +8,7 @@ const POINTS = [
 ];
 
 const withMockedFetch = async (
-  response: () => Promise<Response>,
+  response: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>,
   run: () => Promise<void>,
 ) => {
   const originalFetch = globalThis.fetch;
@@ -21,9 +21,11 @@ const withMockedFetch = async (
 };
 
 test("fetchRoadRoute decodes the OSRM geometry into LatLon points", async () => {
+  let requestUrl = "";
   await withMockedFetch(
-    async () =>
-      new Response(
+    async (input) => {
+      requestUrl = String(input);
+      return new Response(
         JSON.stringify({
           code: "Ok",
           routes: [
@@ -39,7 +41,8 @@ test("fetchRoadRoute decodes the OSRM geometry into LatLon points", async () => 
           ],
         }),
         { status: 200 },
-      ),
+      );
+    },
     async () => {
       const route = await fetchRoadRoute(POINTS, "driving");
       assert.deepEqual(route, [
@@ -47,6 +50,18 @@ test("fetchRoadRoute decodes the OSRM geometry into LatLon points", async () => 
         { lat: 13, lon: 25 },
         { lat: 15.75, lon: 30.25 },
       ]);
+    },
+  );
+  assert.ok(requestUrl.includes("radiuses=2000;2000"));
+  assert.ok(!requestUrl.includes("overview=full"));
+});
+
+test("fetchRoadRoute falls back to null when a point has no nearby road", async () => {
+  await withMockedFetch(
+    async () =>
+      new Response(JSON.stringify({ code: "NoSegment" }), { status: 200 }),
+    async () => {
+      assert.equal(await fetchRoadRoute(POINTS, "driving"), null);
     },
   );
 });
