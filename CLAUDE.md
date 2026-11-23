@@ -10,6 +10,8 @@ Tulkit — a collection of single-purpose, client-side web utilities. Live: http
 
 `.harness/` is the working directory for meta7, a multi-wave coordinator prompt (research → design → formal verification → implementation) that writes its research, design, and impl artifacts here.
 
+Agents and meta7 sessions load `.harness/ctx/.tulkit.context` before working. It is the canonical agent-facing project context (stack, architecture, conventions, tool rules). Update it whenever a project fact changes, so the file stays the single source agents read.
+
 ## Commands
 
 Package manager is **pnpm** (pinned 11.21.0 via `.tool-versions`; Node 22 in CI).
