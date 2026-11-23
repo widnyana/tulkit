@@ -30,6 +30,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyPanel } from "./components/EmptyPanel";
+import { MissingEntryPanel } from "./components/MissingEntryPanel";
 import { ResultPanel } from "./components/ResultPanel";
 import { RoutePlannerMap } from "./components/RoutePlannerMap";
 import {
@@ -279,6 +280,7 @@ export default function GpxViewPage() {
 function GpxViewContent() {
   const [rawInput, setRawInput] = useState("");
   const [state, setState] = useState<ViewState>({ kind: "empty" });
+  const [missingId, setMissingId] = useState<string | null>(null);
   const [mapsUrlInput, setMapsUrlInput] = useState("");
   const [mapsState, setMapsState] = useState<MapsImportState>({
     kind: "idle",
@@ -348,16 +350,23 @@ function GpxViewContent() {
     if (!urlId || appliedUrlId.current === urlId) return;
     const text = loadGpxEntry(urlId);
     if (text === null) {
-      setUrlId(null);
+      setMissingId(urlId);
       return;
     }
+    setMissingId(null);
     appliedUrlId.current = urlId;
     currentId.current = urlId;
     setRawInput(text);
     parseInto(text);
-  }, [urlId, setUrlId, parseInto]);
+  }, [urlId, parseInto]);
+
+  const handleDismissMissing = () => {
+    setMissingId(null);
+    setUrlId(null);
+  };
 
   const handleTextChange = (value: string) => {
+    setMissingId(null);
     setRawInput(value);
     parseInto(value, persist);
   };
@@ -365,6 +374,7 @@ function GpxViewContent() {
   const handleFileChange = async (file: File) => {
     currentId.current = null;
     appliedUrlId.current = null;
+    setMissingId(null);
     setState({ kind: "loading" });
     const result = await runToResult(readGpxFile(file));
     if (!result.ok) {
@@ -381,6 +391,7 @@ function GpxViewContent() {
     currentId.current = null;
     appliedUrlId.current = null;
     persist.cancel();
+    setMissingId(null);
     setUrlId(null);
     setRawInput("");
     setState({ kind: "empty" });
@@ -698,6 +709,12 @@ function GpxViewContent() {
           <p className="mt-3 text-sm text-muted-foreground">{TAB_HINTS[tab]}</p>
 
           <TabsContent value="view" className="mt-4 space-y-4">
+            {missingId !== null && (
+              <MissingEntryPanel
+                id={missingId}
+                onDismiss={handleDismissMissing}
+              />
+            )}
             <label htmlFor={rawInputId} className="sr-only">
               GPX XML
             </label>
@@ -734,7 +751,7 @@ function GpxViewContent() {
               )}
             </div>
 
-            {state.kind === "empty" && (
+            {state.kind === "empty" && missingId === null && (
               <EmptyPanel message="Paste GPX XML above or upload a .gpx file to see it on the map." />
             )}
 

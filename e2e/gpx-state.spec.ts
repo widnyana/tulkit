@@ -34,6 +34,57 @@ const MAPS_RESULT = {
 };
 const MAPS_RESULT_VALUE = JSON.stringify(MAPS_RESULT);
 
+test.describe("GPX link opened on another browser", () => {
+  const MISSING_ID = "6acee03b-6a72-4dd6-81a2-248531decc76";
+
+  test("explains that a foreign id lives only in its own browser", async ({
+    page,
+  }) => {
+    await page.goto(`/gpx?id=${MISSING_ID}`);
+
+    const notice = page.getByRole("region", { name: "Saved GPX not found" });
+    await expect(notice).toBeVisible({ timeout: 30_000 });
+    await expect(notice).toContainText(MISSING_ID);
+    await expect(notice).toContainText("send the .gpx file");
+    await expect(notice).toContainText("browser that created them");
+    await expect(
+      page.getByRole("region", { name: "File metadata" }),
+    ).toHaveCount(0);
+    await expect(page).toHaveURL(new RegExp(`id=${MISSING_ID}`));
+  });
+
+  test("dismissing the notice drops the dead id from the url", async ({
+    page,
+  }) => {
+    await page.goto(`/gpx?id=${MISSING_ID}`);
+
+    const notice = page.getByRole("region", { name: "Saved GPX not found" });
+    await expect(notice).toBeVisible({ timeout: 30_000 });
+    await notice.getByRole("button", { name: "Dismiss" }).click();
+
+    await expect(page).toHaveURL(/\/gpx$/, { timeout: 15_000 });
+    await expect(notice).toHaveCount(0);
+    await expect(
+      page.getByText("Paste GPX XML above or upload a .gpx file"),
+    ).toBeVisible();
+  });
+
+  test("pasting a file replaces the foreign id with a local entry", async ({
+    page,
+  }) => {
+    await page.goto(`/gpx?id=${MISSING_ID}`);
+    const notice = page.getByRole("region", { name: "Saved GPX not found" });
+    await expect(notice).toBeVisible({ timeout: 30_000 });
+
+    await page.locator("textarea").first().fill(SAMPLE_GPX);
+
+    await expect(notice).toHaveCount(0);
+    await expect(page.getByText("Waypoints", { exact: true })).toBeVisible({
+      timeout: 15_000,
+    });
+  });
+});
+
 test.describe("GPX last state restore", () => {
   test("reopens the last active tab", async ({ page }) => {
     await page.addInitScript(
