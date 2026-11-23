@@ -7,8 +7,8 @@ import type {
   Map as MapLibreMap,
   Marker as MapLibreMarker,
 } from "maplibre-gl";
-import { useTheme } from "next-themes";
 import { useEffect, useRef, useState } from "react";
+import { useMapStyle } from "@/lib/gpx/mapStyle";
 import type { LatLon } from "../types";
 
 type MapInstance = MapLibreMap;
@@ -18,8 +18,6 @@ type MarkerConstructor = new (options: {
 }) => MapLibreMarker;
 type RouteGeoJson = Parameters<GeoJSONSource["setData"]>[0];
 
-const STYLE_URL_LIGHT = "https://tiles.openfreemap.org/styles/liberty";
-const STYLE_URL_DARK = "https://tiles.openfreemap.org/styles/dark";
 const ROUTE_COLOR = "#0072b2";
 const ROUTE_SOURCE_ID = "gpx-plan-source";
 const ROUTE_LAYER_ID = "gpx-plan-line";
@@ -109,8 +107,7 @@ export function RoutePlannerMap({
   const onPointMoveRef = useRef(onPointMove);
   const [mapReady, setMapReady] = useState(false);
   const [mapFailed, setMapFailed] = useState(false);
-  const { resolvedTheme } = useTheme();
-  const styleUrl = resolvedTheme === "dark" ? STYLE_URL_DARK : STYLE_URL_LIGHT;
+  const mapStyle = useMapStyle();
 
   useEffect(() => {
     controlPointsRef.current = controlPoints;
@@ -146,7 +143,7 @@ export function RoutePlannerMap({
         config.WORKER_URL = "/maplibre-gl-worker.mjs";
         const instance = new MapLibreMapCtor({
           container,
-          style: styleUrl,
+          style: mapStyle,
           fadeDuration: 0,
         });
         map = instance;
@@ -202,7 +199,7 @@ export function RoutePlannerMap({
       markerClassRef.current = null;
       map?.remove();
     };
-  }, [styleUrl]);
+  }, [mapStyle]);
 
   useEffect(() => {
     const map = mapRef.current;

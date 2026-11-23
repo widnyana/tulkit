@@ -1,7 +1,6 @@
 "use client";
 
 import type { Map as MapLibreMap, Popup as MapLibrePopup } from "maplibre-gl";
-import { useTheme } from "next-themes";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import type { LatLon, ParsedGpx, RoutePoint } from "../types";
 import type {
@@ -11,6 +10,7 @@ import type {
   NamedPointGroup,
   PoiGroup,
 } from "../utils";
+import { useMapStyle } from "@/lib/gpx/mapStyle";
 import {
   buildLegend,
   computeBounds,
@@ -22,8 +22,6 @@ type MapInstance = MapLibreMap;
 type EndpointShape = "circle" | "square";
 type SwatchShape = "line" | "circle" | "square";
 
-const STYLE_URL_LIGHT = "https://tiles.openfreemap.org/styles/liberty";
-const STYLE_URL_DARK = "https://tiles.openfreemap.org/styles/dark";
 const TOKEN_FALLBACK = {
   foreground: "#16181d",
   background: "#ffffff",
@@ -788,8 +786,7 @@ export function GpxMap({
   const activeMapRef = useRef<MapInstance | null>(null);
   const popupClassRef = useRef<typeof MapLibrePopup | null>(null);
   const focusedPopupRef = useRef<MapLibrePopup | null>(null);
-  const { resolvedTheme } = useTheme();
-  const styleUrl = resolvedTheme === "dark" ? STYLE_URL_DARK : STYLE_URL_LIGHT;
+  const mapStyle = useMapStyle();
 
   useEffect(() => {
     const container = containerRef.current;
@@ -831,7 +828,7 @@ export function GpxMap({
         popupClassRef.current = Popup;
         const instance = new MapLibreMap({
           container,
-          style: styleUrl,
+          style: mapStyle,
           fadeDuration: 0,
         });
         map = instance;
@@ -1019,7 +1016,7 @@ export function GpxMap({
         delete testWindow.__gpxMap;
       }
     };
-  }, [parsed, styleUrl, legend]);
+  }, [parsed, mapStyle, legend]);
 
   useEffect(() => {
     const map = mapInstance;
