@@ -1,16 +1,22 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { DOMParser as XmldomDOMParser } from "@xmldom/xmldom";
+import { isParseError, parseGpx } from "../../lib/gpx/parse.ts";
 import {
   allPoints,
   computeBounds,
   distanceMeters,
   elevationGain,
+  flattenDesc,
   formatDistance,
   LINE_PALETTE,
   lineGroups,
   pathDistanceMeters,
   pathEndpoints,
+  primaryContent,
   resolveMetadata,
+  routeBrief,
   safeExternalHref,
   totalDistanceMeters,
   trackSegmentCount,
@@ -18,7 +24,25 @@ import {
 } from "./utils.ts";
 import type { ParsedGpx } from "./types.ts";
 
+(globalThis as { DOMParser?: typeof DOMParser }).DOMParser =
+  XmldomDOMParser as unknown as typeof DOMParser;
+
 const empty: ParsedGpx = { waypoints: [], routes: [], tracks: [], skipped: 0 };
+
+const points = (count: number) =>
+  Array.from({ length: count }, (_, index) => ({ lat: index, lon: index }));
+
+const parsedFixture = (relativePath: string): ParsedGpx => {
+  const result = parseGpx(
+    readFileSync(
+      new URL(`../../.harness/ref/gpx/${relativePath}`, import.meta.url),
+      "utf8",
+    ),
+  );
+  assert.ok(!isParseError(result), `expected ${relativePath} to parse`);
+  if (isParseError(result)) throw new Error(result.message);
+  return result;
+};
 
 describe("computeBounds", () => {
   it("returns null for geometry with no points", () => {
@@ -547,5 +571,130 @@ describe("resolveMetadata", () => {
     });
     assert.equal(resolved.link, link);
     assert.equal(resolved.keywords, keywords);
+  });
+});
+
+describe("flattenDesc", () => {
+  it("flattens inline HTML into plain lines", () => {
+    const text = flattenDesc(
+      "<h2>Header</h2>\n<p>Line &amp; more</p>\n<ul><li>One</li><li>Two</li></ul><p>x<br/>y</p>",
+    );
+    assert.equal(text, "Header\nLine & more\nOne\nTwo\nx\ny");
+    assert.ok(!text.includes("<"));
+    assert.ok(!text.includes(">"));
+  });
+
+  it("decodes named and numeric entities", () => {
+    assert.equal(
+      flattenDesc("<p>&quot;A&apos;s&#39; &lt;b&gt; &nbsp; &#65;&#x42;</p>"),
+      "\"A's' AB",
+    );
+  });
+
+  it("collapses whitespace and drops empty lines", () => {
+    assert.equal(flattenDesc("  a   b \n\n  c  "), "a b\nc");
+  });
+
+  it("returns an empty string for missing or blank input", () => {
+    assert.equal(flattenDesc(undefined), "");
+    assert.equal(flattenDesc("   "), "");
+  });
+});
+
+describe("primaryContent / routeBrief", () => {
+  it("picks the content with the most points", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [{ points: points(3) }],
+      tracks: [{ segments: [points(2)] }],
+    };
+    const primary = primaryContent(parsed);
+    assert.equal(primary?.kind, "route");
+    assert.equal(primary?.pointCount, 3);
+  });
+
+  it("prefers the track when point counts tie", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [{ points: points(3) }],
+      tracks: [{ segments: [points(1), points(2)] }],
+    };
+    const primary = primaryContent(parsed);
+    assert.equal(primary?.kind, "track");
+    assert.equal(primary?.pointCount, 3);
+  });
+
+  it("returns the route desc when the route is primary", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [{ desc: "route desc", points: points(3) }],
+      tracks: [{ desc: "track desc", segments: [points(1)] }],
+    };
+    assert.equal(routeBrief(parsed), "route desc");
+  });
+
+  it("falls back to the route desc when the primary track has none", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [{ desc: "route desc", points: points(1) }],
+      tracks: [{ segments: [points(3)] }],
+    };
+    assert.equal(routeBrief(parsed), "route desc");
+  });
+
+  it("falls back to the track desc when the primary route has none", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [{ points: points(3) }],
+      tracks: [{ desc: "track desc", segments: [points(1)] }],
+    };
+    assert.equal(routeBrief(parsed), "track desc");
+  });
+
+  it("ignores metadata.desc", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      metadata: { desc: "file desc" },
+      routes: [{ points: points(2) }],
+      tracks: [{ segments: [points(1)] }],
+    };
+    assert.equal(routeBrief(parsed), undefined);
+  });
+
+  it("returns null and undefined with no route or track", () => {
+    assert.equal(primaryContent(empty), null);
+    assert.equal(routeBrief(empty), undefined);
+  });
+});
+
+describe("routeBrief: corpus", () => {
+  it("flattens a track description", () => {
+    const brief = routeBrief(
+      parsedFixture("BrittanyJura/Southampton_Portsmouth.gpx"),
+    );
+    assert.ok(brief);
+    assert.equal(flattenDesc(brief), "39.5 km, 2:15");
+  });
+
+  it("flattens CDATA HTML from a route description", () => {
+    const brief = routeBrief(
+      parsedFixture("BrittanyJura/SimplifiedGpx/JuraRoute72011.gpx_0.gpx"),
+    );
+    assert.ok(brief);
+    const flat = flattenDesc(brief);
+    assert.ok(flat.includes("Jura Route 7 / 2011"));
+    assert.ok(!flat.includes("<h2>"));
+    assert.ok(!flat.includes("<a href"));
+  });
+
+  it("returns undefined for waypoint-only exports", () => {
+    assert.equal(
+      routeBrief(
+        parsedFixture(
+          "Campsites/CampingMunicipal/camping-municipal-france.gpx",
+        ),
+      ),
+      undefined,
+    );
   });
 });

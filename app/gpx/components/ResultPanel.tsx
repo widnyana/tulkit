@@ -3,6 +3,7 @@ import type { ParsedGpx } from "../types";
 import { buildGpxStats } from "../utils";
 import { GpxMap } from "./GpxMap";
 import { MetadataPanel } from "./MetadataPanel";
+import { RouteBrief } from "./RouteBrief";
 import { StatTiles } from "./StatTiles";
 import { WaypointList } from "./WaypointList";
 
@@ -21,6 +22,7 @@ export function ResultPanel({
   return (
     <div className="space-y-4">
       <MetadataPanel parsed={parsed} />
+      <RouteBrief parsed={parsed} />
       <StatTiles items={buildGpxStats(parsed)} />
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">{note}</p>

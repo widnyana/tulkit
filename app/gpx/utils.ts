@@ -1,4 +1,12 @@
-import type { GpxBounds, GpxLink, LatLon, ParsedGpx, Waypoint } from "./types";
+import type {
+  GpxBounds,
+  GpxLink,
+  LatLon,
+  ParsedGpx,
+  Route,
+  Track,
+  Waypoint,
+} from "./types";
 
 export const LINE_PALETTE = [
   "#0072b2",
@@ -250,6 +258,116 @@ export function resolveMetadata(parsed: ParsedGpx): ResolvedMetadata {
     pointCounts.waypoints + pointCounts.routePoints + pointCounts.trackPoints;
   if (totalPoints > 0) resolved.pointCounts = pointCounts;
   return resolved;
+}
+
+export type PrimaryContent =
+  | { kind: "route"; source: Route; pointCount: number; desc?: string }
+  | { kind: "track"; source: Track; pointCount: number; desc?: string };
+
+function bestRoute(parsed: ParsedGpx): Route | undefined {
+  let best: Route | undefined;
+  for (const route of parsed.routes) {
+    if (!best || route.points.length > best.points.length) best = route;
+  }
+  return best;
+}
+
+function trackPointCount(track: Track): number {
+  return track.segments.reduce((n, segment) => n + segment.length, 0);
+}
+
+function bestTrack(parsed: ParsedGpx): Track | undefined {
+  let best: Track | undefined;
+  let bestCount = -1;
+  for (const track of parsed.tracks) {
+    const count = trackPointCount(track);
+    if (count > bestCount) {
+      best = track;
+      bestCount = count;
+    }
+  }
+  return best;
+}
+
+/** The route or track carrying the most points; ties go to the track. */
+export function primaryContent(parsed: ParsedGpx): PrimaryContent | null {
+  const route = bestRoute(parsed);
+  const track = bestTrack(parsed);
+  const routePoints = route?.points.length ?? 0;
+  const trackPoints = track ? trackPointCount(track) : 0;
+
+  if (track && (!route || trackPoints >= routePoints)) {
+    return {
+      kind: "track",
+      source: track,
+      pointCount: trackPoints,
+      desc: track.desc,
+    };
+  }
+  if (route) {
+    return {
+      kind: "route",
+      source: route,
+      pointCount: routePoints,
+      desc: route.desc,
+    };
+  }
+  return null;
+}
+
+/** The primary content's description, falling back to the other content type. */
+export function routeBrief(parsed: ParsedGpx): string | undefined {
+  const primary = primaryContent(parsed);
+  if (!primary) return undefined;
+  if (primary.desc) return primary.desc;
+  return primary.kind === "track"
+    ? bestRoute(parsed)?.desc
+    : bestTrack(parsed)?.desc;
+}
+
+const NAMED_ENTITIES: Record<string, string> = {
+  amp: "&",
+  lt: "<",
+  gt: ">",
+  quot: '"',
+  apos: "'",
+  nbsp: " ",
+};
+
+function decodeDescEntities(text: string): string {
+  return text.replace(
+    /&(#x[0-9a-f]+|#[0-9]+|[a-z]+);/gi,
+    (entity, body: string) => {
+      if (/^#x/i.test(body)) {
+        const codePoint = Number.parseInt(body.slice(2), 16);
+        return Number.isFinite(codePoint) && codePoint <= 0x10ffff
+          ? String.fromCodePoint(codePoint)
+          : entity;
+      }
+      if (body.startsWith("#")) {
+        const codePoint = Number.parseInt(body.slice(1), 10);
+        return Number.isFinite(codePoint) && codePoint <= 0x10ffff
+          ? String.fromCodePoint(codePoint)
+          : entity;
+      }
+      return NAMED_ENTITIES[body.toLowerCase()] ?? entity;
+    },
+  );
+}
+
+const DESC_BREAK = /<\/(?:p|li)>|<br\s*\/?>/gi;
+const DESC_TAG = /<[a-z/!][^>]*>/gi;
+
+/** Turns a GPX description's inline HTML into plain, trimmed lines of text. */
+export function flattenDesc(text: string | undefined): string {
+  if (!text) return "";
+  return decodeDescEntities(text)
+    .replace(DESC_BREAK, "\n")
+    .replace(DESC_TAG, "")
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter((line) => line.length > 0)
+    .join("\n");
 }
 
 export function waypointsToParsedGpx(
