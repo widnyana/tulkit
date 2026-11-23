@@ -10,7 +10,7 @@ export function StatTiles({ items }: { items: StatTile[] }) {
           key={item.label}
           className="rounded-lg border border-border/70 bg-muted/40 p-3 text-center"
         >
-          <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+          <div className="text-xs font-medium text-muted-foreground">
             {item.label}
           </div>
           <div className="mt-1 text-lg font-semibold tabular-nums tracking-tight text-foreground">

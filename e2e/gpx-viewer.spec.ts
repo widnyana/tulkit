@@ -38,7 +38,7 @@ test.describe("GPX viewer map", () => {
     await expect(metadata).toContainText("Metadata render check");
     await expect(metadata).toContainText("2024-01-02T03:04:05Z");
 
-    const legend = page.getByRole("group", { name: "Map legend" });
+    const legend = page.getByRole("region", { name: "Map legend" });
     await expect(legend).toBeVisible({ timeout: 15_000 });
     await expect(legend.getByText("Start", { exact: true })).toBeVisible();
     await expect(legend.getByText("Finish", { exact: true })).toBeVisible();
@@ -55,5 +55,18 @@ test.describe("GPX viewer map", () => {
       .getByText("Distance", { exact: true })
       .locator("..");
     await expect(distanceTile).toContainText(/km/);
+
+    await legend.focus();
+    await expect(legend).toBeFocused();
+  });
+
+  test("lists waypoints outside the canvas", async ({ page }) => {
+    await page.goto("/gpx");
+    await page.locator("textarea").first().fill(SAMPLE_GPX);
+
+    const summary = page.getByText("All points (2)", { exact: true });
+    await expect(summary).toBeVisible({ timeout: 15_000 });
+    await summary.click();
+    await expect(page.getByText("Alpha", { exact: true })).toBeVisible();
   });
 });

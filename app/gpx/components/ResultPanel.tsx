@@ -4,6 +4,7 @@ import { buildGpxStats } from "../utils";
 import { GpxMap } from "./GpxMap";
 import { MetadataPanel } from "./MetadataPanel";
 import { StatTiles } from "./StatTiles";
+import { WaypointList } from "./WaypointList";
 
 export function ResultPanel({
   note,
@@ -27,6 +28,7 @@ export function ResultPanel({
       </div>
       {children}
       <GpxMap parsed={parsed} />
+      <WaypointList parsed={parsed} />
     </div>
   );
 }

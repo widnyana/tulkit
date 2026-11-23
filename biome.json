@@ -61,5 +61,17 @@
     "parser": {
       "tailwindDirectives": true
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["app/gpx/components/GpxMap.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noNoninteractiveTabindex": "off"
+          }
+        }
+      }
+    }
+  ]
 }

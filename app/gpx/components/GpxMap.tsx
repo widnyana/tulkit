@@ -217,10 +217,16 @@ function addDirectionLayer(map: MapInstance, groups: LineGroup[]) {
   });
 }
 
+interface LabelPaint {
+  text: string;
+  halo: string;
+}
+
 function addWaypointLayers(
   map: MapInstance,
   parsed: ParsedGpx,
   PopupClass: typeof MapLibrePopup,
+  labelPaint: LabelPaint,
 ) {
   if (parsed.waypoints.length === 0) return;
 
@@ -276,8 +282,8 @@ function addWaypointLayers(
         "text-allow-overlap": false,
       },
       paint: {
-        "text-color": "#16181d",
-        "text-halo-color": "#ffffff",
+        "text-color": labelPaint.text,
+        "text-halo-color": labelPaint.halo,
         "text-halo-width": 1.5,
       },
     });
@@ -352,9 +358,10 @@ function MapLegend({ parsed }: { parsed: ParsedGpx }) {
 
   return (
     <div
-      role="group"
+      role="region"
       aria-label="Map legend"
-      className="pointer-events-none absolute bottom-3 left-3 z-10 flex max-w-[min(18rem,calc(100%-1.5rem))] flex-col gap-1.5 rounded-md border border-border bg-background/95 p-3 text-xs"
+      tabIndex={0}
+      className="absolute bottom-3 left-3 z-10 flex max-h-[min(60%,24rem)] max-w-[min(18rem,calc(100%-1.5rem))] flex-col gap-1.5 overflow-y-auto rounded-md border border-border bg-background/95 p-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <p className="font-medium">Legend</p>
       {groups.map((group) => (
@@ -421,6 +428,11 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
     if (!container) return;
 
     setMapFailed(false);
+
+    const labelPaint: LabelPaint =
+      styleUrl === STYLE_URL_DARK
+        ? { text: "#e8ecf1", halo: "#0f1216" }
+        : { text: "#16181d", halo: "#ffffff" };
 
     let map: MapInstance | undefined;
     let cancelled = false;
@@ -500,7 +512,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
           const groups = lineGroups(parsed);
           for (const group of groups) addLineLayer(instance, group);
           addDirectionLayer(instance, groups);
-          addWaypointLayers(instance, parsed, Popup);
+          addWaypointLayers(instance, parsed, Popup, labelPaint);
 
           const endpoints = pathEndpoints(parsed);
           if (endpoints) {
