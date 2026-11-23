@@ -1,8 +1,10 @@
 import { corsHeaders } from "@/lib/net/cors";
 import {
   fetchAllowed,
+  mergeRules,
   type OutboundError,
   type OriginRule,
+  parseOriginRules,
 } from "@/lib/net/outbound";
 import { SITE_URL } from "@/lib/site";
 import { Effect } from "effect";
@@ -11,7 +13,7 @@ import { NextResponse } from "next/server";
 
 const SITE_ORIGIN = new URL(SITE_URL);
 
-const ALLOWED_SCHEMA_RULES = [
+const DEFAULT_SCHEMA_RULES = [
   {
     host: SITE_ORIGIN.hostname.toLowerCase(),
     origin: SITE_ORIGIN.origin,
@@ -33,6 +35,11 @@ const ALLOWED_SCHEMA_RULES = [
     origin: "https://www.schemastore.org",
   },
 ] as const satisfies ReadonlyArray<OriginRule>;
+
+const ALLOWED_SCHEMA_RULES = mergeRules(
+  DEFAULT_SCHEMA_RULES,
+  parseOriginRules(process.env.ALLOWED_SCHEMA_ORIGINS),
+);
 
 const HOST_ERROR = "Host is not in the allowed schema host list";
 

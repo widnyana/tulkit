@@ -5,6 +5,8 @@ import {
   fetchAllowed,
   hostsOf,
   isPrivateHostname,
+  mergeRules,
+  parseOriginRules,
   pinnedUrl,
   validateOutbound,
   type OriginRule,
@@ -267,4 +269,37 @@ test("fetchAllowed reports network failures", async () => {
   } finally {
     globalThis.fetch = originalFetch;
   }
+});
+
+test("parseOriginRules keeps https origins and drops the rest", () => {
+  const parsed = parseOriginRules(
+    "https://a.test, http://b.test, not a url, https://c.test:8443/path",
+  );
+
+  assert.deepEqual(parsed, [
+    { host: "a.test", origin: "https://a.test" },
+    { host: "c.test", origin: "https://c.test:8443" },
+  ]);
+});
+
+test("parseOriginRules returns nothing for an absent value", () => {
+  assert.deepEqual(parseOriginRules(undefined), []);
+  assert.deepEqual(parseOriginRules("   "), []);
+});
+
+test("mergeRules lets an extra origin replace a default host", () => {
+  const base = [
+    { host: "a.test", origin: "https://a.test" },
+    { host: "b.test", origin: "https://b.test" },
+  ];
+  const merged = mergeRules(base, [
+    { host: "b.test", origin: "https://b.test:8443" },
+    { host: "c.test", origin: "https://c.test" },
+  ]);
+
+  assert.deepEqual(merged, [
+    { host: "a.test", origin: "https://a.test" },
+    { host: "b.test", origin: "https://b.test:8443" },
+    { host: "c.test", origin: "https://c.test" },
+  ]);
 });

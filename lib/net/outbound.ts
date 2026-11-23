@@ -93,6 +93,34 @@ export function pinnedUrl(
 export const hostsOf = (rules: ReadonlyArray<OriginRule>): string[] =>
   rules.map((rule) => rule.host);
 
+export function parseOriginRules(value: string | undefined): OriginRule[] {
+  if (!value) return [];
+  const rules: OriginRule[] = [];
+  for (const entry of value.split(",")) {
+    const trimmed = entry.trim();
+    if (trimmed === "") continue;
+    let url: URL;
+    try {
+      url = new URL(trimmed);
+    } catch {
+      continue;
+    }
+    if (url.protocol !== "https:") continue;
+    rules.push({ host: url.hostname.toLowerCase(), origin: url.origin });
+  }
+  return rules;
+}
+
+export function mergeRules(
+  base: ReadonlyArray<OriginRule>,
+  extra: ReadonlyArray<OriginRule>,
+): OriginRule[] {
+  const byHost = new Map<string, OriginRule>();
+  for (const rule of base) byHost.set(rule.host, rule);
+  for (const rule of extra) byHost.set(rule.host, rule);
+  return [...byHost.values()];
+}
+
 export function fetchAllowed(
   raw: string,
   rules: ReadonlyArray<OriginRule>,

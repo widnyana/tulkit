@@ -100,7 +100,8 @@ modules that import `effect`, and the boundary has four parts:
 A new fetch without a typed error, a `catch { return null }` around network I/O, or an
 ad-hoc `fetch` in `app/api` that bypasses `lib/net` is a defect. The API proxies use the
 same typed boundary through `lib/net`, so an `effect` import in `app/api` is expected
-when it comes from `lib/net`.
+when it comes from `lib/net`. The schema proxy allows the site origin plus the built-in
+schema hosts; `ALLOWED_SCHEMA_ORIGINS` adds more, as comma-separated https origins.
 
 ## Conventions
 
