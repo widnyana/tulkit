@@ -7,10 +7,10 @@ handler (`app/ip-planner/llms.txt/route.ts` re-exports the operation list).
 
 ## Files
 
-| File | Role |
-| --- | --- |
-| `api.ts` | `IP_PLANNER_OPERATIONS`, `parseIpPlannerRequest` (validate unknown JSON → trusted `IpPlannerRequest`), `runIpPlannerOperation` (dispatch into `lib/ip/core`) |
-| `api.test.ts` | Request parsing + dispatch tests |
+| File           | Role                                                                                                                                                                                                |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.ts`       | `IP_PLANNER_OPERATIONS`, `parseIpPlannerRequest` (validate unknown JSON → trusted `IpPlannerRequest`), `runIpPlannerOperation` (dispatch into `lib/ip/core`)                                        |
+| `api.test.ts`  | Request parsing + dispatch tests                                                                                                                                                                    |
 | `ipv6.test.ts` | IPv6 parse/format/subnet tests. **Historical location:** it exercises `lib/ip/core.ts` (this core used to live at `app/ip-planner/utils.ts`); kept here so `pnpm test` coverage moved with the file |
 
 ## Operations

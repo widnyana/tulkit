@@ -83,7 +83,7 @@ describe("parseBase64Request", () => {
   });
 });
 
-describe("runBase64Operation", async () => {
+describe("runBase64Operation", () => {
   it("encodes known vector", async () => {
     const r = req({ operation: "encode", input: "hello" });
     assert.equal(await runBase64Operation(r), "aGVsbG8=");

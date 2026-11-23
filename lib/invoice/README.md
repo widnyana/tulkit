@@ -10,16 +10,16 @@ templates, and the public API.
 
 ## Files
 
-| file | what it is |
-| --- | --- |
-| `types.ts` | `InvoiceData` and its parts (`InvoiceItem`, `InvoiceSender`, `InvoiceRecipient`, `PaymentInformation`, `TemplateKey`). Types only, no runtime code. |
-| `validation.ts` | `invoiceDataSchema` — the zod schema. The single boundary definition for the invoice shape. |
-| `formatNumber.ts` | Number to string with caller-supplied decimal/thousand separators. |
-| `formatCurrency.ts` | Currency symbol + amount, with the spacing rule below. |
-| `defaults.ts` | `createDefaultInvoiceData()` (empty form state, dates regenerated per call) and `mergeInvoiceWithDefaults()`. |
-| `sample-data.ts` | The realistic invoice behind the "Load sample" button. Static dates so the test stays deterministic. |
-| `storage.ts` | localStorage load/save/clear under `tulkit_invoice_data`, plus `exportInvoiceJson()`. |
-| `invoice-template-stress-testing.md` | How to verify a PDF template renders correctly. Read it before changing a template. |
+| file                                 | what it is                                                                                                                                          |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `types.ts`                           | `InvoiceData` and its parts (`InvoiceItem`, `InvoiceSender`, `InvoiceRecipient`, `PaymentInformation`, `TemplateKey`). Types only, no runtime code. |
+| `validation.ts`                      | `invoiceDataSchema` — the zod schema. The single boundary definition for the invoice shape.                                                         |
+| `formatNumber.ts`                    | Number to string with caller-supplied decimal/thousand separators.                                                                                  |
+| `formatCurrency.ts`                  | Currency symbol + amount, with the spacing rule below.                                                                                              |
+| `defaults.ts`                        | `createDefaultInvoiceData()` (empty form state, dates regenerated per call) and `mergeInvoiceWithDefaults()`.                                       |
+| `sample-data.ts`                     | The realistic invoice behind the "Load sample" button. Static dates so the test stays deterministic.                                                |
+| `storage.ts`                         | localStorage load/save/clear under `tulkit_invoice_data`, plus `exportInvoiceJson()`.                                                               |
+| `invoice-template-stress-testing.md` | How to verify a PDF template renders correctly. Read it before changing a template.                                                                 |
 
 Tests sit next to their subject: `validation.test.ts`, `sample-data.test.ts`,
 `formatCurrency.test.ts`. Run them with `pnpm test`.

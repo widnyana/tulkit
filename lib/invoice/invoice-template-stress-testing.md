@@ -25,14 +25,14 @@ framework, no fixtures — a payload, a render, and measurements on the output.
 
 Poppler supplies everything needed. On macOS: `brew install poppler`.
 
-| tool | use |
-| --- | --- |
-| `pdftotext -bbox file.pdf -` | XML with every word and its `xMin/yMin/xMax/yMax` in points — the measurement source |
-| `pdftotext file.pdf -` | plain text, for "did this content survive at all" checks |
-| `pdftoppm -png -r 80 file.pdf out` | full-page images, for looking |
-| `pdftoppm -png -r 260 -x .. -y .. -W .. -H ..` | zoomed crop, for glyph-level inspection |
-| `pdfimages -list file.pdf` | confirms embedded logo/QR and their effective DPI |
-| `file -b out.pdf` | quick page count |
+| tool                                           | use                                                                                  |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `pdftotext -bbox file.pdf -`                   | XML with every word and its `xMin/yMin/xMax/yMax` in points — the measurement source |
+| `pdftotext file.pdf -`                         | plain text, for "did this content survive at all" checks                             |
+| `pdftoppm -png -r 80 file.pdf out`             | full-page images, for looking                                                        |
+| `pdftoppm -png -r 260 -x .. -y .. -W .. -H ..` | zoomed crop, for glyph-level inspection                                              |
+| `pdfimages -list file.pdf`                     | confirms embedded logo/QR and their effective DPI                                    |
+| `file -b out.pdf`                              | quick page count                                                                     |
 
 A4 geometry to measure against: page is 595 × 842 pt. With `page.paddingBottom:
 56`, body content must stay above y = 786. Anything below that is running into
@@ -70,8 +70,8 @@ past its parent.
 
 ### The two things only eyes catch
 
-Automated checks confirm text is *present and positioned*. They say nothing
-about whether it is *visible*.
+Automated checks confirm text is _present and positioned_. They say nothing
+about whether it is _visible_.
 
 Render pages to PNG and look at them. Two defects found this way, both of which
 passed every automated check:
@@ -122,7 +122,7 @@ row jumps to the next page whole.
 ### Pressure 4 — every field populated
 
 One payload with nothing omitted: both images as base64 data URIs, recipient
-email *and* phone, all five `paymentInfo` fields, `showBranding`, a fractional
+email _and_ phone, all five `paymentInfo` fields, `showBranding`, a fractional
 quantity, a fractional tax rate, non-default separators, a non-ASCII currency
 symbol. Optional fields are where the untested code lives.
 
@@ -155,14 +155,14 @@ A template passes when, across the full payload sweep:
 
 ## Failure signatures worth recognising
 
-| what you see | what it means |
-| --- | --- |
-| Page 2 has the footer and nothing else | A `View` with a background split at the boundary; its fill painted on a page with no text. Add `wrap={false}` to that box. |
-| A label on one page, its amount on the next | A row split mid-flight. `wrap={false}` on the row. |
-| A large blank gap before a page break | A `wrap={false}` block too tall to fit jumped whole. Allow tall rows to split: `wrap={Boolean(item.notes)}`. |
-| A solid coloured bar with no text | Child `<Text>` carries its own `color`; react-pdf does not inherit the parent's. Style the child. |
-| Text sliding to the paper edge | A flex row where one side has no `flex: 1` and the other no `flexShrink`. |
-| Content under the footer | `page.paddingBottom` smaller than the absolutely-positioned footer's height. |
+| what you see                                | what it means                                                                                                              |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Page 2 has the footer and nothing else      | A `View` with a background split at the boundary; its fill painted on a page with no text. Add `wrap={false}` to that box. |
+| A label on one page, its amount on the next | A row split mid-flight. `wrap={false}` on the row.                                                                         |
+| A large blank gap before a page break       | A `wrap={false}` block too tall to fit jumped whole. Allow tall rows to split: `wrap={Boolean(item.notes)}`.               |
+| A solid coloured bar with no text           | Child `<Text>` carries its own `color`; react-pdf does not inherit the parent's. Style the child.                          |
+| Text sliding to the paper edge              | A flex row where one side has no `flex: 1` and the other no `flexShrink`.                                                  |
+| Content under the footer                    | `page.paddingBottom` smaller than the absolutely-positioned footer's height.                                               |
 
 ## Reproducing
 
@@ -185,13 +185,13 @@ method is the thing worth keeping.
 plus `unbreakable`, `mixed`, `full` and six currency symbols). All five now pass
 the seven criteria. Page-one item capacity, measured on the same payload:
 
-| template | capacity before | after | defects fixed |
-| --- | --- | --- | --- |
-| evergreen | 12 | 12 | 2 |
-| granite | 6 | 10 | 4 |
-| default | 9 | 9 | 5 |
-| stripe | 11 | 11 | 4 |
-| apex | 10 | 9 | 4 |
+| template  | capacity before | after | defects fixed |
+| --------- | --------------- | ----- | ------------- |
+| evergreen | 12              | 12    | 2             |
+| granite   | 6               | 10    | 4             |
+| default   | 9               | 9     | 5             |
+| stripe    | 11              | 11    | 4             |
+| apex      | 10              | 9     | 4             |
 
 Three defect classes accounted for most of it, and all three are worth checking
 first in any new template:
@@ -200,7 +200,7 @@ first in any new template:
 `splitNodes` duplicates a fixed node into every fragment its immediate parent is
 split into (`@react-pdf/layout` `splitNodes`, the `isFixed` branch). Put the
 header inside a wrapper View holding header + rows only, and keep the totals a
-sibling *after* that wrapper: the header then lands on exactly the pages the
+sibling _after_ that wrapper: the header then lands on exactly the pages the
 table spans. All five templates now do this; before the sweep only granite tried,
 and it used a plain `fixed` that leaked onto the totals page.
 

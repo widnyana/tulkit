@@ -11,13 +11,13 @@ bigint arithmetic.
 
 ## Files
 
-| File | Role |
-| --- | --- |
-| `types.ts` | `IpFamily`, `IpAddress`, and all result shapes (`SubnetInfo`, `BasicCalcResult`, …) |
-| `ipv4.ts` | IPv4 parse/format, dotted-mask ↔ CIDR, class A-E + RFC 1918/3330/3171/3021 classification |
-| `ipv6.ts` | IPv6 parse (RFC 4291, compression + embedded IPv4) / format (RFC 5952), expanded masks, RFC 4291/4193/3849 range classification |
-| `core.ts` | Family dispatch + all operations (below); the only file consumers need to import from |
-| `core.test.ts` | Unit tests (`node --test --experimental-strip-types`) |
+| File           | Role                                                                                                                            |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `types.ts`     | `IpFamily`, `IpAddress`, and all result shapes (`SubnetInfo`, `BasicCalcResult`, …)                                             |
+| `ipv4.ts`      | IPv4 parse/format, dotted-mask ↔ CIDR, class A-E + RFC 1918/3330/3171/3021 classification                                       |
+| `ipv6.ts`      | IPv6 parse (RFC 4291, compression + embedded IPv4) / format (RFC 5952), expanded masks, RFC 4291/4193/3849 range classification |
+| `core.ts`      | Family dispatch + all operations (below); the only file consumers need to import from                                           |
+| `core.test.ts` | Unit tests (`node --test --experimental-strip-types`)                                                                           |
 
 ## Public API (core.ts)
 
@@ -36,7 +36,7 @@ bigint arithmetic.
   exceed `Number.MAX_SAFE_INTEGER`). Use `formatHosts` for display. VLSM and
   suggest-mask host counts stay Number-safe integers; larger allocations are
   prefix math.
-- **IPv6 has no broadcast.** Fields named `broadcast` carry the *last address*
+- **IPv6 has no broadcast.** Fields named `broadcast` carry the _last address_
   of the block; UIs label it "Last Address".
 - **`/31` (RFC 3021) and `/127` (RFC 6164)** treat network + broadcast as both
   usable.

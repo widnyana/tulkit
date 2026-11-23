@@ -14,19 +14,19 @@ tulkit is the opposite bet: a handful of single-purpose tools that do exactly on
 
 ## The tools
 
-| Tool | What it does |
-| --- | --- |
-| [.env Comparator](https://tulkit.widnyana.web.id/env-compare) | Diff two `.env` files side by side |
-| [NetPlan](https://tulkit.widnyana.web.id/ip-planner) | Plan IP address subnets |
-| [IP Calculator](https://tulkit.widnyana.web.id/ipcalc) | Subnet math without the mental arithmetic |
-| [Random String Generator](https://tulkit.widnyana.web.id/random-string) | Passwords, tokens, ids — with the character sets you want |
-| [Invoice Generator](https://tulkit.widnyana.web.id/invoice) | Build invoices and export them as PDF |
-| [QR Code Generator](https://tulkit.widnyana.web.id/qr-gen) | Turn text or URLs into QR codes |
-| [JSON Schema Visualizer](https://tulkit.widnyana.web.id/json-schema) | See the shape of a JSON Schema instead of squinting at it |
-| [Base64 Encoder / Decoder](https://tulkit.widnyana.web.id/base64) | Encode and decode, both directions |
-| [Cron Expression Generator](https://tulkit.widnyana.web.id/cron) | Write cron schedules and read them back in plain English |
-| [Mermaid Editor](https://tulkit.widnyana.web.id/mermaid-editor) | Write Mermaid diagrams with live preview, export SVG or PNG |
-| [Tire Pressure Calculator](https://tulkit.widnyana.web.id/tire-pressure) | Pressure conversion and sizing for your tires |
+| Tool                                                                     | What it does                                                |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| [.env Comparator](https://tulkit.widnyana.web.id/env-compare)            | Diff two `.env` files side by side                          |
+| [NetPlan](https://tulkit.widnyana.web.id/ip-planner)                     | Plan IP address subnets                                     |
+| [IP Calculator](https://tulkit.widnyana.web.id/ipcalc)                   | Subnet math without the mental arithmetic                   |
+| [Random String Generator](https://tulkit.widnyana.web.id/random-string)  | Passwords, tokens, ids — with the character sets you want   |
+| [Invoice Generator](https://tulkit.widnyana.web.id/invoice)              | Build invoices and export them as PDF                       |
+| [QR Code Generator](https://tulkit.widnyana.web.id/qr-gen)               | Turn text or URLs into QR codes                             |
+| [JSON Schema Visualizer](https://tulkit.widnyana.web.id/json-schema)     | See the shape of a JSON Schema instead of squinting at it   |
+| [Base64 Encoder / Decoder](https://tulkit.widnyana.web.id/base64)        | Encode and decode, both directions                          |
+| [Cron Expression Generator](https://tulkit.widnyana.web.id/cron)         | Write cron schedules and read them back in plain English    |
+| [Mermaid Editor](https://tulkit.widnyana.web.id/mermaid-editor)          | Write Mermaid diagrams with live preview, export SVG or PNG |
+| [Tire Pressure Calculator](https://tulkit.widnyana.web.id/tire-pressure) | Pressure conversion and sizing for your tires               |
 
 ## Where your data goes
 
