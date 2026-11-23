@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const OSRM_ROUTE_URL = "https://router.project-osrm.org/route/v1";
+const ROUTING_BASE = "https://routing.openstreetmap.de";
 const ROUTE_TIMEOUT_MS = 8000;
+const USER_AGENT = "tulkit-gpx/1.0 (+https://tulkit.widnyana.web.id)";
 const SNAP_RADIUS_METERS = 2000;
 const MIN_POINTS = 2;
 const MAX_POINTS = 100;
@@ -12,10 +13,16 @@ const MAX_POINTS = 100;
 const ROAD_MODES = ["driving", "bicycling", "walking"] as const;
 type RoadMode = (typeof ROAD_MODES)[number];
 
+const OSRM_INSTANCE: Record<RoadMode, string> = {
+  driving: "routed-car",
+  bicycling: "routed-bike",
+  walking: "routed-foot",
+};
+
 const OSRM_PROFILE: Record<RoadMode, string> = {
   driving: "driving",
   bicycling: "bike",
-  walking: "foot",
+  walking: "walking",
 };
 
 interface Coordinate {
@@ -100,11 +107,12 @@ export async function POST(request: NextRequest) {
     .map((point) => `${point.lon},${point.lat}`)
     .join(";");
   const radiuses = parsedPoints.map(() => SNAP_RADIUS_METERS).join(";");
-  const url = `${OSRM_ROUTE_URL}/${OSRM_PROFILE[mode]}/${coordinates}?geometries=geojson&radiuses=${radiuses}`;
+  const url = `${ROUTING_BASE}/${OSRM_INSTANCE[mode]}/route/v1/${OSRM_PROFILE[mode]}/${coordinates}?geometries=geojson&radiuses=${radiuses}`;
 
   try {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(ROUTE_TIMEOUT_MS),
+      headers: { "User-Agent": USER_AGENT },
     });
     if (!response.ok) return unavailableResponse();
 

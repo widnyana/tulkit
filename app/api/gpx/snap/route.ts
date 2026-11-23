@@ -1,17 +1,24 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const OSRM_NEAREST_URL = "https://router.project-osrm.org/nearest/v1";
+const ROUTING_BASE = "https://routing.openstreetmap.de";
 const SNAP_TIMEOUT_MS = 6000;
+const USER_AGENT = "tulkit-gpx/1.0 (+https://tulkit.widnyana.web.id)";
 const SNAP_RADIUS_METERS = 1000;
 
 const ROAD_MODES = ["driving", "bicycling", "walking"] as const;
 type RoadMode = (typeof ROAD_MODES)[number];
 
+const OSRM_INSTANCE: Record<RoadMode, string> = {
+  driving: "routed-car",
+  bicycling: "routed-bike",
+  walking: "routed-foot",
+};
+
 const OSRM_PROFILE: Record<RoadMode, string> = {
   driving: "driving",
   bicycling: "bike",
-  walking: "foot",
+  walking: "walking",
 };
 
 interface OsrmNearestWaypoint {
@@ -75,11 +82,12 @@ export async function POST(request: NextRequest) {
     return errorResponse(`mode must be one of: ${ROAD_MODES.join(", ")}`);
   }
 
-  const url = `${OSRM_NEAREST_URL}/${OSRM_PROFILE[mode]}/${lon},${lat}?number=1&radiuses=${SNAP_RADIUS_METERS}`;
+  const url = `${ROUTING_BASE}/${OSRM_INSTANCE[mode]}/nearest/v1/${OSRM_PROFILE[mode]}/${lon},${lat}?number=1&radiuses=${SNAP_RADIUS_METERS}`;
 
   try {
     const response = await fetch(url, {
       signal: AbortSignal.timeout(SNAP_TIMEOUT_MS),
+      headers: { "User-Agent": USER_AGENT },
     });
     const data: OsrmNearestResponse | null = await response
       .json()
