@@ -1,6 +1,7 @@
 "use client";
 
 import type { Map as MapLibreMap, Popup as MapLibrePopup } from "maplibre-gl";
+import { useTheme } from "next-themes";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { LatLon, ParsedGpx } from "../types";
 import type { LineGroup } from "../utils";
@@ -18,7 +19,8 @@ type MapInstance = MapLibreMap;
 type EndpointShape = "circle" | "square";
 type SwatchShape = "line" | "circle" | "square";
 
-const STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
+const STYLE_URL_LIGHT = "https://tiles.openfreemap.org/styles/liberty";
+const STYLE_URL_DARK = "https://tiles.openfreemap.org/styles/dark";
 const START_COLOR = "#0072b2";
 const FINISH_COLOR = "#16181d";
 const ARROW_IMAGE_ID = "gpx-direction-arrow";
@@ -64,10 +66,18 @@ function endpointElement(
   color: string,
 ): HTMLElement {
   const element = document.createElement("div");
-  element.setAttribute("role", "img");
-  element.setAttribute("aria-label", ariaLabel);
+  element.setAttribute("role", "button");
+  element.setAttribute("aria-label", `${ariaLabel}, show details`);
+  element.tabIndex = 0;
   element.style.cssText =
-    "display:flex;align-items:center;gap:6px;font-family:ui-sans-serif,system-ui,sans-serif;white-space:nowrap";
+    "display:flex;align-items:center;gap:6px;font-family:ui-sans-serif,system-ui,sans-serif;white-space:nowrap;cursor:pointer;border-radius:4px";
+  element.addEventListener("focus", () => {
+    element.style.outline = "2px solid #56b4e9";
+    element.style.outlineOffset = "2px";
+  });
+  element.addEventListener("blur", () => {
+    element.style.outline = "none";
+  });
 
   const badge = document.createElement("span");
   badge.textContent = letter;
@@ -331,6 +341,8 @@ function MapLegend({ parsed }: { parsed: ParsedGpx }) {
 export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mapFailed, setMapFailed] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const styleUrl = resolvedTheme === "dark" ? STYLE_URL_DARK : STYLE_URL_LIGHT;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -356,7 +368,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
         config.WORKER_URL = "/maplibre-gl-worker.mjs";
         const instance = new MapLibreMap({
           container,
-          style: STYLE_URL,
+          style: styleUrl,
           fadeDuration: 0,
         });
         map = instance;
@@ -379,12 +391,16 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
           color: string,
           popupText: string,
         ) => {
-          new Marker({
-            element: endpointElement(ariaLabel, letter, label, shape, color),
-          })
+          const element = endpointElement(ariaLabel, letter, label, shape, color);
+          const marker = new Marker({ element })
             .setLngLat(coordinates)
             .setPopup(new Popup().setText(popupText))
             .addTo(instance);
+          element.addEventListener("keydown", (event) => {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            event.preventDefault();
+            marker.togglePopup();
+          });
         };
 
         instance.on("load", () => {
@@ -458,7 +474,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
       cancelled = true;
       map?.remove();
     };
-  }, [parsed]);
+  }, [parsed, styleUrl]);
 
   const groups = lineGroups(parsed);
   const distance = totalDistanceMeters(parsed);
