@@ -172,11 +172,7 @@ function planSnapFailureNotice(tag: GpxRequestError["_tag"]): PlanNotice {
 async function attachElevations(
   points: ReadonlyArray<LatLon>,
 ): Promise<LatLon[]> {
-  const elevations = await Effect.runPromise(
-    fetchElevations(points).pipe(
-      Effect.catch(() => Effect.succeed(points.map(() => null))),
-    ),
-  );
+  const elevations = await Effect.runPromise(fetchElevations(points));
   return points.map((point, index) => {
     const ele = elevations[index];
     return typeof ele === "number" ? { ...point, ele } : point;

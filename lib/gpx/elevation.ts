@@ -9,19 +9,12 @@ import {
 import { decodeElevations } from "./schemas.ts";
 
 const ELEVATION_ENDPOINT = "/api/gpx/elevation";
-const MAX_ELEVATION_POINTS = 2000;
+const ELEVATION_BATCH_SIZE = 2000;
 
-export function fetchElevations(
+function requestBatch(
   points: ReadonlyArray<LatLon>,
-  policy: RequestPolicy = DEFAULT_REQUEST_POLICY,
+  policy: RequestPolicy,
 ): Effect.Effect<(number | null)[], GpxRequestError> {
-  if (points.length === 0) {
-    return Effect.succeed([]);
-  }
-  if (points.length > MAX_ELEVATION_POINTS) {
-    return Effect.succeed(points.map(() => null));
-  }
-
   return requestJson(
     ELEVATION_ENDPOINT,
     {
@@ -53,4 +46,31 @@ export function fetchElevations(
       ),
     ),
   );
+}
+
+export function fetchElevations(
+  points: ReadonlyArray<LatLon>,
+  policy: RequestPolicy = DEFAULT_REQUEST_POLICY,
+): Effect.Effect<(number | null)[]> {
+  if (points.length === 0) {
+    return Effect.succeed([]);
+  }
+
+  const batches = Array.from(
+    { length: Math.ceil(points.length / ELEVATION_BATCH_SIZE) },
+    (_, index) =>
+      points.slice(
+        index * ELEVATION_BATCH_SIZE,
+        (index + 1) * ELEVATION_BATCH_SIZE,
+      ),
+  );
+
+  return Effect.forEach(
+    batches,
+    (batch) =>
+      requestBatch(batch, policy).pipe(
+        Effect.catch(() => Effect.succeed(batch.map(() => null))),
+      ),
+    { concurrency: 2 },
+  ).pipe(Effect.map((results) => results.flat()));
 }
