@@ -66,10 +66,10 @@ import {
 
 const TAB_VALUES = [
   "view",
-  "library",
   "maps",
   "csv",
   "plan",
+  "library",
 ] as const satisfies readonly TabValue[];
 
 const TAB_LABELS: Record<TabValue, string> = {
@@ -77,7 +77,7 @@ const TAB_LABELS: Record<TabValue, string> = {
   library: "Library",
   maps: "From Maps",
   csv: "From CSV",
-  plan: "Route",
+  plan: "Create Route",
 };
 
 const TAB_HINTS: Record<TabValue, string> = {
