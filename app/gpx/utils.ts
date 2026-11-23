@@ -102,22 +102,41 @@ export function formatDistance(meters: number): string {
   return `${(meters / 1000).toFixed(1)} km`;
 }
 
+/**
+ * GPS/barometer altitude readings jitter by a few metres even standing
+ * still, and since gain only ever accumulates (jitter never nets out),
+ * summing every raw point-to-point delta overstates real ascent several
+ * times over on a dense track. A point only counts once it has moved this
+ * far from the last accepted elevation, which is the standard cheap fix
+ * (every consumer fitness platform applies some form of this).
+ */
+const ELEVATION_NOISE_THRESHOLD_METERS = 3;
+
 export function elevationGain(parsed: ParsedGpx): number | null {
   let samples = 0;
   let gain = 0;
 
   for (const group of lineGroups(parsed)) {
     for (const segment of group.segments) {
-      let previous: number | undefined;
+      let base: number | undefined;
       for (const point of segment) {
         const ele = point.ele;
         if (ele === undefined || !Number.isFinite(ele)) {
-          previous = undefined;
+          base = undefined;
           continue;
         }
         samples += 1;
-        if (previous !== undefined && ele > previous) gain += ele - previous;
-        previous = ele;
+        if (base === undefined) {
+          base = ele;
+          continue;
+        }
+        const delta = ele - base;
+        if (delta > ELEVATION_NOISE_THRESHOLD_METERS) {
+          gain += delta;
+          base = ele;
+        } else if (delta < -ELEVATION_NOISE_THRESHOLD_METERS) {
+          base = ele;
+        }
       }
     }
   }

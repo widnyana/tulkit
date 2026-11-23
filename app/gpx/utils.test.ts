@@ -247,6 +247,42 @@ describe("elevationGain", () => {
     assert.equal(elevationGain(parsed), null);
     assert.equal(elevationGain(empty), null);
   });
+
+  it("ignores GPS/barometer jitter below the noise threshold", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      tracks: [
+        {
+          segments: [
+            [
+              { lat: 0, lon: 0, ele: 100 },
+              { lat: 0, lon: 1, ele: 100.8 },
+              { lat: 0, lon: 2, ele: 99.5 },
+              { lat: 0, lon: 3, ele: 101.2 },
+              { lat: 0, lon: 4, ele: 100.1 },
+            ],
+          ],
+        },
+      ],
+    };
+    assert.equal(elevationGain(parsed), 0);
+  });
+
+  it("still counts a real climb made of many small jittery steps", () => {
+    const points = [{ lat: 0, lon: 0, ele: 0 }];
+    for (let i = 1; i <= 20; i++) {
+      // +0.6 m real climb per step, jitter-sized relative to each other but
+      // a genuine 12 m ascent overall: each 3 m threshold crossing banks its
+      // climb, and the final sub-threshold remainder (1.2 m) is the known,
+      // bounded cost of filtering noise at this granularity.
+      points.push({ lat: 0, lon: i, ele: i * 0.6 });
+    }
+    const parsed: ParsedGpx = {
+      ...empty,
+      tracks: [{ segments: [points] }],
+    };
+    assert.equal(elevationGain(parsed), 11);
+  });
 });
 
 describe("waypointsToParsedGpx", () => {
