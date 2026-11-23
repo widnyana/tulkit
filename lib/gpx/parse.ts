@@ -17,7 +17,10 @@ const INVALID_XML = "The file is not well-formed XML.";
 function readDocument(xml: string): Document | undefined {
   if (typeof DOMParser === "undefined") return undefined;
   try {
-    const doc = new DOMParser().parseFromString(xml, "application/xml");
+    const doc = new DOMParser().parseFromString(
+      xml.replace(/^\uFEFF/, ""),
+      "application/xml",
+    );
     return doc.getElementsByTagName("parsererror").length > 0 ? undefined : doc;
   } catch {
     return undefined;
@@ -174,10 +177,11 @@ export function isParseError(
 }
 
 export function parseGpx(xml: string): ParsedGpx | ParseError {
-  const doc = readDocument(xml);
+  const cleanXml = xml.replace(/^\uFEFF/, "");
+  const doc = readDocument(cleanXml);
   if (!doc) return { message: INVALID_XML };
 
-  const [parsed, error] = parseGPXWithCustomParser(xml, () => doc);
+  const [parsed, error] = parseGPXWithCustomParser(cleanXml, () => doc);
   if (!parsed) return { message: error?.message ?? INVALID_XML };
 
   let skipped = 0;

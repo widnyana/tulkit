@@ -444,4 +444,22 @@ describe("parseGpx: structural hardening", () => {
       time: "2024-01-02T03:04:05Z",
     });
   });
+
+  it("strips a leading UTF-8 BOM before parsing", () => {
+    const waypointResult = parseGpx(
+      '\uFEFF<?xml version="1.0"?><gpx><wpt lat="1" lon="2"><name>P</name></wpt></gpx>',
+    );
+    assert.ok(!isParseError(waypointResult), "expected a successful parse");
+    if (isParseError(waypointResult)) return;
+    assert.equal(waypointResult.waypoints.length, 1);
+    assert.equal(waypointResult.waypoints[0].name, "P");
+
+    const trackResult = parseGpx(
+      '\uFEFF<?xml version="1.0"?><gpx><trk><trkseg><trkpt lat="1" lon="1"></trkpt></trkseg>' +
+        '<trkseg><trkpt lat="2" lon="2"></trkpt></trkseg></trk></gpx>',
+    );
+    assert.ok(!isParseError(trackResult), "expected a successful parse");
+    if (isParseError(trackResult)) return;
+    assert.equal(trackResult.tracks[0].segments.length, 2);
+  });
 });
