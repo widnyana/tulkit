@@ -16,6 +16,7 @@ const TOOL_GUIDES: Record<string, { doc: string; api: string }> = {
   "/qr-gen": { doc: "/qr-gen/llms.txt", api: "/api/qr" },
   "/ip-planner": { doc: "/ip-planner/llms.txt", api: "/api/ip-planner" },
   "/tire-pressure": { doc: "/tire-pressure/llms.txt", api: "" },
+  "/ipcalc": { doc: "/ipcalc/llms.txt", api: "" },
 };
 
 const guideLines = Object.entries(TOOL_GUIDES).map(([href, { doc, api }]) => {
