@@ -44,7 +44,9 @@ const fetchChunk = async (
 ): Promise<(number | null)[] | null> => {
   const latitudes = points.map((point) => point.lat).join(",");
   const longitudes = points.map((point) => point.lon).join(",");
-  const url = `${ELEVATION_URL}?latitude=${latitudes}&longitude=${longitudes}`;
+  const url = new URL(ELEVATION_URL);
+  url.searchParams.set("latitude", latitudes);
+  url.searchParams.set("longitude", longitudes);
 
   return Effect.runPromise(
     Effect.gen(function* () {
