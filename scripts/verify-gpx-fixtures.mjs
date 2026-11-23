@@ -162,6 +162,8 @@ const CHECKS = {
     parsed.waypoints.filter((point) => point.sym === "Bike Repair").length === 2 &&
     parsed.waypoints.filter((point) => point.sym === "Medic").length === 2 &&
     parsed.waypoints.filter((point) => point.sym === "Danger Area").length === 2,
+  "bom-prefixed": (parsed) =>
+    parsed.tracks.length === 1 && totalPoints(parsed.tracks[0]) === 120,
   "empty-valid": (parsed) =>
     parsed.waypoints.length === 0 &&
     parsed.routes.length === 0 &&

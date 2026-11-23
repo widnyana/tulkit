@@ -37,6 +37,7 @@ same bytes. Every scenario exists once for West Java and once for Bali.
 | named-fallback-from-sym | West Java | `west-java/named-fallback-from-sym.gpx` | Route points with symbols and no names. Expect the named-point fallback label taken from the first symbol. |
 | waypoints-many-symbols | West Java | `west-java/waypoints-many-symbols.gpx` | Nine unknown symbols in one file. Expect six kept groups plus Other, and seven distinct colours with no wrap. |
 | full-legend | West Java | `west-java/full-legend.gpx` | Route with twelve marks and six waypoint categories: Camp, Water, Food, Repair, Medic and Hazard. Expect every legend row plus start and finish. |
+| bom-prefixed | West Java | `west-java/bom-prefixed.gpx` | Track file that starts with a UTF-8 BOM before the XML declaration. Expect a normal parse, one line group, no error. |
 | empty-valid | West Java | `west-java/empty-valid.gpx` | Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error. |
 | track-only | Bali | `bali/track-only.gpx` | Single-segment track with elevation. Expect one line group, distance and elevation gain, no brief. |
 | track-multiseg | Bali | `bali/track-multiseg.gpx` | Track split into three segments with a track desc. Expect segment boundaries kept and a brief from the track. |
@@ -70,6 +71,7 @@ same bytes. Every scenario exists once for West Java and once for Bali.
 | named-fallback-from-sym | Bali | `bali/named-fallback-from-sym.gpx` | Route points with symbols and no names. Expect the named-point fallback label taken from the first symbol. |
 | waypoints-many-symbols | Bali | `bali/waypoints-many-symbols.gpx` | Nine unknown symbols in one file. Expect six kept groups plus Other, and seven distinct colours with no wrap. |
 | full-legend | Bali | `bali/full-legend.gpx` | Route with twelve marks and six waypoint categories: Camp, Water, Food, Repair, Medic and Hazard. Expect every legend row plus start and finish. |
+| bom-prefixed | Bali | `bali/bom-prefixed.gpx` | Track file that starts with a UTF-8 BOM before the XML declaration. Expect a normal parse, one line group, no error. |
 | empty-valid | Bali | `bali/empty-valid.gpx` | Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error. |
 
 Regenerate: `node scripts/generate-gpx-fixtures.mjs`

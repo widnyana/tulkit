@@ -906,6 +906,18 @@ const SCENARIOS = [
     },
   },
   {
+    id: "bom-prefixed",
+    note: "Track file that starts with a UTF-8 BOM before the XML declaration. Expect a normal parse, one line group, no error.",
+    build(region, rng) {
+      const xml = documentXml({
+        version: "1.1",
+        creator: "MapSource 6.16.3",
+        body: trk(region, { segments: [trackPoints(region, rng, 120)] }),
+      });
+      return `\uFEFF${xml}`;
+    },
+  },
+  {
     id: "empty-valid",
     note: "Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error.",
     build(region) {
