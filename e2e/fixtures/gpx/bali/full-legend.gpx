@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="RideWithGPS" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="-8.49207" lon="115.18631"><ele>29</ele><name>Denpasar camp</name><desc>Camp 1</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.38222" lon="115.24438"><ele>310</ele><name>Ubud camp</name><desc>Camp 2</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.41461" lon="115.12127"><ele>684</ele><name>Kintamani water</name><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.53127" lon="115.32246"><ele>452</ele><name>Bedugul water</name><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.52037" lon="115.15698"><ele>548</ele><name>Tegallalang water</name><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.44877" lon="115.33456"><ele>164</ele><name>Feed station 1</name><desc>Feed 1</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.48320" lon="115.28277"><ele>594</ele><name>Feed station 2</name><desc>Feed 2</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.42002" lon="115.18215"><ele>167</ele><name>Mechanic 1</name><sym>Bike Repair</sym></wpt>
+  <wpt lat="-8.49251" lon="115.19368"><ele>675</ele><name>Mechanic 2</name><sym>Bike Repair</sym></wpt>
+  <wpt lat="-8.41340" lon="115.15724"><ele>420</ele><name>Medic 1</name><sym>Medic</sym></wpt>
+  <wpt lat="-8.40770" lon="115.20012"><ele>640</ele><name>Medic 2</name><sym>Medic</sym></wpt>
+  <wpt lat="-8.53759" lon="115.31428"><ele>375</ele><name>Hazard 1</name><sym>Danger Area</sym></wpt>
+  <wpt lat="-8.50697" lon="115.21669"><ele>381</ele><name>Hazard 2</name><sym>Danger Area</sym></wpt>
+  <rte>
+    <name>Denpasar - Kintamani - Ubud</name>
+    <desc>Full event legend for Bali: camp, water, feed, repair, medic and hazard.</desc>
+    <rtept lat="-8.44992" lon="115.24993"><name>10.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.44735" lon="115.25158"></rtept>
+    <rtept lat="-8.44510" lon="115.25302"></rtept>
+    <rtept lat="-8.44260" lon="115.25378"></rtept>
+    <rtept lat="-8.44032" lon="115.25542"></rtept>
+    <rtept lat="-8.43832" lon="115.25687"></rtept>
+    <rtept lat="-8.43560" lon="115.25736"></rtept>
+    <rtept lat="-8.43362" lon="115.25862"></rtept>
+    <rtept lat="-8.43101" lon="115.26021"></rtept>
+    <rtept lat="-8.42901" lon="115.26151"></rtept>
+    <rtept lat="-8.42619" lon="115.26277"><name>20.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.42420" lon="115.26372"></rtept>
+    <rtept lat="-8.42221" lon="115.26428"></rtept>
+    <rtept lat="-8.41958" lon="115.26591"></rtept>
+    <rtept lat="-8.41758" lon="115.26661"></rtept>
+    <rtept lat="-8.41511" lon="115.26774"></rtept>
+    <rtept lat="-8.41295" lon="115.26865"></rtept>
+    <rtept lat="-8.41050" lon="115.27025"></rtept>
+    <rtept lat="-8.40834" lon="115.27056"></rtept>
+    <rtept lat="-8.40636" lon="115.27219"></rtept>
+    <rtept lat="-8.40389" lon="115.27283"><name>30.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.40151" lon="115.27353"></rtept>
+    <rtept lat="-8.39921" lon="115.27446"></rtept>
+    <rtept lat="-8.39678" lon="115.27550"></rtept>
+    <rtept lat="-8.39505" lon="115.27672"></rtept>
+    <rtept lat="-8.39271" lon="115.27758"></rtept>
+    <rtept lat="-8.39040" lon="115.27871"></rtept>
+    <rtept lat="-8.38816" lon="115.27949"></rtept>
+    <rtept lat="-8.38611" lon="115.27964"></rtept>
+    <rtept lat="-8.38461" lon="115.28094"></rtept>
+    <rtept lat="-8.38259" lon="115.28183"><name>40.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.38052" lon="115.28253"></rtept>
+    <rtept lat="-8.37823" lon="115.28351"></rtept>
+    <rtept lat="-8.37631" lon="115.28388"></rtept>
+    <rtept lat="-8.37402" lon="115.28474"></rtept>
+    <rtept lat="-8.37198" lon="115.28529"></rtept>
+    <rtept lat="-8.37025" lon="115.28648"></rtept>
+    <rtept lat="-8.36796" lon="115.28707"></rtept>
+    <rtept lat="-8.36636" lon="115.28767"></rtept>
+    <rtept lat="-8.36445" lon="115.28805"></rtept>
+    <rtept lat="-8.36240" lon="115.28861"><name>50.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.36060" lon="115.28964"></rtept>
+    <rtept lat="-8.35904" lon="115.28993"></rtept>
+    <rtept lat="-8.35673" lon="115.29056"></rtept>
+    <rtept lat="-8.35503" lon="115.29186"></rtept>
+    <rtept lat="-8.35322" lon="115.29200"></rtept>
+    <rtept lat="-8.35156" lon="115.29243"></rtept>
+    <rtept lat="-8.35033" lon="115.29352"></rtept>
+    <rtept lat="-8.34801" lon="115.29390"></rtept>
+    <rtept lat="-8.34653" lon="115.29474"></rtept>
+    <rtept lat="-8.34459" lon="115.29537"><name>60.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.34312" lon="115.29564"></rtept>
+    <rtept lat="-8.34200" lon="115.29597"></rtept>
+    <rtept lat="-8.34007" lon="115.29655"></rtept>
+    <rtept lat="-8.33898" lon="115.29768"></rtept>
+    <rtept lat="-8.33744" lon="115.29807"></rtept>
+    <rtept lat="-8.33586" lon="115.29883"></rtept>
+    <rtept lat="-8.33456" lon="115.29928"></rtept>
+    <rtept lat="-8.33320" lon="115.29965"></rtept>
+    <rtept lat="-8.33131" lon="115.30047"></rtept>
+    <rtept lat="-8.33023" lon="115.30056"><name>70.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.32854" lon="115.30157"></rtept>
+    <rtept lat="-8.32785" lon="115.30173"></rtept>
+    <rtept lat="-8.32639" lon="115.30272"></rtept>
+    <rtept lat="-8.32551" lon="115.30296"></rtept>
+    <rtept lat="-8.32435" lon="115.30392"></rtept>
+    <rtept lat="-8.32307" lon="115.30401"></rtept>
+    <rtept lat="-8.32167" lon="115.30508"></rtept>
+    <rtept lat="-8.32052" lon="115.30528"></rtept>
+    <rtept lat="-8.31951" lon="115.30576"></rtept>
+    <rtept lat="-8.31862" lon="115.30698"><name>80.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.31775" lon="115.30707"></rtept>
+    <rtept lat="-8.31622" lon="115.30771"></rtept>
+    <rtept lat="-8.31561" lon="115.30836"></rtept>
+    <rtept lat="-8.31501" lon="115.30924"></rtept>
+    <rtept lat="-8.31364" lon="115.30983"></rtept>
+    <rtept lat="-8.31294" lon="115.30987"></rtept>
+    <rtept lat="-8.31228" lon="115.31118"></rtept>
+    <rtept lat="-8.31129" lon="115.31176"></rtept>
+    <rtept lat="-8.31102" lon="115.31232"></rtept>
+    <rtept lat="-8.30996" lon="115.31306"><name>90.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.30906" lon="115.31327"></rtept>
+    <rtept lat="-8.30852" lon="115.31452"></rtept>
+    <rtept lat="-8.30840" lon="115.31485"></rtept>
+    <rtept lat="-8.30797" lon="115.31593"></rtept>
+    <rtept lat="-8.30709" lon="115.31594"></rtept>
+    <rtept lat="-8.30685" lon="115.31723"></rtept>
+    <rtept lat="-8.30609" lon="115.31778"></rtept>
+    <rtept lat="-8.30618" lon="115.31864"></rtept>
+    <rtept lat="-8.30552" lon="115.31947"></rtept>
+    <rtept lat="-8.30510" lon="115.32026"><name>100.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.30479" lon="115.32122"></rtept>
+    <rtept lat="-8.30439" lon="115.32199"></rtept>
+    <rtept lat="-8.30385" lon="115.32229"></rtept>
+    <rtept lat="-8.30403" lon="115.32367"></rtept>
+    <rtept lat="-8.30361" lon="115.32417"></rtept>
+    <rtept lat="-8.30350" lon="115.32497"></rtept>
+    <rtept lat="-8.30357" lon="115.32604"></rtept>
+    <rtept lat="-8.30320" lon="115.32645"></rtept>
+    <rtept lat="-8.30323" lon="115.32808"></rtept>
+    <rtept lat="-8.30360" lon="115.32888"><name>110.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.30321" lon="115.32998"></rtept>
+    <rtept lat="-8.30335" lon="115.33061"></rtept>
+    <rtept lat="-8.30340" lon="115.33153"></rtept>
+    <rtept lat="-8.30355" lon="115.33286"></rtept>
+    <rtept lat="-8.30376" lon="115.33334"></rtept>
+    <rtept lat="-8.30440" lon="115.33506"></rtept>
+    <rtept lat="-8.30426" lon="115.33590"></rtept>
+    <rtept lat="-8.30477" lon="115.33717"></rtept>
+    <rtept lat="-8.30463" lon="115.33790"></rtept>
+    <rtept lat="-8.30527" lon="115.33937"><name>120.00km</name><sym>warningflag</sym></rtept>
+    <rtept lat="-8.30560" lon="115.34027"></rtept>
+    <rtept lat="-8.30537" lon="115.34126"></rtept>
+    <rtept lat="-8.30634" lon="115.34249"></rtept>
+    <rtept lat="-8.30636" lon="115.34407"></rtept>
+    <rtept lat="-8.30704" lon="115.34483"></rtept>
+    <rtept lat="-8.30734" lon="115.34642"></rtept>
+    <rtept lat="-8.30773" lon="115.34734"></rtept>
+    <rtept lat="-8.30858" lon="115.34888"></rtept>
+    <rtept lat="-8.30899" lon="115.35027"></rtept>
+  </rte>
+</gpx>

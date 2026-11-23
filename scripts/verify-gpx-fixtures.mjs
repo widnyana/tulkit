@@ -151,6 +151,17 @@ const CHECKS = {
   "waypoints-many-symbols": (parsed) =>
     parsed.waypoints.length === 9 &&
     new Set(parsed.waypoints.map((point) => point.sym)).size === 9,
+  "full-legend": (parsed) =>
+    parsed.routes.length === 1 &&
+    parsed.routes[0].points.length === 120 &&
+    parsed.routes[0].points.filter((point) => point.sym === "warningflag").length === 12 &&
+    parsed.waypoints.length === 13 &&
+    parsed.waypoints.filter((point) => point.sym === "Camp").length === 2 &&
+    parsed.waypoints.filter((point) => point.sym === "Drinking Water").length === 3 &&
+    parsed.waypoints.filter((point) => point.sym === "Food").length === 2 &&
+    parsed.waypoints.filter((point) => point.sym === "Bike Repair").length === 2 &&
+    parsed.waypoints.filter((point) => point.sym === "Medic").length === 2 &&
+    parsed.waypoints.filter((point) => point.sym === "Danger Area").length === 2,
   "empty-valid": (parsed) =>
     parsed.waypoints.length === 0 &&
     parsed.routes.length === 0 &&

@@ -848,6 +848,64 @@ const SCENARIOS = [
     },
   },
   {
+    id: "full-legend",
+    note: "Route with twelve marks and six waypoint categories: Camp, Water, Food, Repair, Medic and Hazard. Expect every legend row plus start and finish.",
+    build(region, rng) {
+      const body = routePoints(region, rng, 120)
+        .map((point, index) =>
+          index % 10 === 0
+            ? rtept(
+                point,
+                `<name>${(index + 10).toFixed(2)}km</name><sym>warningflag</sym>`,
+              )
+            : rtept(point),
+        )
+        .join("\n");
+      const stops = [];
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `${region.places[index]} camp`, "Camp", `Camp ${index + 1}`),
+        );
+      }
+      for (let index = 0; index < 3; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `${region.places[index + 2]} water`, "Drinking Water"),
+        );
+      }
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `Feed station ${index + 1}`, "Food", `Feed ${index + 1}`),
+        );
+      }
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `Mechanic ${index + 1}`, "Bike Repair"),
+        );
+      }
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `Medic ${index + 1}`, "Medic"),
+        );
+      }
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `Hazard ${index + 1}`, "Danger Area"),
+        );
+      }
+      return documentXml({
+        version: "1.1",
+        creator: "RideWithGPS",
+        body: `${stops
+          .map((point) => wpt(point))
+          .join("\n")}\n  <rte>\n    <name>${escapeXml(
+          region.routeName,
+        )}</name>\n    <desc>Full event legend for ${escapeXml(
+          region.label,
+        )}: camp, water, feed, repair, medic and hazard.</desc>\n${body}\n  </rte>`,
+      });
+    },
+  },
+  {
     id: "empty-valid",
     note: "Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error.",
     build(region) {
