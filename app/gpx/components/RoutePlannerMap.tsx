@@ -82,11 +82,13 @@ export function RoutePlannerMap({
   snappedPath,
   onMapClick,
   onPointMove,
+  flyToCenter,
 }: {
   controlPoints: ReadonlyArray<LatLon>;
   snappedPath: ReadonlyArray<LatLon> | null;
   onMapClick: (point: LatLon) => void;
   onPointMove: (index: number, point: LatLon) => void;
+  flyToCenter?: LatLon | null;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapInstance | null>(null);
@@ -257,6 +259,12 @@ export function RoutePlannerMap({
       );
     }
   }, [controlPoints, snappedPath, mapReady]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !mapReady || !flyToCenter) return;
+    map.flyTo({ center: [flyToCenter.lon, flyToCenter.lat], zoom: 13 });
+  }, [flyToCenter, mapReady]);
 
   return (
     <div className="relative h-[420px] w-full overflow-hidden rounded-lg border border-border">

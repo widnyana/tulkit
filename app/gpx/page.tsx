@@ -13,9 +13,11 @@ import {
   useRef,
   useState,
 } from "react";
+import { LocateFixed, Search } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
 import { fetchElevations } from "@/lib/gpx/elevation";
+import { type PlaceResult, searchPlace } from "@/lib/gpx/geocode";
 import { fetchRoadRoute, snapToRoad } from "@/lib/gpx/routing";
 import { routeToGpx } from "@/lib/gpx/serialize";
 import {
@@ -83,6 +85,8 @@ const TAB_HINTS: Record<TabValue, string> = {
 
 const PLAN_DRAFT_KEY = "tulkit:gpx:route-draft:v1";
 const PLAN_DRAFT_DEBOUNCE_MS = 400;
+const PLAN_LOCATION_SEARCH_DEBOUNCE_MS = 400;
+const PLAN_LOCATION_TIMEOUT_MS = 10_000;
 const PLAN_SNAP_DEBOUNCE_MS = 600;
 const PLAN_HISTORY_LIMIT = 50;
 const PLAN_NOTICE_TIMEOUT_MS = 3000;
@@ -106,6 +110,21 @@ const SNAP_STATUS_LABELS: Record<SnapStatus, string> = {
   loading: "Snapping to roads...",
   ok: "Snapped to roads.",
   failed: "A point is not on a road; move it closer to a road to export.",
+};
+
+type LocationStatus =
+  | "idle"
+  | "locating"
+  | "granted"
+  | "denied"
+  | "unavailable";
+
+const LOCATION_STATUS_LABELS: Record<LocationStatus, string> = {
+  idle: "",
+  locating: "Finding your location...",
+  granted: "Centered on your location.",
+  denied: "Location access denied — search for a place below.",
+  unavailable: "Location unavailable — search for a place below.",
 };
 
 interface PlanNotice {
@@ -300,6 +319,11 @@ function GpxViewContent() {
   const [snappedPath, setSnappedPath] = useState<LatLon[] | null>(null);
   const [snapStatus, setSnapStatus] = useState<SnapStatus>("idle");
   const [planNotice, setPlanNotice] = useState<PlanNotice | null>(null);
+  const [planCenter, setPlanCenter] = useState<LatLon | null>(null);
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
+  const [placeQuery, setPlaceQuery] = useState("");
+  const [placeResults, setPlaceResults] = useState<PlaceResult[]>([]);
+  const [placeSearching, setPlaceSearching] = useState(false);
   const [preparingPlanGpx, setPreparingPlanGpx] = useState(false);
   const [preparingMapsGpx, setPreparingMapsGpx] = useState(false);
   const planPoints = plan.points;
@@ -307,6 +331,7 @@ function GpxViewContent() {
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
+  const placeSearchAbort = useRef<AbortController | null>(null);
   const draftRestored = useRef(false);
   const resultsRef = useRef<HTMLDivElement | null>(null);
   const scrolledResult = useRef<ParsedGpx | null>(null);
@@ -315,6 +340,7 @@ function GpxViewContent() {
   const mapsUrlInputId = useId();
   const csvInputId = useId();
   const planNameId = useId();
+  const placeSearchId = useId();
 
   const [urlId, setUrlId] = useGpxId();
   const urlIdOnLoad = useRef<string | null>(urlId);
@@ -647,6 +673,70 @@ function GpxViewContent() {
     dispatchPlan({ type: "move", index, point });
   }, []);
 
+  const requestPlanLocation = useCallback(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocationStatus("unavailable");
+      return;
+    }
+    setLocationStatus("locating");
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setPlanCenter({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+        });
+        setLocationStatus("granted");
+      },
+      (error) => {
+        setLocationStatus(
+          error.code === error.PERMISSION_DENIED ? "denied" : "unavailable",
+        );
+      },
+      { timeout: PLAN_LOCATION_TIMEOUT_MS },
+    );
+  }, []);
+
+  useEffect(() => {
+    if (tab === "plan" && locationStatus === "idle") requestPlanLocation();
+  }, [tab, locationStatus, requestPlanLocation]);
+
+  const runPlaceSearch = useDebouncedCallback((query: string) => {
+    placeSearchAbort.current?.abort();
+    if (query.trim() === "") {
+      setPlaceResults([]);
+      setPlaceSearching(false);
+      return;
+    }
+    const controller = new AbortController();
+    placeSearchAbort.current = controller;
+    setPlaceSearching(true);
+    void searchPlace(query, controller.signal).then((results) => {
+      if (controller.signal.aborted) return;
+      setPlaceResults(results);
+      setPlaceSearching(false);
+    });
+  }, PLAN_LOCATION_SEARCH_DEBOUNCE_MS);
+
+  const handlePlaceQueryChange = useCallback(
+    (value: string) => {
+      setPlaceQuery(value);
+      runPlaceSearch(value);
+    },
+    [runPlaceSearch],
+  );
+
+  const handlePlaceSelect = useCallback((result: PlaceResult) => {
+    setPlanCenter({ lat: result.lat, lon: result.lon });
+    setPlaceResults([]);
+    setPlaceQuery(result.label);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      placeSearchAbort.current?.abort();
+    };
+  }, []);
+
   const handleDownloadRouteGpx = async () => {
     if (planPoints.length < 2 || snappedPath === null || preparingPlanGpx) {
       return;
@@ -954,9 +1044,76 @@ function GpxViewContent() {
                 snappedPath={snappedPath}
                 onMapClick={handlePlanMapClick}
                 onPointMove={handlePlanPointMove}
+                flyToCenter={planCenter}
               />
 
               <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={requestPlanLocation}
+                      disabled={locationStatus === "locating"}
+                    >
+                      <LocateFixed className="size-4" aria-hidden="true" />
+                      Use my location
+                    </Button>
+                    {locationStatus === "locating" && <Spinner />}
+                  </div>
+                  {LOCATION_STATUS_LABELS[locationStatus] && (
+                    <p className="text-sm text-muted-foreground">
+                      {LOCATION_STATUS_LABELS[locationStatus]}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor={placeSearchId}
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Search for a place
+                  </label>
+                  <div className="relative">
+                    <Search
+                      className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <Input
+                      id={placeSearchId}
+                      value={placeQuery}
+                      onChange={(e) => handlePlaceQueryChange(e.target.value)}
+                      placeholder="City, address, landmark..."
+                      className="pl-9"
+                    />
+                  </div>
+                  {placeSearching && (
+                    <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Spinner />
+                      <span>Searching...</span>
+                    </p>
+                  )}
+                  {placeResults.length > 0 && (
+                    <div className="space-y-1 rounded-md border border-border p-1">
+                      {placeResults.map((result) => (
+                        <button
+                          key={`${result.lat},${result.lon}`}
+                          type="button"
+                          onClick={() => handlePlaceSelect(result)}
+                          className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-muted"
+                        >
+                          {result.label}
+                        </button>
+                      ))}
+                      <p className="px-2 pt-1 text-xs text-muted-foreground">
+                        Search by OpenStreetMap Nominatim
+                      </p>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <label
                     htmlFor={planNameId}
