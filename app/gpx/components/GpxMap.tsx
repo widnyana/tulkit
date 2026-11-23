@@ -153,10 +153,17 @@ function addLineLayer(map: MapInstance, group: LineGroup) {
       "line-join": "round",
       "line-cap": "round",
     },
-    paint: {
-      "line-color": group.color,
-      "line-width": 4,
-    },
+    paint:
+      group.kind === "route"
+        ? {
+            "line-color": group.color,
+            "line-width": 4,
+            "line-dasharray": [2, 1.5],
+          }
+        : {
+            "line-color": group.color,
+            "line-width": 4,
+          },
   });
 }
 
@@ -289,13 +296,28 @@ function addWaypointLayers(
   });
 }
 
-function Swatch({ color, shape }: { color: string; shape: SwatchShape }) {
+function Swatch({
+  color,
+  shape,
+  dashed,
+}: {
+  color: string;
+  shape: SwatchShape;
+  dashed?: boolean;
+}) {
   if (shape === "line") {
     return (
       <span
         aria-hidden="true"
         className="inline-block shrink-0"
-        style={{ width: 14, height: 3, backgroundColor: color }}
+        style={{
+          width: 14,
+          height: 3,
+          backgroundColor: dashed ? "transparent" : color,
+          backgroundImage: dashed
+            ? `repeating-linear-gradient(to right, ${color} 0 4px, transparent 4px 7px)`
+            : undefined,
+        }}
       />
     );
   }
@@ -333,7 +355,11 @@ function MapLegend({ parsed }: { parsed: ParsedGpx }) {
       <p className="font-medium">Legend</p>
       {groups.map((group) => (
         <LegendRow key={group.id}>
-          <Swatch color={group.color} shape="line" />
+          <Swatch
+            color={group.color}
+            shape="line"
+            dashed={group.kind === "route"}
+          />
           <span>{group.label}</span>
           <span className="ml-auto tabular-nums text-muted-foreground">
             {formatDistance(group.distanceMeters)}
