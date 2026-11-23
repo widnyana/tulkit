@@ -1,12 +1,11 @@
 "use client";
 
 import type { InvoiceData } from "@/lib/invoice/types";
-import { PDFDownloadLink } from "@react-pdf/renderer";
+import { saveAs } from "file-saver";
 import { Download } from "lucide-react";
 import type React from "react";
-import { useMemo } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
-import { InvoiceDocument } from "../invoice-document";
 import { Button } from "./ui/button";
 
 interface InvoiceDownloadButtonProps {
@@ -16,51 +15,32 @@ interface InvoiceDownloadButtonProps {
 const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
   invoiceData,
 }) => {
-  // Check if we have valid data to generate
-  const hasValidData = invoiceData.sender.name && invoiceData.recipient.name;
+  const [isGenerating, setIsGenerating] = useState(false);
+  const hasValidData = Boolean(
+    invoiceData.sender.name && invoiceData.recipient.name,
+  );
 
-  const handleDownloadStart = () => {
+  const handleDownload = async () => {
+    if (isGenerating) return;
+    setIsGenerating(true);
     toast.info("Preparing your PDF...");
-  };
 
-  const handleDownloadError = () => {
-    toast.error("Failed to generate PDF. Please try again.");
+    try {
+      // The renderer and the template tree load on click, not on page open.
+      const [{ pdf }, { InvoiceDocument }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("../invoice-document"),
+      ]);
+      const blob = await pdf(
+        <InvoiceDocument invoiceData={invoiceData} />,
+      ).toBlob();
+      saveAs(blob, `invoice-${invoiceData.invoiceNumber || "untitled"}.pdf`);
+    } catch {
+      toast.error("Failed to generate PDF. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
   };
-
-  // Generate a key based on critical fields to force remount on changes
-  // This prevents React reconciliation bugs in @react-pdf/renderer
-  const dataKey = useMemo(() => {
-    const parts = [
-      invoiceData.templateKey || "default",
-      invoiceData.invoiceNumber,
-      invoiceData.issueDate,
-      invoiceData.dueDate,
-      invoiceData.logo ? "has-logo" : "no-logo",
-      invoiceData.paymentInfo?.paymentQRCode ? "has-qr" : "no-qr",
-      invoiceData.notes || "no-notes",
-      invoiceData.items.length,
-      invoiceData.taxEnabled ? "tax-on" : "tax-off",
-      invoiceData.taxRate,
-      invoiceData.currency,
-      invoiceData.sender.name,
-      invoiceData.recipient.name,
-    ];
-    return parts.join("-");
-  }, [
-    invoiceData.templateKey,
-    invoiceData.invoiceNumber,
-    invoiceData.issueDate,
-    invoiceData.dueDate,
-    invoiceData.logo,
-    invoiceData.paymentInfo?.paymentQRCode,
-    invoiceData.notes,
-    invoiceData.items.length,
-    invoiceData.taxEnabled,
-    invoiceData.taxRate,
-    invoiceData.currency,
-    invoiceData.sender.name,
-    invoiceData.recipient.name,
-  ]);
 
   if (!hasValidData) {
     return (
@@ -73,24 +53,14 @@ const InvoiceDownloadButton: React.FC<InvoiceDownloadButtonProps> = ({
 
   return (
     <div className="p-4 border-t bg-muted">
-      <PDFDownloadLink
-        key={dataKey}
-        document={<InvoiceDocument invoiceData={invoiceData} />}
-        fileName={`invoice-${invoiceData.invoiceNumber || "untitled"}.pdf`}
-        className="w-full block"
-        onClick={handleDownloadStart}
-        onError={handleDownloadError}
+      <Button
+        onClick={handleDownload}
+        disabled={isGenerating}
+        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-6 text-base shadow-sm transition-all hover:shadow-md disabled:hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {({ loading }) => (
-          <Button
-            disabled={loading}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-6 text-base shadow-sm transition-all hover:shadow-md disabled:hover:shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Download className="w-5 h-5 mr-2" />
-            {loading ? "Generating PDF..." : "Download Invoice PDF"}
-          </Button>
-        )}
-      </PDFDownloadLink>
+        <Download className="w-5 h-5 mr-2" />
+        {isGenerating ? "Generating PDF..." : "Download Invoice PDF"}
+      </Button>
     </div>
   );
 };

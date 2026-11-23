@@ -1,9 +1,20 @@
 "use client";
 
 import type { InvoiceData } from "@/lib/invoice/types";
+import dynamic from "next/dynamic";
 import type React from "react";
-import { useEffect, useState } from "react";
-import InvoicePDFViewer from "./invoice-pdf-viewer/InvoicePDFViewer";
+
+const InvoicePDFViewer = dynamic(
+  () => import("./invoice-pdf-viewer/InvoicePDFViewer"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full flex items-center justify-center bg-muted">
+        <p className="text-muted-foreground">Loading preview...</p>
+      </div>
+    ),
+  },
+);
 
 interface InvoicePDFPreviewProps {
   invoiceData: InvoiceData;
@@ -12,36 +23,17 @@ interface InvoicePDFPreviewProps {
 const InvoicePDFPreview: React.FC<InvoicePDFPreviewProps> = ({
   invoiceData,
 }) => {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Enhanced validation to prevent "Eo is not a function" errors
-  const hasValidData =
-    // required sender fields
+  const hasValidData = Boolean(
     invoiceData.sender?.name?.trim() &&
-    invoiceData.sender?.address?.trim() &&
-    // required recipient fields
-    invoiceData.recipient?.name?.trim() &&
-    invoiceData.recipient?.address?.trim() &&
-    // invoice details
-    invoiceData.invoiceNumber?.trim() &&
-    invoiceData.issueDate?.trim() &&
-    invoiceData.dueDate?.trim() &&
-    // Ensure items array exists and has at least one item
-    Array.isArray(invoiceData.items) &&
-    invoiceData.items.length > 0;
-
-  if (!isClient) {
-    // Render placeholder during SSR/hydration
-    return (
-      <div className="h-full w-full flex items-center justify-center bg-muted">
-        <p className="text-muted-foreground">Loading preview...</p>
-      </div>
-    );
-  }
+      invoiceData.sender?.address?.trim() &&
+      invoiceData.recipient?.name?.trim() &&
+      invoiceData.recipient?.address?.trim() &&
+      invoiceData.invoiceNumber?.trim() &&
+      invoiceData.issueDate?.trim() &&
+      invoiceData.dueDate?.trim() &&
+      Array.isArray(invoiceData.items) &&
+      invoiceData.items.length > 0,
+  );
 
   if (!hasValidData) {
     return (

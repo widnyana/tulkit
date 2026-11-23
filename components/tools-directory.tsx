@@ -167,6 +167,7 @@ function DirectoryGroup({
           <li key={`${id}-${tool.href}`}>
             <Link
               href={tool.href}
+              prefetch={false}
               aria-label={tool.title}
               onClick={() => addRecentTool(window.localStorage, tool.href)}
               className={cn(

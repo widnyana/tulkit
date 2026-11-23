@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         ? { exclude: ["error", "warn"] }
         : false,
   },
+  experimental: {
+    // Inline the single global stylesheet so the first paint needs no
+    // render-blocking CSS request. Static pages only, so caching is a wash.
+    inlineCss: true,
+  },
   logging: {
     fetches: {
       fullUrl: true,
