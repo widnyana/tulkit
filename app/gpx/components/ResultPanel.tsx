@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
+import { flushSync } from "react-dom";
 import type { ParsedGpx } from "../types";
 import { buildGpxStats } from "../utils";
 import { GpxMap } from "./GpxMap";
@@ -19,6 +20,22 @@ export function ResultPanel({
   parsed: ParsedGpx;
   children?: ReactNode;
 }) {
+  const [selected, setSelected] = useState<number | null>(null);
+  const [selectionSource, setSelectionSource] = useState(parsed);
+  if (selectionSource !== parsed) {
+    setSelectionSource(parsed);
+    setSelected(null);
+  }
+
+  const handleSelect = (index: number) => {
+    if (selected === index) {
+      flushSync(() => setSelected(null));
+    }
+    setSelected(index);
+  };
+
+  const hasPoints = parsed.waypoints.length > 0;
+
   return (
     <div className="space-y-4">
       <MetadataPanel parsed={parsed} />
@@ -29,8 +46,18 @@ export function ResultPanel({
         {actions}
       </div>
       {children}
-      <GpxMap parsed={parsed} />
-      <WaypointList parsed={parsed} />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
+        <div
+          className={`min-w-0 ${hasPoints ? "lg:col-span-10" : "lg:col-span-12"}`}
+        >
+          <GpxMap parsed={parsed} focusIndex={selected} />
+        </div>
+        {hasPoints ? (
+          <div className="min-w-0 lg:col-span-2">
+            <WaypointList parsed={parsed} onSelect={handleSelect} />
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

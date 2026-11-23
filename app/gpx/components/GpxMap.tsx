@@ -68,21 +68,15 @@ const OTHER_POI_GROUP_KEY = "__other";
 interface VisibleFeatures {
   lines: Record<string, number>;
   marks: number;
-  named: number;
   direction: number;
   poi: Record<string, number>;
-  start: boolean;
-  finish: boolean;
 }
 
 const EMPTY_VISIBLE: VisibleFeatures = {
   lines: {},
   marks: 0,
-  named: 0,
   direction: 0,
   poi: {},
-  start: false,
-  finish: false,
 };
 
 // The e2e probe reads the live map to query rendered features and project
@@ -445,6 +439,22 @@ function popupContent(options: {
   return container;
 }
 
+function waypointPopupContent(fields: {
+  name: string;
+  sym: string;
+  desc: string;
+  href?: string;
+  hrefText: string;
+}): HTMLDivElement | null {
+  const href = safeExternalHref(fields.href);
+  if (!fields.name && !fields.sym && !fields.desc && !href) return null;
+  return popupContent({
+    title: fields.name,
+    lines: [fields.sym, fields.desc],
+    link: href ? { href, text: fields.hrefText || href } : undefined,
+  });
+}
+
 function decoratePopup(popup: MapLibrePopup): MapLibrePopup {
   const apply = () => {
     const element: HTMLElement | undefined = popup.getElement();
@@ -556,23 +566,19 @@ function addWaypointLayers(
 
   map.on("click", WAYPOINT_HIT_LAYER_ID, (event) => {
     const properties = event.features?.[0]?.properties ?? {};
-    const name = typeof properties.name === "string" ? properties.name : "";
-    const sym = typeof properties.sym === "string" ? properties.sym : "";
-    const desc = typeof properties.desc === "string" ? properties.desc : "";
-    const hrefText =
-      typeof properties.hrefText === "string" ? properties.hrefText : "";
-    const href = safeExternalHref(
-      typeof properties.href === "string" ? properties.href : undefined,
-    );
-    if (!name && !sym && !desc && !href) return;
+    const content = waypointPopupContent({
+      name: typeof properties.name === "string" ? properties.name : "",
+      sym: typeof properties.sym === "string" ? properties.sym : "",
+      desc: typeof properties.desc === "string" ? properties.desc : "",
+      href: typeof properties.href === "string" ? properties.href : undefined,
+      hrefText:
+        typeof properties.hrefText === "string" ? properties.hrefText : "",
+    });
+    if (!content) return;
     decoratePopup(
-      new PopupClass().setLngLat(event.lngLat).setDOMContent(
-        popupContent({
-          title: name,
-          lines: [sym, desc],
-          link: href ? { href, text: hrefText || href } : undefined,
-        }),
-      ),
+      new PopupClass({ focusAfterOpen: false })
+        .setLngLat(event.lngLat)
+        .setDOMContent(content),
     ).addTo(map);
   });
   map.on("mouseenter", WAYPOINT_HIT_LAYER_ID, () => {
@@ -636,32 +642,16 @@ function MapLegend({
   legend: LegendModel;
   visible: VisibleFeatures;
 }) {
-  const { markLabelsVisible, namedVisible } = legendVisibility(legend);
+  const { markLabelsVisible } = legendVisibility(legend);
   const endpoints = legend.lines.length === 0 ? null : legend.endpoints;
-  const lineRows = legend.lines.filter(
-    (group) => (visible.lines[group.id] ?? 0) > 0,
-  );
-  const poiRows = legend.poiGroups.filter(
-    (group) => (visible.poi[group.key] ?? 0) > 0,
-  );
-  const marksRowVisible =
-    legend.marks !== null && markLabelsVisible && visible.marks > 0;
   const marksCapVisible = legend.marks !== null && !markLabelsVisible;
-  const namedRowVisible =
-    legend.namedPoints !== null && namedVisible && visible.named > 0;
-  const loopRowVisible = endpoints !== null && legend.loop && visible.start;
-  const startRowVisible = endpoints !== null && !legend.loop && visible.start;
-  const finishRowVisible = endpoints !== null && !legend.loop && visible.finish;
   const directionRowVisible = visible.direction > 0;
   const hasContent =
-    lineRows.length > 0 ||
-    marksRowVisible ||
-    marksCapVisible ||
-    namedRowVisible ||
-    poiRows.length > 0 ||
-    loopRowVisible ||
-    startRowVisible ||
-    finishRowVisible ||
+    legend.lines.length > 0 ||
+    legend.marks !== null ||
+    legend.namedPoints !== null ||
+    legend.poiGroups.length > 0 ||
+    endpoints !== null ||
     directionRowVisible;
   if (!hasContent) return null;
 
@@ -673,25 +663,32 @@ function MapLegend({
       className="absolute bottom-3 left-3 z-10 flex max-h-[min(45%,18rem)] max-w-[min(18rem,calc(100%-8.5rem))] [overflow-wrap:anywhere] flex-col gap-1.5 overflow-y-auto rounded-md border border-border bg-background/95 p-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <p className="font-medium">Legend</p>
-      {lineRows.map((group) => (
-        <LegendRow key={group.id}>
-          <Swatch
-            color={group.color}
-            shape="line"
-            dashed={group.kind === "route"}
-          />
-          <span>{group.label}</span>
-          <span className="ml-auto tabular-nums text-muted-foreground">
-            {formatDistance(group.distanceMeters)}
-          </span>
-        </LegendRow>
-      ))}
-      {legend.marks && marksRowVisible ? (
+      {legend.lines.map((group) => {
+        const offScreen = (visible.lines[group.id] ?? 0) === 0;
+        return (
+          <LegendRow key={group.id}>
+            <Swatch
+              color={group.color}
+              shape="line"
+              dashed={group.kind === "route"}
+            />
+            <span>
+              {group.label}
+              {offScreen ? " · off screen" : ""}
+            </span>
+            <span className="ml-auto tabular-nums text-muted-foreground">
+              {formatDistance(group.distanceMeters)}
+            </span>
+          </LegendRow>
+        );
+      })}
+      {legend.marks && markLabelsVisible ? (
         <LegendRow>
           <span>
+            {legend.marks.count} marks every {legend.marks.stepKm} km
             {visible.marks < legend.marks.count
-              ? `${visible.marks} of ${legend.marks.count} marks in view`
-              : `${legend.marks.count} marks every ${legend.marks.stepKm} km`}
+              ? ` · ${visible.marks} in view`
+              : ""}
           </span>
         </LegendRow>
       ) : null}
@@ -702,52 +699,60 @@ function MapLegend({
           </span>
         </LegendRow>
       ) : null}
-      {legend.namedPoints && namedRowVisible ? (
+      {legend.namedPoints ? (
         <LegendRow>
           <span>{legend.namedPoints.count} named points</span>
         </LegendRow>
       ) : null}
-      {poiRows.map((group) => (
-        <LegendRow key={group.key}>
-          <Swatch
-            color={
-              group.color === TOKEN_FALLBACK.background
-                ? "var(--background)"
-                : group.color
-            }
-            shape="circle"
-            ringColor={
-              group.ringColor === TOKEN_FALLBACK.foreground
-                ? "var(--foreground)"
-                : group.ringColor
-            }
-          />
-          <span>
-            {group.label} {group.count}
-          </span>
-        </LegendRow>
-      ))}
-      {loopRowVisible ? (
-        <LegendRow>
-          <Swatch color={START_SWATCH} shape="circle" />
-          <span>Start - Finish</span>
-        </LegendRow>
-      ) : (
-        <>
-          {startRowVisible ? (
+      {legend.poiGroups.map((group) => {
+        const visibleCount = visible.poi[group.key] ?? 0;
+        const suffix =
+          visibleCount < group.count
+            ? visibleCount === 0
+              ? " · off screen"
+              : ` · ${visibleCount} visible`
+            : "";
+        return (
+          <LegendRow key={group.key}>
+            <Swatch
+              color={
+                group.color === TOKEN_FALLBACK.background
+                  ? "var(--background)"
+                  : group.color
+              }
+              shape="circle"
+              ringColor={
+                group.ringColor === TOKEN_FALLBACK.foreground
+                  ? "var(--foreground)"
+                  : group.ringColor
+              }
+            />
+            <span>
+              {group.label} {group.count}
+              {suffix}
+            </span>
+          </LegendRow>
+        );
+      })}
+      {endpoints ? (
+        legend.loop ? (
+          <LegendRow>
+            <Swatch color={START_SWATCH} shape="circle" />
+            <span>Start - Finish</span>
+          </LegendRow>
+        ) : (
+          <>
             <LegendRow>
               <Swatch color={START_SWATCH} shape="circle" />
               <span>Start</span>
             </LegendRow>
-          ) : null}
-          {finishRowVisible ? (
             <LegendRow>
               <Swatch color={FINISH_SWATCH} shape="square" />
               <span>Finish</span>
             </LegendRow>
-          ) : null}
-        </>
-      )}
+          </>
+        )
+      ) : null}
       {directionRowVisible ? (
         <LegendRow>
           <svg
@@ -767,11 +772,22 @@ function MapLegend({
   );
 }
 
-export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
+export function GpxMap({
+  parsed,
+  focusIndex,
+}: {
+  parsed: ParsedGpx;
+  focusIndex?: number | null;
+}) {
   const legend = useMemo(() => buildLegend(parsed), [parsed]);
   const containerRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   const [mapFailed, setMapFailed] = useState(false);
   const [visible, setVisible] = useState<VisibleFeatures>(EMPTY_VISIBLE);
+  const [mapInstance, setMapInstance] = useState<MapInstance | null>(null);
+  const activeMapRef = useRef<MapInstance | null>(null);
+  const popupClassRef = useRef<typeof MapLibrePopup | null>(null);
+  const focusedPopupRef = useRef<MapLibrePopup | null>(null);
   const { resolvedTheme } = useTheme();
   const styleUrl = resolvedTheme === "dark" ? STYLE_URL_DARK : STYLE_URL_LIGHT;
 
@@ -793,6 +809,11 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
     let cancelled = false;
     let measureTimer: number | undefined;
 
+    const handleFullscreenChange = () => {
+      map?.resize();
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
     (async () => {
       try {
         const {
@@ -807,12 +828,15 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
         if (cancelled) return;
 
         config.WORKER_URL = "/maplibre-gl-worker.mjs";
+        popupClassRef.current = Popup;
         const instance = new MapLibreMap({
           container,
           style: styleUrl,
           fadeDuration: 0,
         });
         map = instance;
+        activeMapRef.current = instance;
+        setMapInstance(instance);
         if (process.env.NODE_ENV !== "production") {
           const testWindow = window as TestWindow;
           testWindow.__gpxMap = instance;
@@ -827,7 +851,11 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
           new NavigationControl({ showCompass: true, visualizePitch: false }),
           "top-right",
         );
-        instance.addControl(new FullscreenControl(), "top-right");
+        const frame = frameRef.current;
+        instance.addControl(
+          new FullscreenControl(frame ? { container: frame } : {}),
+          "top-right",
+        );
         if (computeBounds(parsed)) {
           instance.addControl(
             new ZoomToContentControl(() => fitMapToContent(instance, parsed)),
@@ -860,7 +888,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
             .setLngLat(coordinates)
             .setPopup(
               decoratePopup(
-                new Popup().setDOMContent(
+                new Popup({ focusAfterOpen: false }).setDOMContent(
                   popupContent({ title: firstLine, lines: restLines }),
                 ),
               ),
@@ -894,8 +922,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
             addNamedPointLayer(instance, legend.namedPoints, labelPaint);
           }
 
-          const endpoints =
-            legend.lines.length === 0 ? null : legend.endpoints;
+          const endpoints = legend.lines.length === 0 ? null : legend.endpoints;
           if (endpoints) {
             if (legend.loop) {
               addEndpointMarker(
@@ -951,19 +978,11 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
                 poi[key] = (poi[key] ?? 0) + 1;
               }
             }
-            const bounds = instance.getBounds();
             setVisible({
               lines,
               marks: countLayer(MARK_LABEL_LAYER_ID),
-              named: countLayer(NAMED_LABEL_LAYER_ID),
               direction: countLayer(DIRECTION_LAYER_ID),
               poi,
-              start: endpoints
-                ? bounds.contains([endpoints.start.lon, endpoints.start.lat])
-                : false,
-              finish: endpoints
-                ? bounds.contains([endpoints.end.lon, endpoints.end.lat])
-                : false,
             });
           };
 
@@ -989,7 +1008,12 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
     return () => {
       cancelled = true;
       clearTimeout(measureTimer);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      activeMapRef.current = null;
+      popupClassRef.current = null;
+      focusedPopupRef.current = null;
       map?.remove();
+      setMapInstance(null);
       if (process.env.NODE_ENV !== "production") {
         const testWindow = window as TestWindow;
         delete testWindow.__gpxMap;
@@ -997,11 +1021,45 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
     };
   }, [parsed, styleUrl, legend]);
 
+  useEffect(() => {
+    const map = mapInstance;
+    if (!map || activeMapRef.current !== map) return;
+    if (focusIndex === null || focusIndex === undefined) return;
+    const waypoint = parsed.waypoints[focusIndex];
+    if (!waypoint) return;
+
+    map.flyTo({
+      center: [waypoint.lon, waypoint.lat],
+      zoom: Math.max(map.getZoom(), 15),
+    });
+
+    const PopupClass = popupClassRef.current;
+    if (!PopupClass) return;
+    const content = waypointPopupContent({
+      name: waypoint.name ?? "",
+      sym: waypoint.sym ?? "",
+      desc: waypoint.desc ?? "",
+      href: waypoint.link?.href,
+      hrefText: waypoint.link?.text ?? "",
+    });
+    if (!content) return;
+
+    focusedPopupRef.current?.remove();
+    focusedPopupRef.current = decoratePopup(
+      new PopupClass({ focusAfterOpen: false })
+        .setLngLat([waypoint.lon, waypoint.lat])
+        .setDOMContent(content),
+    ).addTo(map);
+  }, [focusIndex, mapInstance, parsed]);
+
   const endpoints = legend.lines.length === 0 ? null : legend.endpoints;
 
   return (
     <figure className="space-y-2">
-      <div className="relative h-[500px] w-full overflow-hidden rounded-lg border border-border">
+      <div
+        ref={frameRef}
+        className="relative h-[500px] w-full overflow-hidden rounded-lg border border-border [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:rounded-none"
+      >
         <div ref={containerRef} className="h-full w-full" />
         <MapLegend legend={legend} visible={visible} />
         {mapFailed ? (

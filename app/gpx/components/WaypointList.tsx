@@ -15,34 +15,51 @@ function keyedWaypoints(parsed: ParsedGpx) {
   });
 }
 
-export function WaypointList({ parsed }: { parsed: ParsedGpx }) {
+export function WaypointList({
+  parsed,
+  onSelect,
+}: {
+  parsed: ParsedGpx;
+  onSelect: (index: number) => void;
+}) {
   const total = parsed.waypoints.length;
   if (total === 0) return null;
 
   const rows = keyedWaypoints(parsed);
 
   return (
-    <details className="rounded-lg border border-border bg-card p-4 text-sm">
-      <summary className="cursor-pointer font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+    <details className="rounded-lg border border-border bg-card p-3 text-sm lg:max-h-[500px] lg:overflow-y-auto lg:text-xs">
+      <summary className="sticky top-0 z-10 -mx-3 -mt-3 mb-2 cursor-pointer border-b border-border bg-card px-3 py-2 font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
         All points ({total})
       </summary>
-      <ol className="mt-3 space-y-2">
+      <ol className="space-y-2">
         {rows.map(({ waypoint, key }, index) => (
           <li key={key}>
-            <span className="font-medium">
-              {waypoint.name ?? waypoint.sym ?? `Point ${index + 1}`}
-            </span>
-            {waypoint.name && waypoint.sym ? (
-              <span className="ml-2 text-muted-foreground">{waypoint.sym}</span>
-            ) : null}
-            {waypoint.desc ? (
-              <p className="mt-1 text-muted-foreground">{waypoint.desc}</p>
-            ) : null}
+            <button
+              type="button"
+              onMouseDown={(event) => event.preventDefault()}
+              onClick={() => onSelect(index)}
+              className="block w-full p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <span className="break-words font-medium">
+                {waypoint.name ?? waypoint.sym ?? `Point ${index + 1}`}
+              </span>
+              {waypoint.name && waypoint.sym ? (
+                <span className="ml-2 text-muted-foreground">
+                  {waypoint.sym}
+                </span>
+              ) : null}
+              {waypoint.desc ? (
+                <span className="mt-1 block break-words text-muted-foreground">
+                  {waypoint.desc}
+                </span>
+              ) : null}
+            </button>
           </li>
         ))}
       </ol>
       {total > POINT_LIST_LIMIT ? (
-        <p className="mt-3 text-muted-foreground">
+        <p className="mt-2 text-muted-foreground">
           First {POINT_LIST_LIMIT} of {total} points shown.
         </p>
       ) : null}
