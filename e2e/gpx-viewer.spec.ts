@@ -48,7 +48,12 @@ test.describe("GPX viewer map", () => {
     await expect(legend.getByText("Test ride", { exact: true })).toBeVisible();
 
     const caption = page.locator("figcaption");
-    await expect(caption).toContainText(/km/);
     await expect(caption).toContainText(/Start 0\.00000, 0\.00000/);
+    await expect(caption).toContainText(/Finish 0\.01000, 0\.01100/);
+
+    const distanceTile = page
+      .getByText("Distance", { exact: true })
+      .locator("..");
+    await expect(distanceTile).toContainText(/km/);
   });
 });
