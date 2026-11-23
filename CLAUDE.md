@@ -71,6 +71,17 @@ Shared helpers: `lib/site.ts` (site metadata constants), `lib/utils.ts` (`cn()` 
 
 Tailwind v4 is configured CSS-first in `app/globals.css` (`@import "tailwindcss"` + `@theme`); there is no `tailwind.config.js`. Fonts: Geist Sans/Mono via `next/font`.
 
+## Release
+
+`package.json` is the version of record. A push to `main` runs `scripts/release.mjs`: it
+reads the conventional commits since the last `v*` tag, bumps patch, minor or major,
+prepends `CHANGELOG.md`, commits `chore(release): vX.Y.Z`, tags it, and publishes the
+GitHub release. The release commit is a normal push, so the deploy that follows carries
+the new version. Never edit the version by hand and never tag a release manually.
+
+A `fix:` is a patch, a `feat:` is a minor, and `feat!:` or a `BREAKING CHANGE:` body is a
+major. The footer prints `v<version> · <short sha>`, so a running deploy identifies itself.
+
 ## GPX I/O boundary
 
 `app/gpx`, `lib/gpx`, `lib/net`, and the API proxies that use `lib/net` are the only
