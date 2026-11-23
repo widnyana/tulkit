@@ -133,7 +133,9 @@ export default function GpxViewPage() {
 
   const handleDownloadCsvGpx = () => {
     if (csvState.kind !== "success") return;
-    const gpx = waypointsToGpx(csvState.result.waypoints.map((w) => w.waypoint));
+    const gpx = waypointsToGpx(
+      csvState.result.waypoints.map((w) => w.waypoint),
+    );
     saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "csv-import.gpx");
   };
 
@@ -373,9 +375,7 @@ export default function GpxViewPage() {
               {csvState.result.waypoints.length > 0 && (
                 <GpxMap
                   parsed={{
-                    waypoints: csvState.result.waypoints.map(
-                      (w) => w.waypoint,
-                    ),
+                    waypoints: csvState.result.waypoints.map((w) => w.waypoint),
                     routes: [],
                     tracks: [],
                     skipped: 0,

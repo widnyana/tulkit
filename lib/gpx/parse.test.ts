@@ -91,3 +91,35 @@ describe("parseGpx — adversarial input", () => {
     assert.equal(result.skipped, 2);
   });
 });
+
+describe("parseGpx — track segments", () => {
+  it("keeps <trkseg> boundaries when a track has several segments", () => {
+    const result = parseGpx(
+      '<gpx><trk><name>Ride</name><trkseg><trkpt lat="1" lon="1"></trkpt><trkpt lat="2" lon="2"></trkpt></trkseg><trkseg><trkpt lat="3" lon="3"></trkpt></trkseg></trk><trk><trkseg><trkpt lat="4" lon="4"></trkpt></trkseg></trk></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.tracks.length, 2);
+    assert.equal(result.tracks[0].name, "Ride");
+    assert.deepEqual(result.tracks[0].segments, [
+      [
+        { lat: 1, lon: 1 },
+        { lat: 2, lon: 2 },
+      ],
+      [{ lat: 3, lon: 3 }],
+    ]);
+    assert.deepEqual(result.tracks[1].segments, [[{ lat: 4, lon: 4 }]]);
+    assert.equal(result.skipped, 0);
+  });
+
+  it("drops an invalid point inside a segment without merging segments", () => {
+    const result = parseGpx(
+      '<gpx><trk><trkseg><trkpt lat="1" lon="1"></trkpt></trkseg><trkseg><trkpt lon="2"></trkpt><trkpt lat="3" lon="3"></trkpt></trkseg></trk></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.tracks[0].segments.length, 2);
+    assert.deepEqual(result.tracks[0].segments[1], [{ lat: 3, lon: 3 }]);
+    assert.equal(result.skipped, 1);
+  });
+});

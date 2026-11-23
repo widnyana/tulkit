@@ -1,3 +1,4 @@
+import { parseGPXWithCustomParser } from "@we-gold/gpxjs";
 import type {
   LatLon,
   ParsedGpx,
@@ -7,27 +8,35 @@ import type {
   Waypoint,
 } from "../../app/gpx/types.ts";
 
-function textOf(parent: Element, tag: string): string | undefined {
-  const text = parent.getElementsByTagName(tag)[0]?.textContent?.trim();
+const INVALID_XML = "The file is not well-formed XML.";
+
+function readDocument(xml: string): Document | undefined {
+  if (typeof DOMParser === "undefined") return undefined;
+  try {
+    const doc = new DOMParser().parseFromString(xml, "application/xml");
+    return doc.getElementsByTagName("parsererror").length > 0 ? undefined : doc;
+  } catch {
+    return undefined;
+  }
+}
+
+function textOf(parent: Element | undefined, tag: string): string | undefined {
+  const text = parent?.getElementsByTagName(tag)[0]?.textContent?.trim();
   return text ? text : undefined;
 }
 
-function extractName(el: Element): string | undefined {
+function nameOf(el: Element | undefined): string | undefined {
   return textOf(el, "name") ?? textOf(el, "urlname") ?? textOf(el, "url");
 }
 
-function extractLatLon(el: Element): LatLon | undefined {
-  const latAttr = el.getAttribute("lat");
-  const lonAttr = el.getAttribute("lon");
-  if (latAttr === null || lonAttr === null) return undefined;
-  const lat = Number(latAttr);
-  const lon = Number(lonAttr);
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return undefined;
-  return { lat, lon };
-}
-
-function hasParserError(doc: Document): boolean {
-  return doc.getElementsByTagName("parsererror").length > 0;
+function toLatLon(source: {
+  latitude: number;
+  longitude: number;
+}): LatLon | undefined {
+  if (!Number.isFinite(source.latitude) || !Number.isFinite(source.longitude)) {
+    return undefined;
+  }
+  return { lat: source.latitude, lon: source.longitude };
 }
 
 export function isParseError(
@@ -37,63 +46,84 @@ export function isParseError(
 }
 
 export function parseGpx(xml: string): ParsedGpx | ParseError {
-  let doc: Document;
-  try {
-    doc = new DOMParser().parseFromString(xml, "application/xml");
-  } catch {
-    return { message: "The file is not well-formed XML." };
-  }
-  if (hasParserError(doc)) {
-    return { message: "The file is not well-formed XML." };
-  }
+  const doc = readDocument(xml);
+  if (!doc) return { message: INVALID_XML };
+
+  const [parsed, error] = parseGPXWithCustomParser(xml, () => doc);
+  if (!parsed) return { message: error?.message ?? INVALID_XML };
 
   let skipped = 0;
 
+  const waypointEls = Array.from(doc.getElementsByTagName("wpt"));
   const waypoints: Waypoint[] = [];
-  for (const wpt of Array.from(doc.getElementsByTagName("wpt"))) {
-    const point = extractLatLon(wpt);
+  parsed.waypoints.forEach((source, index) => {
+    const point = toLatLon(source);
     if (!point) {
       skipped++;
-      continue;
+      return;
     }
     waypoints.push({
       ...point,
-      name: extractName(wpt),
-      desc: textOf(wpt, "desc"),
+      name: source.name?.trim() || nameOf(waypointEls[index]),
+      desc: source.description?.trim() || textOf(waypointEls[index], "desc"),
     });
-  }
+  });
 
-  const routes: Route[] = [];
-  for (const rte of Array.from(doc.getElementsByTagName("rte"))) {
+  const routeEls = Array.from(doc.getElementsByTagName("rte"));
+  const routes: Route[] = parsed.routes.map((source, index) => {
     const points: LatLon[] = [];
-    for (const rtept of Array.from(rte.getElementsByTagName("rtept"))) {
-      const point = extractLatLon(rtept);
+    for (const candidate of source.points) {
+      const point = toLatLon(candidate);
       if (!point) {
         skipped++;
         continue;
       }
       points.push(point);
     }
-    routes.push({ name: extractName(rte), points });
-  }
+    return {
+      name: source.name?.trim() || nameOf(routeEls[index]),
+      points,
+    };
+  });
 
-  const tracks: Track[] = [];
-  for (const trk of Array.from(doc.getElementsByTagName("trk"))) {
+  const trackEls = Array.from(doc.getElementsByTagName("trk"));
+  const tracks: Track[] = parsed.tracks.map((source, index) => {
+    const trackEl = trackEls[index];
+    const segmentSizes = trackEl
+      ? Array.from(trackEl.getElementsByTagName("trkseg")).map(
+          (segment) => segment.getElementsByTagName("trkpt").length,
+        )
+      : [];
+
     const segments: LatLon[][] = [];
-    for (const trkseg of Array.from(trk.getElementsByTagName("trkseg"))) {
+    let offset = 0;
+    for (const size of segmentSizes) {
       const segment: LatLon[] = [];
-      for (const trkpt of Array.from(trkseg.getElementsByTagName("trkpt"))) {
-        const point = extractLatLon(trkpt);
+      for (const candidate of source.points.slice(offset, offset + size)) {
+        const point = toLatLon(candidate);
         if (!point) {
           skipped++;
           continue;
         }
         segment.push(point);
       }
+      offset += size;
       segments.push(segment);
     }
-    tracks.push({ name: extractName(trk), segments });
-  }
+    for (const candidate of source.points.slice(offset)) {
+      const point = toLatLon(candidate);
+      if (!point) {
+        skipped++;
+        continue;
+      }
+      segments.push([point]);
+    }
+
+    return {
+      name: source.name?.trim() || nameOf(trackEl),
+      segments,
+    };
+  });
 
   return { waypoints, routes, tracks, skipped };
 }

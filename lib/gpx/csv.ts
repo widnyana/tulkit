@@ -14,7 +14,9 @@ export function parseWaypointCsv(text: string): CsvParseResult {
   const waypoints: { row: number; waypoint: Waypoint }[] = [];
   const errors: { row: number; message: string }[] = [];
 
-  const headerCols = (lines[0] ?? "").split(",").map((c) => c.trim().toLowerCase());
+  const headerCols = (lines[0] ?? "")
+    .split(",")
+    .map((c) => c.trim().toLowerCase());
   const latIndex = headerCols.indexOf("latitude");
   const lonIndex = headerCols.indexOf("longitude");
   const nameIndex = headerCols.indexOf("name");
