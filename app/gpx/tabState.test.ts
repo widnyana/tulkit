@@ -2,9 +2,16 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   buildTabQuery,
+  CSV_INPUT_KEY,
+  MAPS_INPUT_KEY,
+  readActiveTab,
+  readStoredText,
   readTabQuery,
   sanitizeTabQuery,
+  TAB_ACTIVE_KEY,
   TAB_QUERY_KEY,
+  writeActiveTab,
+  writeStoredText,
   writeTabQuery,
 } from "./tabState.ts";
 
@@ -15,6 +22,9 @@ function fakeStorage(initial: Record<string, string> = {}) {
     getItem: (key: string): string | null => data.get(key) ?? null,
     setItem: (key: string, value: string): void => {
       data.set(key, value);
+    },
+    removeItem: (key: string): void => {
+      data.delete(key);
     },
   };
 }
@@ -97,5 +107,45 @@ describe("buildTabQuery", () => {
     for (const tab of ["plan", "maps", "csv"] as const) {
       assert.equal(buildTabQuery(tab, "", { view: "id=abc" }), `tab=${tab}`);
     }
+  });
+});
+
+describe("readActiveTab and writeActiveTab", () => {
+  it("round-trips a valid tab", () => {
+    const store = fakeStorage();
+    writeActiveTab(store, "plan");
+    assert.equal(store.data.get(TAB_ACTIVE_KEY), "plan");
+    assert.equal(readActiveTab(store), "plan");
+  });
+
+  it("returns null when nothing is stored", () => {
+    assert.equal(readActiveTab(fakeStorage()), null);
+  });
+
+  it("returns null for an unknown tab", () => {
+    const store = fakeStorage({ [TAB_ACTIVE_KEY]: "planner" });
+    assert.equal(readActiveTab(store), null);
+  });
+});
+
+describe("readStoredText and writeStoredText", () => {
+  it("round-trips text", () => {
+    const store = fakeStorage();
+    writeStoredText(store, MAPS_INPUT_KEY, "https://maps.example/place");
+    assert.equal(
+      readStoredText(store, MAPS_INPUT_KEY),
+      "https://maps.example/place",
+    );
+  });
+
+  it("returns an empty string when the key is missing", () => {
+    assert.equal(readStoredText(fakeStorage(), CSV_INPUT_KEY), "");
+  });
+
+  it("removes the key when the value is empty", () => {
+    const store = fakeStorage({ [CSV_INPUT_KEY]: "-7.782,110.369" });
+    writeStoredText(store, CSV_INPUT_KEY, "");
+    assert.equal(store.data.has(CSV_INPUT_KEY), false);
+    assert.equal(readStoredText(store, CSV_INPUT_KEY), "");
   });
 });

@@ -39,7 +39,14 @@ import {
   runToResult,
 } from "./effects";
 import type { LatLon, MapsWaypoint, ParsedGpx } from "./types";
-import type { TabValue } from "./tabState";
+import {
+  CSV_INPUT_KEY,
+  gpxStorage,
+  MAPS_INPUT_KEY,
+  readStoredText,
+  type TabValue,
+  writeStoredText,
+} from "./tabState";
 import { useGpxId } from "./useGpxId";
 import { useTabNavigation } from "./useTabNavigation";
 import {
@@ -412,14 +419,14 @@ function GpxViewContent() {
     }
   };
 
-  const handleCsvChange = (value: string) => {
+  const handleCsvChange = useCallback((value: string) => {
     setCsvInput(value);
     if (value.trim() === "") {
       setCsvState({ kind: "idle" });
       return;
     }
     setCsvState({ kind: "success", result: parseWaypointCsv(value) });
-  };
+  }, []);
 
   const handleDownloadCsvGpx = () => {
     if (csvState.kind !== "success") return;
@@ -427,6 +434,30 @@ function GpxViewContent() {
     const gpx = routeToGpx({ waypoints, controlPoints: waypoints });
     saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "csv-import.gpx");
   };
+
+  const inputsRestored = useRef(false);
+
+  useEffect(() => {
+    if (inputsRestored.current) return;
+    inputsRestored.current = true;
+    const store = gpxStorage();
+    if (store === null) return;
+    setMapsUrlInput(readStoredText(store, MAPS_INPUT_KEY));
+    const savedCsv = readStoredText(store, CSV_INPUT_KEY);
+    if (savedCsv !== "") handleCsvChange(savedCsv);
+  }, [handleCsvChange]);
+
+  useEffect(() => {
+    const store = gpxStorage();
+    if (store === null) return;
+    writeStoredText(store, MAPS_INPUT_KEY, mapsUrlInput);
+  }, [mapsUrlInput]);
+
+  useEffect(() => {
+    const store = gpxStorage();
+    if (store === null) return;
+    writeStoredText(store, CSV_INPUT_KEY, csvInput);
+  }, [csvInput]);
 
   useEffect(() => {
     if (draftRestored.current) return;

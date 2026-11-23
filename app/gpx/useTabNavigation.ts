@@ -1,76 +1,103 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
-import { loadGpxEntry } from "@/lib/gpx/storage";
+import { useCallback, useEffect } from "react";
+import { GPX_INDEX_KEY, loadGpxEntry } from "@/lib/gpx/storage";
 import {
   buildTabQuery,
+  gpxStorage,
+  isTabValue,
+  readActiveTab,
   readTabQuery,
   sanitizeTabQuery,
-  TAB_QUERY_PARAMS,
   type TabValue,
+  writeActiveTab,
   writeTabQuery,
 } from "./tabState";
 
-function isTabValue(value: string | null): value is TabValue {
-  return value !== null && Object.hasOwn(TAB_QUERY_PARAMS, value);
-}
-
-function localStore(): Storage | null {
+function storedViewQuery(
+  store: Storage | null,
+  stored: Record<string, string>,
+): string | null {
+  const remembered = stored.view;
+  if (remembered) {
+    const id = new URLSearchParams(remembered).get("id");
+    if (id !== null && loadGpxEntry(id) !== null) return remembered;
+  }
+  if (store === null) return null;
   try {
-    return typeof globalThis.localStorage === "undefined"
-      ? null
-      : globalThis.localStorage;
+    const raw = store.getItem(GPX_INDEX_KEY);
+    if (raw === null) return null;
+    const ids: unknown = JSON.parse(raw);
+    if (!Array.isArray(ids)) return null;
+    for (let index = ids.length - 1; index >= 0; index -= 1) {
+      const id: unknown = ids[index];
+      if (typeof id === "string" && loadGpxEntry(id) !== null) {
+        return new URLSearchParams({ id }).toString();
+      }
+    }
+    return null;
   } catch {
     return null;
   }
 }
 
-function restorableViewQuery(stored: Record<string, string>): string | null {
-  if (!stored.view) return null;
-  const id = new URLSearchParams(stored.view).get("id");
-  return id !== null && loadGpxEntry(id) !== null ? stored.view : null;
+function queryUrl(pathname: string, query: string): string {
+  return query === "" ? pathname : `${pathname}?${query}`;
 }
 
 export function useTabNavigation(): [TabValue, (next: TabValue) => void] {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const rawTab = searchParams.get("tab");
-  const tab: TabValue = isTabValue(rawTab) ? rawTab : "view";
-  const cleanedUrl = useRef(false);
+  const explicitTab = searchParams.get("tab");
+  const explicitId = searchParams.get("id");
+  const tab: TabValue = isTabValue(explicitTab) ? explicitTab : "view";
 
   const setTab = useCallback(
     (next: TabValue) => {
-      const store = localStore();
+      const store = gpxStorage();
       const stored = store === null ? {} : readTabQuery(store);
       const currentQuery = sanitizeTabQuery(tab, searchParams.toString());
       if (store !== null) {
         if (currentQuery === "") delete stored[tab];
         else stored[tab] = currentQuery;
         writeTabQuery(store, stored);
+        writeActiveTab(store, next);
       }
-      const viewQuery = next === "view" ? restorableViewQuery(stored) : null;
+      const viewQuery = next === "view" ? storedViewQuery(store, stored) : null;
       const query = buildTabQuery(
         next,
         "",
         viewQuery === null ? {} : { view: viewQuery },
       );
-      router.replace(query === "" ? pathname : `${pathname}?${query}`, {
-        scroll: false,
-      });
+      router.replace(queryUrl(pathname, query), { scroll: false });
     },
     [pathname, router, searchParams, tab],
   );
 
   useEffect(() => {
-    if (cleanedUrl.current) return;
-    cleanedUrl.current = true;
-    const store = localStore();
+    const store = gpxStorage();
     const current = searchParams.toString();
-    const sanitized = sanitizeTabQuery(tab, current);
+    const stored = store === null ? {} : readTabQuery(store);
+    const remembered = store === null ? null : readActiveTab(store);
+    if (
+      explicitTab === null &&
+      (explicitId === null || explicitId === "") &&
+      remembered !== null &&
+      remembered !== "view"
+    ) {
+      const query = sanitizeTabQuery(remembered, stored[remembered] ?? "");
+      router.replace(queryUrl(pathname, query), { scroll: false });
+      return;
+    }
+    const viewQuery = tab === "view" ? storedViewQuery(store, stored) : null;
+    const sanitized = buildTabQuery(
+      tab,
+      current,
+      viewQuery === null ? {} : { view: viewQuery },
+    );
     if (store !== null) {
-      const stored = readTabQuery(store);
       if (sanitized === "") delete stored[tab];
       else stored[tab] = sanitized;
       if (tab !== "view") {
@@ -80,12 +107,11 @@ export function useTabNavigation(): [TabValue, (next: TabValue) => void] {
         }
       }
       writeTabQuery(store, stored);
+      writeActiveTab(store, tab);
     }
     if (sanitized === current) return;
-    router.replace(sanitized === "" ? pathname : `${pathname}?${sanitized}`, {
-      scroll: false,
-    });
-  }, [pathname, router, searchParams, tab]);
+    router.replace(queryUrl(pathname, sanitized), { scroll: false });
+  }, [explicitId, explicitTab, pathname, router, searchParams, tab]);
 
   return [tab, setTab];
 }
