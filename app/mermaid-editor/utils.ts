@@ -33,9 +33,7 @@ const TOKEN_RE = new RegExp(
     '(?<string>"[^"\\n]*")',
     "(?<label>\\|[^|\\n]*\\|)",
     "(?<hex>#[0-9a-fA-F]{3,8}\\b)",
-    // --!> is not a valid mermaid arrow; accepted so CodeQL's js/bad-tag-filter
-    // (flags any regex matching --> but not --!> as a bad HTML-comment filter) stays quiet.
-    "(?<arrow>[<xo]?(?:-\\.+->?|-{2,}!>|-{2,}[>xo]?|={2,}>?|-{1,2}>>?|--[>xo]))",
+    "(?<arrow>[<xo]?(?:-\\.+->?|-{2,}!?[>xo]?|={2,}>?|-{1,2}>>?))",
     `(?<type>\\b(?:${TYPES})(?![\\w-]))`,
     `(?<keyword>\\b(?:${KEYWORDS})\\b)`,
     "(?<punct>[()[\\]{}])",

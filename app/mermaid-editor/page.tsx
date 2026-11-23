@@ -158,7 +158,7 @@ export default function MermaidEditorPage() {
       const host = previewRef.current;
       if (!host) return;
       if (!code.trim()) {
-        host.innerHTML = "";
+        host.replaceChildren();
         setError(null);
         return;
       }
@@ -177,7 +177,12 @@ export default function MermaidEditorPage() {
         const { svg } = await mermaid.render(id, code);
         if (seq !== renderSeq.current) return;
         setRenderTick((t) => t + 1);
-        host.innerHTML = svg;
+        const parsed = new DOMParser().parseFromString(svg, "image/svg+xml");
+        const root = parsed.documentElement;
+        if (!root || parsed.querySelector("parsererror")) {
+          throw new Error("The diagram could not be rendered.");
+        }
+        host.replaceChildren(document.importNode(root, true));
         const el = host.querySelector("svg");
         if (el) {
           el.style.maxWidth = "100%";

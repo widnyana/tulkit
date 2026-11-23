@@ -364,16 +364,27 @@ const DESC_SCRIPT = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi;
 const DESC_BREAK = /<br\b[^>]*>/gi;
 const DESC_BLOCK =
   /<\/?(?:p|div|h[1-6]|ul|ol|li|tr|td|th|table|thead|tbody|section|article|header|footer|blockquote|pre|figure|figcaption)\b[^>]*>/gi;
-const DESC_TAG = /<[a-z/!][^>]*>/gi;
+const DESC_TAG = /<[^>]*>/g;
+
+const stripTags = (input: string): string => {
+  let text = input;
+  let previous = "";
+  while (text !== previous) {
+    previous = text;
+    text = text.replace(DESC_TAG, "");
+  }
+  return text.replace(/</g, "");
+};
 
 /** Turns a GPX description's inline HTML into plain, trimmed lines of text. */
 export function flattenDesc(text: string | undefined): string {
   if (!text) return "";
-  return decodeDescEntities(text)
-    .replace(DESC_SCRIPT, "")
-    .replace(DESC_BREAK, "\n")
-    .replace(DESC_BLOCK, "\n")
-    .replace(DESC_TAG, "")
+  return stripTags(
+    decodeDescEntities(text)
+      .replace(DESC_SCRIPT, "")
+      .replace(DESC_BREAK, "\n")
+      .replace(DESC_BLOCK, "\n"),
+  )
     .split("\n")
     .map((line) => line.replace(/\s+/g, " ").trim())
     .filter((line) => line.length > 0)

@@ -628,6 +628,18 @@ describe("flattenDesc", () => {
     assert.equal(flattenDesc(undefined), "");
     assert.equal(flattenDesc("   "), "");
   });
+
+  it("repeats tag removal until the text is stable", () => {
+    assert.ok(!flattenDesc("<scr<script>ipt>alert(1)</script>").includes("<"));
+  });
+
+  it("keeps br tags as line breaks", () => {
+    assert.equal(flattenDesc("Route start<br>Camp 2"), "Route start\nCamp 2");
+  });
+
+  it("drops bare less-than characters", () => {
+    assert.equal(flattenDesc("3 < 5"), "3 5");
+  });
 });
 
 describe("extractSourceUrl", () => {
