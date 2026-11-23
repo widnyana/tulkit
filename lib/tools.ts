@@ -155,6 +155,19 @@ export const tools: Tool[] = [
     ],
   },
   {
+    href: "/gpx",
+    title: "GPX Viewer",
+    category: "Lifestyle",
+    description: "View any .gpx file's waypoints, routes, and tracks on a map",
+    keywords: [
+      "gpx viewer",
+      "gpx file",
+      "map viewer",
+      "waypoints",
+      "gps route",
+    ],
+  },
+  {
     href: "/tire-pressure",
     title: "Tire Pressure Calculator",
     description:
