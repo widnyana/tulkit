@@ -172,6 +172,43 @@ export function trackSegmentCount(parsed: ParsedGpx): number {
   return parsed.tracks.reduce((n, t) => n + t.segments.length, 0);
 }
 
+export interface StatTile {
+  label: string;
+  value: string;
+}
+
+/** Derives the at-a-glance stat row from a parsed file. Omits any stat that's zero/unavailable. */
+export function buildGpxStats(parsed: ParsedGpx): StatTile[] {
+  const stats: StatTile[] = [
+    { label: "Waypoints", value: String(parsed.waypoints.length) },
+  ];
+
+  if (parsed.routes.length > 0) {
+    stats.push({ label: "Routes", value: String(parsed.routes.length) });
+  }
+
+  const segments = trackSegmentCount(parsed);
+  if (segments > 0) {
+    stats.push({ label: "Track segments", value: String(segments) });
+  }
+
+  const distance = totalDistanceMeters(parsed);
+  if (distance > 0) {
+    stats.push({ label: "Distance", value: formatDistance(distance) });
+  }
+
+  const gain = elevationGain(parsed);
+  if (gain !== null && gain > 0) {
+    stats.push({ label: "Elevation gain", value: `+${gain} m` });
+  }
+
+  if (parsed.skipped > 0) {
+    stats.push({ label: "Points skipped", value: String(parsed.skipped) });
+  }
+
+  return stats;
+}
+
 export function pathEndpoints(
   parsed: ParsedGpx,
 ): { start: LatLon; end: LatLon } | null {

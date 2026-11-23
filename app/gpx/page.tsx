@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { EmptyPanel } from "./components/EmptyPanel";
 import { ResultPanel } from "./components/ResultPanel";
 import {
   importMapsLink,
@@ -36,7 +37,7 @@ import {
 import type { MapsWaypoint, ParsedGpx } from "./types";
 import { useGpxId } from "./useGpxId";
 import { useQueryState } from "./useQueryState";
-import { trackSegmentCount, waypointsToParsedGpx } from "./utils";
+import { waypointsToParsedGpx } from "./utils";
 
 const TAB_VALUES = ["view", "maps", "csv"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
@@ -44,6 +45,18 @@ type TabValue = (typeof TAB_VALUES)[number];
 function isTabValue(value: string): value is TabValue {
   return (TAB_VALUES as readonly string[]).includes(value);
 }
+
+const TAB_LABELS: Record<TabValue, string> = {
+  view: "View",
+  maps: "From Maps",
+  csv: "From CSV",
+};
+
+const TAB_HINTS: Record<TabValue, string> = {
+  view: "Paste GPX XML or upload a .gpx file to inspect it on a map.",
+  maps: "Paste a Google Maps share link to pull its waypoints into a GPX file.",
+  csv: "Paste latitude/longitude rows to generate a GPX file.",
+};
 
 type ViewState =
   | { kind: "empty" }
@@ -239,13 +252,18 @@ function GpxViewContent() {
         </header>
 
         <Tabs value={tab} onValueChange={setTab} className="tool-enter mt-6">
-          <TabsList className="h-auto flex-wrap">
-            <TabsTrigger value="view">View a GPX</TabsTrigger>
-            <TabsTrigger value="maps">Import from Google Maps link</TabsTrigger>
-            <TabsTrigger value="csv">Create from CSV</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3">
+            {TAB_VALUES.map((value) => (
+              <TabsTrigger key={value} value={value}>
+                {TAB_LABELS[value]}
+              </TabsTrigger>
+            ))}
           </TabsList>
+          <p className="mt-3 text-sm text-muted-foreground">
+            {TAB_HINTS[tab]}
+          </p>
 
-          <TabsContent value="view" className="space-y-4">
+          <TabsContent value="view" className="mt-4 space-y-4">
             <label htmlFor={rawInputId} className="sr-only">
               GPX XML
             </label>
@@ -283,9 +301,7 @@ function GpxViewContent() {
             </div>
 
             {state.kind === "empty" && (
-              <p className="text-sm text-muted-foreground">
-                Paste GPX XML above or upload a .gpx file to see it on the map.
-              </p>
+              <EmptyPanel message="Paste GPX XML above or upload a .gpx file to see it on the map." />
             )}
 
             {state.kind === "loading" && (
@@ -300,23 +316,10 @@ function GpxViewContent() {
               </p>
             )}
 
-            {state.kind === "success" && (
-              <ResultPanel
-                summary={
-                  <>
-                    {state.parsed.waypoints.length} waypoints,{" "}
-                    {state.parsed.routes.length} routes,{" "}
-                    {trackSegmentCount(state.parsed)} track segments
-                    {state.parsed.skipped > 0 &&
-                      `, ${state.parsed.skipped} points skipped`}
-                  </>
-                }
-                parsed={state.parsed}
-              />
-            )}
+            {state.kind === "success" && <ResultPanel parsed={state.parsed} />}
           </TabsContent>
 
-          <TabsContent value="maps" className="space-y-4">
+          <TabsContent value="maps" className="mt-4 space-y-4">
             <div className="flex items-center gap-3">
               <label htmlFor={mapsUrlInputId} className="sr-only">
                 Google Maps link
@@ -339,6 +342,10 @@ function GpxViewContent() {
               </Button>
             </div>
 
+            {mapsState.kind === "idle" && (
+              <EmptyPanel message="Paste a Google Maps share link above to pull out its waypoints." />
+            )}
+
             {mapsState.kind === "loading" && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Spinner /> Resolving Maps link...
@@ -353,12 +360,6 @@ function GpxViewContent() {
 
             {mapsState.kind === "success" && (
               <ResultPanel
-                summary={
-                  <>
-                    {mapsState.waypoints.length} waypoint
-                    {mapsState.waypoints.length === 1 ? "" : "s"} found
-                  </>
-                }
                 actions={
                   <Button type="button" onClick={handleDownloadGpx}>
                     Download GPX
@@ -369,7 +370,7 @@ function GpxViewContent() {
             )}
           </TabsContent>
 
-          <TabsContent value="csv" className="space-y-4">
+          <TabsContent value="csv" className="mt-4 space-y-4">
             <label htmlFor={csvInputId} className="sr-only">
               Waypoint CSV
             </label>
@@ -383,16 +384,16 @@ function GpxViewContent() {
               className="min-h-[160px] font-mono text-xs"
             />
 
+            {csvState.kind === "idle" && (
+              <EmptyPanel message="Paste latitude/longitude rows above to generate a GPX file." />
+            )}
+
             {csvState.kind === "success" &&
               (csvState.result.waypoints.length > 0 ? (
                 <ResultPanel
-                  summary={
-                    <>
-                      {csvState.result.waypoints.length} waypoint
-                      {csvState.result.waypoints.length === 1 ? "" : "s"} parsed
-                      {csvState.result.errors.length > 0 &&
-                        `, ${csvState.result.errors.length} row${csvState.result.errors.length === 1 ? "" : "s"} failed`}
-                    </>
+                  note={
+                    csvState.result.errors.length > 0 &&
+                    `${csvState.result.errors.length} row${csvState.result.errors.length === 1 ? "" : "s"} failed`
                   }
                   actions={
                     <Button type="button" onClick={handleDownloadCsvGpx}>
@@ -424,7 +425,10 @@ function GpxViewContent() {
                       </thead>
                       <tbody>
                         {csvState.result.waypoints.map(({ row, waypoint }) => (
-                          <tr key={row} className="border-t border-border">
+                          <tr
+                            key={row}
+                            className={`border-t border-border ${row % 2 === 0 ? "bg-muted/30" : ""}`}
+                          >
                             <td className="px-3 py-2">{row}</td>
                             <td className="px-3 py-2">{waypoint.lat}</td>
                             <td className="px-3 py-2">{waypoint.lon}</td>

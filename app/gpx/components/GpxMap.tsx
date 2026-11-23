@@ -8,11 +8,9 @@ import type { LineGroup } from "../utils";
 import {
   computeBounds,
   distanceMeters,
-  elevationGain,
   formatDistance,
   lineGroups,
   pathEndpoints,
-  totalDistanceMeters,
 } from "../utils";
 
 type MapInstance = MapLibreMap;
@@ -526,21 +524,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
     };
   }, [parsed, styleUrl]);
 
-  const groups = lineGroups(parsed);
-  const distance = totalDistanceMeters(parsed);
-  const gain = elevationGain(parsed);
   const endpoints = pathEndpoints(parsed);
-  const summary: string[] = [];
-  if (distance > 0) summary.push(formatDistance(distance));
-  if (gain !== null && gain > 0) summary.push(`+${gain} m ascent`);
-  if (groups.length === 0) {
-    summary.push(`${parsed.waypoints.length} waypoints`);
-  }
-  if (endpoints) {
-    summary.push(
-      `Start ${formatCoordinate(endpoints.start)} | Finish ${formatCoordinate(endpoints.end)}`,
-    );
-  }
 
   return (
     <figure className="space-y-2">
@@ -549,14 +533,17 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
         <MapLegend parsed={parsed} />
         {mapFailed ? (
           <p className="absolute inset-0 p-4 text-sm text-muted-foreground">
-            The map could not be drawn in this browser. The route summary below
-            still lists the distance and coordinates.
+            The map could not be drawn in this browser. The stats above still
+            reflect the parsed file.
           </p>
         ) : null}
       </div>
-      <figcaption className="text-sm text-muted-foreground">
-        {summary.join(" | ")}
-      </figcaption>
+      {endpoints && (
+        <figcaption className="text-sm text-muted-foreground">
+          Start {formatCoordinate(endpoints.start)} · Finish{" "}
+          {formatCoordinate(endpoints.end)}
+        </figcaption>
+      )}
     </figure>
   );
 }
