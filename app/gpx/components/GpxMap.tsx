@@ -818,11 +818,13 @@ export function GpxMap({
   const popupClassRef = useRef<typeof MapLibrePopup | null>(null);
   const focusedPopupRef = useRef<MapLibrePopup | null>(null);
   const mapStyle = useMapStyle();
-  const pendingStyleRef = useRef(mapStyle);
-  const appliedStyleRef = useRef<string | typeof mapStyle | null>(null);
-  const styleSwitchInFlightRef = useRef(false);
+  const mapStyleRef = useRef(mapStyle);
   const parsedRef = useRef(parsed);
   const legendRef = useRef(legend);
+
+  useEffect(() => {
+    mapStyleRef.current = mapStyle;
+  }, [mapStyle]);
 
   useEffect(() => {
     parsedRef.current = parsed;
@@ -833,45 +835,34 @@ export function GpxMap({
   }, [legend]);
 
   useEffect(() => {
-    pendingStyleRef.current = mapStyle;
     const map = activeMapRef.current;
-    if (!map || styleSwitchInFlightRef.current) return;
-    if (appliedStyleRef.current === mapStyle) return;
-    beginStyleSwitch(map);
-  }, [mapStyle]);
-
-  function finishStyleSwitch(map: MapInstance, target: typeof mapStyle) {
-    appliedStyleRef.current = target;
-    if (pendingStyleRef.current !== target) {
-      beginStyleSwitch(map);
-      return;
-    }
-    styleSwitchInFlightRef.current = false;
-    map.setMissingStyleImageResolver((id) => {
-      if (map.hasImage(id)) return;
-      map.addImage(id, new ImageData(1, 1));
+    if (!map) return;
+    // diff:false forces a full reload instead of an in-place patch: a diff's
+    // behavior (does it fire style.load, does it keep our runtime-added
+    // sources) depends on how close the two styles are, and was not
+    // consistent. applyMapContent re-adds whatever setStyle dropped and
+    // no-ops on what it kept, so a redundant reload (mount, Strict Mode, a
+    // toggle fired before the last one settled) is harmless either way.
+    map.setStyle(mapStyle, { diff: false });
+    map.once("style.load", () => {
+      map.setMissingStyleImageResolver((id) => {
+        if (map.hasImage(id)) return;
+        map.addImage(id, new ImageData(1, 1));
+      });
+      const tokens = readChartTokens();
+      const labelPaint: LabelPaint = {
+        text: tokens.foreground,
+        halo: tokens.background,
+      };
+      applyMapContent(
+        map,
+        parsedRef.current,
+        legendRef.current,
+        tokens,
+        labelPaint,
+      );
     });
-    const tokens = readChartTokens();
-    const labelPaint: LabelPaint = {
-      text: tokens.foreground,
-      halo: tokens.background,
-    };
-    applyMapContent(map, parsedRef.current, legendRef.current, tokens, labelPaint);
-  }
-
-  function beginStyleSwitch(map: MapInstance) {
-    const target = pendingStyleRef.current;
-    styleSwitchInFlightRef.current = true;
-    map.setStyle(target);
-    // A style close enough to apply as a diff (ours: same layers, different
-    // paint) patches in place and never fires style.load, so a full reload
-    // is the only case that needs the event.
-    if (map.isStyleLoaded()) {
-      finishStyleSwitch(map, target);
-    } else {
-      map.once("style.load", () => finishStyleSwitch(map, target));
-    }
-  }
+  }, [mapStyle]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -912,12 +903,11 @@ export function GpxMap({
         popupClassRef.current = Popup;
         const instance = new MapLibreMap({
           container,
-          style: pendingStyleRef.current,
+          style: mapStyleRef.current,
           fadeDuration: 0,
         });
         map = instance;
         activeMapRef.current = instance;
-        appliedStyleRef.current = pendingStyleRef.current;
         setMapInstance(instance);
         if (process.env.NODE_ENV !== "production") {
           const testWindow = window as TestWindow;
@@ -1079,8 +1069,6 @@ export function GpxMap({
       activeMapRef.current = null;
       popupClassRef.current = null;
       focusedPopupRef.current = null;
-      appliedStyleRef.current = null;
-      styleSwitchInFlightRef.current = false;
       map?.remove();
       setMapInstance(null);
       if (process.env.NODE_ENV !== "production") {

@@ -65,6 +65,44 @@ function routeGeoJson(
   };
 }
 
+function applyRouteLayer(
+  map: MapInstance,
+  controlPoints: ReadonlyArray<LatLon>,
+  snappedPath: ReadonlyArray<LatLon> | null,
+) {
+  const isSnapped = snappedPath !== null && snappedPath.length >= 2;
+  const data = routeGeoJson(controlPoints, snappedPath);
+  const source = map.getSource(ROUTE_SOURCE_ID) as GeoJSONSource | undefined;
+
+  if (source) {
+    void source.setData(data);
+  } else {
+    map.addSource(ROUTE_SOURCE_ID, { type: "geojson", data });
+    map.addLayer({
+      id: ROUTE_LAYER_ID,
+      type: "line",
+      source: ROUTE_SOURCE_ID,
+      layout: {
+        "line-join": "round",
+        "line-cap": "round",
+      },
+      paint: {
+        "line-color": ROUTE_COLOR,
+        "line-width": 4,
+        "line-dasharray": isSnapped ? SOLID_PATTERN : DASHED_PATTERN,
+      },
+    });
+  }
+
+  if (map.getLayer(ROUTE_LAYER_ID)) {
+    map.setPaintProperty(
+      ROUTE_LAYER_ID,
+      "line-dasharray",
+      isSnapped ? SOLID_PATTERN : DASHED_PATTERN,
+    );
+  }
+}
+
 function markerElement(label: number): HTMLElement {
   const element = document.createElement("div");
   element.textContent = String(label);
@@ -103,55 +141,44 @@ export function RoutePlannerMap({
   const locationMarkerRef = useRef<MapLibreMarker | null>(null);
   const markerClassRef = useRef<MarkerConstructor | null>(null);
   const controlPointsRef = useRef<ReadonlyArray<LatLon>>(controlPoints);
+  const snappedPathRef = useRef(snappedPath);
   const onMapClickRef = useRef(onMapClick);
   const onPointMoveRef = useRef(onPointMove);
   const [mapReady, setMapReady] = useState(false);
   const [mapFailed, setMapFailed] = useState(false);
-  const [styleGeneration, setStyleGeneration] = useState(0);
   const mapStyle = useMapStyle();
-  const pendingStyleRef = useRef(mapStyle);
-  const appliedStyleRef = useRef<string | typeof mapStyle | null>(null);
-  const styleSwitchInFlightRef = useRef(false);
+  const mapStyleRef = useRef(mapStyle);
 
   useEffect(() => {
     controlPointsRef.current = controlPoints;
   }, [controlPoints]);
 
   useEffect(() => {
-    pendingStyleRef.current = mapStyle;
-    const map = mapRef.current;
-    if (!map || styleSwitchInFlightRef.current) return;
-    if (appliedStyleRef.current === mapStyle) return;
-    beginStyleSwitch(map);
+    snappedPathRef.current = snappedPath;
+  }, [snappedPath]);
+
+  useEffect(() => {
+    mapStyleRef.current = mapStyle;
   }, [mapStyle]);
 
-  function finishStyleSwitch(map: MapInstance, target: typeof mapStyle) {
-    appliedStyleRef.current = target;
-    if (pendingStyleRef.current !== target) {
-      beginStyleSwitch(map);
-      return;
-    }
-    styleSwitchInFlightRef.current = false;
-    map.setMissingStyleImageResolver((id) => {
-      if (map.hasImage(id)) return;
-      map.addImage(id, new ImageData(1, 1));
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    // diff:false forces a full reload instead of an in-place patch: a diff's
+    // behavior (does it fire style.load, does it keep our runtime-added
+    // source) depends on how close the two styles are, and was not
+    // consistent. The route effect re-adds the source if setStyle dropped
+    // it and no-ops if it didn't, so a redundant reload (mount, Strict Mode,
+    // a toggle fired before the last one settled) is harmless either way.
+    map.setStyle(mapStyle, { diff: false });
+    map.once("style.load", () => {
+      map.setMissingStyleImageResolver((id) => {
+        if (map.hasImage(id)) return;
+        map.addImage(id, new ImageData(1, 1));
+      });
+      applyRouteLayer(map, controlPointsRef.current, snappedPathRef.current);
     });
-    setStyleGeneration((generation) => generation + 1);
-  }
-
-  function beginStyleSwitch(map: MapInstance) {
-    const target = pendingStyleRef.current;
-    styleSwitchInFlightRef.current = true;
-    map.setStyle(target);
-    // A style close enough to apply as a diff (ours: same layers, different
-    // paint) patches in place and never fires style.load, so a full reload
-    // is the only case that needs the event.
-    if (map.isStyleLoaded()) {
-      finishStyleSwitch(map, target);
-    } else {
-      map.once("style.load", () => finishStyleSwitch(map, target));
-    }
-  }
+  }, [mapStyle]);
 
   useEffect(() => {
     onMapClickRef.current = onMapClick;
@@ -183,12 +210,11 @@ export function RoutePlannerMap({
         config.WORKER_URL = "/maplibre-gl-worker.mjs";
         const instance = new MapLibreMapCtor({
           container,
-          style: pendingStyleRef.current,
+          style: mapStyleRef.current,
           fadeDuration: 0,
         });
         map = instance;
         mapRef.current = instance;
-        appliedStyleRef.current = pendingStyleRef.current;
         markerClassRef.current = Marker;
 
         instance.setMissingStyleImageResolver((id) => {
@@ -238,8 +264,6 @@ export function RoutePlannerMap({
       locationMarkerRef.current = null;
       mapRef.current = null;
       markerClassRef.current = null;
-      appliedStyleRef.current = null;
-      styleSwitchInFlightRef.current = false;
       map?.remove();
     };
   }, []);
@@ -278,39 +302,8 @@ export function RoutePlannerMap({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-
-    const isSnapped = snappedPath !== null && snappedPath.length >= 2;
-    const data = routeGeoJson(controlPoints, snappedPath);
-    const source = map.getSource(ROUTE_SOURCE_ID) as GeoJSONSource | undefined;
-
-    if (source) {
-      void source.setData(data);
-    } else {
-      map.addSource(ROUTE_SOURCE_ID, { type: "geojson", data });
-      map.addLayer({
-        id: ROUTE_LAYER_ID,
-        type: "line",
-        source: ROUTE_SOURCE_ID,
-        layout: {
-          "line-join": "round",
-          "line-cap": "round",
-        },
-        paint: {
-          "line-color": ROUTE_COLOR,
-          "line-width": 4,
-          "line-dasharray": isSnapped ? SOLID_PATTERN : DASHED_PATTERN,
-        },
-      });
-    }
-
-    if (map.getLayer(ROUTE_LAYER_ID)) {
-      map.setPaintProperty(
-        ROUTE_LAYER_ID,
-        "line-dasharray",
-        isSnapped ? SOLID_PATTERN : DASHED_PATTERN,
-      );
-    }
-  }, [controlPoints, snappedPath, mapReady, styleGeneration]);
+    applyRouteLayer(map, controlPoints, snappedPath);
+  }, [controlPoints, snappedPath, mapReady]);
 
   useEffect(() => {
     const map = mapRef.current;
