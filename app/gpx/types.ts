@@ -28,3 +28,11 @@ export interface ParsedGpx {
 export interface ParseError {
   message: string;
 }
+
+export interface MapsWaypoint extends LatLon {
+  name?: string;
+}
+
+export interface MapsLinkError {
+  message: string;
+}

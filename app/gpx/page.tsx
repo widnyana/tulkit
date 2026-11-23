@@ -2,14 +2,18 @@
 
 import "maplibre-gl/dist/maplibre-gl.css";
 
+import { saveAs } from "file-saver";
 import Link from "next/link";
 import { useId, useState } from "react";
+import { isShortMapsLink, parseMapsUrl } from "@/lib/gpx/mapsLink";
 import { isParseError, parseGpx } from "@/lib/gpx/parse";
+import { waypointsToGpx } from "@/lib/gpx/serialize";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { GpxMap } from "./components/GpxMap";
-import type { ParsedGpx } from "./types";
+import type { MapsWaypoint, ParsedGpx } from "./types";
 import { trackSegmentCount } from "./utils";
 
 type ViewState =
@@ -18,10 +22,44 @@ type ViewState =
   | { kind: "error"; message: string }
   | { kind: "success"; parsed: ParsedGpx };
 
+type MapsImportState =
+  | { kind: "idle" }
+  | { kind: "loading" }
+  | { kind: "error"; message: string }
+  | { kind: "success"; waypoints: MapsWaypoint[] };
+
+async function resolveMapsInput(rawUrl: string): Promise<MapsWaypoint[]> {
+  const targetUrl = isShortMapsLink(rawUrl)
+    ? await resolveShortMapsLink(rawUrl)
+    : rawUrl;
+
+  const result = parseMapsUrl(targetUrl);
+  if (!Array.isArray(result)) {
+    throw new Error(result.message);
+  }
+  return result;
+}
+
+async function resolveShortMapsLink(shortUrl: string): Promise<string> {
+  const response = await fetch(
+    `/api/resolve-maps-link?url=${encodeURIComponent(shortUrl)}`,
+  );
+  const data: { resolvedUrl?: string; error?: string } = await response.json();
+  if (!response.ok || !data.resolvedUrl) {
+    throw new Error(data.error ?? "Failed to resolve the Maps link");
+  }
+  return data.resolvedUrl;
+}
+
 export default function GpxViewPage() {
   const [rawInput, setRawInput] = useState("");
   const [state, setState] = useState<ViewState>({ kind: "empty" });
+  const [mapsUrlInput, setMapsUrlInput] = useState("");
+  const [mapsState, setMapsState] = useState<MapsImportState>({
+    kind: "idle",
+  });
   const fileInputId = useId();
+  const mapsUrlInputId = useId();
 
   const parseInto = (text: string) => {
     if (text.trim() === "") {
@@ -51,6 +89,30 @@ export default function GpxViewPage() {
   const handleClear = () => {
     setRawInput("");
     setState({ kind: "empty" });
+  };
+
+  const handleMapsImport = async () => {
+    const trimmed = mapsUrlInput.trim();
+    if (trimmed === "") return;
+    setMapsState({ kind: "loading" });
+    try {
+      const waypoints = await resolveMapsInput(trimmed);
+      setMapsState({ kind: "success", waypoints });
+    } catch (error) {
+      setMapsState({
+        kind: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to import this Maps link",
+      });
+    }
+  };
+
+  const handleDownloadGpx = () => {
+    if (mapsState.kind !== "success") return;
+    const gpx = waypointsToGpx(mapsState.waypoints);
+    saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "maps-import.gpx");
   };
 
   return (
@@ -155,6 +217,67 @@ export default function GpxViewPage() {
                   `, ${state.parsed.skipped} points skipped`}
               </p>
               <GpxMap parsed={state.parsed} />
+            </div>
+          )}
+        </div>
+
+        <div className="tool-enter mt-10 space-y-4 border-t border-border pt-8">
+          <h2 className="text-lg font-semibold text-foreground">
+            Import from Google Maps link
+          </h2>
+          <div className="flex items-center gap-3">
+            <label htmlFor={mapsUrlInputId} className="sr-only">
+              Google Maps link
+            </label>
+            <Input
+              id={mapsUrlInputId}
+              value={mapsUrlInput}
+              onChange={(e) => setMapsUrlInput(e.target.value)}
+              placeholder="https://maps.app.goo.gl/... or a maps.google.com link"
+              className="font-mono text-xs"
+            />
+            <Button
+              type="button"
+              onClick={handleMapsImport}
+              disabled={
+                mapsState.kind === "loading" || mapsUrlInput.trim() === ""
+              }
+            >
+              Import
+            </Button>
+          </div>
+
+          {mapsState.kind === "loading" && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Spinner /> Resolving Maps link...
+            </div>
+          )}
+
+          {mapsState.kind === "error" && (
+            <p className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+              {mapsState.message}
+            </p>
+          )}
+
+          {mapsState.kind === "success" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {mapsState.waypoints.length} waypoint
+                  {mapsState.waypoints.length === 1 ? "" : "s"} found
+                </p>
+                <Button type="button" onClick={handleDownloadGpx}>
+                  Download GPX
+                </Button>
+              </div>
+              <GpxMap
+                parsed={{
+                  waypoints: mapsState.waypoints,
+                  routes: [],
+                  tracks: [],
+                  skipped: 0,
+                }}
+              />
             </div>
           )}
         </div>
