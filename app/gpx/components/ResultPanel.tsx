@@ -20,7 +20,7 @@ export function ResultPanel({
 }) {
   return (
     <div className="space-y-4">
-      <MetadataPanel metadata={parsed.metadata} />
+      <MetadataPanel parsed={parsed} />
       <StatTiles items={buildGpxStats(parsed)} />
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">{note}</p>

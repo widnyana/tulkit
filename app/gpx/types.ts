@@ -45,6 +45,7 @@ export interface GpxLink {
 export interface GpxMetadata {
   name?: string;
   desc?: string;
+  creator?: string;
   author?: string;
   email?: string;
   link?: GpxLink;

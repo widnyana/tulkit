@@ -10,6 +10,7 @@ import {
   lineGroups,
   pathDistanceMeters,
   pathEndpoints,
+  resolveMetadata,
   safeExternalHref,
   totalDistanceMeters,
   trackSegmentCount,
@@ -456,5 +457,95 @@ describe("safeExternalHref", () => {
     assert.equal(safeExternalHref("not a url"), undefined);
     assert.equal(safeExternalHref(""), undefined);
     assert.equal(safeExternalHref(undefined), undefined);
+  });
+});
+
+describe("resolveMetadata", () => {
+  it("prefers metadata name, then route name, then track name", () => {
+    const metadataName: ParsedGpx = {
+      ...empty,
+      metadata: { name: "Meta" },
+      routes: [{ name: "Route", points: [] }],
+      tracks: [{ name: "Track", segments: [] }],
+    };
+    assert.equal(resolveMetadata(metadataName).title, "Meta");
+
+    const routeName: ParsedGpx = {
+      ...empty,
+      routes: [{ name: "Route", points: [] }],
+      tracks: [{ name: "Track", segments: [] }],
+    };
+    assert.equal(resolveMetadata(routeName).title, "Route");
+
+    const trackName: ParsedGpx = {
+      ...empty,
+      tracks: [{ name: "Track", segments: [] }],
+    };
+    assert.equal(resolveMetadata(trackName).title, "Track");
+  });
+
+  it("omits the title for creator-only metadata", () => {
+    const resolved = resolveMetadata({
+      ...empty,
+      metadata: { creator: "MapSource 6.16.3" },
+    });
+    assert.equal(resolved.title, undefined);
+    assert.equal(resolved.creator, "MapSource 6.16.3");
+  });
+
+  it("prefers metadata bounds and falls back to computed point bounds", () => {
+    const bounds = { minLat: 1, minLon: 2, maxLat: 3, maxLon: 4 };
+    const declared = resolveMetadata({
+      ...empty,
+      metadata: { bounds },
+      waypoints: [{ lat: -10, lon: -20 }],
+    });
+    assert.deepEqual(declared.bounds, bounds);
+
+    const computed = resolveMetadata({
+      ...empty,
+      waypoints: [{ lat: 10, lon: 20 }],
+      routes: [{ points: [{ lat: 0, lon: 0 }] }],
+      tracks: [{ segments: [[{ lat: -5, lon: 5 }]] }],
+    });
+    assert.deepEqual(computed.bounds, {
+      minLat: -5,
+      minLon: 0,
+      maxLat: 10,
+      maxLon: 20,
+    });
+  });
+
+  it("counts waypoints, route points, and track points", () => {
+    const resolved = resolveMetadata({
+      waypoints: [{ lat: 1, lon: 1 }],
+      routes: [
+        {
+          points: [
+            { lat: 2, lon: 2 },
+            { lat: 3, lon: 3 },
+          ],
+        },
+      ],
+      tracks: [{ segments: [[{ lat: 4, lon: 4 }], [{ lat: 5, lon: 5 }]] }],
+      skipped: 0,
+    });
+    assert.deepEqual(resolved.pointCounts, {
+      waypoints: 1,
+      routePoints: 2,
+      trackPoints: 2,
+    });
+    assert.equal(resolveMetadata(empty).pointCounts, undefined);
+  });
+
+  it("passes link and keywords through unchanged", () => {
+    const link = { href: "https://example.com", text: "Page" };
+    const keywords = ["a", "b"];
+    const resolved = resolveMetadata({
+      ...empty,
+      metadata: { link, keywords },
+    });
+    assert.equal(resolved.link, link);
+    assert.equal(resolved.keywords, keywords);
   });
 });

@@ -109,6 +109,8 @@ function parseMetadata(doc: Document): GpxMetadata | undefined {
   const authorEl = metadataEl ? directChild(metadataEl, "author") : undefined;
 
   const metadata: GpxMetadata = {};
+  const creator = root.getAttribute("creator")?.trim();
+  if (creator) metadata.creator = creator;
   const name = directText(source, "name");
   if (name) metadata.name = name;
   const desc = directText(source, "desc");

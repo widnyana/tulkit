@@ -1,4 +1,4 @@
-import type { LatLon, ParsedGpx, Waypoint } from "./types";
+import type { GpxBounds, GpxLink, LatLon, ParsedGpx, Waypoint } from "./types";
 
 export const LINE_PALETTE = [
   "#0072b2",
@@ -187,6 +187,69 @@ export function computeBounds(
     [minLon, minLat],
     [maxLon, maxLat],
   ];
+}
+
+export interface PointCounts {
+  waypoints: number;
+  routePoints: number;
+  trackPoints: number;
+}
+
+export interface ResolvedMetadata {
+  title?: string;
+  desc?: string;
+  creator?: string;
+  author?: string;
+  email?: string;
+  link?: GpxLink;
+  time?: string;
+  keywords?: string[];
+  bounds?: GpxBounds;
+  pointCounts?: PointCounts;
+}
+
+export function resolveMetadata(parsed: ParsedGpx): ResolvedMetadata {
+  const metadata = parsed.metadata;
+  const routeName = parsed.routes.find((route) => route.name?.trim())?.name;
+  const trackName = parsed.tracks.find((track) => track.name?.trim())?.name;
+  const title =
+    metadata?.name?.trim() || routeName?.trim() || trackName?.trim();
+
+  const pointCounts: PointCounts = {
+    waypoints: parsed.waypoints.length,
+    routePoints: parsed.routes.reduce((n, route) => n + route.points.length, 0),
+    trackPoints: parsed.tracks.reduce(
+      (n, track) =>
+        n + track.segments.reduce((m, segment) => m + segment.length, 0),
+      0,
+    ),
+  };
+
+  let bounds = metadata?.bounds;
+  if (!bounds) {
+    const computed = computeBounds(parsed);
+    if (computed) {
+      const [[minLon, minLat], [maxLon, maxLat]] = computed;
+      bounds = { minLat, minLon, maxLat, maxLon };
+    }
+  }
+
+  const resolved: ResolvedMetadata = {};
+  if (title) resolved.title = title;
+  if (metadata?.desc) resolved.desc = metadata.desc;
+  if (metadata?.creator) resolved.creator = metadata.creator;
+  if (metadata?.author) resolved.author = metadata.author;
+  if (metadata?.email) resolved.email = metadata.email;
+  if (metadata?.link) resolved.link = metadata.link;
+  if (metadata?.time) resolved.time = metadata.time;
+  if (metadata?.keywords && metadata.keywords.length > 0) {
+    resolved.keywords = metadata.keywords;
+  }
+  if (bounds) resolved.bounds = bounds;
+  const totalPoints =
+    pointCounts.waypoints + pointCounts.routePoints + pointCounts.trackPoints;
+  if (totalPoints > 0) resolved.pointCounts = pointCounts;
+  return resolved;
 }
 
 export function waypointsToParsedGpx(

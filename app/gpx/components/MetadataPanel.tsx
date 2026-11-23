@@ -1,8 +1,18 @@
-import type { GpxMetadata } from "../types";
-import { safeExternalHref } from "../utils";
+import type { ParsedGpx } from "../types";
+import { type PointCounts, resolveMetadata, safeExternalHref } from "../utils";
 
-export function MetadataPanel({ metadata }: { metadata?: GpxMetadata }) {
-  if (!metadata) return null;
+function pointsLabel(counts: PointCounts): string {
+  return [
+    counts.waypoints > 0 ? `${counts.waypoints} waypoints` : undefined,
+    counts.routePoints > 0 ? `${counts.routePoints} route points` : undefined,
+    counts.trackPoints > 0 ? `${counts.trackPoints} track points` : undefined,
+  ]
+    .filter((part) => part !== undefined)
+    .join(" · ");
+}
+
+export function MetadataPanel({ parsed }: { parsed: ParsedGpx }) {
+  const metadata = resolveMetadata(parsed);
 
   const author =
     metadata.author && metadata.email
@@ -14,15 +24,20 @@ export function MetadataPanel({ metadata }: { metadata?: GpxMetadata }) {
   const bounds = metadata.bounds
     ? `${metadata.bounds.minLat.toFixed(5)}, ${metadata.bounds.minLon.toFixed(5)} to ${metadata.bounds.maxLat.toFixed(5)}, ${metadata.bounds.maxLon.toFixed(5)}`
     : undefined;
+  const points = metadata.pointCounts
+    ? pointsLabel(metadata.pointCounts)
+    : undefined;
 
   if (
-    !metadata.name &&
+    !metadata.title &&
     !metadata.desc &&
+    !metadata.creator &&
     !author &&
     !metadata.time &&
     keywords.length === 0 &&
     !linkLabel &&
-    !bounds
+    !bounds &&
+    !points
   ) {
     return null;
   }
@@ -32,9 +47,9 @@ export function MetadataPanel({ metadata }: { metadata?: GpxMetadata }) {
       aria-label="File metadata"
       className="rounded-lg border border-border bg-card p-4"
     >
-      {metadata.name ? (
+      {metadata.title ? (
         <h2 className="text-base font-semibold tracking-tight text-foreground">
-          {metadata.name}
+          {metadata.title}
         </h2>
       ) : null}
       {metadata.desc ? (
@@ -43,6 +58,12 @@ export function MetadataPanel({ metadata }: { metadata?: GpxMetadata }) {
         </p>
       ) : null}
       <dl className="mt-3 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+        {metadata.creator ? (
+          <div className="flex flex-wrap gap-1.5">
+            <dt className="text-muted-foreground">Created by</dt>
+            <dd className="text-foreground">{metadata.creator}</dd>
+          </div>
+        ) : null}
         {author ? (
           <div className="flex flex-wrap gap-1.5">
             <dt className="text-muted-foreground">Author</dt>
@@ -100,6 +121,12 @@ export function MetadataPanel({ metadata }: { metadata?: GpxMetadata }) {
                 </span>
               ))}
             </dd>
+          </div>
+        ) : null}
+        {points ? (
+          <div className="flex flex-wrap gap-1.5 sm:col-span-2">
+            <dt className="text-muted-foreground">Points</dt>
+            <dd className="text-foreground">{points}</dd>
           </div>
         ) : null}
       </dl>

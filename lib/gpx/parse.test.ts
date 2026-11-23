@@ -199,6 +199,32 @@ describe("parseGpx: metadata", () => {
   });
 });
 
+describe("parseGpx: creator", () => {
+  it("reads the root creator attribute with a metadata block", () => {
+    const result = parseGpx(
+      fixture("RoscoffCoastal/parcours-morlaix-plougasnou.gpx"),
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.metadata?.creator, "MapSource 6.16.3");
+  });
+
+  it("builds metadata from a bare creator attribute", () => {
+    const result = parseGpx(fixture("Campsites/archies_fr.gpx"));
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.ok(result.metadata, "expected metadata for a creator attribute");
+    assert.ok(result.metadata?.creator?.startsWith("PoiEdit v5.2.0"));
+  });
+
+  it("leaves metadata undefined with neither <metadata> nor creator", () => {
+    const result = parseGpx(fixture("BrittanyJura/Reims-VitryLeFrancois.gpx"));
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.metadata, undefined);
+  });
+});
+
 describe("parseGpx: waypoint symbols", () => {
   it("keeps the <sym> of a point-of-interest export", () => {
     const result = parseGpx(
