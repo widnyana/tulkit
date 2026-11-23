@@ -519,6 +519,14 @@ describe("resolveMetadata", () => {
     assert.equal(resolved.creator, "MapSource 6.16.3");
   });
 
+  it("uses bounds-only metadata without inventing a title or creator", () => {
+    const bounds = { minLat: 1, minLon: 2, maxLat: 3, maxLon: 4 };
+    const resolved = resolveMetadata({ ...empty, metadata: { bounds } });
+    assert.deepEqual(resolved.bounds, bounds);
+    assert.equal(resolved.title, undefined);
+    assert.equal(resolved.creator, undefined);
+  });
+
   it("prefers metadata bounds and falls back to computed point bounds", () => {
     const bounds = { minLat: 1, minLon: 2, maxLat: 3, maxLon: 4 };
     const declared = resolveMetadata({
@@ -623,6 +631,20 @@ describe("flattenDesc", () => {
 });
 
 describe("extractSourceUrl", () => {
+  it("reads a URL from anchor markup", () => {
+    assert.equal(
+      extractSourceUrl('<a href="https://example.com/x">x</a>'),
+      "https://example.com/x",
+    );
+  });
+
+  it("decodes entities before matching", () => {
+    assert.equal(
+      extractSourceUrl('<a href="https://example.com/x?a=1&amp;b=2">x</a>'),
+      "https://example.com/x?a=1&b=2",
+    );
+  });
+
   it("drops a closing parenthesis the URL does not open", () => {
     assert.equal(
       extractSourceUrl("See (https://example.com/foo)"),
@@ -642,6 +664,10 @@ describe("extractSourceUrl", () => {
       extractSourceUrl("a https://example.com/one b https://example.com/two"),
       "https://example.com/one",
     );
+  });
+
+  it("returns undefined when the raw desc has no URL", () => {
+    assert.equal(extractSourceUrl("<p>No links here</p>"), undefined);
   });
 
   it("ignores non-web schemes", () => {
@@ -715,6 +741,15 @@ describe("primaryContent / routeBrief", () => {
       routes: [{ points: points(2) }],
       tracks: [{ segments: [points(1)] }],
     };
+    assert.equal(routeBrief(parsed), undefined);
+  });
+
+  it("returns no brief for a track without a description", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      tracks: [{ segments: [points(3)] }],
+    };
+    assert.equal(primaryContent(parsed)?.kind, "track");
     assert.equal(routeBrief(parsed), undefined);
   });
 
@@ -814,6 +849,27 @@ describe("buildLegend", () => {
     assert.equal(legend.namedPoints?.count, 3);
   });
 
+  it("leaves one or two km-named points without marks", () => {
+    for (const count of [1, 2]) {
+      const parsed: ParsedGpx = {
+        ...empty,
+        routes: [
+          {
+            points: Array.from({ length: count }, (_, index) => ({
+              lat: index,
+              lon: index,
+              name: `${index * 10}.00km`,
+            })),
+          },
+        ],
+      };
+      const legend = buildLegend(parsed);
+      assert.equal(legend.marks, null);
+      assert.ok(legend.namedPoints);
+      assert.equal(legend.namedPoints.count, count);
+    }
+  });
+
   it("groups waypoints by symbol with distinct stable colours", () => {
     const parsed: ParsedGpx = {
       ...empty,
@@ -836,6 +892,26 @@ describe("buildLegend", () => {
     );
     assert.equal(new Set(groups.map((group) => group.color)).size, 3);
     assert.deepEqual(buildLegend(parsed).poiGroups, groups);
+  });
+
+  it("keeps arbitrary symbols as raw labelled groups", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      waypoints: [
+        { lat: 0, lon: 0, sym: "Shelter" },
+        { lat: 1, lon: 1, sym: "Trailhead" },
+        { lat: 2, lon: 2, sym: "Gate" },
+      ],
+    };
+    const groups = buildLegend(parsed).poiGroups;
+    assert.equal(groups.length, 3);
+    assert.deepEqual(groups.map((group) => group.label).sort(), [
+      "Gate",
+      "Shelter",
+      "Trailhead",
+    ]);
+    assert.equal(new Set(groups.map((group) => group.color)).size, 3);
+    assert.ok(groups.every((group) => group.count === 1));
   });
 
   it("merges groups beyond the limit into Other", () => {

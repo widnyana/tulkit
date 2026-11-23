@@ -384,9 +384,10 @@ const URL_PATTERN = /https?:\/\/[^\s<>"']+/i;
 const URL_TRAILING = /[.,;:!?]+$/;
 const URL_OPENERS: Record<string, string> = { ")": "(", "]": "[", "}": "{" };
 
-/** The first web URL in flattened description text, without sentence punctuation. */
-export function extractSourceUrl(text: string | undefined): string | undefined {
-  const match = text?.match(URL_PATTERN)?.[0];
+/** The first web URL in a raw description, decoded and trimmed. */
+export function extractSourceUrl(desc: string | undefined): string | undefined {
+  if (!desc) return undefined;
+  const match = decodeDescEntities(desc).match(URL_PATTERN)?.[0];
   if (!match) return undefined;
   let end = match.length;
   while (end > 0) {

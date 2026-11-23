@@ -17,10 +17,11 @@ function excerptOf(text: string): string {
 }
 
 export function RouteBrief({ parsed }: { parsed: ParsedGpx }) {
-  const text = flattenDesc(routeBrief(parsed));
+  const desc = routeBrief(parsed);
+  const text = flattenDesc(desc);
   if (!text) return null;
 
-  const href = safeExternalHref(extractSourceUrl(text));
+  const href = safeExternalHref(extractSourceUrl(desc));
   const truncated = text.length > EXCERPT_LENGTH;
 
   return (

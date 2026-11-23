@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const SAMPLE_GPX = `<?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="tulkit" xmlns="http://www.topografix.com/GPX/1/1">
@@ -68,5 +68,128 @@ test.describe("GPX viewer map", () => {
     await expect(summary).toBeVisible({ timeout: 15_000 });
     await summary.click();
     await expect(page.getByText("Alpha", { exact: true })).toBeVisible();
+  });
+});
+
+const FIXTURE_ROOT = "e2e/fixtures/gpx";
+
+async function loadFixture(page: Page, path: string) {
+  await page.goto("/gpx");
+  const input = page.locator('input[type="file"]');
+  await expect(input).toHaveCount(1, { timeout: 15_000 });
+  await input.setInputFiles(`${FIXTURE_ROOT}/${path}`);
+}
+
+test.describe("GPX viewer fixtures", () => {
+  test("renders km marks and one Source link", async ({ page }) => {
+    await loadFixture(page, "west-java/route-km-marks.gpx");
+
+    const legend = page.getByRole("region", { name: "Map legend" });
+    await expect(legend).toBeVisible({ timeout: 15_000 });
+    await expect(
+      legend.getByText("7 marks every 10 km", { exact: true }),
+    ).toBeVisible();
+
+    const brief = page.getByRole("region", { name: "Route description" });
+    await expect(brief).toBeVisible({ timeout: 15_000 });
+    await expect(brief).toContainText("Route notes");
+    await expect(brief.locator("a")).toHaveCount(1);
+    await expect(
+      brief.getByRole("link", { name: "Source", exact: true }),
+    ).toBeVisible();
+  });
+
+  test("hides mark labels above the cap", async ({ page }) => {
+    await loadFixture(page, "bali/route-marks-large.gpx");
+
+    const legend = page.getByRole("region", { name: "Map legend" });
+    await expect(legend).toBeVisible({ timeout: 15_000 });
+    await expect(
+      legend.getByText("250 marks, labels hidden above 200", { exact: true }),
+    ).toBeVisible();
+  });
+
+  test("canonicalises known symbols into legend rows", async ({ page }) => {
+    await loadFixture(page, "west-java/waypoints-sym-vocab.gpx");
+
+    const legend = page.getByRole("region", { name: "Map legend" });
+    await expect(legend).toBeVisible({ timeout: 15_000 });
+    await expect(legend.getByText("Camp 6", { exact: true })).toBeVisible();
+    await expect(legend.getByText("Water 5", { exact: true })).toBeVisible();
+  });
+
+  test("caps the waypoint list and groups unlabelled points", async ({
+    page,
+  }) => {
+    await loadFixture(page, "west-java/waypoints-no-sym.gpx");
+
+    const legend = page.getByRole("region", { name: "Map legend" });
+    await expect(legend).toBeVisible({ timeout: 15_000 });
+    await expect(legend.getByText("Points 250", { exact: true })).toBeVisible();
+
+    const summary = page.getByText("All points (250)", { exact: true });
+    await expect(summary).toBeVisible({ timeout: 15_000 });
+    await summary.click();
+    await expect(
+      page.getByText("First 200 of 250 points shown.", { exact: true }),
+    ).toBeVisible();
+  });
+
+  test("renders the full metadata ladder", async ({ page }) => {
+    await loadFixture(page, "bali/metadata-full.gpx");
+
+    const metadata = page.getByRole("region", { name: "File metadata" });
+    await expect(metadata).toBeVisible({ timeout: 15_000 });
+    await expect(
+      metadata.getByRole("heading", { name: "Bali fixture route" }),
+    ).toBeVisible();
+    await expect(metadata.getByText("Created by", { exact: true })).toBeVisible();
+    await expect(
+      metadata.getByText("MapSource 6.16.3", { exact: true }),
+    ).toBeVisible();
+    await expect(metadata.getByText("Bounds", { exact: true })).toBeVisible();
+  });
+
+  test("excerpts a long brief and keeps one Source link", async ({ page }) => {
+    await loadFixture(page, "bali/brief-long.gpx");
+
+    const brief = page.getByRole("region", { name: "Route description" });
+    await expect(brief).toBeVisible({ timeout: 15_000 });
+    await expect(
+      brief.getByText("Show full description", { exact: true }),
+    ).toBeVisible();
+    await expect(brief.locator("a")).toHaveCount(1);
+    await expect(
+      brief.getByRole("link", { name: "Source", exact: true }),
+    ).toBeVisible();
+  });
+
+  test("hides the legend and reports skipped points without an error", async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+
+    await loadFixture(page, "west-java/invalid-points-only.gpx");
+
+    const metadata = page.getByRole("region", { name: "File metadata" });
+    await expect(metadata).toBeVisible({ timeout: 15_000 });
+    await expect(metadata.getByText("Created by", { exact: true })).toBeVisible();
+    await expect(
+      metadata.getByText("broken-export", { exact: true }),
+    ).toBeVisible();
+
+    const skipped = page
+      .getByText("Points skipped", { exact: true })
+      .locator("..");
+    await expect(skipped).toContainText("3");
+
+    await expect(page.getByRole("region", { name: "Map legend" })).toHaveCount(
+      0,
+    );
+    await expect(
+      page.locator("nextjs-portal [data-nextjs-dialog-root]"),
+    ).toHaveCount(0);
+    expect(errors).toEqual([]);
   });
 });
