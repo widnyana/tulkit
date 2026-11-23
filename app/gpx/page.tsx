@@ -43,8 +43,10 @@ import {
   CSV_INPUT_KEY,
   gpxStorage,
   MAPS_INPUT_KEY,
+  readMapsResult,
   readStoredText,
   type TabValue,
+  writeMapsResult,
   writeStoredText,
 } from "./tabState";
 import { useGpxId } from "./useGpxId";
@@ -389,15 +391,24 @@ function GpxViewContent() {
     if (trimmed === "") return;
     setMapsState({ kind: "loading" });
     const result = await runToResult(importMapsLink(trimmed));
-    setMapsState(
-      result.ok
-        ? {
-            kind: "success",
-            waypoints: result.value.waypoints,
-            route: result.value.route,
-          }
-        : { kind: "error", message: result.message },
-    );
+    if (!result.ok) {
+      setMapsState({ kind: "error", message: result.message });
+      return;
+    }
+    setMapsState({
+      kind: "success",
+      waypoints: result.value.waypoints,
+      route: result.value.route,
+    });
+    const store = gpxStorage();
+    if (store !== null) {
+      writeMapsResult(store, {
+        url: trimmed,
+        waypoints: result.value.waypoints,
+        route: result.value.route,
+        savedAt: Date.now(),
+      });
+    }
   };
 
   const handleDownloadGpx = async () => {
@@ -442,7 +453,16 @@ function GpxViewContent() {
     inputsRestored.current = true;
     const store = gpxStorage();
     if (store === null) return;
-    setMapsUrlInput(readStoredText(store, MAPS_INPUT_KEY));
+    const savedMapsInput = readStoredText(store, MAPS_INPUT_KEY);
+    setMapsUrlInput(savedMapsInput);
+    const savedMapsResult = readMapsResult(store);
+    if (savedMapsResult !== null && savedMapsResult.url === savedMapsInput) {
+      setMapsState({
+        kind: "success",
+        waypoints: savedMapsResult.waypoints,
+        route: savedMapsResult.route,
+      });
+    }
     const savedCsv = readStoredText(store, CSV_INPUT_KEY);
     if (savedCsv !== "") handleCsvChange(savedCsv);
   }, [handleCsvChange]);

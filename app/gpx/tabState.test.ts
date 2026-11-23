@@ -4,13 +4,17 @@ import {
   buildTabQuery,
   CSV_INPUT_KEY,
   MAPS_INPUT_KEY,
+  MAPS_RESULT_KEY,
+  MAPS_RESULT_MAX_BYTES,
   readActiveTab,
+  readMapsResult,
   readStoredText,
   readTabQuery,
   sanitizeTabQuery,
   TAB_ACTIVE_KEY,
   TAB_QUERY_KEY,
   writeActiveTab,
+  writeMapsResult,
   writeStoredText,
   writeTabQuery,
 } from "./tabState.ts";
@@ -147,5 +151,97 @@ describe("readStoredText and writeStoredText", () => {
     writeStoredText(store, CSV_INPUT_KEY, "");
     assert.equal(store.data.has(CSV_INPUT_KEY), false);
     assert.equal(readStoredText(store, CSV_INPUT_KEY), "");
+  });
+});
+
+const MAPS_RESULT = {
+  url: "https://maps.google.com/place/Test+Landmark",
+  waypoints: [{ lat: -7.782, lon: 110.369, name: "Start" }],
+  route: [
+    { lat: -7.782, lon: 110.369 },
+    { lat: -7.783, lon: 110.372 },
+  ],
+  savedAt: 1_700_000_000_000,
+};
+
+describe("readMapsResult and writeMapsResult", () => {
+  it("round-trips a cached import", () => {
+    const store = fakeStorage();
+    writeMapsResult(store, MAPS_RESULT);
+    assert.deepEqual(readMapsResult(store), MAPS_RESULT);
+  });
+
+  it("returns null when nothing is stored", () => {
+    assert.equal(readMapsResult(fakeStorage()), null);
+  });
+
+  it("returns null for corrupt JSON", () => {
+    const store = fakeStorage({ [MAPS_RESULT_KEY]: "{not json" });
+    assert.equal(readMapsResult(store), null);
+  });
+
+  it("rejects a record without a url", () => {
+    const store = fakeStorage({
+      [MAPS_RESULT_KEY]: JSON.stringify({
+        waypoints: MAPS_RESULT.waypoints,
+        route: MAPS_RESULT.route,
+        savedAt: MAPS_RESULT.savedAt,
+      }),
+    });
+    assert.equal(readMapsResult(store), null);
+  });
+
+  it("rejects malformed waypoints", () => {
+    for (const waypoint of [
+      { lon: 110.369 },
+      { lat: "0", lon: 110.369 },
+      { lat: 0, lon: 0, name: 42 },
+    ]) {
+      const store = fakeStorage({
+        [MAPS_RESULT_KEY]: JSON.stringify({
+          ...MAPS_RESULT,
+          waypoints: [waypoint],
+        }),
+      });
+      assert.equal(readMapsResult(store), null);
+    }
+  });
+
+  it("rejects malformed routes", () => {
+    for (const route of [
+      undefined,
+      "route",
+      [{ lat: 0 }],
+      [{ lat: null, lon: 0 }],
+    ]) {
+      const store = fakeStorage({
+        [MAPS_RESULT_KEY]: JSON.stringify({
+          ...MAPS_RESULT,
+          route,
+        }),
+      });
+      assert.equal(readMapsResult(store), null);
+    }
+  });
+
+  it("rejects a non-finite savedAt", () => {
+    const store = fakeStorage({
+      [MAPS_RESULT_KEY]: JSON.stringify({
+        ...MAPS_RESULT,
+        savedAt: "now",
+      }),
+    });
+    assert.equal(readMapsResult(store), null);
+  });
+
+  it("skips records larger than the size guard", () => {
+    const store = fakeStorage();
+    writeMapsResult(store, {
+      url: MAPS_RESULT.url,
+      waypoints: [{ lat: 0, lon: 0, name: "x".repeat(MAPS_RESULT_MAX_BYTES) }],
+      route: null,
+      savedAt: 0,
+    });
+    assert.equal(store.data.has(MAPS_RESULT_KEY), false);
   });
 });

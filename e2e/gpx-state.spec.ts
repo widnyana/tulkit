@@ -3,6 +3,8 @@ import { expect, test } from "@playwright/test";
 const ACTIVE_TAB_KEY = "tulkit:gpx:active-tab:v1";
 const INDEX_KEY = "tulkit:gpx:index";
 const ENTRY_PREFIX = "tulkit:gpx:entry:";
+const MAPS_INPUT_KEY = "tulkit:gpx:maps-input:v1";
+const MAPS_RESULT_KEY = "tulkit:gpx:maps-result:v1";
 const ENTRY_ID = "e2e-entry";
 const WAYPOINT_NAME = "E2E Waypoint";
 
@@ -16,6 +18,21 @@ const SAMPLE_GPX = `<?xml version="1.0" encoding="UTF-8"?>
 const ENTRY_KEY = `${ENTRY_PREFIX}${ENTRY_ID}`;
 const ENTRY_VALUE = JSON.stringify({ rawText: SAMPLE_GPX, savedAt: 0 });
 const INDEX_VALUE = JSON.stringify([ENTRY_ID]);
+
+const MAPS_URL = "https://maps.google.com/place/Test+Landmark/@-7.782,110.369,17z";
+const MAPS_RESULT = {
+  url: MAPS_URL,
+  waypoints: [
+    { lat: -7.782, lon: 110.369, name: "Start" },
+    { lat: -7.783, lon: 110.372, name: "Finish" },
+  ],
+  route: [
+    { lat: -7.782, lon: 110.369 },
+    { lat: -7.783, lon: 110.372 },
+  ],
+  savedAt: 0,
+};
+const MAPS_RESULT_VALUE = JSON.stringify(MAPS_RESULT);
 
 test.describe("GPX last state restore", () => {
   test("reopens the last active tab", async ({ page }) => {
@@ -73,5 +90,39 @@ test.describe("GPX last state restore", () => {
     await page.goto(`/gpx?tab=plan&id=${ENTRY_ID}`);
 
     await expect(page).toHaveURL(/\/gpx\?tab=plan$/, { timeout: 30_000 });
+  });
+
+  test("restores the cached Maps import without a network call", async ({
+    page,
+  }) => {
+    const resolveRequests: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().includes("/api/resolve-maps-link")) {
+        resolveRequests.push(request.url());
+      }
+    });
+
+    await page.addInitScript(
+      ([activeKey, inputKey, inputValue, resultKey, resultValue]) => {
+        window.localStorage.setItem(activeKey, "maps");
+        window.localStorage.setItem(inputKey, inputValue);
+        window.localStorage.setItem(resultKey, resultValue);
+      },
+      [
+        ACTIVE_TAB_KEY,
+        MAPS_INPUT_KEY,
+        MAPS_URL,
+        MAPS_RESULT_KEY,
+        MAPS_RESULT_VALUE,
+      ] as const,
+    );
+
+    await page.goto("/gpx");
+
+    await expect(page.getByRole("button", { name: "Download GPX" })).toBeVisible(
+      { timeout: 30_000 },
+    );
+    await expect(page.getByText("Waypoints", { exact: true })).toBeVisible();
+    expect(resolveRequests).toEqual([]);
   });
 });

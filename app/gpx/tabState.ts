@@ -1,7 +1,11 @@
+import type { LatLon, MapsWaypoint } from "./types";
+
 export const TAB_QUERY_KEY = "tulkit:gpx:tab-query:v1";
 export const TAB_ACTIVE_KEY = "tulkit:gpx:active-tab:v1";
 export const MAPS_INPUT_KEY = "tulkit:gpx:maps-input:v1";
 export const CSV_INPUT_KEY = "tulkit:gpx:csv-input:v1";
+export const MAPS_RESULT_KEY = "tulkit:gpx:maps-result:v1";
+export const MAPS_RESULT_MAX_BYTES = 1_000_000;
 
 export type TabValue = "view" | "maps" | "csv" | "plan";
 
@@ -133,5 +137,78 @@ export function writeStoredText(
   try {
     if (value === "") storage.removeItem(key);
     else storage.setItem(key, value);
+  } catch {}
+}
+
+export interface StoredMapsResult {
+  url: string;
+  waypoints: MapsWaypoint[];
+  route: LatLon[] | null;
+  savedAt: number;
+}
+
+function isLatLonPoint(value: unknown): value is LatLon {
+  if (typeof value !== "object" || value === null) return false;
+  if (!("lat" in value) || !("lon" in value)) return false;
+  return (
+    typeof value.lat === "number" &&
+    Number.isFinite(value.lat) &&
+    typeof value.lon === "number" &&
+    Number.isFinite(value.lon)
+  );
+}
+
+function isMapsWaypoint(value: unknown): value is MapsWaypoint {
+  if (!isLatLonPoint(value)) return false;
+  if (!("name" in value)) return true;
+  return typeof value.name === "string";
+}
+
+function isLatLonArray(value: unknown): value is LatLon[] {
+  return Array.isArray(value) && value.every(isLatLonPoint);
+}
+
+export function readMapsResult(
+  storage: Pick<Storage, "getItem">,
+): StoredMapsResult | null {
+  try {
+    const raw = storage.getItem(MAPS_RESULT_KEY);
+    if (raw === null) return null;
+    const parsed: unknown = JSON.parse(raw);
+    if (typeof parsed !== "object" || parsed === null) return null;
+    const record = parsed as Partial<StoredMapsResult>;
+    if (typeof record.url !== "string" || record.url === "") return null;
+    const waypoints = record.waypoints;
+    if (!Array.isArray(waypoints) || !waypoints.every(isMapsWaypoint)) {
+      return null;
+    }
+    if (record.route === undefined) return null;
+    const route = record.route;
+    if (route !== null && !isLatLonArray(route)) return null;
+    if (
+      typeof record.savedAt !== "number" ||
+      !Number.isFinite(record.savedAt)
+    ) {
+      return null;
+    }
+    return {
+      url: record.url,
+      waypoints,
+      route,
+      savedAt: record.savedAt,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function writeMapsResult(
+  storage: Pick<Storage, "setItem">,
+  result: StoredMapsResult,
+): void {
+  try {
+    const serialized = JSON.stringify(result);
+    if (serialized.length > MAPS_RESULT_MAX_BYTES) return;
+    storage.setItem(MAPS_RESULT_KEY, serialized);
   } catch {}
 }
