@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { saveAs } from "file-saver";
 import Link from "next/link";
 import { useId, useState } from "react";
+import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
 import { isShortMapsLink, parseMapsUrl } from "@/lib/gpx/mapsLink";
 import { isParseError, parseGpx } from "@/lib/gpx/parse";
 import { waypointsToGpx } from "@/lib/gpx/serialize";
@@ -27,6 +28,10 @@ type MapsImportState =
   | { kind: "loading" }
   | { kind: "error"; message: string }
   | { kind: "success"; waypoints: MapsWaypoint[] };
+
+type CsvImportState =
+  | { kind: "idle" }
+  | { kind: "success"; result: CsvParseResult };
 
 async function resolveMapsInput(rawUrl: string): Promise<MapsWaypoint[]> {
   const targetUrl = isShortMapsLink(rawUrl)
@@ -58,6 +63,8 @@ export default function GpxViewPage() {
   const [mapsState, setMapsState] = useState<MapsImportState>({
     kind: "idle",
   });
+  const [csvInput, setCsvInput] = useState("");
+  const [csvState, setCsvState] = useState<CsvImportState>({ kind: "idle" });
   const fileInputId = useId();
   const mapsUrlInputId = useId();
 
@@ -113,6 +120,21 @@ export default function GpxViewPage() {
     if (mapsState.kind !== "success") return;
     const gpx = waypointsToGpx(mapsState.waypoints);
     saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "maps-import.gpx");
+  };
+
+  const handleCsvChange = (value: string) => {
+    setCsvInput(value);
+    if (value.trim() === "") {
+      setCsvState({ kind: "idle" });
+      return;
+    }
+    setCsvState({ kind: "success", result: parseWaypointCsv(value) });
+  };
+
+  const handleDownloadCsvGpx = () => {
+    if (csvState.kind !== "success") return;
+    const gpx = waypointsToGpx(csvState.result.waypoints.map((w) => w.waypoint));
+    saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "csv-import.gpx");
   };
 
   return (
@@ -278,6 +300,88 @@ export default function GpxViewPage() {
                   skipped: 0,
                 }}
               />
+            </div>
+          )}
+        </div>
+
+        <div className="tool-enter mt-10 space-y-4 border-t border-border pt-8">
+          <h2 className="text-lg font-semibold text-foreground">
+            Create GPX from a pasted CSV waypoint list
+          </h2>
+          <Textarea
+            value={csvInput}
+            onChange={(e) => handleCsvChange(e.target.value)}
+            placeholder={
+              "Latitude,Longitude,Name,Description\n10.000000,20.000000,Start Point,Test Point Campus"
+            }
+            className="min-h-[160px] font-mono text-xs"
+          />
+
+          {csvState.kind === "success" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {csvState.result.waypoints.length} waypoint
+                  {csvState.result.waypoints.length === 1 ? "" : "s"} parsed
+                  {csvState.result.errors.length > 0 &&
+                    `, ${csvState.result.errors.length} row${csvState.result.errors.length === 1 ? "" : "s"} failed`}
+                </p>
+                <Button
+                  type="button"
+                  onClick={handleDownloadCsvGpx}
+                  disabled={csvState.result.waypoints.length === 0}
+                >
+                  Download GPX
+                </Button>
+              </div>
+
+              {csvState.result.errors.length > 0 && (
+                <ul className="space-y-1 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                  {csvState.result.errors.map((error) => (
+                    <li key={error.row}>{error.message}</li>
+                  ))}
+                </ul>
+              )}
+
+              {csvState.result.waypoints.length > 0 && (
+                <div className="overflow-x-auto rounded-md border border-border">
+                  <table className="w-full text-left text-sm">
+                    <thead className="bg-muted/50 text-muted-foreground">
+                      <tr>
+                        <th className="px-3 py-2 font-medium">Row</th>
+                        <th className="px-3 py-2 font-medium">Latitude</th>
+                        <th className="px-3 py-2 font-medium">Longitude</th>
+                        <th className="px-3 py-2 font-medium">Name</th>
+                        <th className="px-3 py-2 font-medium">Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {csvState.result.waypoints.map(({ row, waypoint }) => (
+                        <tr key={row} className="border-t border-border">
+                          <td className="px-3 py-2">{row}</td>
+                          <td className="px-3 py-2">{waypoint.lat}</td>
+                          <td className="px-3 py-2">{waypoint.lon}</td>
+                          <td className="px-3 py-2">{waypoint.name}</td>
+                          <td className="px-3 py-2">{waypoint.desc ?? ""}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {csvState.result.waypoints.length > 0 && (
+                <GpxMap
+                  parsed={{
+                    waypoints: csvState.result.waypoints.map(
+                      (w) => w.waypoint,
+                    ),
+                    routes: [],
+                    tracks: [],
+                    skipped: 0,
+                  }}
+                />
+              )}
             </div>
           )}
         </div>
