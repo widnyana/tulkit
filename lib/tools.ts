@@ -166,6 +166,9 @@ export const tools: Tool[] = [
       "map viewer",
       "waypoints",
       "gps route",
+      "route planner",
+      "create gpx route",
+      "gpx builder",
     ],
   },
   {

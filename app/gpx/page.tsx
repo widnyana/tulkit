@@ -9,12 +9,14 @@ import {
   useCallback,
   useEffect,
   useId,
+  useReducer,
   useRef,
   useState,
 } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
-import { waypointsToGpx } from "@/lib/gpx/serialize";
+import { fetchRoadRoute } from "@/lib/gpx/routing";
+import { routeToGpx, waypointsToGpx } from "@/lib/gpx/serialize";
 import {
   generateGpxId,
   loadGpxEntry,
@@ -28,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyPanel } from "./components/EmptyPanel";
 import { ResultPanel } from "./components/ResultPanel";
+import { RoutePlannerMap } from "./components/RoutePlannerMap";
 import {
   importMapsLink,
   parseGpxText,
@@ -37,9 +40,13 @@ import {
 import type { LatLon, MapsWaypoint, ParsedGpx } from "./types";
 import { useGpxId } from "./useGpxId";
 import { useQueryState } from "./useQueryState";
-import { waypointsToParsedGpx } from "./utils";
+import {
+  formatDistance,
+  pathDistanceMeters,
+  waypointsToParsedGpx,
+} from "./utils";
 
-const TAB_VALUES = ["view", "maps", "csv"] as const;
+const TAB_VALUES = ["view", "maps", "csv", "plan"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
 
 function isTabValue(value: string): value is TabValue {
@@ -50,13 +57,149 @@ const TAB_LABELS: Record<TabValue, string> = {
   view: "View",
   maps: "From Maps",
   csv: "From CSV",
+  plan: "Route",
 };
 
 const TAB_HINTS: Record<TabValue, string> = {
   view: "Paste GPX XML or upload a .gpx file to inspect it on a map.",
   maps: "Paste a Google Maps share link to pull its waypoints into a GPX file.",
   csv: "Paste latitude/longitude rows to generate a GPX file.",
+  plan: "Click the map to build a route, snap it to roads, and export it as GPX.",
 };
+
+const PLAN_DRAFT_KEY = "tulkit:gpx:route-draft:v1";
+const PLAN_DRAFT_DEBOUNCE_MS = 400;
+const PLAN_SNAP_DEBOUNCE_MS = 600;
+const PLAN_HISTORY_LIMIT = 50;
+
+const PLAN_MODES = ["driving", "bicycling", "walking"] as const;
+type PlanMode = (typeof PLAN_MODES)[number];
+
+const PLAN_MODE_LABELS: Record<PlanMode, string> = {
+  driving: "Driving",
+  bicycling: "Bicycling",
+  walking: "Walking",
+};
+
+type SnapStatus = "idle" | "loading" | "ok" | "failed";
+
+const SNAP_STATUS_LABELS: Record<SnapStatus, string> = {
+  idle: "Add at least two points to snap to roads.",
+  loading: "Snapping to roads...",
+  ok: "Snapped to roads.",
+  failed: "Could not snap to roads; showing straight lines.",
+};
+
+interface PlanDraft {
+  name: string;
+  mode: PlanMode;
+  points: LatLon[];
+  snappedPath: LatLon[] | null;
+}
+
+interface PlanPointsState {
+  points: LatLon[];
+  history: LatLon[][];
+}
+
+type PlanPointsAction =
+  | { type: "add"; point: LatLon }
+  | { type: "move"; index: number; point: LatLon }
+  | { type: "moveUp"; index: number }
+  | { type: "moveDown"; index: number }
+  | { type: "remove"; index: number }
+  | { type: "clear" }
+  | { type: "undo" }
+  | { type: "restore"; points: LatLon[] };
+
+function withPlanHistory(
+  state: PlanPointsState,
+  points: LatLon[],
+): PlanPointsState {
+  return {
+    points,
+    history: [...state.history, state.points].slice(-PLAN_HISTORY_LIMIT),
+  };
+}
+
+function planPointsReducer(
+  state: PlanPointsState,
+  action: PlanPointsAction,
+): PlanPointsState {
+  switch (action.type) {
+    case "add":
+      return withPlanHistory(state, [...state.points, action.point]);
+    case "move":
+      return withPlanHistory(
+        state,
+        state.points.map((point, index) =>
+          index === action.index ? action.point : point,
+        ),
+      );
+    case "moveUp": {
+      if (action.index <= 0 || action.index >= state.points.length)
+        return state;
+      const points = [...state.points];
+      [points[action.index - 1], points[action.index]] = [
+        points[action.index],
+        points[action.index - 1],
+      ];
+      return withPlanHistory(state, points);
+    }
+    case "moveDown": {
+      if (action.index < 0 || action.index >= state.points.length - 1) {
+        return state;
+      }
+      const points = [...state.points];
+      [points[action.index], points[action.index + 1]] = [
+        points[action.index + 1],
+        points[action.index],
+      ];
+      return withPlanHistory(state, points);
+    }
+    case "remove":
+      return withPlanHistory(
+        state,
+        state.points.filter((_, index) => index !== action.index),
+      );
+    case "clear":
+      if (state.points.length === 0) return state;
+      return withPlanHistory(state, []);
+    case "undo": {
+      const previous = state.history.at(-1);
+      if (!previous) return state;
+      return { points: previous, history: state.history.slice(0, -1) };
+    }
+    case "restore":
+      return { points: action.points, history: [] };
+  }
+}
+
+function isPlanMode(value: unknown): value is PlanMode {
+  return (
+    typeof value === "string" &&
+    (PLAN_MODES as readonly string[]).includes(value)
+  );
+}
+
+function isLatLon(value: unknown): value is LatLon {
+  if (typeof value !== "object" || value === null) return false;
+  const point = value as { lat?: unknown; lon?: unknown };
+  return (
+    typeof point.lat === "number" &&
+    typeof point.lon === "number" &&
+    Number.isFinite(point.lat) &&
+    Number.isFinite(point.lon)
+  );
+}
+
+function slugifyName(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 type ViewState =
   | { kind: "empty" }
@@ -91,10 +234,22 @@ function GpxViewContent() {
   });
   const [csvInput, setCsvInput] = useState("");
   const [csvState, setCsvState] = useState<CsvImportState>({ kind: "idle" });
+  const [plan, dispatchPlan] = useReducer(planPointsReducer, {
+    points: [],
+    history: [],
+  });
+  const [planName, setPlanName] = useState("");
+  const [planMode, setPlanMode] = useState<PlanMode>("driving");
+  const [snappedPath, setSnappedPath] = useState<LatLon[] | null>(null);
+  const [snapStatus, setSnapStatus] = useState<SnapStatus>("idle");
+  const planPoints = plan.points;
+  const snapRequestId = useRef(0);
+  const draftRestored = useRef(false);
   const rawInputId = useId();
   const fileInputId = useId();
   const mapsUrlInputId = useId();
   const csvInputId = useId();
+  const planNameId = useId();
 
   const [urlId, setUrlId] = useGpxId();
   const [rawTab, setTab] = useQueryState("tab", "view");
@@ -214,6 +369,102 @@ function GpxViewContent() {
     saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "csv-import.gpx");
   };
 
+  useEffect(() => {
+    if (draftRestored.current) return;
+    draftRestored.current = true;
+    if (typeof window === "undefined") return;
+
+    let parsed: unknown;
+    try {
+      const raw = window.localStorage.getItem(PLAN_DRAFT_KEY);
+      if (raw === null) return;
+      parsed = JSON.parse(raw);
+    } catch {
+      return;
+    }
+    if (typeof parsed !== "object" || parsed === null) return;
+
+    const draft = parsed as Partial<PlanDraft>;
+    if (typeof draft.name === "string") setPlanName(draft.name);
+    if (isPlanMode(draft.mode)) setPlanMode(draft.mode);
+    if (Array.isArray(draft.points)) {
+      const points = draft.points.filter(isLatLon);
+      if (points.length > 0) dispatchPlan({ type: "restore", points });
+    }
+    if (Array.isArray(draft.snappedPath)) {
+      const path = draft.snappedPath.filter(isLatLon);
+      if (path.length >= 2) setSnappedPath(path);
+    }
+  }, []);
+
+  useEffect(() => {
+    const requestId = snapRequestId.current + 1;
+    snapRequestId.current = requestId;
+
+    if (planPoints.length < 2) {
+      setSnappedPath(null);
+      setSnapStatus("idle");
+      return;
+    }
+
+    setSnappedPath(null);
+    setSnapStatus("loading");
+
+    const timer = setTimeout(() => {
+      void fetchRoadRoute(planPoints, planMode).then((route) => {
+        if (snapRequestId.current !== requestId) return;
+        setSnappedPath(route);
+        setSnapStatus(route === null ? "failed" : "ok");
+      });
+    }, PLAN_SNAP_DEBOUNCE_MS);
+
+    return () => {
+      clearTimeout(timer);
+      if (snapRequestId.current === requestId) {
+        snapRequestId.current = requestId + 1;
+      }
+    };
+  }, [planPoints, planMode]);
+
+  const persistPlanDraft = useDebouncedCallback((draft: PlanDraft) => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage.setItem(PLAN_DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      return;
+    }
+  }, PLAN_DRAFT_DEBOUNCE_MS);
+
+  useEffect(() => {
+    persistPlanDraft({
+      name: planName,
+      mode: planMode,
+      points: planPoints,
+      snappedPath,
+    });
+  }, [planName, planMode, planPoints, snappedPath, persistPlanDraft]);
+
+  const handlePlanMapClick = useCallback((point: LatLon) => {
+    dispatchPlan({ type: "add", point });
+  }, []);
+
+  const handlePlanPointMove = useCallback((index: number, point: LatLon) => {
+    dispatchPlan({ type: "move", index, point });
+  }, []);
+
+  const handleDownloadRouteGpx = () => {
+    if (planPoints.length < 2) return;
+    const gpx = routeToGpx({
+      name: planName,
+      controlPoints: planPoints,
+      snappedPath,
+    });
+    saveAs(
+      new Blob([gpx], { type: "application/gpx+xml" }),
+      `${slugifyName(planName) || "route"}.gpx`,
+    );
+  };
+
   return (
     <div className="min-h-screen">
       <div className="mx-auto max-w-6xl px-5 pb-28 pt-10 sm:px-6 sm:pt-14 lg:pb-12">
@@ -256,7 +507,7 @@ function GpxViewContent() {
         </header>
 
         <Tabs value={tab} onValueChange={setTab} className="tool-enter mt-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             {TAB_VALUES.map((value) => (
               <TabsTrigger key={value} value={value}>
                 {TAB_LABELS[value]}
@@ -460,6 +711,165 @@ function GpxViewContent() {
                   )}
                 </div>
               ))}
+          </TabsContent>
+
+          <TabsContent value="plan" className="mt-4">
+            <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_20rem]">
+              <RoutePlannerMap
+                controlPoints={planPoints}
+                snappedPath={snappedPath}
+                onMapClick={handlePlanMapClick}
+                onPointMove={handlePlanPointMove}
+              />
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label
+                    htmlFor={planNameId}
+                    className="text-sm font-medium text-foreground"
+                  >
+                    Route name
+                  </label>
+                  <Input
+                    id={planNameId}
+                    value={planName}
+                    onChange={(e) => setPlanName(e.target.value)}
+                    placeholder="Morning loop"
+                  />
+                </div>
+
+                <div
+                  role="group"
+                  aria-label="Travel mode"
+                  className="flex flex-wrap gap-2"
+                >
+                  {PLAN_MODES.map((value) => (
+                    <Button
+                      key={value}
+                      type="button"
+                      size="sm"
+                      variant={planMode === value ? "default" : "outline"}
+                      aria-pressed={planMode === value}
+                      onClick={() => setPlanMode(value)}
+                    >
+                      {PLAN_MODE_LABELS[value]}
+                    </Button>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+                  <span className="font-medium text-foreground">
+                    {formatDistance(
+                      pathDistanceMeters(snappedPath ?? planPoints),
+                    )}
+                  </span>
+                  <span aria-hidden="true">·</span>
+                  {snapStatus === "loading" && <Spinner />}
+                  <span>{SNAP_STATUS_LABELS[snapStatus]}</span>
+                </div>
+
+                {planPoints.length === 0 ? (
+                  <EmptyPanel message="Click the map to drop your first route point." />
+                ) : (
+                  <div className="overflow-x-auto rounded-md border border-border">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-muted/50 text-muted-foreground">
+                        <tr>
+                          <th className="px-3 py-2 font-medium">#</th>
+                          <th className="px-3 py-2 font-medium">Latitude</th>
+                          <th className="px-3 py-2 font-medium">Longitude</th>
+                          <th className="px-3 py-2 text-right font-medium">
+                            Actions
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {planPoints.map((point, index) => (
+                          <tr
+                            key={`${point.lat}-${point.lon}`}
+                            className={`border-t border-border ${index % 2 === 1 ? "bg-muted/30" : ""}`}
+                          >
+                            <td className="px-3 py-2">{index + 1}</td>
+                            <td className="px-3 py-2 font-mono text-xs">
+                              {point.lat.toFixed(5)}
+                            </td>
+                            <td className="px-3 py-2 font-mono text-xs">
+                              {point.lon.toFixed(5)}
+                            </td>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  aria-label={`Move point ${index + 1} up`}
+                                  disabled={index === 0}
+                                  onClick={() =>
+                                    dispatchPlan({ type: "moveUp", index })
+                                  }
+                                >
+                                  ↑
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  aria-label={`Move point ${index + 1} down`}
+                                  disabled={index === planPoints.length - 1}
+                                  onClick={() =>
+                                    dispatchPlan({ type: "moveDown", index })
+                                  }
+                                >
+                                  ↓
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon-sm"
+                                  aria-label={`Delete point ${index + 1}`}
+                                  onClick={() =>
+                                    dispatchPlan({ type: "remove", index })
+                                  }
+                                >
+                                  ×
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => dispatchPlan({ type: "undo" })}
+                    disabled={plan.history.length === 0}
+                  >
+                    Undo
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => dispatchPlan({ type: "clear" })}
+                    disabled={planPoints.length === 0}
+                  >
+                    Clear
+                  </Button>
+                  <Button
+                    type="button"
+                    className="ml-auto"
+                    onClick={handleDownloadRouteGpx}
+                    disabled={planPoints.length < 2}
+                  >
+                    Download GPX
+                  </Button>
+                </div>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
