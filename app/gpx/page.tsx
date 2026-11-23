@@ -99,12 +99,11 @@ const PLAN_MIN_POINT_GAP_METERS = 10;
 const PLAN_MAX_LEG_METERS = 1000 * 1000;
 const PLAN_MAX_SNAP_DISTANCE_METERS = 1000;
 
-const PLAN_MODES = ["driving", "bicycling", "walking"] as const;
+const PLAN_MODES = ["bicycling", "walking"] as const;
 type PlanMode = (typeof PLAN_MODES)[number];
 
 const PLAN_MODE_LABELS: Record<PlanMode, string> = {
-  driving: "Driving",
-  bicycling: "Bicycling",
+  bicycling: "Cycling",
   walking: "Walking",
 };
 
@@ -320,7 +319,7 @@ function GpxViewContent() {
     history: [],
   });
   const [planName, setPlanName] = useState("");
-  const [planMode, setPlanMode] = useState<PlanMode>("driving");
+  const [planMode, setPlanMode] = useState<PlanMode>("bicycling");
   const [snappedPath, setSnappedPath] = useState<LatLon[] | null>(null);
   const [snapStatus, setSnapStatus] = useState<SnapStatus>("idle");
   const [planNotice, setPlanNotice] = useState<PlanNotice | null>(null);
@@ -846,8 +845,8 @@ function GpxViewContent() {
             Strava, Garmin, RideWithGPS, or similar software to see its
             metadata, waypoints, routes, and tracks. Paste a Google Maps share
             link or a CSV of latitude/longitude rows to build a file. Planned
-            routes snap to roads for driving, cycling, or walking, and exports
-            carry elevation. Ready-made route files in the library also download
+            routes snap to roads for cycling or walking, and exports carry
+            elevation. Ready-made route files in the library also download
             straight from this page. Parsing, planning, and export happen in
             your browser; files never leave your device.
           </p>

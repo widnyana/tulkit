@@ -10,13 +10,13 @@ const ROAD_MODES = ["driving", "bicycling", "walking"] as const;
 type RoadMode = (typeof ROAD_MODES)[number];
 
 const OSRM_INSTANCE: Record<RoadMode, string> = {
-  driving: "routed-car",
+  driving: "routed-bike",
   bicycling: "routed-bike",
   walking: "routed-foot",
 };
 
 const OSRM_PROFILE: Record<RoadMode, string> = {
-  driving: "driving",
+  driving: "bike",
   bicycling: "bike",
   walking: "walking",
 };
