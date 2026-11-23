@@ -97,11 +97,8 @@ function parseKeywords(value: string | undefined): string[] | undefined {
   return keywords.length > 0 ? keywords : undefined;
 }
 
-/**
- * GPX 1.1 keeps these fields in a <metadata> child; GPX 1.0 puts them directly
- * under <gpx>. Both shapes are read, and only fields actually present survive
- * so an absent block renders nothing instead of empty rows.
- */
+// GPX 1.1 nests these fields in <metadata>; 1.0 puts them under <gpx>.
+// Both shapes are read, and absent fields are dropped, not rendered empty.
 function parseMetadata(doc: Document): GpxMetadata | undefined {
   const root = doc.documentElement;
   if (!root) return undefined;

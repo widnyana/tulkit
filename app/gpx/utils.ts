@@ -119,14 +119,8 @@ export function safeExternalHref(href: string | undefined): string | undefined {
   }
 }
 
-/**
- * GPS/barometer altitude readings jitter by a few metres even standing
- * still, and since gain only ever accumulates (jitter never nets out),
- * summing every raw point-to-point delta overstates real ascent several
- * times over on a dense track. A point only counts once it has moved this
- * far from the last accepted elevation, which is the standard cheap fix
- * (every consumer fitness platform applies some form of this).
- */
+// Altitude jitters by a few metres and gain only accumulates, so raw deltas
+// overstate ascent. Count a point after 3 m of movement from the last accepted elevation.
 const ELEVATION_NOISE_THRESHOLD_METERS = 3;
 
 export function elevationGain(parsed: ParsedGpx): number | null {
@@ -224,7 +218,6 @@ export interface StatTile {
   value: string;
 }
 
-/** Derives the at-a-glance stat row from a parsed file. Omits any stat that's zero/unavailable. */
 export function buildGpxStats(parsed: ParsedGpx): StatTile[] {
   const stats: StatTile[] = [
     { label: "Waypoints", value: String(parsed.waypoints.length) },

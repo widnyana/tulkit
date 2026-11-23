@@ -290,10 +290,8 @@ describe("elevationGain", () => {
   it("still counts a real climb made of many small jittery steps", () => {
     const points = [{ lat: 0, lon: 0, ele: 0 }];
     for (let i = 1; i <= 20; i++) {
-      // +0.6 m real climb per step, jitter-sized relative to each other but
-      // a genuine 12 m ascent overall: each 3 m threshold crossing banks its
-      // climb, and the final sub-threshold remainder (1.2 m) is the known,
-      // bounded cost of filtering noise at this granularity.
+      // +0.6 m per step: each crossing above the 3 m threshold banks 3.6 m, so
+      // 10.8 m of the 12 m ascent counts and the final 1.2 m stays under.
       points.push({ lat: 0, lon: i, ele: i * 0.6 });
     }
     const parsed: ParsedGpx = {

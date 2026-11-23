@@ -1,7 +1,6 @@
 import type { GpxMetadata } from "../types";
 import { safeExternalHref } from "../utils";
 
-/** Renders the declared file metadata, omitting every absent field. */
 export function MetadataPanel({ metadata }: { metadata?: GpxMetadata }) {
   if (!metadata) return null;
 
