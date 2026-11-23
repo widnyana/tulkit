@@ -1,16 +1,21 @@
 import { corsHeaders } from "@/lib/net/cors";
-import { pinnedUrl, validateOutbound } from "@/lib/net/outbound";
+import {
+  fetchAllowed,
+  type OutboundError,
+  type OriginRule,
+} from "@/lib/net/outbound";
 import { SITE_URL } from "@/lib/site";
+import { Effect } from "effect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const ALLOWED_MAPS_HOSTS = [
-  "maps.app.goo.gl",
-  "goo.gl",
-  "www.google.com",
-  "google.com",
-  "maps.google.com",
-];
+const ALLOWED_MAPS_RULES = [
+  { host: "maps.app.goo.gl", origin: "https://maps.app.goo.gl" },
+  { host: "goo.gl", origin: "https://goo.gl" },
+  { host: "www.google.com", origin: "https://www.google.com" },
+  { host: "google.com", origin: "https://google.com" },
+  { host: "maps.google.com", origin: "https://maps.google.com" },
+] as const satisfies ReadonlyArray<OriginRule>;
 
 const HOST_ERROR = "Host is not an allowed Google Maps host";
 
@@ -29,83 +34,38 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const validation = validateOutbound(mapsUrl, ALLOWED_MAPS_HOSTS, HOST_ERROR);
-  if ("error" in validation) {
-    return NextResponse.json(
-      { error: validation.error },
-      { status: 400, headers: corsHeaders },
-    );
-  }
+  const outcome = await Effect.runPromise(
+    fetchAllowed(mapsUrl, ALLOWED_MAPS_RULES, {
+      headers: { "User-Agent": `Tulkit/1.0 ${SITE_URL}` },
+      timeoutMs: 10000,
+      maxRedirects: 5,
+      hostError: HOST_ERROR,
+    }).pipe(
+      Effect.match({
+        onFailure: (error: OutboundError) => ({ ok: false as const, error }),
+        onSuccess: (value) => ({ ok: true as const, value }),
+      }),
+    ),
+  );
 
-  let currentUrl = validation.url;
+  if (!outcome.ok) {
+    const { error } = outcome;
 
-  try {
-    const initialFetchUrl = pinnedUrl(currentUrl, ALLOWED_MAPS_HOSTS);
-    if (!initialFetchUrl) {
+    if (error._tag === "BlockedTarget") {
       return NextResponse.json(
-        { error: HOST_ERROR },
+        { error: error.reason },
         { status: 400, headers: corsHeaders },
       );
     }
 
-    let response = await fetch(initialFetchUrl.toString(), {
-      headers: { "User-Agent": `Tulkit/1.0 ${SITE_URL}` },
-      signal: AbortSignal.timeout(10000),
-      redirect: "manual",
-    });
-
-    for (let redirects = 0; redirects < 5; redirects++) {
-      if (response.status < 300 || response.status >= 400) {
-        break;
-      }
-
-      const location = response.headers.get("location");
-      if (!location) {
-        break;
-      }
-
-      currentUrl = new URL(location, currentUrl);
-      const redirectValidation = validateOutbound(
-        currentUrl.toString(),
-        ALLOWED_MAPS_HOSTS,
-        HOST_ERROR,
-      );
-      if ("error" in redirectValidation) {
-        return NextResponse.json(
-          { error: redirectValidation.error },
-          { status: 400, headers: corsHeaders },
-        );
-      }
-      currentUrl = redirectValidation.url;
-
-      const fetchUrl = pinnedUrl(currentUrl, ALLOWED_MAPS_HOSTS);
-      if (!fetchUrl) {
-        return NextResponse.json(
-          { error: HOST_ERROR },
-          { status: 400, headers: corsHeaders },
-        );
-      }
-
-      response = await fetch(fetchUrl.toString(), {
-        headers: { "User-Agent": `Tulkit/1.0 ${SITE_URL}` },
-        signal: AbortSignal.timeout(10000),
-        redirect: "manual",
-      });
-    }
-
-    if (response.status >= 300 && response.status < 400) {
+    if (error._tag === "TooManyRedirects") {
       return NextResponse.json(
         { error: "Too many redirects" },
         { status: 400, headers: corsHeaders },
       );
     }
 
-    return NextResponse.json(
-      { resolvedUrl: currentUrl.toString() },
-      { status: 200, headers: corsHeaders },
-    );
-  } catch (error) {
-    if (error instanceof Error && error.name === "AbortError") {
+    if (error._tag === "RequestTimeout") {
       return NextResponse.json(
         { error: "Request timed out after 10 seconds" },
         { status: 408, headers: corsHeaders },
@@ -117,4 +77,9 @@ export async function GET(request: NextRequest) {
       { status: 500, headers: corsHeaders },
     );
   }
+
+  return NextResponse.json(
+    { resolvedUrl: outcome.value.finalUrl.toString() },
+    { status: 200, headers: corsHeaders },
+  );
 }

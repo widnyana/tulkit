@@ -73,8 +73,8 @@ Tailwind v4 is configured CSS-first in `app/globals.css` (`@import "tailwindcss"
 
 ## GPX I/O boundary
 
-`app/gpx` and `lib/gpx` are the only modules that import `effect`, and the boundary
-has four parts:
+`app/gpx`, `lib/gpx`, `lib/net`, and the API proxies that use `lib/net` are the only
+modules that import `effect`, and the boundary has four parts:
 
 - every network call goes through `lib/gpx/http.ts`; it returns an `Effect` with a typed
   error from `lib/gpx/errors.ts`, retries transient failures with a bounded backoff, and
@@ -87,7 +87,9 @@ has four parts:
 - the page keeps one fiber per request and interrupts it before starting the next
 
 A new fetch without a typed error, a `catch { return null }` around network I/O, or an
-`effect` import inside `app/api` is a defect.
+ad-hoc `fetch` in `app/api` that bypasses `lib/net` is a defect. The API proxies use the
+same typed boundary through `lib/net`, so an `effect` import in `app/api` is expected
+when it comes from `lib/net`.
 
 ## Conventions
 

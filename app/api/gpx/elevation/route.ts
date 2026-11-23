@@ -1,3 +1,5 @@
+import { RequestTimeout, UpstreamFailure } from "@/lib/net/outbound";
+import { Duration, Effect } from "effect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -44,25 +46,44 @@ const fetchChunk = async (
   const longitudes = points.map((point) => point.lon).join(",");
   const url = `${ELEVATION_URL}?latitude=${latitudes}&longitude=${longitudes}`;
 
-  try {
-    const response = await fetch(url, {
-      next: { revalidate: ELEVATION_REVALIDATE_SECONDS },
-      signal: AbortSignal.timeout(ELEVATION_TIMEOUT_MS),
-    });
-    if (!response.ok) return null;
+  return Effect.runPromise(
+    Effect.gen(function* () {
+      const response = yield* Effect.tryPromise({
+        try: (signal) =>
+          fetch(url, {
+            next: { revalidate: ELEVATION_REVALIDATE_SECONDS },
+            signal,
+          }),
+        catch: () => new UpstreamFailure({ status: 0 }),
+      }).pipe(
+        Effect.timeout(Duration.millis(ELEVATION_TIMEOUT_MS)),
+        Effect.catchTag("TimeoutError", () =>
+          Effect.fail(new RequestTimeout()),
+        ),
+      );
 
-    const data: OpenMeteoElevationResponse = await response.json();
-    const elevations = data.elevation;
-    if (!Array.isArray(elevations) || elevations.length !== points.length) {
-      return null;
-    }
+      if (!response.ok) return null;
 
-    return elevations.map((value) =>
-      typeof value === "number" && Number.isFinite(value) ? value : null,
-    );
-  } catch {
-    return null;
-  }
+      const data = yield* Effect.tryPromise({
+        try: () => response.json() as Promise<OpenMeteoElevationResponse>,
+        catch: () => new UpstreamFailure({ status: 0 }),
+      });
+
+      const elevations = data.elevation;
+      if (!Array.isArray(elevations) || elevations.length !== points.length) {
+        return null;
+      }
+
+      return elevations.map((value) =>
+        typeof value === "number" && Number.isFinite(value) ? value : null,
+      );
+    }).pipe(
+      Effect.match({
+        onFailure: () => null,
+        onSuccess: (value) => value,
+      }),
+    ),
+  );
 };
 
 export async function POST(request: NextRequest) {

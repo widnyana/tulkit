@@ -1,3 +1,5 @@
+import { RequestTimeout, UpstreamFailure } from "@/lib/net/outbound";
+import { Duration, Effect } from "effect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -109,26 +111,45 @@ export async function POST(request: NextRequest) {
     `${osrmRouteBase(mode)}/`,
   );
 
-  try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(ROUTE_TIMEOUT_MS),
-      headers: { "User-Agent": USER_AGENT },
-    });
-    if (!response.ok) return unavailableResponse();
+  const outcome = await Effect.runPromise(
+    Effect.gen(function* () {
+      const response = yield* Effect.tryPromise({
+        try: (signal) =>
+          fetch(url, { signal, headers: { "User-Agent": USER_AGENT } }),
+        catch: () => new UpstreamFailure({ status: 0 }),
+      }).pipe(
+        Effect.timeout(Duration.millis(ROUTE_TIMEOUT_MS)),
+        Effect.catchTag("TimeoutError", () =>
+          Effect.fail(new RequestTimeout()),
+        ),
+      );
 
-    const data: OsrmRouteResponse = await response.json();
-    const route = data.routes?.[0];
-    if (data.code !== "Ok" || !route) return unavailableResponse();
+      if (!response.ok) return null;
 
-    const geometry = route.geometry.coordinates;
-    if (!Array.isArray(geometry) || geometry.length === 0) {
-      return unavailableResponse();
-    }
+      return yield* Effect.tryPromise({
+        try: () => response.json() as Promise<OsrmRouteResponse>,
+        catch: () => new UpstreamFailure({ status: 0 }),
+      });
+    }).pipe(
+      Effect.match({
+        onFailure: () => null,
+        onSuccess: (value) => value,
+      }),
+    ),
+  );
 
-    return NextResponse.json({
-      coordinates: geometry.map(([lon, lat]) => [lon, lat]),
-    });
-  } catch {
+  if (!outcome) return unavailableResponse();
+
+  const data = outcome;
+  const route = data.routes?.[0];
+  if (data.code !== "Ok" || !route) return unavailableResponse();
+
+  const geometry = route.geometry.coordinates;
+  if (!Array.isArray(geometry) || geometry.length === 0) {
     return unavailableResponse();
   }
+
+  return NextResponse.json({
+    coordinates: geometry.map(([lon, lat]) => [lon, lat]),
+  });
 }

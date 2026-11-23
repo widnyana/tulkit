@@ -1,3 +1,5 @@
+import { RequestTimeout, UpstreamFailure } from "@/lib/net/outbound";
+import { Duration, Effect } from "effect";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
@@ -85,38 +87,57 @@ export async function POST(request: NextRequest) {
     `${osrmNearestBase(mode)}/`,
   );
 
-  try {
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(SNAP_TIMEOUT_MS),
-      headers: { "User-Agent": USER_AGENT },
-    });
-    const data: OsrmNearestResponse | null = await response
-      .json()
-      .catch(() => null);
+  const outcome = await Effect.runPromise(
+    Effect.gen(function* () {
+      const response = yield* Effect.tryPromise({
+        try: (signal) =>
+          fetch(url, { signal, headers: { "User-Agent": USER_AGENT } }),
+        catch: () => new UpstreamFailure({ status: 0 }),
+      }).pipe(
+        Effect.timeout(Duration.millis(SNAP_TIMEOUT_MS)),
+        Effect.catchTag("TimeoutError", () =>
+          Effect.fail(new RequestTimeout()),
+        ),
+      );
 
-    if (data?.code === "NoSegment") return noRoadResponse();
-    if (!response.ok || data?.code !== "Ok") return unavailableResponse();
+      const data = yield* Effect.tryPromise({
+        try: () => response.json() as Promise<OsrmNearestResponse>,
+        catch: () => new UpstreamFailure({ status: 0 }),
+      });
 
-    const waypoint = data.waypoints?.[0];
-    if (!waypoint?.location) return unavailableResponse();
+      return { response, data };
+    }).pipe(
+      Effect.match({
+        onFailure: () => null,
+        onSuccess: (value) => value,
+      }),
+    ),
+  );
 
-    const [snappedLon, snappedLat] = waypoint.location;
-    const { distance } = waypoint;
-    if (
-      !isInRange(snappedLat, -90, 90) ||
-      !isInRange(snappedLon, -180, 180) ||
-      typeof distance !== "number" ||
-      !Number.isFinite(distance)
-    ) {
-      return unavailableResponse();
-    }
+  if (!outcome) return unavailableResponse();
 
-    return NextResponse.json({
-      point: { lat: snappedLat, lon: snappedLon },
-      distance,
-      reason: "ok" as const,
-    });
-  } catch {
+  const { response, data } = outcome;
+
+  if (data?.code === "NoSegment") return noRoadResponse();
+  if (!response.ok || data?.code !== "Ok") return unavailableResponse();
+
+  const waypoint = data.waypoints?.[0];
+  if (!waypoint?.location) return unavailableResponse();
+
+  const [snappedLon, snappedLat] = waypoint.location;
+  const { distance } = waypoint;
+  if (
+    !isInRange(snappedLat, -90, 90) ||
+    !isInRange(snappedLon, -180, 180) ||
+    typeof distance !== "number" ||
+    !Number.isFinite(distance)
+  ) {
     return unavailableResponse();
   }
+
+  return NextResponse.json({
+    point: { lat: snappedLat, lon: snappedLon },
+    distance,
+    reason: "ok" as const,
+  });
 }
