@@ -25,6 +25,17 @@ same bytes. Every scenario exists once for West Java and once for Bali.
 | sportive-supported | West Java | `west-java/sportive-supported.gpx` | Supported 100 km sportive: feed stations, water points and mechanics. Expect Food, Water and Repair groups plus a brief. |
 | bikepacking-unsupported | West Java | `west-java/bikepacking-unsupported.gpx` | Unsupported bikepacking track: water, camp, resupply and summit points. Expect four POI groups including an unrecognised Resupply group. |
 | mtb-technical | West Java | `west-java/mtb-technical.gpx` | Technical MTB loop with hazard, viewpoint and summit points. Expect three POI groups and a track brief. |
+| brief-long | West Java | `west-java/brief-long.gpx` | Route desc above 240 characters with one http URL and one unsafe URL. Expect an excerpt plus Show full description and a single Source link. |
+| brief-both-desc | West Java | `west-java/brief-both-desc.gpx` | Route and track both carry a desc and the track has more points. Expect the track desc to win the brief. |
+| marks-200 | West Java | `west-java/marks-200.gpx` | Exactly 200 km-named marks. Expect the label layer to stay on and no note row. |
+| marks-201 | West Java | `west-java/marks-201.gpx` | 201 km-named marks, one above the cap. Expect the label layer skipped and the note row present. |
+| marks-labels-extra | West Java | `west-java/marks-labels-extra.gpx` | Twelve marks but only eight labels. Expect the label array to stop at eight while the count stays twelve. |
+| metadata-variants | West Java | `west-java/metadata-variants.gpx` | Author without email and a link without text. Expect an author row, no email, and a Source anchor labelled by its href. |
+| loop-route | West Java | `west-java/loop-route.gpx` | Track that returns to its first point. Expect the loop row instead of separate start and finish rows. |
+| single-waypoint | West Java | `west-java/single-waypoint.gpx` | One waypoint and nothing else. Expect a single marker and the waypoint fallback label. |
+| multi-track | West Java | `west-java/multi-track.gpx` | Two tracks in one file. Expect two line groups with separate colours and distances. |
+| named-fallback-from-sym | West Java | `west-java/named-fallback-from-sym.gpx` | Route points with symbols and no names. Expect the named-point fallback label taken from the first symbol. |
+| empty-valid | West Java | `west-java/empty-valid.gpx` | Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error. |
 | track-only | Bali | `bali/track-only.gpx` | Single-segment track with elevation. Expect one line group, distance and elevation gain, no brief. |
 | track-multiseg | Bali | `bali/track-multiseg.gpx` | Track split into three segments with a track desc. Expect segment boundaries kept and a brief from the track. |
 | track-extensions | Bali | `bali/track-extensions.gpx` | Vendor extensions and no desc. Expect extensions ignored and no brief. |
@@ -45,6 +56,17 @@ same bytes. Every scenario exists once for West Java and once for Bali.
 | sportive-supported | Bali | `bali/sportive-supported.gpx` | Supported 100 km sportive: feed stations, water points and mechanics. Expect Food, Water and Repair groups plus a brief. |
 | bikepacking-unsupported | Bali | `bali/bikepacking-unsupported.gpx` | Unsupported bikepacking track: water, camp, resupply and summit points. Expect four POI groups including an unrecognised Resupply group. |
 | mtb-technical | Bali | `bali/mtb-technical.gpx` | Technical MTB loop with hazard, viewpoint and summit points. Expect three POI groups and a track brief. |
+| brief-long | Bali | `bali/brief-long.gpx` | Route desc above 240 characters with one http URL and one unsafe URL. Expect an excerpt plus Show full description and a single Source link. |
+| brief-both-desc | Bali | `bali/brief-both-desc.gpx` | Route and track both carry a desc and the track has more points. Expect the track desc to win the brief. |
+| marks-200 | Bali | `bali/marks-200.gpx` | Exactly 200 km-named marks. Expect the label layer to stay on and no note row. |
+| marks-201 | Bali | `bali/marks-201.gpx` | 201 km-named marks, one above the cap. Expect the label layer skipped and the note row present. |
+| marks-labels-extra | Bali | `bali/marks-labels-extra.gpx` | Twelve marks but only eight labels. Expect the label array to stop at eight while the count stays twelve. |
+| metadata-variants | Bali | `bali/metadata-variants.gpx` | Author without email and a link without text. Expect an author row, no email, and a Source anchor labelled by its href. |
+| loop-route | Bali | `bali/loop-route.gpx` | Track that returns to its first point. Expect the loop row instead of separate start and finish rows. |
+| single-waypoint | Bali | `bali/single-waypoint.gpx` | One waypoint and nothing else. Expect a single marker and the waypoint fallback label. |
+| multi-track | Bali | `bali/multi-track.gpx` | Two tracks in one file. Expect two line groups with separate colours and distances. |
+| named-fallback-from-sym | Bali | `bali/named-fallback-from-sym.gpx` | Route points with symbols and no names. Expect the named-point fallback label taken from the first symbol. |
+| empty-valid | Bali | `bali/empty-valid.gpx` | Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error. |
 
 Regenerate: `node scripts/generate-gpx-fixtures.mjs`
 Verify: `node --experimental-strip-types scripts/verify-gpx-fixtures.mjs`

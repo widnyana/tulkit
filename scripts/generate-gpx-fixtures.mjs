@@ -647,6 +647,191 @@ const SCENARIOS = [
       });
     },
   },
+  {
+    id: "brief-long",
+    note: "Route desc above 240 characters with one http URL and one unsafe URL. Expect an excerpt plus Show full description and a single Source link.",
+    build(region, rng) {
+      const body = routePoints(region, rng, 120)
+        .map((point) => rtept(point))
+        .join("\n");
+      const paragraph =
+        "This route leaves the city and climbs steadily through plantations, then follows a ridge with three short descents and a long exposed section before the final run into town. ";
+      const desc = `${paragraph}${paragraph}More notes at https://example.com/notes/${region.slug} and ignore javascript:alert(1).`;
+      return documentXml({
+        version: "1.1",
+        creator: "Komoot",
+        body: `  <rte>\n    <name>${escapeXml(
+          region.routeName,
+        )}</name>\n    <desc>${escapeXml(desc)}</desc>\n${body}\n  </rte>`,
+      });
+    },
+  },
+  {
+    id: "brief-both-desc",
+    note: "Route and track both carry a desc and the track has more points. Expect the track desc to win the brief.",
+    build(region, rng) {
+      const body = routePoints(region, rng, 50)
+        .map((point) => rtept(point))
+        .join("\n");
+      return documentXml({
+        version: "1.1",
+        creator: "QGIS",
+        body: `  <rte>\n    <name>${escapeXml(
+          region.routeName,
+        )}</name>\n    <desc>Route description</desc>\n${body}\n  </rte>\n${trk(
+          region,
+          {
+            segments: [trackPoints(region, rng, 300)],
+            desc: "Track description",
+          },
+        )}`,
+      });
+    },
+  },
+  {
+    id: "marks-200",
+    note: "Exactly 200 km-named marks. Expect the label layer to stay on and no note row.",
+    build(region, rng) {
+      const body = routePoints(region, rng, 200)
+        .map((point, index) => rtept(point, `<name>${index + 1}.00km</name>`))
+        .join("\n");
+      return documentXml({
+        version: "1.1",
+        creator: "gps-touring",
+        body: `  <rte>\n    <name>${escapeXml(region.routeName)}</name>\n${body}\n  </rte>`,
+      });
+    },
+  },
+  {
+    id: "marks-201",
+    note: "201 km-named marks, one above the cap. Expect the label layer skipped and the note row present.",
+    build(region, rng) {
+      const body = routePoints(region, rng, 201)
+        .map((point, index) => rtept(point, `<name>${index + 1}.00km</name>`))
+        .join("\n");
+      return documentXml({
+        version: "1.1",
+        creator: "gps-touring",
+        body: `  <rte>\n    <name>${escapeXml(region.routeName)}</name>\n${body}\n  </rte>`,
+      });
+    },
+  },
+  {
+    id: "marks-labels-extra",
+    note: "Twelve marks but only eight labels. Expect the label array to stop at eight while the count stays twelve.",
+    build(region, rng) {
+      const body = routePoints(region, rng, 120)
+        .map((point, index) =>
+          index % 10 === 0
+            ? rtept(point, `<name>${(index + 10).toFixed(2)}km</name>`)
+            : rtept(point),
+        )
+        .join("\n");
+      return documentXml({
+        version: "1.1",
+        creator: "gps-touring",
+        body: `  <rte>\n    <name>${escapeXml(region.routeName)}</name>\n${body}\n  </rte>`,
+      });
+    },
+  },
+  {
+    id: "metadata-variants",
+    note: "Author without email and a link without text. Expect an author row, no email, and a Source anchor labelled by its href.",
+    build(region, rng) {
+      const metadata = `  <metadata>\n    <name>${escapeXml(
+        region.label,
+      )} variant route</name>\n    <author><name>Fixture Author</name></author>\n    <link href="https://example.com/no-text/${
+        region.slug
+      }"/>\n  </metadata>`;
+      return documentXml({
+        version: "1.1",
+        creator: "BaseCamp",
+        metadata,
+        body: trk(region, { segments: [trackPoints(region, rng, 120)] }),
+      });
+    },
+  },
+  {
+    id: "loop-route",
+    note: "Track that returns to its first point. Expect the loop row instead of separate start and finish rows.",
+    build(region, rng) {
+      const points = trackPoints(region, rng, 200);
+      points.push({ ...points[0] });
+      return documentXml({
+        version: "1.1",
+        creator: "StravaGPX",
+        body: trk(region, { segments: [points] }),
+      });
+    },
+  },
+  {
+    id: "single-waypoint",
+    note: "One waypoint and nothing else. Expect a single marker and the waypoint fallback label.",
+    build(region, rng) {
+      return documentXml({
+        version: "1.1",
+        creator: "organicmaps",
+        body: wpt(
+          poiPoint(
+            region,
+            rng,
+            `${region.places[0]} meeting point`,
+            "Viewpoint",
+          ),
+        ),
+      });
+    },
+  },
+  {
+    id: "multi-track",
+    note: "Two tracks in one file. Expect two line groups with separate colours and distances.",
+    build(region, rng) {
+      return documentXml({
+        version: "1.1",
+        creator: "Garmin Connect",
+        body: `${trk(region, {
+          segments: [trackPoints(region, rng, 200)],
+          name: `${region.trackName} day 1`,
+        })}\n${trk(region, {
+          segments: [trackPoints(region, rng, 80)],
+          name: `${region.trackName} day 2`,
+        })}`,
+      });
+    },
+  },
+  {
+    id: "named-fallback-from-sym",
+    note: "Route points with symbols and no names. Expect the named-point fallback label taken from the first symbol.",
+    build(region, rng) {
+      const body = routePoints(region, rng, 30)
+        .map((point, index) =>
+          index % 6 === 0
+            ? rtept(point, `<sym>Summit</sym>`)
+            : rtept(point),
+        )
+        .join("\n");
+      return documentXml({
+        version: "1.1",
+        creator: "BaseCamp",
+        body: `  <rte>\n    <name>${escapeXml(region.routeName)}</name>\n${body}\n  </rte>`,
+      });
+    },
+  },
+  {
+    id: "empty-valid",
+    note: "Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error.",
+    build(region) {
+      const metadata = `  <metadata>\n    <name>${escapeXml(
+        region.label,
+      )} empty route</name>\n  </metadata>`;
+      return documentXml({
+        version: "1.1",
+        creator: "BaseCamp",
+        metadata,
+        body: "",
+      });
+    },
+  },
 ];
 
 rmSync(OUT_ROOT, { recursive: true, force: true });

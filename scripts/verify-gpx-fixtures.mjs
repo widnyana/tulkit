@@ -102,6 +102,58 @@ const CHECKS = {
     typeof parsed.tracks[0].desc === "string" &&
     parsed.waypoints.length === 6 &&
     parsed.waypoints.filter((point) => point.sym === "Danger Area").length === 3,
+  "brief-long": (parsed) =>
+    parsed.routes.length === 1 &&
+    (parsed.routes[0].desc ?? "").length > 400,
+  "brief-both-desc": (parsed) =>
+    parsed.routes.length === 1 &&
+    parsed.routes[0].desc === "Route description" &&
+    parsed.tracks.length === 1 &&
+    parsed.tracks[0].desc === "Track description" &&
+    totalPoints(parsed.tracks[0]) === 300,
+  "marks-200": (parsed) =>
+    parsed.routes.length === 1 &&
+    parsed.routes[0].points.length === 200 &&
+    parsed.routes[0].points.every((point) => /^\d+\.00km$/.test(point.name ?? "")),
+  "marks-201": (parsed) =>
+    parsed.routes.length === 1 &&
+    parsed.routes[0].points.length === 201 &&
+    parsed.routes[0].points.every((point) => /^\d+\.00km$/.test(point.name ?? "")),
+  "marks-labels-extra": (parsed) =>
+    parsed.routes.length === 1 &&
+    parsed.routes[0].points.length === 120 &&
+    parsed.routes[0].points.filter((point) => point.name !== undefined).length === 12,
+  "metadata-variants": (parsed) =>
+    parsed.metadata?.author === "Fixture Author" &&
+    parsed.metadata?.email === undefined &&
+    parsed.metadata?.link?.href?.startsWith("https://") === true &&
+    parsed.metadata?.link?.text === undefined,
+  "loop-route": (parsed) =>
+    parsed.tracks.length === 1 &&
+    totalPoints(parsed.tracks[0]) === 201 &&
+    parsed.tracks[0].segments[0][0].lat ===
+      parsed.tracks[0].segments[0][200].lat &&
+    parsed.tracks[0].segments[0][0].lon ===
+      parsed.tracks[0].segments[0][200].lon,
+  "single-waypoint": (parsed) =>
+    parsed.waypoints.length === 1 &&
+    parsed.tracks.length === 0 &&
+    parsed.routes.length === 0,
+  "multi-track": (parsed) =>
+    parsed.tracks.length === 2 &&
+    totalPoints(parsed.tracks[0]) === 200 &&
+    totalPoints(parsed.tracks[1]) === 80,
+  "named-fallback-from-sym": (parsed) =>
+    parsed.routes.length === 1 &&
+    parsed.routes[0].points.length === 30 &&
+    parsed.routes[0].points.every((point) => point.name === undefined) &&
+    parsed.routes[0].points.filter((point) => point.sym === "Summit").length === 5,
+  "empty-valid": (parsed) =>
+    parsed.waypoints.length === 0 &&
+    parsed.routes.length === 0 &&
+    parsed.tracks.length === 0 &&
+    parsed.skipped === 0 &&
+    parsed.metadata?.name !== undefined,
   "invalid-points-only": (parsed) =>
     parsed.waypoints.length === 0 &&
     parsed.routes.length === 0 &&

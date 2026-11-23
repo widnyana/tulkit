@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="BaseCamp" xmlns="http://www.topografix.com/GPX/1/1">
+  <rte>
+    <name>Denpasar - Kintamani - Ubud</name>
+    <rtept lat="-8.44988" lon="115.25036"><sym>Summit</sym></rtept>
+    <rtept lat="-8.44066" lon="115.25500"></rtept>
+    <rtept lat="-8.43100" lon="115.26037"></rtept>
+    <rtept lat="-8.42086" lon="115.26537"></rtept>
+    <rtept lat="-8.41176" lon="115.26914"></rtept>
+    <rtept lat="-8.40232" lon="115.27368"></rtept>
+    <rtept lat="-8.39337" lon="115.27692"><sym>Summit</sym></rtept>
+    <rtept lat="-8.38453" lon="115.28048"></rtept>
+    <rtept lat="-8.37658" lon="115.28343"></rtept>
+    <rtept lat="-8.36794" lon="115.28682"></rtept>
+    <rtept lat="-8.36066" lon="115.28951"></rtept>
+    <rtept lat="-8.35307" lon="115.29199"></rtept>
+    <rtept lat="-8.34611" lon="115.29487"><sym>Summit</sym></rtept>
+    <rtept lat="-8.33994" lon="115.29694"></rtept>
+    <rtept lat="-8.33402" lon="115.29973"></rtept>
+    <rtept lat="-8.32783" lon="115.30142"></rtept>
+    <rtept lat="-8.32319" lon="115.30374"></rtept>
+    <rtept lat="-8.31896" lon="115.30662"></rtept>
+    <rtept lat="-8.31511" lon="115.30927"><sym>Summit</sym></rtept>
+    <rtept lat="-8.31139" lon="115.31149"></rtept>
+    <rtept lat="-8.30892" lon="115.31409"></rtept>
+    <rtept lat="-8.30667" lon="115.31712"></rtept>
+    <rtept lat="-8.30457" lon="115.32006"></rtept>
+    <rtept lat="-8.30414" lon="115.32361"></rtept>
+    <rtept lat="-8.30332" lon="115.32755"><sym>Summit</sym></rtept>
+    <rtept lat="-8.30356" lon="115.33087"></rtept>
+    <rtept lat="-8.30425" lon="115.33517"></rtept>
+    <rtept lat="-8.30504" lon="115.34001"></rtept>
+    <rtept lat="-8.30736" lon="115.34503"></rtept>
+    <rtept lat="-8.30880" lon="115.34997"></rtept>
+  </rte>
+</gpx>
