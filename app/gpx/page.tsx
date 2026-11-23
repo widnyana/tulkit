@@ -642,19 +642,21 @@ function GpxViewContent() {
 
         <header className="hero-enter mb-8 mt-6 max-w-2xl">
           <h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            GPX Viewer
+            GPX Viewer & Route Planner
           </h1>
           <p className="mt-2 text-muted-foreground">
-            View a .gpx file's metadata, waypoints, routes, and tracks on a map
+            Inspect a GPX file, plan a road route on the map, or turn waypoints
+            into a GPX file.
           </p>
           <p className="sr-only">
-            Paste raw GPX XML or upload a .gpx file to see its declared
-            metadata, waypoints, routes, and tracks rendered on a map. Supports
-            GPX 1.0 and 1.1 files from Strava, Garmin, RideWithGPS, GPSies,
-            ViewRanger, and similar GPS software. Useful for inspecting a route
-            before a ride, checking a point-of-interest export, or
-            sanity-checking a file before sharing it. Parsing and rendering
-            happen entirely in your browser; the file never leaves your device.
+            Inspect a GPX file, plan a route by clicking on the map, or turn a
+            waypoint list into GPX. Paste GPX XML or upload a .gpx file from
+            Strava, Garmin, RideWithGPS, or similar software to see its
+            metadata, waypoints, routes, and tracks. Paste a Google Maps share
+            link or a CSV of latitude/longitude rows to build a file. Planned
+            routes snap to roads for driving, cycling, or walking, and exports
+            carry elevation. Parsing, planning, and export happen in your
+            browser; files never leave your device.
           </p>
         </header>
 

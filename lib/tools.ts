@@ -156,19 +156,21 @@ export const tools: Tool[] = [
   },
   {
     href: "/gpx",
-    title: "GPX Viewer",
+    title: "GPX Viewer & Route Planner",
     category: "Lifestyle",
     description:
-      "View a .gpx file's metadata, waypoints, routes, and tracks on a map",
+      "Inspect GPX files, plan road routes on a map, and export GPX with elevation. Waypoints from CSV or Google Maps links. All in your browser.",
     keywords: [
       "gpx viewer",
-      "gpx file",
-      "map viewer",
-      "waypoints",
-      "gps route",
-      "route planner",
+      "gpx route planner",
       "create gpx route",
       "gpx builder",
+      "gpx editor",
+      "convert csv to gpx",
+      "google maps to gpx",
+      "gpx elevation",
+      "waypoints",
+      "gps route",
     ],
   },
   {
