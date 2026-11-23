@@ -35,7 +35,15 @@ import {
 } from "./effects";
 import type { MapsWaypoint, ParsedGpx } from "./types";
 import { useGpxId } from "./useGpxId";
+import { useQueryState } from "./useQueryState";
 import { trackSegmentCount } from "./utils";
+
+const TAB_VALUES = ["view", "maps", "csv"] as const;
+type TabValue = (typeof TAB_VALUES)[number];
+
+function isTabValue(value: string): value is TabValue {
+  return (TAB_VALUES as readonly string[]).includes(value);
+}
 
 type ViewState =
   | { kind: "empty" }
@@ -76,6 +84,8 @@ function GpxViewContent() {
   const csvInputId = useId();
 
   const [urlId, setUrlId] = useGpxId();
+  const [rawTab, setTab] = useQueryState("tab", "view");
+  const tab: TabValue = isTabValue(rawTab) ? rawTab : "view";
   const currentId = useRef<string | null>(null);
   const appliedUrlId = useRef<string | null>(null);
 
@@ -228,7 +238,7 @@ function GpxViewContent() {
           </p>
         </header>
 
-        <Tabs defaultValue="view" className="tool-enter mt-6">
+        <Tabs value={tab} onValueChange={setTab} className="tool-enter mt-6">
           <TabsList className="h-auto flex-wrap">
             <TabsTrigger value="view">View a GPX</TabsTrigger>
             <TabsTrigger value="maps">Import from Google Maps link</TabsTrigger>
