@@ -21,6 +21,7 @@ import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
 import type { GpxRequestError } from "@/lib/gpx/errors";
 import { fetchElevations } from "@/lib/gpx/elevation";
 import { type PlaceResult, searchPlace } from "@/lib/gpx/geocode";
+import { fetchGpxText, isGpxSource } from "@/lib/gpx/remote";
 import { fetchRoadRoute, snapToRoad } from "@/lib/gpx/routing";
 import { routeToGpx } from "@/lib/gpx/serialize";
 import {
@@ -322,6 +323,8 @@ function GpxViewContent() {
     null,
   );
   const [mapsUrlInput, setMapsUrlInput] = useState("");
+  const [srcUrlInput, setSrcUrlInput] = useState("");
+  const [loadingSource, setLoadingSource] = useState(false);
   const [mapsState, setMapsState] = useState<MapsImportState>({
     kind: "idle",
   });
@@ -355,6 +358,7 @@ function GpxViewContent() {
   const rawInputId = useId();
   const fileInputId = useId();
   const mapsUrlInputId = useId();
+  const srcUrlInputId = useId();
   const csvInputId = useId();
   const planNameId = useId();
   const placeSearchId = useId();
@@ -413,36 +417,22 @@ function GpxViewContent() {
   const appliedSrc = useRef<string | null>(null);
   useEffect(() => {
     if (srcParam === null || appliedSrc.current === srcParam) return;
-    const allowed =
-      srcParam.startsWith("/") ||
-      srcParam.startsWith("http://") ||
-      srcParam.startsWith("https://");
-    if (!allowed) {
+    if (!isGpxSource(srcParam)) {
       setState({ kind: "error", message: "That link is not a GPX address." });
       return;
     }
     let cancelled = false;
     setState({ kind: "loading" });
-    void (async () => {
-      try {
-        const response = await fetch(srcParam);
-        if (!response.ok) {
-          throw new Error(`Route file request failed: ${response.status}`);
-        }
-        const text = await response.text();
-        if (cancelled) return;
-        appliedSrc.current = srcParam;
-        setRawInput(text);
-        parseInto(text);
-      } catch {
-        if (!cancelled) {
-          setState({
-            kind: "error",
-            message: "Could not load a GPX file from that link.",
-          });
-        }
+    void runToResult(fetchGpxText(srcParam)).then((result) => {
+      if (cancelled) return;
+      if (!result.ok) {
+        setState({ kind: "error", message: result.message });
+        return;
       }
-    })();
+      appliedSrc.current = srcParam;
+      setRawInput(result.value);
+      parseInto(result.value);
+    });
     return () => {
       cancelled = true;
     };
@@ -487,6 +477,21 @@ function GpxViewContent() {
     setRawInput(result.value.text);
     setState({ kind: "success", parsed: result.value.parsed });
     persist(result.value.text);
+  };
+
+  const handleLoadSource = async () => {
+    const url = srcUrlInput.trim();
+    if (url === "") return;
+    setLoadingSource(true);
+    setMissingId(null);
+    const result = await runToResult(fetchGpxText(url));
+    setLoadingSource(false);
+    if (!result.ok) {
+      setState({ kind: "error", message: result.message });
+      return;
+    }
+    setRawInput(result.value);
+    parseInto(result.value, persist);
   };
 
   const handleClear = () => {
@@ -961,8 +966,40 @@ function GpxViewContent() {
               )}
             </div>
 
+            <div className="flex items-center gap-3">
+              <label htmlFor={srcUrlInputId} className="sr-only">
+                GPX file link
+              </label>
+              <Input
+                id={srcUrlInputId}
+                value={srcUrlInput}
+                onChange={(e) => setSrcUrlInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    void handleLoadSource();
+                  }
+                }}
+                placeholder="https://example.com/route.gpx"
+                className="font-mono text-xs"
+              />
+              <Button
+                type="button"
+                onClick={() => void handleLoadSource()}
+                disabled={loadingSource || srcUrlInput.trim() === ""}
+              >
+                Load
+              </Button>
+            </div>
+
+            {loadingSource && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Spinner /> Loading link...
+              </div>
+            )}
+
             {state.kind === "empty" && missingId === null && (
-              <EmptyPanel message="Paste GPX XML above or upload a .gpx file to see it on the map." />
+              <EmptyPanel message="Paste GPX XML, upload a .gpx file, or paste a file link to see it on the map." />
             )}
 
             {state.kind === "loading" && (

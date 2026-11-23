@@ -79,7 +79,9 @@ test.describe("GPX link opened on another browser", () => {
     await expect(page).toHaveURL(/\/gpx$/, { timeout: 15_000 });
     await expect(notice(page)).toHaveCount(0);
     await expect(
-      page.getByText("Paste GPX XML above or upload a .gpx file"),
+      page.getByText(
+        "Paste GPX XML, upload a .gpx file, or paste a file link to see it on the map.",
+      ),
     ).toBeVisible();
   });
 
