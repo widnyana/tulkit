@@ -5,12 +5,14 @@ export interface SerializableWaypoint {
   lon: number;
   name?: string;
   desc?: string;
+  ele?: number;
 }
 
 export interface RoutePlanPoint {
   lat: number;
   lon: number;
   name?: string;
+  ele?: number;
 }
 
 export interface RoutePlanExport {
@@ -28,6 +30,7 @@ export function waypointsToGpx(points: SerializableWaypoint[]): string {
         new Point(point.lat, point.lon, {
           name: point.name,
           desc: point.desc,
+          ele: point.ele,
         }),
     ),
   );
@@ -39,8 +42,18 @@ export function waypointsToGpx(points: SerializableWaypoint[]): string {
 export function routeToGpx(plan: RoutePlanExport): string {
   const { Metadata, Point, Route, Segment, Track } = BaseBuilder.MODELS;
   const trimmedName = plan.name?.trim() ?? "";
-  const toPoint = (point: RoutePlanPoint) =>
-    new Point(point.lat, point.lon, { name: point.name });
+  const toPoint = (point: {
+    lat: number;
+    lon: number;
+    name?: string;
+    desc?: string;
+    ele?: number;
+  }) =>
+    new Point(point.lat, point.lon, {
+      name: point.name,
+      desc: point.desc,
+      ele: point.ele,
+    });
 
   const builder = new BaseBuilder();
 
@@ -50,15 +63,7 @@ export function routeToGpx(plan: RoutePlanExport): string {
 
   const waypoints = plan.waypoints;
   if (waypoints && waypoints.length > 0) {
-    builder.setWayPoints(
-      waypoints.map(
-        (point) =>
-          new Point(point.lat, point.lon, {
-            name: point.name,
-            desc: point.desc,
-          }),
-      ),
-    );
+    builder.setWayPoints(waypoints.map(toPoint));
   }
 
   const snappedPath = plan.snappedPath;

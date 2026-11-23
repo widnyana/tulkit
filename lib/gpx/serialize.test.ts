@@ -167,6 +167,36 @@ test("routeToGpx writes waypoints alongside the route", () => {
   }
 });
 
+test("routeToGpx round-trips snapped path elevations through parseGpx", () => {
+  const snappedPath = [
+    { lat: 40.1, lon: -73.9, ele: 12 },
+    { lat: 40.15, lon: -73.855, ele: 34.5 },
+    { lat: 40.2, lon: -73.8, ele: 56 },
+  ];
+
+  const gpx = routeToGpx({
+    name: "Elevated",
+    controlPoints: snappedPath,
+    snappedPath,
+  });
+  const parsed = parseGpx(gpx);
+
+  assert.ok(!isParseError(parsed));
+  if (isParseError(parsed)) return;
+
+  assert.equal(parsed.routes.length, 0);
+  assert.equal(parsed.tracks.length, 1);
+  assert.equal(parsed.tracks[0].segments.length, 1);
+
+  const segment = parsed.tracks[0].segments[0];
+  assert.equal(segment.length, snappedPath.length);
+  for (let i = 0; i < snappedPath.length; i++) {
+    assert.equal(segment[i].lat, snappedPath[i].lat);
+    assert.equal(segment[i].lon, snappedPath[i].lon);
+    assert.equal(segment[i].ele, snappedPath[i].ele);
+  }
+});
+
 test("routeToGpx escapes XML special characters in the route name", () => {
   const name = "A & B < C > D";
   const gpx = routeToGpx({ name, controlPoints: [{ lat: 0, lon: 0 }] });

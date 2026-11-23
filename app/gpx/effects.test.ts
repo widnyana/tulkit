@@ -104,17 +104,10 @@ describe("importMapsLink", () => {
     globalThis.fetch = (async () =>
       new Response(
         JSON.stringify({
-          code: "Ok",
-          routes: [
-            {
-              geometry: {
-                coordinates: [
-                  [20.5, 10.5],
-                  [25, 13],
-                  [30.25, 15.75],
-                ],
-              },
-            },
+          coordinates: [
+            [20.5, 10.5],
+            [25, 13],
+            [30.25, 15.75],
           ],
         }),
         { status: 200 },
