@@ -1,6 +1,6 @@
 import { BaseBuilder, buildGPX } from "gpx-builder";
 
-interface SerializableWaypoint {
+export interface SerializableWaypoint {
   lat: number;
   lon: number;
   name?: string;
@@ -17,6 +17,7 @@ export interface RoutePlanExport {
   name?: string;
   controlPoints: ReadonlyArray<RoutePlanPoint>;
   snappedPath?: ReadonlyArray<RoutePlanPoint> | null;
+  waypoints?: ReadonlyArray<SerializableWaypoint>;
 }
 
 export function waypointsToGpx(points: SerializableWaypoint[]): string {
@@ -50,6 +51,19 @@ export function routeToGpx(plan: RoutePlanExport): string {
 
   if (trimmedName) {
     builder.setMetadata(new Metadata({ name: trimmedName }));
+  }
+
+  const waypoints = plan.waypoints;
+  if (waypoints && waypoints.length > 0) {
+    builder.setWayPoints(
+      waypoints.map(
+        (point) =>
+          new Point(point.lat, point.lon, {
+            name: point.name,
+            desc: point.desc,
+          }),
+      ),
+    );
   }
 
   const snappedPath = plan.snappedPath;

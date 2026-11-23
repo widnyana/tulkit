@@ -100,6 +100,36 @@ test("routeToGpx writes a snapped path as a single track segment", () => {
   }
 });
 
+test("routeToGpx writes waypoints alongside the route", () => {
+  const waypoints = [
+    { lat: 48.1, lon: 11.5, name: "Start", desc: "First stop" },
+    { lat: 48.2, lon: 11.6, name: "Finish" },
+  ];
+  const controlPoints = [
+    { lat: 48.1, lon: 11.5, name: "Start" },
+    { lat: 48.2, lon: 11.6, name: "Finish" },
+  ];
+
+  const gpx = routeToGpx({ waypoints, controlPoints });
+  const parsed = parseGpx(gpx);
+
+  assert.ok(!isParseError(parsed));
+  if (isParseError(parsed)) return;
+
+  assert.equal(parsed.waypoints.length, waypoints.length);
+  for (let i = 0; i < waypoints.length; i++) {
+    assert.equal(parsed.waypoints[i].name, waypoints[i].name);
+  }
+
+  assert.equal(parsed.tracks.length, 0);
+  assert.equal(parsed.routes.length, 1);
+  assert.equal(parsed.routes[0].points.length, controlPoints.length);
+  for (let i = 0; i < controlPoints.length; i++) {
+    assert.equal(parsed.routes[0].points[i].lat, controlPoints[i].lat);
+    assert.equal(parsed.routes[0].points[i].lon, controlPoints[i].lon);
+  }
+});
+
 test("routeToGpx escapes XML special characters in the route name", () => {
   const name = "A & B < C > D";
   const gpx = routeToGpx({ name, controlPoints: [{ lat: 0, lon: 0 }] });

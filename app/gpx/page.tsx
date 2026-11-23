@@ -16,7 +16,7 @@ import {
 import { useDebouncedCallback } from "use-debounce";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
 import { fetchRoadRoute } from "@/lib/gpx/routing";
-import { routeToGpx, waypointsToGpx } from "@/lib/gpx/serialize";
+import { routeToGpx } from "@/lib/gpx/serialize";
 import {
   generateGpxId,
   loadGpxEntry,
@@ -348,7 +348,10 @@ function GpxViewContent() {
 
   const handleDownloadGpx = () => {
     if (mapsState.kind !== "success") return;
-    const gpx = waypointsToGpx(mapsState.waypoints);
+    const gpx = routeToGpx({
+      controlPoints: mapsState.waypoints,
+      snappedPath: mapsState.route,
+    });
     saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "maps-import.gpx");
   };
 
@@ -363,9 +366,8 @@ function GpxViewContent() {
 
   const handleDownloadCsvGpx = () => {
     if (csvState.kind !== "success") return;
-    const gpx = waypointsToGpx(
-      csvState.result.waypoints.map((w) => w.waypoint),
-    );
+    const waypoints = csvState.result.waypoints.map((w) => w.waypoint);
+    const gpx = routeToGpx({ waypoints, controlPoints: waypoints });
     saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "csv-import.gpx");
   };
 
