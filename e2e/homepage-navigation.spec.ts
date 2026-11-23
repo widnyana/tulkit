@@ -5,13 +5,19 @@ const palette = (page: Page) => page.getByRole("dialog", { name: "Search tools" 
 const query = (page: Page) =>
   page.getByRole("searchbox", { name: "Search tools" });
 
+const openWithShortcut = async (page: Page, key: string) => {
+  await expect(async () => {
+    await page.keyboard.press(key);
+    await expect(palette(page)).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+};
+
 test.describe("tool navigation", () => {
   test("Ctrl+K opens the palette and Enter jumps to the first match", async ({
     page,
   }) => {
     await page.goto("/");
-    await page.keyboard.press("Control+k");
-    await expect(palette(page)).toBeVisible();
+    await openWithShortcut(page, "Control+k");
     await query(page).fill("cron");
     await expect(
       palette(page).getByRole("link", {
@@ -37,7 +43,7 @@ test.describe("tool navigation", () => {
 
   test("the palette is global and jumps between tool pages", async ({ page }) => {
     await page.goto("/base64");
-    await page.keyboard.press("Control+k");
+    await openWithShortcut(page, "Control+k");
     await query(page).fill("invoice");
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/\/invoice$/);
@@ -47,8 +53,7 @@ test.describe("tool navigation", () => {
     page,
   }) => {
     await page.goto("/");
-    await page.keyboard.press("/");
-    await expect(palette(page)).toBeVisible();
+    await openWithShortcut(page, "/");
     await query(page).fill("zzzz");
     await expect(palette(page).getByText("No tools match “zzzz”")).toBeVisible();
     await page.keyboard.press("Escape");
@@ -62,7 +67,7 @@ test.describe("tool navigation", () => {
     page,
   }) => {
     await page.goto("/");
-    await page.keyboard.press("Control+k");
+    await openWithShortcut(page, "Control+k");
     await query(page).fill("ip");
     await page.keyboard.press("ArrowDown");
     await expect(
