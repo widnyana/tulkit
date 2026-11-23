@@ -35,6 +35,7 @@ same bytes. Every scenario exists once for West Java and once for Bali.
 | single-waypoint | West Java | `west-java/single-waypoint.gpx` | One waypoint and nothing else. Expect a single marker and the waypoint fallback label. |
 | multi-track | West Java | `west-java/multi-track.gpx` | Two tracks in one file. Expect two line groups with separate colours and distances. |
 | named-fallback-from-sym | West Java | `west-java/named-fallback-from-sym.gpx` | Route points with symbols and no names. Expect the named-point fallback label taken from the first symbol. |
+| waypoints-many-symbols | West Java | `west-java/waypoints-many-symbols.gpx` | Nine unknown symbols in one file. Expect six kept groups plus Other, and seven distinct colours with no wrap. |
 | empty-valid | West Java | `west-java/empty-valid.gpx` | Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error. |
 | track-only | Bali | `bali/track-only.gpx` | Single-segment track with elevation. Expect one line group, distance and elevation gain, no brief. |
 | track-multiseg | Bali | `bali/track-multiseg.gpx` | Track split into three segments with a track desc. Expect segment boundaries kept and a brief from the track. |
@@ -66,6 +67,7 @@ same bytes. Every scenario exists once for West Java and once for Bali.
 | single-waypoint | Bali | `bali/single-waypoint.gpx` | One waypoint and nothing else. Expect a single marker and the waypoint fallback label. |
 | multi-track | Bali | `bali/multi-track.gpx` | Two tracks in one file. Expect two line groups with separate colours and distances. |
 | named-fallback-from-sym | Bali | `bali/named-fallback-from-sym.gpx` | Route points with symbols and no names. Expect the named-point fallback label taken from the first symbol. |
+| waypoints-many-symbols | Bali | `bali/waypoints-many-symbols.gpx` | Nine unknown symbols in one file. Expect six kept groups plus Other, and seven distinct colours with no wrap. |
 | empty-valid | Bali | `bali/empty-valid.gpx` | Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error. |
 
 Regenerate: `node scripts/generate-gpx-fixtures.mjs`

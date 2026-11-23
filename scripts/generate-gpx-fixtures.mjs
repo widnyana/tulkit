@@ -818,6 +818,36 @@ const SCENARIOS = [
     },
   },
   {
+    id: "waypoints-many-symbols",
+    note: "Nine unknown symbols in one file. Expect six kept groups plus Other, and seven distinct colours with no wrap.",
+    build(region, rng) {
+      const symbols = [
+        "Bakso",
+        "Warteg",
+        "Sate",
+        "Kopi",
+        "Bakery",
+        "Laundry",
+        "Homestay",
+        "Warnet",
+        "Bengkel",
+      ];
+      const points = symbols.map((sym, index) =>
+        poiPoint(
+          region,
+          rng,
+          `${region.places[index % region.places.length]} ${sym.toLowerCase()}`,
+          sym,
+        ),
+      );
+      return documentXml({
+        version: "1.1",
+        creator: "organicmaps",
+        body: points.map((point) => wpt(point)).join("\n"),
+      });
+    },
+  },
+  {
     id: "empty-valid",
     note: "Metadata only, no points at all. Expect a metadata panel, no map markers, no legend, no error.",
     build(region) {

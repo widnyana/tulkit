@@ -148,6 +148,9 @@ const CHECKS = {
     parsed.routes[0].points.length === 30 &&
     parsed.routes[0].points.every((point) => point.name === undefined) &&
     parsed.routes[0].points.filter((point) => point.sym === "Summit").length === 5,
+  "waypoints-many-symbols": (parsed) =>
+    parsed.waypoints.length === 9 &&
+    new Set(parsed.waypoints.map((point) => point.sym)).size === 9,
   "empty-valid": (parsed) =>
     parsed.waypoints.length === 0 &&
     parsed.routes.length === 0 &&
