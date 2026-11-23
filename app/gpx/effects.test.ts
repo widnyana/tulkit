@@ -24,6 +24,11 @@ const fixture = (name: string) =>
 const PLACE_URL =
   "https://www.google.com/maps/place/Test+Landmark/@12.5,25.5,17z";
 
+const DRIVING_DIRECTIONS_URL =
+  "https://www.google.com/maps/dir/Test+Stop+One/Test+Stop+Two/@1.0,2.0,35486m/data=!3m2!1e3!4b1!4m17!1m2!29m1!3s00000000-0000-0000-0000-000000000000!4m13!1m5!1m1!1s0x0:0x0!2m2!1d20.5!2d10.5!1m5!1m1!1s0x0:0x0!2m2!1d30.25!2d15.75!3e0?entry=ttu&g_ep=0000000000";
+
+const TRANSIT_DIRECTIONS_URL = DRIVING_DIRECTIONS_URL.replace("!3e0", "!3e3");
+
 describe("parseGpxText", () => {
   it("parses a real track export", async () => {
     const parsed = await Effect.runPromise(
@@ -55,9 +60,10 @@ describe("readGpxFile", () => {
 
 describe("importMapsLink", () => {
   it("parses a place link without touching the network", async () => {
-    const waypoints = await Effect.runPromise(importMapsLink(PLACE_URL));
-    assert.equal(waypoints.length, 1);
-    assert.equal(waypoints[0].name, "Test Landmark");
+    const result = await Effect.runPromise(importMapsLink(PLACE_URL));
+    assert.equal(result.waypoints.length, 1);
+    assert.equal(result.waypoints[0].name, "Test Landmark");
+    assert.equal(result.route, null);
   });
 
   it("resolves a short link through the API before parsing", async () => {
@@ -67,10 +73,10 @@ describe("importMapsLink", () => {
         status: 200,
       })) as typeof fetch;
     try {
-      const waypoints = await Effect.runPromise(
+      const result = await Effect.runPromise(
         importMapsLink("https://maps.app.goo.gl/abc123"),
       );
-      assert.equal(waypoints[0].lat, 12.5);
+      assert.equal(result.waypoints[0].lat, 12.5);
     } finally {
       globalThis.fetch = originalFetch;
     }
@@ -88,6 +94,75 @@ describe("importMapsLink", () => {
       );
       assert.ok(error instanceof MapsLinkFailure);
       assert.equal(error.message, "Link expired");
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("fetches a road-snapped route for a driving directions link", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async () =>
+      new Response(
+        JSON.stringify({
+          code: "Ok",
+          routes: [
+            {
+              geometry: {
+                coordinates: [
+                  [20.5, 10.5],
+                  [25, 13],
+                  [30.25, 15.75],
+                ],
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      )) as typeof fetch;
+    try {
+      const result = await Effect.runPromise(
+        importMapsLink(DRIVING_DIRECTIONS_URL),
+      );
+      assert.equal(result.waypoints.length, 2);
+      assert.deepEqual(result.route, [
+        { lat: 10.5, lon: 20.5 },
+        { lat: 13, lon: 25 },
+        { lat: 15.75, lon: 30.25 },
+      ]);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("keeps the waypoints when the routing fetch fails, with a null route", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = (async () => {
+      throw new Error("offline");
+    }) as typeof fetch;
+    try {
+      const result = await Effect.runPromise(
+        importMapsLink(DRIVING_DIRECTIONS_URL),
+      );
+      assert.equal(result.waypoints.length, 2);
+      assert.equal(result.route, null);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it("skips the routing fetch entirely for transit directions", async () => {
+    const originalFetch = globalThis.fetch;
+    let fetchCalled = false;
+    globalThis.fetch = (async () => {
+      fetchCalled = true;
+      return new Response("{}", { status: 200 });
+    }) as typeof fetch;
+    try {
+      const result = await Effect.runPromise(
+        importMapsLink(TRANSIT_DIRECTIONS_URL),
+      );
+      assert.equal(result.route, null);
+      assert.equal(fetchCalled, false);
     } finally {
       globalThis.fetch = originalFetch;
     }

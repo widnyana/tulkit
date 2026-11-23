@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { isShortMapsLink, parseMapsUrl } from "./mapsLink.ts";
+import {
+  isShortMapsLink,
+  parseMapsTravelMode,
+  parseMapsUrl,
+} from "./mapsLink.ts";
 
 const REAL_DIRECTIONS_URL =
   "https://www.google.com/maps/dir/Test+Stop+One/Test+Stop+Two/@1.0,2.0,35486m/data=!3m2!1e3!4b1!4m17!1m2!29m1!3s00000000-0000-0000-0000-000000000000!4m13!1m5!1m1!1s0x0:0x0!2m2!1d20.5!2d10.5!1m5!1m1!1s0x0:0x0!2m2!1d30.25!2d15.75!3e0?entry=ttu&g_ep=0000000000";
@@ -50,4 +54,29 @@ test("isShortMapsLink recognizes short link hosts", () => {
   assert.equal(isShortMapsLink("https://goo.gl/maps/xyz"), true);
   assert.equal(isShortMapsLink(REAL_DIRECTIONS_URL), false);
   assert.equal(isShortMapsLink("not a url"), false);
+});
+
+test("parseMapsTravelMode reads the !3eN flag from a directions link", () => {
+  assert.equal(parseMapsTravelMode(REAL_DIRECTIONS_URL), "driving");
+  assert.equal(
+    parseMapsTravelMode(REAL_DIRECTIONS_URL.replace("!3e0", "!3e1")),
+    "bicycling",
+  );
+  assert.equal(
+    parseMapsTravelMode(REAL_DIRECTIONS_URL.replace("!3e0", "!3e2")),
+    "walking",
+  );
+  assert.equal(
+    parseMapsTravelMode(REAL_DIRECTIONS_URL.replace("!3e0", "!3e3")),
+    "transit",
+  );
+});
+
+test("parseMapsTravelMode returns null when there is no travel-mode flag", () => {
+  assert.equal(
+    parseMapsTravelMode(
+      "https://www.google.com/maps/place/Test+Landmark/@12.5,25.5,17z",
+    ),
+    null,
+  );
 });

@@ -6,6 +6,16 @@ const DIR_PREFIX = "/maps/dir/";
 const PLACE_PREFIX = "/maps/place/";
 const COORD_PAIR = /!1d(-?\d+(?:\.\d+)?)!2d(-?\d+(?:\.\d+)?)/g;
 const AT_LAT_LON = /^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/;
+const TRAVEL_MODE_FLAG = /!3e(\d)/;
+
+export type MapsTravelMode = "driving" | "bicycling" | "walking" | "transit";
+
+const TRAVEL_MODES: Record<string, MapsTravelMode> = {
+  "0": "driving",
+  "1": "bicycling",
+  "2": "walking",
+  "3": "transit",
+};
 
 function decodeSegment(segment: string): string {
   return decodeURIComponent(segment.replace(/\+/g, " "));
@@ -90,4 +100,9 @@ export function isShortMapsLink(url: string): boolean {
   } catch {
     return false;
   }
+}
+
+export function parseMapsTravelMode(url: string): MapsTravelMode | null {
+  const match = url.match(TRAVEL_MODE_FLAG);
+  return match ? (TRAVEL_MODES[match[1]] ?? null) : null;
 }

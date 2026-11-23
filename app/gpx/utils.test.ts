@@ -11,6 +11,7 @@ import {
   pathEndpoints,
   totalDistanceMeters,
   trackSegmentCount,
+  waypointsToParsedGpx,
 } from "./utils.ts";
 import type { ParsedGpx } from "./types.ts";
 
@@ -245,6 +246,51 @@ describe("elevationGain", () => {
     };
     assert.equal(elevationGain(parsed), null);
     assert.equal(elevationGain(empty), null);
+  });
+});
+
+describe("waypointsToParsedGpx", () => {
+  const waypoints = [
+    { lat: 10.5, lon: 20.5, name: "Start" },
+    { lat: 15.75, lon: 30.25, name: "End" },
+  ];
+
+  it("wraps 2+ points as a straight route with no road route given", () => {
+    const parsed = waypointsToParsedGpx(waypoints);
+    assert.equal(parsed.routes.length, 1);
+    assert.equal(parsed.tracks.length, 0);
+    assert.deepEqual(parsed.routes[0].points, waypoints);
+  });
+
+  it("does not synthesize a route for a single point", () => {
+    const parsed = waypointsToParsedGpx([waypoints[0]]);
+    assert.equal(parsed.routes.length, 0);
+    assert.equal(parsed.tracks.length, 0);
+  });
+
+  it("uses the road route as a track when one is provided", () => {
+    const roadRoute = [
+      { lat: 10.5, lon: 20.5 },
+      { lat: 12, lon: 24 },
+      { lat: 15.75, lon: 30.25 },
+    ];
+    const parsed = waypointsToParsedGpx(waypoints, roadRoute);
+    assert.equal(parsed.routes.length, 0);
+    assert.equal(parsed.tracks.length, 1);
+    assert.deepEqual(parsed.tracks[0].segments, [roadRoute]);
+    assert.deepEqual(parsed.waypoints, waypoints);
+  });
+
+  it("falls back to the straight route when the road route is too short", () => {
+    const parsed = waypointsToParsedGpx(waypoints, [waypoints[0]]);
+    assert.equal(parsed.tracks.length, 0);
+    assert.equal(parsed.routes.length, 1);
+  });
+
+  it("falls back to the straight route when the road route is null", () => {
+    const parsed = waypointsToParsedGpx(waypoints, null);
+    assert.equal(parsed.tracks.length, 0);
+    assert.equal(parsed.routes.length, 1);
   });
 });
 

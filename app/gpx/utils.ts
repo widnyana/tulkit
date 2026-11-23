@@ -159,7 +159,18 @@ export function computeBounds(
   ];
 }
 
-export function waypointsToParsedGpx(waypoints: Waypoint[]): ParsedGpx {
+export function waypointsToParsedGpx(
+  waypoints: Waypoint[],
+  roadRoute?: LatLon[] | null,
+): ParsedGpx {
+  if (roadRoute && roadRoute.length >= 2) {
+    return {
+      waypoints,
+      routes: [],
+      tracks: [{ segments: [roadRoute] }],
+      skipped: 0,
+    };
+  }
   return {
     waypoints,
     routes: waypoints.length >= 2 ? [{ points: waypoints }] : [],

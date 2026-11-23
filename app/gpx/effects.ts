@@ -1,7 +1,12 @@
 import { Data, Effect } from "effect";
-import { isShortMapsLink, parseMapsUrl } from "../../lib/gpx/mapsLink.ts";
+import {
+  isShortMapsLink,
+  parseMapsTravelMode,
+  parseMapsUrl,
+} from "../../lib/gpx/mapsLink.ts";
 import { isParseError, parseGpx } from "../../lib/gpx/parse.ts";
-import type { MapsWaypoint, ParsedGpx } from "./types";
+import { fetchRoadRoute } from "../../lib/gpx/routing.ts";
+import type { LatLon, MapsWaypoint, ParsedGpx } from "./types";
 
 export class FileReadFailure extends Data.TaggedError("FileReadFailure")<{
   readonly message: string;
@@ -75,9 +80,14 @@ function resolveShortMapsLink(
   });
 }
 
+export interface MapsImportResult {
+  readonly waypoints: MapsWaypoint[];
+  readonly route: LatLon[] | null;
+}
+
 export function importMapsLink(
   rawUrl: string,
-): Effect.Effect<MapsWaypoint[], MapsLinkFailure> {
+): Effect.Effect<MapsImportResult, MapsLinkFailure> {
   return Effect.gen(function* () {
     const targetUrl = isShortMapsLink(rawUrl)
       ? yield* resolveShortMapsLink(rawUrl)
@@ -88,7 +98,12 @@ export function importMapsLink(
         new MapsLinkFailure({ message: parsed.message }),
       );
     }
-    return parsed;
+    const travelMode = parseMapsTravelMode(targetUrl);
+    const route =
+      travelMode && parsed.length >= 2
+        ? yield* Effect.promise(() => fetchRoadRoute(parsed, travelMode))
+        : null;
+    return { waypoints: parsed, route };
   });
 }
 

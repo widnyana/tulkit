@@ -34,7 +34,7 @@ import {
   readGpxFile,
   runToResult,
 } from "./effects";
-import type { MapsWaypoint, ParsedGpx } from "./types";
+import type { LatLon, MapsWaypoint, ParsedGpx } from "./types";
 import { useGpxId } from "./useGpxId";
 import { useQueryState } from "./useQueryState";
 import { waypointsToParsedGpx } from "./utils";
@@ -68,7 +68,7 @@ type MapsImportState =
   | { kind: "idle" }
   | { kind: "loading" }
   | { kind: "error"; message: string }
-  | { kind: "success"; waypoints: MapsWaypoint[] };
+  | { kind: "success"; waypoints: MapsWaypoint[]; route: LatLon[] | null };
 
 type CsvImportState =
   | { kind: "idle" }
@@ -182,7 +182,11 @@ function GpxViewContent() {
     const result = await runToResult(importMapsLink(trimmed));
     setMapsState(
       result.ok
-        ? { kind: "success", waypoints: result.value }
+        ? {
+            kind: "success",
+            waypoints: result.value.waypoints,
+            route: result.value.route,
+          }
         : { kind: "error", message: result.message },
     );
   };
@@ -365,7 +369,10 @@ function GpxViewContent() {
                     Download GPX
                   </Button>
                 }
-                parsed={waypointsToParsedGpx(mapsState.waypoints)}
+                parsed={waypointsToParsedGpx(
+                  mapsState.waypoints,
+                  mapsState.route,
+                )}
               />
             )}
           </TabsContent>
@@ -442,16 +449,10 @@ function GpxViewContent() {
                 </ResultPanel>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm text-muted-foreground">
-                      0 waypoints parsed
-                      {csvState.result.errors.length > 0 &&
-                        `, ${csvState.result.errors.length} row${csvState.result.errors.length === 1 ? "" : "s"} failed`}
-                    </p>
-                    <Button type="button" disabled>
-                      Download GPX
-                    </Button>
-                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    0 waypoints parsed. Fix the rows below and nothing will be
+                    downloadable until at least one parses.
+                  </p>
                   {csvState.result.errors.length > 0 && (
                     <ul className="space-y-1 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                       {csvState.result.errors.map((error) => (
