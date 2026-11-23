@@ -102,6 +102,19 @@ export function formatDistance(meters: number): string {
   return `${(meters / 1000).toFixed(1)} km`;
 }
 
+/** A GPX link is untrusted input, so only web URLs may become an anchor. */
+export function safeExternalHref(href: string | undefined): string | undefined {
+  if (!href) return undefined;
+  try {
+    const url = new URL(href);
+    return url.protocol === "http:" || url.protocol === "https:"
+      ? url.href
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * GPS/barometer altitude readings jitter by a few metres even standing
  * still, and since gain only ever accumulates (jitter never nets out),

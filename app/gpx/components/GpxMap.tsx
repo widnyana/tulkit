@@ -29,6 +29,7 @@ const WAYPOINT_HIT_LAYER_ID = "gpx-waypoints-hit";
 const WAYPOINT_DOT_LAYER_ID = "gpx-waypoints-dot";
 const WAYPOINT_LABEL_LAYER_ID = "gpx-waypoints-label";
 const LOOP_DISTANCE_METERS = 25;
+const WAYPOINT_LABEL_LIMIT = 200;
 
 function formatCoordinate(point: LatLon): string {
   return `${point.lat.toFixed(5)}, ${point.lon.toFixed(5)}`;
@@ -232,6 +233,7 @@ function addWaypointLayers(
         properties: {
           name: waypoint.name ?? "",
           desc: waypoint.desc ?? "",
+          sym: waypoint.sym ?? "",
         },
         geometry: {
           type: "Point" as const,
@@ -260,29 +262,31 @@ function addWaypointLayers(
       "circle-stroke-width": 2,
     },
   });
-  map.addLayer({
-    id: WAYPOINT_LABEL_LAYER_ID,
-    type: "symbol",
-    source: WAYPOINT_SOURCE_ID,
-    layout: {
-      "text-field": ["coalesce", ["get", "name"], ""],
-      "text-font": ["Noto Sans Regular"],
-      "text-size": 12,
-      "text-anchor": "top",
-      "text-offset": [0, 0.9],
-      "text-allow-overlap": false,
-    },
-    paint: {
-      "text-color": "#16181d",
-      "text-halo-color": "#ffffff",
-      "text-halo-width": 1.5,
-    },
-  });
+  if (parsed.waypoints.length <= WAYPOINT_LABEL_LIMIT) {
+    map.addLayer({
+      id: WAYPOINT_LABEL_LAYER_ID,
+      type: "symbol",
+      source: WAYPOINT_SOURCE_ID,
+      layout: {
+        "text-field": ["coalesce", ["get", "name"], ["get", "sym"], ""],
+        "text-font": ["Noto Sans Regular"],
+        "text-size": 12,
+        "text-anchor": "top",
+        "text-offset": [0, 0.9],
+        "text-allow-overlap": false,
+      },
+      paint: {
+        "text-color": "#16181d",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 1.5,
+      },
+    });
+  }
 
   map.on("click", WAYPOINT_HIT_LAYER_ID, (event) => {
     const feature = event.features?.[0];
     const properties: Record<string, unknown> = feature?.properties ?? {};
-    const text = [properties.name, properties.desc]
+    const text = [properties.name, properties.sym, properties.desc]
       .filter((part): part is string => typeof part === "string" && part !== "")
       .join("\n");
     if (text === "") return;
@@ -472,7 +476,13 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
           color: string,
           popupText: string,
         ) => {
-          const element = endpointElement(ariaLabel, letter, label, shape, color);
+          const element = endpointElement(
+            ariaLabel,
+            letter,
+            label,
+            shape,
+            color,
+          );
           const marker = new Marker({ element })
             .setLngLat(coordinates)
             .setPopup(new Popup().setText(popupText))

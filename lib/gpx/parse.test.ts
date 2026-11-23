@@ -124,3 +124,90 @@ describe("parseGpx — track segments", () => {
     assert.equal(result.skipped, 1);
   });
 });
+
+describe("parseGpx — metadata", () => {
+  it("reads a full GPX 1.1 metadata block", () => {
+    const result = parseGpx(
+      '<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">' +
+        "<metadata><name>Alps loop</name><desc>A two day ride</desc>" +
+        '<author><name>Ada</name><email id="ada" domain="example.com" /></author>' +
+        '<link href="https://example.com/route"><text>Route page</text><type>text/html</type></link>' +
+        "<time>2024-01-02T03:04:05Z</time><keywords>road, climb, alps</keywords>" +
+        '<bounds minlat="45.1" minlon="5.2" maxlat="46.3" maxlon="7.4" /></metadata>' +
+        '<trk><trkseg><trkpt lat="45.1" lon="5.2" /></trkseg></trk></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.deepEqual(result.metadata, {
+      name: "Alps loop",
+      desc: "A two day ride",
+      author: "Ada",
+      email: "ada@example.com",
+      link: {
+        href: "https://example.com/route",
+        text: "Route page",
+        type: "text/html",
+      },
+      time: "2024-01-02T03:04:05Z",
+      keywords: ["road", "climb", "alps"],
+      bounds: { minLat: 45.1, minLon: 5.2, maxLat: 46.3, maxLon: 7.4 },
+    });
+  });
+
+  it("reads GPX 1.0 root-level metadata fields", () => {
+    const result = parseGpx(
+      '<gpx version="1.0" xmlns="http://www.topografix.com/GPX/1/0">' +
+        "<name>Legacy</name><desc>Old export</desc><author>Grace</author>" +
+        "<email>grace@example.com</email><url>https://example.com/legacy</url>" +
+        "<urlname>Legacy page</urlname><time>2010-05-06T07:08:09Z</time>" +
+        "<keywords>old, gpx</keywords>" +
+        '<bounds minlat="1" minlon="2" maxlat="3" maxlon="4" />' +
+        '<wpt lat="1" lon="2"><name>P</name></wpt></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.deepEqual(result.metadata, {
+      name: "Legacy",
+      desc: "Old export",
+      author: "Grace",
+      email: "grace@example.com",
+      link: { href: "https://example.com/legacy", text: "Legacy page" },
+      time: "2010-05-06T07:08:09Z",
+      keywords: ["old", "gpx"],
+      bounds: { minLat: 1, minLon: 2, maxLat: 3, maxLon: 4 },
+    });
+  });
+
+  it("keeps a metadata block that only declares time and bounds", () => {
+    const result = parseGpx(
+      "<gpx><metadata><time>2016-04-27T15:17:02+01:00</time>" +
+        '<bounds minlat="48.5" minlon="-3.9" maxlat="48.7" maxlon="-3.8" /></metadata></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.deepEqual(result.metadata, {
+      time: "2016-04-27T15:17:02+01:00",
+      bounds: { minLat: 48.5, minLon: -3.9, maxLat: 48.7, maxLon: -3.8 },
+    });
+  });
+
+  it("leaves metadata undefined when the file declares none", () => {
+    const result = parseGpx('<gpx><wpt lat="1" lon="2" /></gpx>');
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.metadata, undefined);
+  });
+});
+
+describe("parseGpx — waypoint symbols", () => {
+  it("keeps the <sym> of a point-of-interest export", () => {
+    const result = parseGpx(
+      '<gpx><wpt lat="1" lon="2"><name>Water Spring</name><sym>Drinking Water</sym><desc>Cold</desc></wpt></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.waypoints[0].name, "Water Spring");
+    assert.equal(result.waypoints[0].sym, "Drinking Water");
+    assert.equal(result.waypoints[0].desc, "Cold");
+  });
+});

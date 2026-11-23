@@ -2,6 +2,11 @@ import { expect, test } from "@playwright/test";
 
 const SAMPLE_GPX = `<?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="tulkit" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata>
+    <name>Coastal test</name>
+    <desc>Metadata render check</desc>
+    <time>2024-01-02T03:04:05Z</time>
+  </metadata>
   <wpt lat="0" lon="0">
     <name>Alpha</name>
   </wpt>
@@ -24,6 +29,14 @@ test.describe("GPX viewer map", () => {
   }) => {
     await page.goto("/gpx");
     await page.locator("textarea").first().fill(SAMPLE_GPX);
+
+    const metadata = page.getByRole("region", { name: "File metadata" });
+    await expect(metadata).toBeVisible({ timeout: 15_000 });
+    await expect(
+      metadata.getByRole("heading", { name: "Coastal test" }),
+    ).toBeVisible();
+    await expect(metadata).toContainText("Metadata render check");
+    await expect(metadata).toContainText("2024-01-02T03:04:05Z");
 
     const legend = page.getByRole("group", { name: "Map legend" });
     await expect(legend).toBeVisible({ timeout: 15_000 });

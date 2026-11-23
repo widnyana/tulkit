@@ -9,6 +9,7 @@ import {
   LINE_PALETTE,
   lineGroups,
   pathEndpoints,
+  safeExternalHref,
   totalDistanceMeters,
   trackSegmentCount,
   waypointsToParsedGpx,
@@ -413,5 +414,31 @@ describe("pathEndpoints", () => {
       pathEndpoints({ ...empty, waypoints: [{ lat: 1, lon: 1 }] }),
       null,
     );
+  });
+});
+
+describe("safeExternalHref", () => {
+  it("keeps http and https URLs", () => {
+    assert.equal(
+      safeExternalHref("https://example.com/route"),
+      "https://example.com/route",
+    );
+    assert.equal(
+      safeExternalHref("http://example.com/route"),
+      "http://example.com/route",
+    );
+  });
+
+  it("rejects script, data, and non-web schemes", () => {
+    assert.equal(safeExternalHref("javascript:alert(1)"), undefined);
+    assert.equal(safeExternalHref("data:text/html,hi"), undefined);
+    assert.equal(safeExternalHref("mailto:ada@example.com"), undefined);
+  });
+
+  it("rejects relative and malformed values", () => {
+    assert.equal(safeExternalHref("/route"), undefined);
+    assert.equal(safeExternalHref("not a url"), undefined);
+    assert.equal(safeExternalHref(""), undefined);
+    assert.equal(safeExternalHref(undefined), undefined);
   });
 });

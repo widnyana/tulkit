@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { ParsedGpx } from "../types";
 import { buildGpxStats } from "../utils";
 import { GpxMap } from "./GpxMap";
+import { MetadataPanel } from "./MetadataPanel";
 import { StatTiles } from "./StatTiles";
 
 export function ResultPanel({
@@ -18,6 +19,7 @@ export function ResultPanel({
 }) {
   return (
     <div className="space-y-4">
+      <MetadataPanel metadata={parsed.metadata} />
       <StatTiles items={buildGpxStats(parsed)} />
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">{note}</p>

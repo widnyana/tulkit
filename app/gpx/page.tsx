@@ -242,16 +242,16 @@ function GpxViewContent() {
             GPX Viewer
           </h1>
           <p className="mt-2 text-muted-foreground">
-            View any .gpx file's waypoints, routes, and tracks on a map
+            View a .gpx file's metadata, waypoints, routes, and tracks on a map
           </p>
           <p className="sr-only">
-            Paste raw GPX XML or upload a .gpx file to see its waypoints,
-            routes, and tracks rendered on a map. Supports GPX 1.0 and 1.1 files
-            from Strava, Garmin, RideWithGPS, GPSies, ViewRanger, and similar
-            GPS software. Useful for inspecting a route before a ride, checking
-            a point-of-interest export, or sanity-checking a file before sharing
-            it. Parsing and rendering happen entirely in your browser; the file
-            never leaves your device.
+            Paste raw GPX XML or upload a .gpx file to see its declared
+            metadata, waypoints, routes, and tracks rendered on a map. Supports
+            GPX 1.0 and 1.1 files from Strava, Garmin, RideWithGPS, GPSies,
+            ViewRanger, and similar GPS software. Useful for inspecting a route
+            before a ride, checking a point-of-interest export, or
+            sanity-checking a file before sharing it. Parsing and rendering
+            happen entirely in your browser; the file never leaves your device.
           </p>
         </header>
 
@@ -263,9 +263,7 @@ function GpxViewContent() {
               </TabsTrigger>
             ))}
           </TabsList>
-          <p className="mt-3 text-sm text-muted-foreground">
-            {TAB_HINTS[tab]}
-          </p>
+          <p className="mt-3 text-sm text-muted-foreground">{TAB_HINTS[tab]}</p>
 
           <TabsContent value="view" className="mt-4 space-y-4">
             <label htmlFor={rawInputId} className="sr-only">

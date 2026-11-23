@@ -14,7 +14,7 @@ test("parses the design doc's sample CSV block", () => {
     row: 2,
     waypoint: {
       lat: 10,
-      lon: 20.000000,
+      lon: 20.0,
       name: "Start Point",
       desc: "Test Campus",
     },
@@ -22,8 +22,8 @@ test("parses the design doc's sample CSV block", () => {
   assert.deepEqual(result.waypoints[1], {
     row: 3,
     waypoint: {
-      lat: 11.000000,
-      lon: 21.000000,
+      lat: 11.0,
+      lon: 21.0,
       name: "Checkpoint 1",
       desc: "Test Pavement Connection",
     },
