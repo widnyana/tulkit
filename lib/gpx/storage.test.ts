@@ -39,7 +39,7 @@ afterEach(() => {
 const indexIds = (): string[] =>
   JSON.parse(scope.localStorage?.getItem(GPX_INDEX_KEY) ?? "[]");
 
-describe("saveGpxEntry — eviction", () => {
+describe("saveGpxEntry: eviction", () => {
   it("keeps the five newest entries and drops the oldest payload", () => {
     const ids = ["id-1", "id-2", "id-3", "id-4", "id-5", "id-6"];
     for (const id of ids) saveGpxEntry(id, `<gpx>${id}</gpx>`);
@@ -63,7 +63,7 @@ describe("saveGpxEntry — eviction", () => {
   });
 });
 
-describe("saveGpxEntry — in-place overwrite", () => {
+describe("saveGpxEntry: in-place overwrite", () => {
   it("rewrites the payload without reordering or evicting", () => {
     saveGpxEntry("a", "first");
     saveGpxEntry("b", "second");
@@ -81,7 +81,7 @@ describe("saveGpxEntry — in-place overwrite", () => {
   });
 });
 
-describe("loadGpxEntry — adversarial store state", () => {
+describe("loadGpxEntry: adversarial store state", () => {
   it("returns null rather than throwing on malformed JSON", () => {
     scope.localStorage?.setItem(`${GPX_ENTRY_PREFIX}bad`, "{not json");
     assert.equal(loadGpxEntry("bad"), null);

@@ -13,7 +13,7 @@ const fixture = (relativePath: string) =>
     "utf8",
   );
 
-describe("parseGpx — real-world fixtures", () => {
+describe("parseGpx: real-world fixtures", () => {
   it("parses a Strava track-only export (GPX 1.1)", () => {
     const result = parseGpx(fixture("audax-yogyakarta-yucc-2025-100-km.gpx"));
     assert.ok(!isParseError(result), "expected a successful parse");
@@ -59,7 +59,7 @@ describe("parseGpx — real-world fixtures", () => {
   });
 });
 
-describe("parseGpx — adversarial input", () => {
+describe("parseGpx: adversarial input", () => {
   it("drops a point with a NaN <ele> instead of crashing, keeping its lat/lon", () => {
     const result = parseGpx(
       '<gpx><wpt lat="12.34" lon="56.78"><ele>NaN</ele></wpt></gpx>',
@@ -93,7 +93,7 @@ describe("parseGpx — adversarial input", () => {
   });
 });
 
-describe("parseGpx — track segments", () => {
+describe("parseGpx: track segments", () => {
   it("keeps <trkseg> boundaries when a track has several segments", () => {
     const result = parseGpx(
       '<gpx><trk><name>Ride</name><trkseg><trkpt lat="1" lon="1"></trkpt><trkpt lat="2" lon="2"></trkpt></trkseg><trkseg><trkpt lat="3" lon="3"></trkpt></trkseg></trk><trk><trkseg><trkpt lat="4" lon="4"></trkpt></trkseg></trk></gpx>',
@@ -125,7 +125,7 @@ describe("parseGpx — track segments", () => {
   });
 });
 
-describe("parseGpx — metadata", () => {
+describe("parseGpx: metadata", () => {
   it("reads a full GPX 1.1 metadata block", () => {
     const result = parseGpx(
       '<gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">' +
@@ -199,7 +199,7 @@ describe("parseGpx — metadata", () => {
   });
 });
 
-describe("parseGpx — waypoint symbols", () => {
+describe("parseGpx: waypoint symbols", () => {
   it("keeps the <sym> of a point-of-interest export", () => {
     const result = parseGpx(
       '<gpx><wpt lat="1" lon="2"><name>Water Spring</name><sym>Drinking Water</sym><desc>Cold</desc></wpt></gpx>',
