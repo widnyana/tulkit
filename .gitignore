@@ -53,3 +53,7 @@ docs/plans/*
 .pi/
 design-graph.graph
 skills-lock.json
+
+# meta7 run artifacts (meta7.yaml itself is committed)
+.harness/provness/
+.harness/scratchs/

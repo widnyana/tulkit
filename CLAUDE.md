@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Tulkit — a collection of single-purpose, client-side web utilities. Live: https://tulkit.widnyana.web.id/. Next.js 16 (App Router, Turbopack), React 19, TypeScript (strict), Tailwind v4, shadcn/ui. Deployed on Netlify.
 
+## Meta7
+
+`.harness/` is the working directory for meta7, a multi-wave coordinator prompt (research → design → formal verification → implementation) that writes its research, design, and impl artifacts here.
+
 ## Commands
 
 Package manager is **pnpm** (pinned 11.21.0 via `.tool-versions`; Node 22 in CI).
