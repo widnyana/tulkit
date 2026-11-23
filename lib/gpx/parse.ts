@@ -24,27 +24,15 @@ function readDocument(xml: string): Document | undefined {
   }
 }
 
-function textOf(parent: Element | undefined, tag: string): string | undefined {
-  const text = parent?.getElementsByTagName(tag)[0]?.textContent?.trim();
-  return text ? text : undefined;
-}
-
 function nameOf(el: Element | undefined): string | undefined {
-  return textOf(el, "name") ?? textOf(el, "urlname") ?? textOf(el, "url");
+  return directText(el, "name") ?? directText(el, "urlname");
 }
 
 function directChild(
   parent: Element | undefined,
   tag: string,
 ): Element | undefined {
-  if (!parent) return undefined;
-  for (const node of Array.from(parent.childNodes)) {
-    if (node.nodeType !== 1) continue;
-    const element = node as Element;
-    const name = (element.localName || element.nodeName).split(":").pop();
-    if (name === tag) return element;
-  }
-  return undefined;
+  return directChildren(parent, tag)[0];
 }
 
 function directText(
@@ -55,13 +43,36 @@ function directText(
   return text ? text : undefined;
 }
 
+function directChildren(parent: Element | undefined, tag: string): Element[] {
+  if (!parent) return [];
+  const children: Element[] = [];
+  for (const node of Array.from(parent.childNodes)) {
+    if (node.nodeType !== 1) continue;
+    const element = node as Element;
+    const name = (element.localName || element.nodeName).split(":").pop();
+    if (name === tag) children.push(element);
+  }
+  return children;
+}
+
 function parseBounds(element: Element | undefined): GpxBounds | undefined {
   if (!element) return undefined;
-  const minLat = Number(element.getAttribute("minlat"));
-  const minLon = Number(element.getAttribute("minlon"));
-  const maxLat = Number(element.getAttribute("maxlat"));
-  const maxLon = Number(element.getAttribute("maxlon"));
-  if (![minLat, minLon, maxLat, maxLon].every(Number.isFinite)) {
+  const attributes = ["minlat", "minlon", "maxlat", "maxlon"].map((name) =>
+    element.getAttribute(name),
+  );
+  if (attributes.some((value) => value === null || value.trim() === "")) {
+    return undefined;
+  }
+  const [minLat, minLon, maxLat, maxLon] = attributes.map(Number);
+  if (
+    ![minLat, minLon, maxLat, maxLon].every(Number.isFinite) ||
+    minLat > maxLat ||
+    minLon > maxLon ||
+    minLat < -90 ||
+    maxLat > 90 ||
+    minLon < -180 ||
+    maxLon > 180
+  ) {
     return undefined;
   }
   return { minLat, minLon, maxLat, maxLon };
@@ -84,9 +95,9 @@ function parseLink(element: Element | undefined): GpxLink | undefined {
   return href || text || type ? { href, text, type } : undefined;
 }
 
-function parseLegacyLink(root: Element): GpxLink | undefined {
-  const href = directText(root, "url");
-  return href ? { href, text: directText(root, "urlname") } : undefined;
+function parseLegacyLink(element: Element | undefined): GpxLink | undefined {
+  const href = directText(element, "url");
+  return href ? { href, text: directText(element, "urlname") } : undefined;
 }
 
 function parseKeywords(value: string | undefined): string[] | undefined {
@@ -105,33 +116,34 @@ function parseMetadata(doc: Document): GpxMetadata | undefined {
   if (!root) return undefined;
 
   const metadataEl = directChild(root, "metadata");
-  const source = metadataEl ?? root;
-  const authorEl = metadataEl ? directChild(metadataEl, "author") : undefined;
+  const authorEl = directChild(metadataEl, "author");
 
   const metadata: GpxMetadata = {};
   const creator = root.getAttribute("creator")?.trim();
   if (creator) metadata.creator = creator;
-  const name = directText(source, "name");
+  const name = directText(metadataEl, "name") ?? directText(root, "name");
   if (name) metadata.name = name;
-  const desc = directText(source, "desc");
+  const desc = directText(metadataEl, "desc") ?? directText(root, "desc");
   if (desc) metadata.desc = desc;
-  const author = metadataEl
-    ? directText(authorEl, "name")
-    : directText(root, "author");
+  const author = directText(authorEl, "name") ?? directText(root, "author");
   if (author) metadata.author = author;
-  const email = metadataEl
-    ? parseEmail(directChild(authorEl, "email"))
-    : directText(root, "email");
+  const email =
+    parseEmail(directChild(authorEl, "email")) ?? directText(root, "email");
   if (email) metadata.email = email;
-  const link = metadataEl
-    ? parseLink(directChild(metadataEl, "link"))
-    : parseLegacyLink(root);
+  const metadataLink = parseLink(directChild(metadataEl, "link"));
+  const link = metadataLink?.href
+    ? metadataLink
+    : (parseLegacyLink(root) ?? metadataLink);
   if (link) metadata.link = link;
-  const time = directText(source, "time");
+  const time = directText(metadataEl, "time") ?? directText(root, "time");
   if (time) metadata.time = time;
-  const keywords = parseKeywords(directText(source, "keywords"));
+  const keywords = parseKeywords(
+    directText(metadataEl, "keywords") ?? directText(root, "keywords"),
+  );
   if (keywords) metadata.keywords = keywords;
-  const bounds = parseBounds(directChild(source, "bounds"));
+  const bounds =
+    parseBounds(directChild(metadataEl, "bounds")) ??
+    parseBounds(directChild(root, "bounds"));
   if (bounds) metadata.bounds = bounds;
 
   return Object.keys(metadata).length > 0 ? metadata : undefined;
@@ -169,8 +181,9 @@ export function parseGpx(xml: string): ParsedGpx | ParseError {
   if (!parsed) return { message: error?.message ?? INVALID_XML };
 
   let skipped = 0;
+  const root = doc.documentElement ?? undefined;
 
-  const waypointEls = Array.from(doc.getElementsByTagName("wpt"));
+  const waypointEls = directChildren(root, "wpt");
   const waypoints: Waypoint[] = [];
   parsed.waypoints.forEach((source, index) => {
     const point = toLatLon(source);
@@ -179,23 +192,22 @@ export function parseGpx(xml: string): ParsedGpx | ParseError {
       return;
     }
     const waypointEl = waypointEls[index];
-    const link =
-      parseLink(directChild(waypointEl, "link")) ?? parseLegacyLink(waypointEl);
+    const link = parseLink(directChild(waypointEl, "link"));
+    const legacy = parseLegacyLink(waypointEl);
+    const resolved = link?.href ? link : (legacy ?? link);
     waypoints.push({
       ...point,
       name: source.name?.trim() || nameOf(waypointEl),
-      desc: source.description?.trim() || textOf(waypointEl, "desc"),
-      sym: textOf(waypointEl, "sym"),
-      ...(link ? { link } : {}),
+      desc: directText(waypointEl, "desc") || source.description?.trim(),
+      sym: directText(waypointEl, "sym"),
+      ...(resolved ? { link: resolved } : {}),
     });
   });
 
-  const routeEls = Array.from(doc.getElementsByTagName("rte"));
+  const routeEls = directChildren(root, "rte");
   const routes: Route[] = parsed.routes.map((source, index) => {
     const routeEl = routeEls[index];
-    const pointEls = routeEl
-      ? Array.from(routeEl.getElementsByTagName("rtept"))
-      : [];
+    const pointEls = directChildren(routeEl, "rtept");
     const points: RoutePoint[] = [];
     source.points.forEach((candidate, pointIndex) => {
       const point = toLatLon(candidate);
@@ -218,14 +230,12 @@ export function parseGpx(xml: string): ParsedGpx | ParseError {
     };
   });
 
-  const trackEls = Array.from(doc.getElementsByTagName("trk"));
+  const trackEls = directChildren(root, "trk");
   const tracks: Track[] = parsed.tracks.map((source, index) => {
     const trackEl = trackEls[index];
-    const segmentSizes = trackEl
-      ? Array.from(trackEl.getElementsByTagName("trkseg")).map(
-          (segment) => segment.getElementsByTagName("trkpt").length,
-        )
-      : [];
+    const segmentSizes = directChildren(trackEl, "trkseg").map(
+      (segment) => directChildren(segment, "trkpt").length,
+    );
 
     const segments: LatLon[][] = [];
     let offset = 0;

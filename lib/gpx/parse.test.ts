@@ -323,3 +323,125 @@ describe("parseGpx: route point data", () => {
     assert.equal(result.routes[0].points[0].name, "Good");
   });
 });
+
+describe("parseGpx: structural hardening", () => {
+  it("ignores an rtept nested in route extensions", () => {
+    const result = parseGpx(
+      '<gpx><rte><extensions><rtept lat="9" lon="9"><name>Ghost</name><sym>ghost</sym></rtept></extensions>' +
+        '<rtept lat="1" lon="2"></rtept></rte></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.routes[0].points.length, 1);
+    assert.equal(result.routes[0].points[0].name, undefined);
+    assert.equal(result.routes[0].points[0].sym, undefined);
+  });
+
+  it("keeps track segment sizes when extensions nest a trkpt", () => {
+    const result = parseGpx(
+      '<gpx><trk><trkseg><extensions><trkpt lat="9" lon="9"></trkpt></extensions>' +
+        '<trkpt lat="1" lon="1"></trkpt></trkseg><trkseg><trkpt lat="2" lon="2"></trkpt>' +
+        '<extensions><trkpt lat="8" lon="8"></trkpt></extensions></trkseg></trk></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.tracks[0].segments.length, 2);
+    assert.equal(result.tracks[0].segments[0].length, 1);
+    assert.equal(result.tracks[0].segments[1].length, 1);
+    assert.deepEqual(result.tracks[0].segments, [
+      [{ lat: 1, lon: 1 }],
+      [{ lat: 2, lon: 2 }],
+    ]);
+  });
+
+  it("does not let a wpt nested in metadata extensions supply a waypoint link", () => {
+    const result = parseGpx(
+      '<gpx><metadata><extensions><wpt lat="9" lon="9"><link href="https://ghost.example/x">' +
+        "<text>Ghost</text></link></wpt></extensions></metadata>" +
+        '<wpt lat="1" lon="2"><name>Real</name></wpt></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.waypoints.length, 1);
+    assert.equal(result.waypoints[0].name, "Real");
+    assert.equal(result.waypoints[0].link, undefined);
+  });
+
+  it("falls back to a legacy url when a link element has no href", () => {
+    const result = parseGpx(
+      '<gpx><wpt lat="1" lon="2"><link><text>Broken</text></link>' +
+        "<url>https://example.com/ok</url><urlname>OK</urlname></wpt></gpx>",
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.waypoints[0].link?.href, "https://example.com/ok");
+    assert.equal(result.waypoints[0].link?.text, "OK");
+  });
+
+  it("resolves a metadata link from the root url and urlname", () => {
+    const result = parseGpx(
+      "<gpx><metadata><name>X</name></metadata><url>https://example.com/legacy</url>" +
+        "<urlname>Legacy</urlname></gpx>",
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.metadata?.name, "X");
+    assert.deepEqual(result.metadata?.link, {
+      href: "https://example.com/legacy",
+      text: "Legacy",
+    });
+  });
+
+  it("drops bounds that are missing a corner", () => {
+    const result = parseGpx(
+      '<gpx><metadata><bounds minlat="1" maxlat="3" maxlon="4"/></metadata></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.metadata?.bounds, undefined);
+  });
+
+  it("does not take a route name from its first point", () => {
+    const result = parseGpx(
+      '<gpx><rte><rtept lat="1" lon="2"><name>First stop</name></rtept></rte></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.routes[0].name, undefined);
+    assert.equal(result.routes[0].points[0].name, "First stop");
+  });
+
+  it("keeps the full text of a waypoint desc", () => {
+    const result = parseGpx(
+      '<gpx><wpt lat="1" lon="2"><desc>Note <b>bold</b> tail</desc></wpt></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.waypoints[0].desc, "Note bold tail");
+  });
+
+  it("ignores desc and sym nested in waypoint extensions", () => {
+    const result = parseGpx(
+      '<gpx><wpt lat="1" lon="2"><extensions><desc>vendor</desc><sym>vendor</sym>' +
+        "</extensions></wpt></gpx>",
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.waypoints[0].desc, undefined);
+    assert.equal(result.waypoints[0].sym, undefined);
+  });
+
+  it("falls back to root name and desc when metadata omits them", () => {
+    const result = parseGpx(
+      "<gpx><metadata><time>2024-01-02T03:04:05Z</time></metadata>" +
+        "<name>Legacy</name><desc>Old</desc></gpx>",
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.deepEqual(result.metadata, {
+      name: "Legacy",
+      desc: "Old",
+      time: "2024-01-02T03:04:05Z",
+    });
+  });
+});
