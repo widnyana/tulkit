@@ -211,3 +211,89 @@ describe("parseGpx: waypoint symbols", () => {
     assert.equal(result.waypoints[0].desc, "Cold");
   });
 });
+
+describe("parseGpx: route point data", () => {
+  it("keeps route point names, symbols, comments and the route desc", () => {
+    const result = parseGpx(
+      fixture("BrittanyJura/SimplifiedGpx/JuraRoute72011.gpx_0.gpx"),
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.routes.length, 1);
+    const route = result.routes[0];
+    assert.equal(route.points.length, 1249);
+    assert.equal(route.points[0].name, "0.00km");
+    assert.equal(
+      route.points.filter((point) => point.sym === "warningflag").length,
+      29,
+    );
+    assert.equal(typeof route.desc, "string");
+    assert.ok(route.desc?.includes("Jura Route 7 / 2011"));
+  });
+
+  it("attaches links to ViewRanger campsite waypoints", () => {
+    const result = parseGpx(
+      fixture("Campsites/CampingMunicipal/camping-municipal-france.gpx"),
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.waypoints.length, 1649);
+    assert.equal(result.skipped, 1);
+    assert.ok(
+      result.waypoints.every(
+        (waypoint) =>
+          waypoint.link === undefined ||
+          waypoint.link.href?.startsWith("http") === true,
+      ),
+    );
+    assert.equal(
+      result.waypoints.filter((waypoint) => waypoint.link !== undefined).length,
+      1316,
+    );
+  });
+
+  it("keeps a route and its track from a single parse", () => {
+    const result = parseGpx(fixture("wrong-gpx-export.gpx"));
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.routes.length, 1);
+    assert.equal(result.routes[0].points.length, 2);
+    assert.equal(result.tracks.length, 1);
+    assert.equal(
+      result.tracks.reduce(
+        (total, track) => total + track.segments.flat().length,
+        0,
+      ),
+      1119,
+    );
+  });
+
+  it("keeps route point metadata and waypoint links from attributes", () => {
+    const result = parseGpx(
+      '<gpx><rte><rtept lat="1" lon="2"><name>A</name><sym>Flag</sym><cmt>note</cmt></rtept></rte>' +
+        '<wpt lat="3" lon="4"><link href="https://example.com/x"><text>X</text></link></wpt>' +
+        '<wpt lat="5" lon="6"><url>https://example.com/legacy</url><urlname>Legacy</urlname></wpt></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.routes[0].points[0].name, "A");
+    assert.equal(result.routes[0].points[0].sym, "Flag");
+    assert.equal(result.routes[0].points[0].cmt, "note");
+    assert.equal(result.waypoints[0].link?.href, "https://example.com/x");
+    assert.equal(result.waypoints[0].link?.text, "X");
+    assert.equal(result.waypoints[1].link?.href, "https://example.com/legacy");
+    assert.equal(result.waypoints[1].link?.text, "Legacy");
+  });
+
+  it("counts an rtept with a non-numeric lat as skipped", () => {
+    const result = parseGpx(
+      '<gpx><rte><rtept lat="north" lon="2"><name>Bad</name></rtept>' +
+        '<rtept lat="1" lon="2"><name>Good</name></rtept></rte></gpx>',
+    );
+    assert.ok(!isParseError(result), "expected a successful parse");
+    if (isParseError(result)) return;
+    assert.equal(result.skipped, 1);
+    assert.equal(result.routes[0].points.length, 1);
+    assert.equal(result.routes[0].points[0].name, "Good");
+  });
+});

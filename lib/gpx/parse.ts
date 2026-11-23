@@ -7,6 +7,7 @@ import type {
   ParsedGpx,
   ParseError,
   Route,
+  RoutePoint,
   Track,
   Waypoint,
 } from "../../app/gpx/types.ts";
@@ -175,27 +176,42 @@ export function parseGpx(xml: string): ParsedGpx | ParseError {
       skipped++;
       return;
     }
+    const waypointEl = waypointEls[index];
+    const link =
+      parseLink(directChild(waypointEl, "link")) ?? parseLegacyLink(waypointEl);
     waypoints.push({
       ...point,
-      name: source.name?.trim() || nameOf(waypointEls[index]),
-      desc: source.description?.trim() || textOf(waypointEls[index], "desc"),
-      sym: textOf(waypointEls[index], "sym"),
+      name: source.name?.trim() || nameOf(waypointEl),
+      desc: source.description?.trim() || textOf(waypointEl, "desc"),
+      sym: textOf(waypointEl, "sym"),
+      ...(link ? { link } : {}),
     });
   });
 
   const routeEls = Array.from(doc.getElementsByTagName("rte"));
   const routes: Route[] = parsed.routes.map((source, index) => {
-    const points: LatLon[] = [];
-    for (const candidate of source.points) {
+    const routeEl = routeEls[index];
+    const pointEls = routeEl
+      ? Array.from(routeEl.getElementsByTagName("rtept"))
+      : [];
+    const points: RoutePoint[] = [];
+    source.points.forEach((candidate, pointIndex) => {
       const point = toLatLon(candidate);
       if (!point) {
         skipped++;
-        continue;
+        return;
       }
-      points.push(point);
-    }
+      const pointEl = pointEls[pointIndex];
+      points.push({
+        ...point,
+        name: candidate.name?.trim() || nameOf(pointEl),
+        sym: directText(pointEl, "sym"),
+        cmt: directText(pointEl, "cmt"),
+      });
+    });
     return {
-      name: source.name?.trim() || nameOf(routeEls[index]),
+      name: source.name?.trim() || nameOf(routeEl),
+      desc: directText(routeEl, "desc"),
       points,
     };
   });
@@ -235,6 +251,7 @@ export function parseGpx(xml: string): ParsedGpx | ParseError {
 
     return {
       name: source.name?.trim() || nameOf(trackEl),
+      desc: directText(trackEl, "desc"),
       segments,
     };
   });

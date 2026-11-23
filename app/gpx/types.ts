@@ -8,15 +8,24 @@ export interface Waypoint extends LatLon {
   name?: string;
   desc?: string;
   sym?: string;
+  link?: GpxLink;
+}
+
+export interface RoutePoint extends LatLon {
+  name?: string;
+  sym?: string;
+  cmt?: string;
 }
 
 export interface Route {
   name?: string;
-  points: LatLon[];
+  desc?: string;
+  points: RoutePoint[];
 }
 
 export interface Track {
   name?: string;
+  desc?: string;
   segments: LatLon[][];
 }
 
