@@ -172,12 +172,25 @@ function lastTag() {
   return tag ? tag.trim() : null;
 }
 
+function configureIdentity() {
+  git(["config", "user.name", process.env.GITHUB_ACTOR || BOT_NAME]);
+  git([
+    "config",
+    "user.email",
+    process.env.GITHUB_ACTOR_ID
+      ? `${process.env.GITHUB_ACTOR_ID}+${process.env.GITHUB_ACTOR}@users.noreply.github.com`
+      : BOT_EMAIL,
+  ]);
+}
+
 function main() {
   const headSubject = git(["log", "-1", "--format=%s"]).trim();
   if (RELEASE_SUBJECT.test(headSubject)) {
     console.log("already a release commit");
     return;
   }
+
+  configureIdentity();
 
   const tag = lastTag();
 
@@ -223,14 +236,6 @@ function main() {
   writePackageVersion(version);
   prependChangelog(section);
 
-  git(["config", "user.name", process.env.GITHUB_ACTOR || BOT_NAME]);
-  git([
-    "config",
-    "user.email",
-    process.env.GITHUB_ACTOR_ID
-      ? `${process.env.GITHUB_ACTOR_ID}+${process.env.GITHUB_ACTOR}@users.noreply.github.com`
-      : BOT_EMAIL,
-  ]);
   git(["add", "package.json", "CHANGELOG.md"]);
   git(["commit", "-m", `chore(release): v${version}`]);
   git(["tag", "-a", tagName, "-m", tagName]);
