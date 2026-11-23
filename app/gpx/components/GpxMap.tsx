@@ -2,15 +2,20 @@
 
 import type { Map as MapLibreMap, Popup as MapLibrePopup } from "maplibre-gl";
 import { useTheme } from "next-themes";
-import { type ReactNode, useEffect, useRef, useState } from "react";
-import type { LatLon, ParsedGpx } from "../types";
-import type { LineGroup } from "../utils";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import type { LatLon, ParsedGpx, RoutePoint } from "../types";
+import type {
+  DistanceMarks,
+  LegendModel,
+  LineGroup,
+  NamedPointGroup,
+  PoiGroup,
+} from "../utils";
 import {
+  buildLegend,
   computeBounds,
-  distanceMeters,
   formatDistance,
-  lineGroups,
-  pathEndpoints,
+  safeExternalHref,
 } from "../utils";
 
 type MapInstance = MapLibreMap;
@@ -28,20 +33,15 @@ const WAYPOINT_SOURCE_ID = "gpx-waypoints-source";
 const WAYPOINT_HIT_LAYER_ID = "gpx-waypoints-hit";
 const WAYPOINT_DOT_LAYER_ID = "gpx-waypoints-dot";
 const WAYPOINT_LABEL_LAYER_ID = "gpx-waypoints-label";
-const LOOP_DISTANCE_METERS = 25;
+const MARK_SOURCE_ID = "gpx-marks-source";
+const MARK_LABEL_LAYER_ID = "gpx-marks-label";
+const NAMED_SOURCE_ID = "gpx-named-source";
+const NAMED_LABEL_LAYER_ID = "gpx-named-label";
+const MARK_LABEL_LIMIT = 200;
 const WAYPOINT_LABEL_LIMIT = 200;
 
 function formatCoordinate(point: LatLon): string {
   return `${point.lat.toFixed(5)}, ${point.lon.toFixed(5)}`;
-}
-
-function isLoopRoute(
-  endpoints: { start: LatLon; end: LatLon } | null,
-): boolean {
-  return (
-    endpoints !== null &&
-    distanceMeters(endpoints.start, endpoints.end) < LOOP_DISTANCE_METERS
-  );
 }
 
 function lineFeatures(segments: LatLon[][]) {
@@ -222,30 +222,201 @@ interface LabelPaint {
   halo: string;
 }
 
+interface LegendVisibility {
+  marksVisible: boolean;
+  markLabelsVisible: boolean;
+  namedVisible: boolean;
+  poiVisible: boolean;
+}
+
+function legendVisibility(legend: LegendModel): LegendVisibility {
+  return {
+    marksVisible: legend.marks !== null,
+    markLabelsVisible: (legend.marks?.count ?? 0) <= MARK_LABEL_LIMIT,
+    namedVisible:
+      legend.namedPoints !== null &&
+      legend.namedPoints.count <= MARK_LABEL_LIMIT,
+    poiVisible: legend.poiGroups.length > 0,
+  };
+}
+
+function markLabel(point: RoutePoint, index: number, labels: string[]): string {
+  const preview = labels[index];
+  if (preview !== undefined) return preview;
+  return point.name?.trim() || point.sym?.trim() || "";
+}
+
+function poiGroupIndex(groups: PoiGroup[]): Map<string, PoiGroup> {
+  const index = new Map<string, PoiGroup>();
+  for (const group of groups) index.set(group.key, group);
+  return index;
+}
+
+function addMarkLabelLayer(
+  map: MapInstance,
+  marks: DistanceMarks,
+  labelPaint: LabelPaint,
+) {
+  map.addSource(MARK_SOURCE_ID, {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: marks.points.map((point, index) => ({
+        type: "Feature" as const,
+        properties: { label: markLabel(point, index, marks.labels) },
+        geometry: {
+          type: "Point" as const,
+          coordinates: [point.lon, point.lat],
+        },
+      })),
+    },
+  });
+  map.addLayer({
+    id: MARK_LABEL_LAYER_ID,
+    type: "symbol",
+    source: MARK_SOURCE_ID,
+    layout: {
+      "text-field": ["get", "label"],
+      "text-font": ["Noto Sans Regular"],
+      "text-size": 12,
+      "text-anchor": "top",
+      "text-offset": [0, 0.9],
+      "text-allow-overlap": true,
+    },
+    paint: {
+      "text-color": labelPaint.text,
+      "text-halo-color": labelPaint.halo,
+      "text-halo-width": 1.5,
+    },
+  });
+}
+
+function addNamedPointLayer(
+  map: MapInstance,
+  named: NamedPointGroup,
+  labelPaint: LabelPaint,
+) {
+  map.addSource(NAMED_SOURCE_ID, {
+    type: "geojson",
+    data: {
+      type: "FeatureCollection",
+      features: named.points.map((point) => {
+        const name = point.name?.trim();
+        const sym = point.sym?.trim();
+        return {
+          type: "Feature" as const,
+          properties: {
+            ...(name ? { name } : {}),
+            ...(sym ? { sym } : {}),
+          },
+          geometry: {
+            type: "Point" as const,
+            coordinates: [point.lon, point.lat],
+          },
+        };
+      }),
+    },
+  });
+  map.addLayer({
+    id: NAMED_LABEL_LAYER_ID,
+    type: "symbol",
+    source: NAMED_SOURCE_ID,
+    layout: {
+      "text-field": ["coalesce", ["get", "name"], ["get", "sym"], ""],
+      "text-font": ["Noto Sans Regular"],
+      "text-size": 12,
+      "text-anchor": "top",
+      "text-offset": [0, 0.9],
+    },
+    paint: {
+      "text-color": labelPaint.text,
+      "text-halo-color": labelPaint.halo,
+      "text-halo-width": 1.5,
+    },
+  });
+}
+
+function waypointPopupContent(
+  properties: Record<string, unknown>,
+): HTMLElement | null {
+  const name = typeof properties.name === "string" ? properties.name : "";
+  const sym = typeof properties.sym === "string" ? properties.sym : "";
+  const desc = typeof properties.desc === "string" ? properties.desc : "";
+  const hrefText =
+    typeof properties.hrefText === "string" ? properties.hrefText : "";
+  const href = safeExternalHref(
+    typeof properties.href === "string" ? properties.href : undefined,
+  );
+  if (!name && !sym && !desc && !href) return null;
+
+  const container = document.createElement("div");
+  if (name) {
+    const strong = document.createElement("strong");
+    strong.textContent = name;
+    container.append(strong);
+  }
+  if (sym) {
+    const span = document.createElement("span");
+    span.textContent = sym;
+    span.className = name
+      ? "ml-2 text-muted-foreground"
+      : "text-muted-foreground";
+    container.append(span);
+  }
+  if (desc) {
+    const paragraph = document.createElement("p");
+    paragraph.textContent = desc;
+    paragraph.className = "mt-1 whitespace-pre-line text-muted-foreground";
+    container.append(paragraph);
+  }
+  if (href) {
+    const anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.textContent = hrefText || href;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.className = "mt-1 inline-block underline";
+    container.append(anchor);
+  }
+  return container;
+}
+
 function addWaypointLayers(
   map: MapInstance,
   parsed: ParsedGpx,
   PopupClass: typeof MapLibrePopup,
   labelPaint: LabelPaint,
+  poiGroups: PoiGroup[],
 ) {
   if (parsed.waypoints.length === 0) return;
+
+  const groups = poiGroupIndex(poiGroups);
 
   map.addSource(WAYPOINT_SOURCE_ID, {
     type: "geojson",
     data: {
       type: "FeatureCollection",
-      features: parsed.waypoints.map((waypoint) => ({
-        type: "Feature" as const,
-        properties: {
-          name: waypoint.name ?? "",
-          desc: waypoint.desc ?? "",
-          sym: waypoint.sym ?? "",
-        },
-        geometry: {
-          type: "Point" as const,
-          coordinates: [waypoint.lon, waypoint.lat],
-        },
-      })),
+      features: parsed.waypoints.map((waypoint) => {
+        const sym = waypoint.sym?.trim() ?? "";
+        const key = sym.toLowerCase();
+        const group = groups.get(key);
+        return {
+          type: "Feature" as const,
+          properties: {
+            name: waypoint.name ?? "",
+            desc: waypoint.desc ?? "",
+            sym: waypoint.sym ?? "",
+            color: group?.color ?? "#ffffff",
+            ring: group?.ringColor ?? "#16181d",
+            href: waypoint.link?.href ?? "",
+            hrefText: waypoint.link?.text ?? "",
+          },
+          geometry: {
+            type: "Point" as const,
+            coordinates: [waypoint.lon, waypoint.lat],
+          },
+        };
+      }),
     },
   });
   map.addLayer({
@@ -263,8 +434,8 @@ function addWaypointLayers(
     source: WAYPOINT_SOURCE_ID,
     paint: {
       "circle-radius": 5,
-      "circle-color": "#ffffff",
-      "circle-stroke-color": "#16181d",
+      "circle-color": ["get", "color"],
+      "circle-stroke-color": ["coalesce", ["get", "ring"], "#16181d"],
       "circle-stroke-width": 2,
     },
   });
@@ -291,12 +462,9 @@ function addWaypointLayers(
 
   map.on("click", WAYPOINT_HIT_LAYER_ID, (event) => {
     const feature = event.features?.[0];
-    const properties: Record<string, unknown> = feature?.properties ?? {};
-    const text = [properties.name, properties.sym, properties.desc]
-      .filter((part): part is string => typeof part === "string" && part !== "")
-      .join("\n");
-    if (text === "") return;
-    new PopupClass().setLngLat(event.lngLat).setText(text).addTo(map);
+    const content = waypointPopupContent(feature?.properties ?? {});
+    if (!content) return;
+    new PopupClass().setLngLat(event.lngLat).setDOMContent(content).addTo(map);
   });
   map.on("mouseenter", WAYPOINT_HIT_LAYER_ID, () => {
     map.getCanvas().style.cursor = "pointer";
@@ -310,10 +478,12 @@ function Swatch({
   color,
   shape,
   dashed,
+  ringColor,
 }: {
   color: string;
   shape: SwatchShape;
   dashed?: boolean;
+  ringColor?: string;
 }) {
   if (shape === "line") {
     return (
@@ -340,6 +510,7 @@ function Swatch({
         height: 12,
         backgroundColor: color,
         borderRadius: shape === "circle" ? "50%" : 2,
+        boxShadow: ringColor ? `inset 0 0 0 1px ${ringColor}` : undefined,
       }}
     />
   );
@@ -349,12 +520,17 @@ function LegendRow({ children }: { children: ReactNode }) {
   return <div className="flex items-center gap-2">{children}</div>;
 }
 
-function MapLegend({ parsed }: { parsed: ParsedGpx }) {
-  const groups = lineGroups(parsed);
-  const endpoints = pathEndpoints(parsed);
-  const loop = isLoopRoute(endpoints);
-
-  if (groups.length === 0 && parsed.waypoints.length === 0) return null;
+function MapLegend({ legend }: { legend: LegendModel }) {
+  const { marksVisible, markLabelsVisible, namedVisible, poiVisible } =
+    legendVisibility(legend);
+  const endpoints = legend.endpoints;
+  const hasContent =
+    legend.lines.length > 0 ||
+    marksVisible ||
+    legend.namedPoints !== null ||
+    poiVisible ||
+    endpoints !== null;
+  if (!hasContent) return null;
 
   return (
     <div
@@ -364,7 +540,7 @@ function MapLegend({ parsed }: { parsed: ParsedGpx }) {
       className="absolute bottom-3 left-3 z-10 flex max-h-[min(60%,24rem)] max-w-[min(18rem,calc(100%-1.5rem))] flex-col gap-1.5 overflow-y-auto rounded-md border border-border bg-background/95 p-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
     >
       <p className="font-medium">Legend</p>
-      {groups.map((group) => (
+      {legend.lines.map((group) => (
         <LegendRow key={group.id}>
           <Swatch
             color={group.color}
@@ -377,7 +553,46 @@ function MapLegend({ parsed }: { parsed: ParsedGpx }) {
           </span>
         </LegendRow>
       ))}
-      {loop ? (
+      {legend.marks && markLabelsVisible ? (
+        <LegendRow>
+          <span>
+            {legend.marks.count} marks every {legend.marks.stepKm} km
+          </span>
+        </LegendRow>
+      ) : null}
+      {legend.marks && !markLabelsVisible ? (
+        <LegendRow>
+          <span>
+            {legend.marks.count} marks, labels hidden above {MARK_LABEL_LIMIT}
+          </span>
+        </LegendRow>
+      ) : null}
+      {legend.namedPoints && namedVisible ? (
+        <LegendRow>
+          <span>{legend.namedPoints.count} named points</span>
+        </LegendRow>
+      ) : null}
+      {legend.namedPoints && !namedVisible ? (
+        <LegendRow>
+          <span>
+            {legend.namedPoints.count} points, labels hidden above{" "}
+            {MARK_LABEL_LIMIT}
+          </span>
+        </LegendRow>
+      ) : null}
+      {legend.poiGroups.map((group) => (
+        <LegendRow key={group.key}>
+          <Swatch
+            color={group.color}
+            shape="circle"
+            ringColor={group.ringColor}
+          />
+          <span>
+            {group.label} {group.count}
+          </span>
+        </LegendRow>
+      ))}
+      {legend.loop ? (
         <LegendRow>
           <Swatch color={START_COLOR} shape="circle" />
           <span>Start - Finish</span>
@@ -398,7 +613,7 @@ function MapLegend({ parsed }: { parsed: ParsedGpx }) {
           ) : null}
         </>
       )}
-      {groups.length > 0 ? (
+      {legend.lines.length > 0 ? (
         <LegendRow>
           <svg
             aria-hidden="true"
@@ -418,6 +633,7 @@ function MapLegend({ parsed }: { parsed: ParsedGpx }) {
 }
 
 export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
+  const legend = useMemo(() => buildLegend(parsed), [parsed]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [mapFailed, setMapFailed] = useState(false);
   const { resolvedTheme } = useTheme();
@@ -433,6 +649,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
       styleUrl === STYLE_URL_DARK
         ? { text: "#e8ecf1", halo: "#0f1216" }
         : { text: "#16181d", halo: "#ffffff" };
+    const { markLabelsVisible, namedVisible } = legendVisibility(legend);
 
     let map: MapInstance | undefined;
     let cancelled = false;
@@ -509,14 +726,25 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
         instance.on("load", () => {
           if (cancelled) return;
 
-          const groups = lineGroups(parsed);
-          for (const group of groups) addLineLayer(instance, group);
-          addDirectionLayer(instance, groups);
-          addWaypointLayers(instance, parsed, Popup, labelPaint);
+          for (const group of legend.lines) addLineLayer(instance, group);
+          addDirectionLayer(instance, legend.lines);
+          addWaypointLayers(
+            instance,
+            parsed,
+            Popup,
+            labelPaint,
+            legend.poiGroups,
+          );
+          if (markLabelsVisible && legend.marks) {
+            addMarkLabelLayer(instance, legend.marks, labelPaint);
+          }
+          if (namedVisible && legend.namedPoints) {
+            addNamedPointLayer(instance, legend.namedPoints, labelPaint);
+          }
 
-          const endpoints = pathEndpoints(parsed);
+          const endpoints = legend.endpoints;
           if (endpoints) {
-            if (isLoopRoute(endpoints)) {
+            if (legend.loop) {
               addEndpointMarker(
                 [endpoints.start.lon, endpoints.start.lat],
                 "Start and finish of a loop",
@@ -570,15 +798,15 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
       cancelled = true;
       map?.remove();
     };
-  }, [parsed, styleUrl]);
+  }, [parsed, styleUrl, legend]);
 
-  const endpoints = pathEndpoints(parsed);
+  const endpoints = legend.endpoints;
 
   return (
     <figure className="space-y-2">
       <div className="relative h-[500px] w-full overflow-hidden rounded-lg border border-border">
         <div ref={containerRef} className="h-full w-full" />
-        <MapLegend parsed={parsed} />
+        <MapLegend legend={legend} />
         {mapFailed ? (
           <p className="absolute inset-0 p-4 text-sm text-muted-foreground">
             The map could not be drawn in this browser. The stats above still

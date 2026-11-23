@@ -4,6 +4,7 @@ import type {
   LatLon,
   ParsedGpx,
   Route,
+  RoutePoint,
   Track,
   Waypoint,
 } from "./types";
@@ -319,10 +320,14 @@ export function primaryContent(parsed: ParsedGpx): PrimaryContent | null {
 export function routeBrief(parsed: ParsedGpx): string | undefined {
   const primary = primaryContent(parsed);
   if (!primary) return undefined;
-  if (primary.desc) return primary.desc;
-  return primary.kind === "track"
-    ? bestRoute(parsed)?.desc
-    : bestTrack(parsed)?.desc;
+  const primaryDesc =
+    primary.desc && flattenDesc(primary.desc) ? primary.desc : undefined;
+  if (primaryDesc) return primaryDesc;
+  const fallback =
+    primary.kind === "track"
+      ? bestRoute(parsed)?.desc
+      : bestTrack(parsed)?.desc;
+  return fallback && flattenDesc(fallback) ? fallback : undefined;
 }
 
 const NAMED_ENTITIES: Record<string, string> = {
@@ -355,19 +360,50 @@ function decodeDescEntities(text: string): string {
   );
 }
 
-const DESC_BREAK = /<\/(?:p|li)>|<br\s*\/?>/gi;
+const DESC_SCRIPT = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi;
+const DESC_BREAK = /<br\b[^>]*>/gi;
+const DESC_BLOCK =
+  /<\/?(?:p|div|h[1-6]|ul|ol|li|tr|td|th|table|thead|tbody|section|article|header|footer|blockquote|pre|figure|figcaption)\b[^>]*>/gi;
 const DESC_TAG = /<[a-z/!][^>]*>/gi;
 
 /** Turns a GPX description's inline HTML into plain, trimmed lines of text. */
 export function flattenDesc(text: string | undefined): string {
   if (!text) return "";
   return decodeDescEntities(text)
+    .replace(DESC_SCRIPT, "")
     .replace(DESC_BREAK, "\n")
+    .replace(DESC_BLOCK, "\n")
     .replace(DESC_TAG, "")
     .split("\n")
     .map((line) => line.replace(/\s+/g, " ").trim())
     .filter((line) => line.length > 0)
     .join("\n");
+}
+
+const URL_PATTERN = /https?:\/\/[^\s<>"']+/i;
+const URL_TRAILING = /[.,;:!?]+$/;
+const URL_OPENERS: Record<string, string> = { ")": "(", "]": "[", "}": "{" };
+
+/** The first web URL in flattened description text, without sentence punctuation. */
+export function extractSourceUrl(text: string | undefined): string | undefined {
+  const match = text?.match(URL_PATTERN)?.[0];
+  if (!match) return undefined;
+  let end = match.length;
+  while (end > 0) {
+    const current = match.slice(0, end);
+    const trimmed = current.replace(URL_TRAILING, "");
+    if (trimmed.length < current.length) {
+      end = trimmed.length;
+      continue;
+    }
+    const last = current.slice(-1);
+    const opener = URL_OPENERS[last];
+    if (!opener || current.split(last).length <= current.split(opener).length) {
+      break;
+    }
+    end -= 1;
+  }
+  return match.slice(0, end);
 }
 
 export function waypointsToParsedGpx(
@@ -435,17 +471,20 @@ export interface PoiGroup {
   label: string;
   count: number;
   color: string;
+  ringColor?: string;
 }
 
 export interface DistanceMarks {
   count: number;
   stepKm: number;
   labels: string[];
+  points: RoutePoint[];
 }
 
 export interface NamedPointGroup {
   label: string;
   count: number;
+  points: RoutePoint[];
 }
 
 export interface LegendModel {
@@ -462,6 +501,35 @@ const KM_TOLERANCE = 0.05;
 const LOOP_DISTANCE_METERS = 25;
 const POI_GROUP_LIMIT = 6;
 const MARK_LABEL_LIMIT = 8;
+
+const POI_PALETTE = [
+  ...LINE_PALETTE,
+  "#332288",
+  "#117733",
+  "#882255",
+  "#44aa99",
+  "#ddcc77",
+  "#aa4499",
+] as const;
+const OTHER_GROUP_KEY = "__other";
+
+function hashKey(key: string): number {
+  let hash = 0;
+  for (let index = 0; index < key.length; index += 1) {
+    hash = (hash * 31 + key.charCodeAt(index)) | 0;
+  }
+  return hash >>> 0;
+}
+
+function keyedPoiColor(key: string, used: Set<string>): string {
+  let hue = hashKey(key) % 360;
+  let color = `hsl(${hue}, 55%, 42%)`;
+  while (used.has(color)) {
+    hue = (hue + 137) % 360;
+    color = `hsl(${hue}, 55%, 42%)`;
+  }
+  return color;
+}
 
 const POI_SEMANTICS = [
   { pattern: /camp|camping|tent/i, label: "Camp", color: "#009e73" },
@@ -548,7 +616,7 @@ function distanceMarks(parsed: ParsedGpx): DistanceMarks | null {
   );
   if (stepKm === null) return null;
 
-  let count = 0;
+  const points: RoutePoint[] = [];
   const labels: string[] = [];
   for (const route of parsed.routes) {
     for (const point of route.points) {
@@ -562,46 +630,44 @@ function distanceMarks(parsed: ParsedGpx): DistanceMarks | null {
         ? sym !== undefined
         : nearStep || sym !== undefined;
       if (!marked) continue;
-      count += 1;
+      points.push(point);
       const label = name || (value !== null ? `${value} km` : sym);
       if (label && labels.length < MARK_LABEL_LIMIT) labels.push(label);
     }
   }
-  return count >= 2 ? { count, stepKm, labels } : null;
+  if (points.length < 2) return null;
+  return { count: points.length, stepKm, labels, points };
 }
 
 function namedPoints(parsed: ParsedGpx): NamedPointGroup | null {
-  const count = parsed.routes.reduce(
-    (total, route) => total + route.points.length,
-    0,
-  );
-  if (count === 0) return null;
-
-  let label: string | undefined;
+  const points: RoutePoint[] = [];
   for (const route of parsed.routes) {
     for (const point of route.points) {
-      const name = point.name?.trim();
-      if (name) {
-        label = name;
+      if (point.name?.trim() || point.sym?.trim()) points.push(point);
+    }
+  }
+  if (points.length === 0) return null;
+
+  let label: string | undefined;
+  for (const point of points) {
+    const name = point.name?.trim();
+    if (name) {
+      label = name;
+      break;
+    }
+  }
+  if (!label) {
+    for (const point of points) {
+      const sym = point.sym?.trim();
+      if (sym) {
+        label = sym;
         break;
       }
     }
-    if (label) break;
   }
-  if (!label) {
-    for (const route of parsed.routes) {
-      for (const point of route.points) {
-        const sym = point.sym?.trim();
-        if (sym) {
-          label = sym;
-          break;
-        }
-      }
-      if (label) break;
-    }
-  }
+  if (!label) return null;
 
-  return label ? { label, count } : null;
+  return { label, count: points.length, points };
 }
 
 function semanticPoi(
@@ -635,19 +701,36 @@ function poiGroups(parsed: ParsedGpx): PoiGroup[] {
   }
 
   const sorted = [...buckets.values()].sort(
-    (a, b) => b.count - a.count || a.key.localeCompare(b.key),
+    (a, b) => b.count - a.count || (a.key < b.key ? -1 : a.key > b.key ? 1 : 0),
   );
   const kept = sorted.slice(0, POI_GROUP_LIMIT);
   const rest = sorted.slice(POI_GROUP_LIMIT);
   if (rest.length > 0) {
     kept.push({
-      key: "other",
+      key: OTHER_GROUP_KEY,
       label: "Other",
       count: rest.reduce((total, bucket) => total + bucket.count, 0),
     });
   }
 
-  const resolved = kept.map((bucket) => {
+  const resolved: PoiGroup[] = kept.map((bucket) => {
+    if (bucket.key === OTHER_GROUP_KEY) {
+      return {
+        key: bucket.key,
+        label: bucket.label,
+        count: bucket.count,
+        color: "#6b7280",
+      };
+    }
+    if (bucket.key === "") {
+      return {
+        key: bucket.key,
+        label: bucket.label,
+        count: bucket.count,
+        color: "#ffffff",
+        ringColor: "#16181d",
+      };
+    }
     const semantic = semanticPoi(bucket.sym);
     return {
       key: bucket.key,
@@ -661,30 +744,28 @@ function poiGroups(parsed: ParsedGpx): PoiGroup[] {
     resolved.map((group) => group.color).filter((color) => color !== ""),
   );
   const pending = resolved
-    .filter((group) => group.color === "" && group.key !== "")
-    .sort((a, b) => a.key.localeCompare(b.key));
+    .filter(
+      (group) =>
+        group.color === "" && group.key !== OTHER_GROUP_KEY && group.key !== "",
+    )
+    .sort((a, b) => (a.key < b.key ? -1 : a.key > b.key ? 1 : 0));
 
   let paletteIndex = 0;
   for (const group of pending) {
-    while (
-      paletteIndex < LINE_PALETTE.length &&
-      used.has(LINE_PALETTE[paletteIndex])
-    ) {
+    let color: string | null = null;
+    while (paletteIndex < POI_PALETTE.length) {
+      const candidate = POI_PALETTE[paletteIndex];
       paletteIndex += 1;
+      if (!used.has(candidate)) {
+        color = candidate;
+        break;
+      }
     }
-    const color =
-      paletteIndex < LINE_PALETTE.length
-        ? LINE_PALETTE[paletteIndex]
-        : LINE_PALETTE[paletteIndex % LINE_PALETTE.length];
-    group.color = color;
-    used.add(color);
-    paletteIndex += 1;
+    group.color = color ?? keyedPoiColor(group.key, used);
+    used.add(group.color);
   }
 
-  return resolved.map((group) => ({
-    ...group,
-    color: group.color || "#16181d",
-  }));
+  return resolved;
 }
 
 export function buildLegend(parsed: ParsedGpx): LegendModel {

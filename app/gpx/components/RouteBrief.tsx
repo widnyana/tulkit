@@ -1,8 +1,12 @@
 import type { ParsedGpx } from "../types";
-import { flattenDesc, routeBrief, safeExternalHref } from "../utils";
+import {
+  extractSourceUrl,
+  flattenDesc,
+  routeBrief,
+  safeExternalHref,
+} from "../utils";
 
 const EXCERPT_LENGTH = 240;
-const URL_PATTERN = /https?:\/\/[^\s<>"']+/i;
 
 function excerptOf(text: string): string {
   if (text.length <= EXCERPT_LENGTH) return text;
@@ -13,11 +17,10 @@ function excerptOf(text: string): string {
 }
 
 export function RouteBrief({ parsed }: { parsed: ParsedGpx }) {
-  const raw = routeBrief(parsed);
-  const text = raw ? flattenDesc(raw) : "";
+  const text = flattenDesc(routeBrief(parsed));
   if (!text) return null;
 
-  const href = raw ? safeExternalHref(raw.match(URL_PATTERN)?.[0]) : undefined;
+  const href = safeExternalHref(extractSourceUrl(text));
   const truncated = text.length > EXCERPT_LENGTH;
 
   return (

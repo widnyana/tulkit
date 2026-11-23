@@ -9,6 +9,7 @@ import {
   computeBounds,
   distanceMeters,
   elevationGain,
+  extractSourceUrl,
   flattenDesc,
   formatDistance,
   LINE_PALETTE,
@@ -585,6 +586,25 @@ describe("flattenDesc", () => {
     assert.ok(!text.includes(">"));
   });
 
+  it("breaks lines on block tags", () => {
+    assert.equal(
+      flattenDesc("<h2>Title</h2><p>Body</p><ul><li>One</li><li>Two</li></ul>"),
+      "Title\nBody\nOne\nTwo",
+    );
+  });
+
+  it("breaks lines between sibling divs", () => {
+    assert.equal(flattenDesc("<div>A</div><div>B</div>"), "A\nB");
+  });
+
+  it("breaks lines on br tags with attributes", () => {
+    assert.equal(flattenDesc('<p>a<br class="x"/>b</p>'), "a\nb");
+  });
+
+  it("drops script content entirely", () => {
+    assert.equal(flattenDesc("<script>alert(1)</script><p>Hello</p>"), "Hello");
+  });
+
   it("decodes named and numeric entities", () => {
     assert.equal(
       flattenDesc("<p>&quot;A&apos;s&#39; &lt;b&gt; &nbsp; &#65;&#x42;</p>"),
@@ -599,6 +619,33 @@ describe("flattenDesc", () => {
   it("returns an empty string for missing or blank input", () => {
     assert.equal(flattenDesc(undefined), "");
     assert.equal(flattenDesc("   "), "");
+  });
+});
+
+describe("extractSourceUrl", () => {
+  it("drops a closing parenthesis the URL does not open", () => {
+    assert.equal(
+      extractSourceUrl("See (https://example.com/foo)"),
+      "https://example.com/foo",
+    );
+  });
+
+  it("drops trailing sentence punctuation", () => {
+    assert.equal(
+      extractSourceUrl("Docs: https://example.com/foo."),
+      "https://example.com/foo",
+    );
+  });
+
+  it("returns only the first URL", () => {
+    assert.equal(
+      extractSourceUrl("a https://example.com/one b https://example.com/two"),
+      "https://example.com/one",
+    );
+  });
+
+  it("ignores non-web schemes", () => {
+    assert.equal(extractSourceUrl("javascript:alert(1)"), undefined);
   });
 });
 
@@ -647,6 +694,15 @@ describe("primaryContent / routeBrief", () => {
     const parsed: ParsedGpx = {
       ...empty,
       routes: [{ points: points(3) }],
+      tracks: [{ desc: "track desc", segments: [points(1)] }],
+    };
+    assert.equal(routeBrief(parsed), "track desc");
+  });
+
+  it("falls back when the primary desc flattens to nothing", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [{ desc: "<p></p>", points: points(3) }],
       tracks: [{ desc: "track desc", segments: [points(1)] }],
     };
     assert.equal(routeBrief(parsed), "track desc");
@@ -729,6 +785,7 @@ describe("buildLegend", () => {
     };
     const marks = buildLegend(parsed).marks;
     assert.equal(marks?.count, 4);
+    assert.equal(marks?.points.length, marks?.count);
     assert.equal(marks?.stepKm, 10);
     assert.deepEqual(marks?.labels, [
       "0.00km",
@@ -802,10 +859,94 @@ describe("buildLegend", () => {
     };
     const groups = buildLegend(parsed).poiGroups;
     assert.equal(groups.length, 7);
-    assert.equal(groups.filter((group) => group.key !== "other").length, 6);
-    const other = groups.find((group) => group.key === "other");
+    assert.equal(groups.filter((group) => group.key !== "__other").length, 6);
+    const other = groups.find((group) => group.key === "__other");
     assert.equal(other?.label, "Other");
     assert.equal(other?.count, 2);
+  });
+
+  it("keeps every colour distinct across palette exhaustion", () => {
+    const syms = [
+      "alpha",
+      "bravo",
+      "charlie",
+      "delta",
+      "echo",
+      "foxtrot",
+      "golf",
+      "hotel",
+      "india",
+    ];
+    const parsed: ParsedGpx = {
+      ...empty,
+      waypoints: syms.map((sym, index) => ({ lat: index, lon: index, sym })),
+    };
+    const groups = buildLegend(parsed).poiGroups;
+    assert.equal(groups.length, 7);
+    assert.equal(groups.filter((group) => group.key !== "__other").length, 6);
+    assert.equal(new Set(groups.map((group) => group.color)).size, 7);
+    assert.equal(
+      groups.find((group) => group.key === "__other")?.color,
+      "#6b7280",
+    );
+    assert.deepEqual(buildLegend(parsed).poiGroups, groups);
+  });
+
+  it("skips semantic colours when allocating", () => {
+    const syms = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot"];
+    const parsed: ParsedGpx = {
+      ...empty,
+      waypoints: [
+        { lat: 0, lon: 0, sym: "Water" },
+        { lat: 1, lon: 1, sym: "Water" },
+        ...syms.map((sym, index) => ({ lat: index + 2, lon: index + 2, sym })),
+      ],
+    };
+    const groups = buildLegend(parsed).poiGroups;
+    assert.equal(groups.length, 7);
+    assert.equal(new Set(groups.map((group) => group.color)).size, 7);
+  });
+
+  it("keeps a real Other bucket separate from the fold", () => {
+    const syms = [
+      "Other",
+      "Other",
+      "alpha",
+      "bravo",
+      "charlie",
+      "delta",
+      "echo",
+      "foxtrot",
+      "golf",
+    ];
+    const parsed: ParsedGpx = {
+      ...empty,
+      waypoints: syms.map((sym, index) => ({ lat: index, lon: index, sym })),
+    };
+    const groups = buildLegend(parsed).poiGroups;
+    assert.equal(groups.length, 7);
+    const keys = groups.map((group) => group.key);
+    assert.equal(new Set(keys).size, keys.length);
+    const real = groups.find((group) => group.key === "other");
+    const folded = groups.find((group) => group.key === "__other");
+    assert.equal(real?.label, "Other");
+    assert.equal(folded?.label, "Other");
+    assert.equal(new Set(groups.map((group) => group.color)).size, 7);
+  });
+
+  it("marks unlabelled waypoints with a white dot and dark ring", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      waypoints: [
+        { lat: 0, lon: 0 },
+        { lat: 1, lon: 1 },
+      ],
+    };
+    const groups = buildLegend(parsed).poiGroups;
+    assert.equal(groups.length, 1);
+    assert.equal(groups[0].key, "");
+    assert.equal(groups[0].color, "#ffffff");
+    assert.equal(groups[0].ringColor, "#16181d");
   });
 
   it("reads the Jura corpus km step", () => {
