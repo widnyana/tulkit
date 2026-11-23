@@ -162,7 +162,6 @@ export default function MermaidEditorPage() {
         setError(null);
         return;
       }
-      const id = `mermaid-${seq}`;
       try {
         // Lazy import: mermaid is large and only this route needs it.
         const { default: mermaid } = await import("mermaid");
@@ -174,15 +173,12 @@ export default function MermaidEditorPage() {
           htmlLabels: false,
           flowchart: { htmlLabels: false },
         });
-        const { svg } = await mermaid.render(id, code);
+        host.removeAttribute("data-processed");
+        host.replaceChildren();
+        host.textContent = code;
+        await mermaid.run({ nodes: [host] });
         if (seq !== renderSeq.current) return;
         setRenderTick((t) => t + 1);
-        const parsed = new DOMParser().parseFromString(svg, "image/svg+xml");
-        const root = parsed.documentElement;
-        if (!root || parsed.querySelector("parsererror")) {
-          throw new Error("The diagram could not be rendered.");
-        }
-        host.replaceChildren(document.importNode(root, true));
         const el = host.querySelector("svg");
         if (el) {
           el.style.maxWidth = "100%";
@@ -190,9 +186,8 @@ export default function MermaidEditorPage() {
         }
         setError(null);
       } catch (err) {
-        // mermaid leaves its scratch node behind on a failed render
-        document.getElementById(`d${id}`)?.remove();
         if (seq !== renderSeq.current) return;
+        host.replaceChildren();
         setError(err instanceof Error ? err.message : "Unknown error");
       }
     }, delay);

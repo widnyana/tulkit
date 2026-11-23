@@ -360,28 +360,55 @@ function decodeDescEntities(text: string): string {
   );
 }
 
-const DESC_SCRIPT = /<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi;
 const DESC_BREAK = /<br\b[^>]*>/gi;
 const DESC_BLOCK =
   /<\/?(?:p|div|h[1-6]|ul|ol|li|tr|td|th|table|thead|tbody|section|article|header|footer|blockquote|pre|figure|figcaption)\b[^>]*>/gi;
-const DESC_TAG = /<[^>]*>/g;
 
-const stripTags = (input: string): string => {
-  let text = input;
-  let previous = "";
-  while (text !== previous) {
-    previous = text;
-    text = text.replace(DESC_TAG, "");
+const SCRIPT_TAGS = new Set(["script", "style"]);
+
+const scanText = (input: string): string => {
+  let out = "";
+  let index = 0;
+  while (index < input.length) {
+    const open = input.indexOf("<", index);
+    if (open === -1) {
+      out += input.slice(index);
+      break;
+    }
+    out += input.slice(index, open);
+    const close = input.indexOf(">", open + 1);
+    if (close === -1) {
+      const follower = input[open + 1];
+      if (follower !== undefined && !/\s/.test(follower)) break;
+      index = open + 1;
+      continue;
+    }
+    const body = input
+      .slice(open + 1, close)
+      .trim()
+      .toLowerCase();
+    const closing = body.startsWith("/");
+    const name = (closing ? body.slice(1) : body).split(/[\s/]/)[0] ?? "";
+    index = close + 1;
+    if (!closing && SCRIPT_TAGS.has(name)) {
+      const lower = input.toLowerCase();
+      const end = lower.indexOf(`</${name}`, index);
+      if (end === -1) {
+        index = input.length;
+        break;
+      }
+      const endClose = input.indexOf(">", end);
+      index = endClose === -1 ? input.length : endClose + 1;
+    }
   }
-  return text.replace(/</g, "");
+  return out;
 };
 
 /** Turns a GPX description's inline HTML into plain, trimmed lines of text. */
 export function flattenDesc(text: string | undefined): string {
   if (!text) return "";
-  return stripTags(
+  return scanText(
     decodeDescEntities(text)
-      .replace(DESC_SCRIPT, "")
       .replace(DESC_BREAK, "\n")
       .replace(DESC_BLOCK, "\n"),
   )

@@ -613,6 +613,18 @@ describe("flattenDesc", () => {
     assert.equal(flattenDesc("<script>alert(1)</script><p>Hello</p>"), "Hello");
   });
 
+  it("keeps text after a script block", () => {
+    assert.equal(flattenDesc("<script>alert(1)</script>Keep me"), "Keep me");
+  });
+
+  it("keeps text after a style block", () => {
+    assert.equal(flattenDesc("<style>.a{}</style>Text"), "Text");
+  });
+
+  it("drops an unterminated tag", () => {
+    assert.equal(flattenDesc("<b"), "");
+  });
+
   it("decodes named and numeric entities", () => {
     assert.equal(
       flattenDesc("<p>&quot;A&apos;s&#39; &lt;b&gt; &nbsp; &#65;&#x42;</p>"),
