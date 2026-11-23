@@ -813,14 +813,11 @@ export function GpxMap({
   const popupClassRef = useRef<typeof MapLibrePopup | null>(null);
   const focusedPopupRef = useRef<MapLibrePopup | null>(null);
   const mapStyle = useMapStyle();
-  const mapStyleRef = useRef(mapStyle);
-  const skipStyleSwitchRef = useRef(true);
+  const pendingStyleRef = useRef(mapStyle);
+  const appliedStyleRef = useRef<string | typeof mapStyle | null>(null);
+  const styleSwitchInFlightRef = useRef(false);
   const parsedRef = useRef(parsed);
   const legendRef = useRef(legend);
-
-  useEffect(() => {
-    mapStyleRef.current = mapStyle;
-  }, [mapStyle]);
 
   useEffect(() => {
     parsedRef.current = parsed;
@@ -831,14 +828,24 @@ export function GpxMap({
   }, [legend]);
 
   useEffect(() => {
-    if (skipStyleSwitchRef.current) {
-      skipStyleSwitchRef.current = false;
-      return;
-    }
+    pendingStyleRef.current = mapStyle;
     const map = activeMapRef.current;
-    if (!map) return;
-    map.setStyle(mapStyle);
+    if (!map || styleSwitchInFlightRef.current) return;
+    if (appliedStyleRef.current === mapStyle) return;
+    beginStyleSwitch(map);
+  }, [mapStyle]);
+
+  function beginStyleSwitch(map: MapInstance) {
+    const target = pendingStyleRef.current;
+    styleSwitchInFlightRef.current = true;
+    map.setStyle(target);
     map.once("style.load", () => {
+      appliedStyleRef.current = target;
+      if (pendingStyleRef.current !== target) {
+        beginStyleSwitch(map);
+        return;
+      }
+      styleSwitchInFlightRef.current = false;
       map.setMissingStyleImageResolver((id) => {
         if (map.hasImage(id)) return;
         map.addImage(id, new ImageData(1, 1));
@@ -850,7 +857,7 @@ export function GpxMap({
       };
       applyMapContent(map, parsedRef.current, legendRef.current, tokens, labelPaint);
     });
-  }, [mapStyle]);
+  }
 
   useEffect(() => {
     const container = containerRef.current;
@@ -891,11 +898,12 @@ export function GpxMap({
         popupClassRef.current = Popup;
         const instance = new MapLibreMap({
           container,
-          style: mapStyleRef.current,
+          style: pendingStyleRef.current,
           fadeDuration: 0,
         });
         map = instance;
         activeMapRef.current = instance;
+        appliedStyleRef.current = pendingStyleRef.current;
         setMapInstance(instance);
         if (process.env.NODE_ENV !== "production") {
           const testWindow = window as TestWindow;
@@ -1057,6 +1065,8 @@ export function GpxMap({
       activeMapRef.current = null;
       popupClassRef.current = null;
       focusedPopupRef.current = null;
+      appliedStyleRef.current = null;
+      styleSwitchInFlightRef.current = false;
       map?.remove();
       setMapInstance(null);
       if (process.env.NODE_ENV !== "production") {

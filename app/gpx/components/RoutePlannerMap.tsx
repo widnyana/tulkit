@@ -109,33 +109,40 @@ export function RoutePlannerMap({
   const [mapFailed, setMapFailed] = useState(false);
   const [styleGeneration, setStyleGeneration] = useState(0);
   const mapStyle = useMapStyle();
-  const mapStyleRef = useRef(mapStyle);
-  const skipStyleSwitchRef = useRef(true);
+  const pendingStyleRef = useRef(mapStyle);
+  const appliedStyleRef = useRef<string | typeof mapStyle | null>(null);
+  const styleSwitchInFlightRef = useRef(false);
 
   useEffect(() => {
     controlPointsRef.current = controlPoints;
   }, [controlPoints]);
 
   useEffect(() => {
-    mapStyleRef.current = mapStyle;
+    pendingStyleRef.current = mapStyle;
+    const map = mapRef.current;
+    if (!map || styleSwitchInFlightRef.current) return;
+    if (appliedStyleRef.current === mapStyle) return;
+    beginStyleSwitch(map);
   }, [mapStyle]);
 
-  useEffect(() => {
-    if (skipStyleSwitchRef.current) {
-      skipStyleSwitchRef.current = false;
-      return;
-    }
-    const map = mapRef.current;
-    if (!map) return;
-    map.setStyle(mapStyle);
+  function beginStyleSwitch(map: MapInstance) {
+    const target = pendingStyleRef.current;
+    styleSwitchInFlightRef.current = true;
+    map.setStyle(target);
     map.once("style.load", () => {
+      appliedStyleRef.current = target;
+      if (pendingStyleRef.current !== target) {
+        beginStyleSwitch(map);
+        return;
+      }
+      styleSwitchInFlightRef.current = false;
       map.setMissingStyleImageResolver((id) => {
         if (map.hasImage(id)) return;
         map.addImage(id, new ImageData(1, 1));
       });
       setStyleGeneration((generation) => generation + 1);
     });
-  }, [mapStyle]);
+  }
 
   useEffect(() => {
     onMapClickRef.current = onMapClick;
@@ -167,11 +174,12 @@ export function RoutePlannerMap({
         config.WORKER_URL = "/maplibre-gl-worker.mjs";
         const instance = new MapLibreMapCtor({
           container,
-          style: mapStyleRef.current,
+          style: pendingStyleRef.current,
           fadeDuration: 0,
         });
         map = instance;
         mapRef.current = instance;
+        appliedStyleRef.current = pendingStyleRef.current;
         markerClassRef.current = Marker;
 
         instance.setMissingStyleImageResolver((id) => {
@@ -221,6 +229,8 @@ export function RoutePlannerMap({
       locationMarkerRef.current = null;
       mapRef.current = null;
       markerClassRef.current = null;
+      appliedStyleRef.current = null;
+      styleSwitchInFlightRef.current = false;
       map?.remove();
     };
   }, []);
