@@ -1,4 +1,4 @@
-import type { LatLon, ParsedGpx } from "./types";
+import type { LatLon, ParsedGpx, Waypoint } from "./types";
 
 export const LINE_PALETTE = [
   "#0072b2",
@@ -157,6 +157,15 @@ export function computeBounds(
     [minLon, minLat],
     [maxLon, maxLat],
   ];
+}
+
+export function waypointsToParsedGpx(waypoints: Waypoint[]): ParsedGpx {
+  return {
+    waypoints,
+    routes: waypoints.length >= 2 ? [{ points: waypoints }] : [],
+    tracks: [],
+    skipped: 0,
+  };
 }
 
 export function trackSegmentCount(parsed: ParsedGpx): number {

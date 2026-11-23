@@ -36,7 +36,7 @@ import {
 import type { MapsWaypoint, ParsedGpx } from "./types";
 import { useGpxId } from "./useGpxId";
 import { useQueryState } from "./useQueryState";
-import { trackSegmentCount } from "./utils";
+import { trackSegmentCount, waypointsToParsedGpx } from "./utils";
 
 const TAB_VALUES = ["view", "maps", "csv"] as const;
 type TabValue = (typeof TAB_VALUES)[number];
@@ -364,12 +364,7 @@ function GpxViewContent() {
                     Download GPX
                   </Button>
                 }
-                parsed={{
-                  waypoints: mapsState.waypoints,
-                  routes: [],
-                  tracks: [],
-                  skipped: 0,
-                }}
+                parsed={waypointsToParsedGpx(mapsState.waypoints)}
               />
             )}
           </TabsContent>
@@ -404,12 +399,9 @@ function GpxViewContent() {
                       Download GPX
                     </Button>
                   }
-                  parsed={{
-                    waypoints: csvState.result.waypoints.map((w) => w.waypoint),
-                    routes: [],
-                    tracks: [],
-                    skipped: 0,
-                  }}
+                  parsed={waypointsToParsedGpx(
+                    csvState.result.waypoints.map((w) => w.waypoint),
+                  )}
                 >
                   {csvState.result.errors.length > 0 && (
                     <ul className="space-y-1 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
