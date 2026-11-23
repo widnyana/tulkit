@@ -6,14 +6,18 @@ import { saveAs } from "file-saver";
 import Link from "next/link";
 import { useId, useState } from "react";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
-import { isShortMapsLink, parseMapsUrl } from "@/lib/gpx/mapsLink";
-import { isParseError, parseGpx } from "@/lib/gpx/parse";
 import { waypointsToGpx } from "@/lib/gpx/serialize";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { GpxMap } from "./components/GpxMap";
+import {
+  importMapsLink,
+  parseGpxText,
+  readGpxFile,
+  runToResult,
+} from "./effects";
 import type { MapsWaypoint, ParsedGpx } from "./types";
 import { trackSegmentCount } from "./utils";
 
@@ -33,29 +37,6 @@ type CsvImportState =
   | { kind: "idle" }
   | { kind: "success"; result: CsvParseResult };
 
-async function resolveMapsInput(rawUrl: string): Promise<MapsWaypoint[]> {
-  const targetUrl = isShortMapsLink(rawUrl)
-    ? await resolveShortMapsLink(rawUrl)
-    : rawUrl;
-
-  const result = parseMapsUrl(targetUrl);
-  if (!Array.isArray(result)) {
-    throw new Error(result.message);
-  }
-  return result;
-}
-
-async function resolveShortMapsLink(shortUrl: string): Promise<string> {
-  const response = await fetch(
-    `/api/resolve-maps-link?url=${encodeURIComponent(shortUrl)}`,
-  );
-  const data: { resolvedUrl?: string; error?: string } = await response.json();
-  if (!response.ok || !data.resolvedUrl) {
-    throw new Error(data.error ?? "Failed to resolve the Maps link");
-  }
-  return data.resolvedUrl;
-}
-
 export default function GpxViewPage() {
   const [rawInput, setRawInput] = useState("");
   const [state, setState] = useState<ViewState>({ kind: "empty" });
@@ -73,12 +54,13 @@ export default function GpxViewPage() {
       setState({ kind: "empty" });
       return;
     }
-    const result = parseGpx(text);
-    setState(
-      isParseError(result)
-        ? { kind: "error", message: result.message }
-        : { kind: "success", parsed: result },
-    );
+    void runToResult(parseGpxText(text)).then((result) => {
+      setState(
+        result.ok
+          ? { kind: "success", parsed: result.value }
+          : { kind: "error", message: result.message },
+      );
+    });
   };
 
   const handleTextChange = (value: string) => {
@@ -88,9 +70,13 @@ export default function GpxViewPage() {
 
   const handleFileChange = async (file: File) => {
     setState({ kind: "loading" });
-    const text = await file.text();
-    setRawInput(text);
-    parseInto(text);
+    const result = await runToResult(readGpxFile(file));
+    if (!result.ok) {
+      setState({ kind: "error", message: result.message });
+      return;
+    }
+    setRawInput(result.value.text);
+    setState({ kind: "success", parsed: result.value.parsed });
   };
 
   const handleClear = () => {
@@ -102,18 +88,12 @@ export default function GpxViewPage() {
     const trimmed = mapsUrlInput.trim();
     if (trimmed === "") return;
     setMapsState({ kind: "loading" });
-    try {
-      const waypoints = await resolveMapsInput(trimmed);
-      setMapsState({ kind: "success", waypoints });
-    } catch (error) {
-      setMapsState({
-        kind: "error",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Failed to import this Maps link",
-      });
-    }
+    const result = await runToResult(importMapsLink(trimmed));
+    setMapsState(
+      result.ok
+        ? { kind: "success", waypoints: result.value }
+        : { kind: "error", message: result.message },
+    );
   };
 
   const handleDownloadGpx = () => {
