@@ -192,4 +192,45 @@ test.describe("GPX viewer fixtures", () => {
     ).toHaveCount(0);
     expect(errors).toEqual([]);
   });
+
+  test("renders popup text against the popover surface in dark mode", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
+    await loadFixture(page, "west-java/full-legend.gpx");
+
+    const startMarker = page.getByRole("button", { name: /Start of route/ });
+    await expect(startMarker).toBeVisible({ timeout: 15_000 });
+    await startMarker.click();
+
+    const popup = page.locator(".maplibregl-popup-content").first();
+    await expect(popup).toBeVisible();
+
+    const resolved = await page.evaluate(() => {
+      const probe = document.createElement("div");
+      document.body.append(probe);
+      const resolve = (token: string) => {
+        probe.style.color = `var(${token})`;
+        return getComputedStyle(probe).color;
+      };
+      const values = {
+        dark: document.documentElement.classList.contains("dark"),
+        popover: resolve("--popover"),
+        popoverForeground: resolve("--popover-foreground"),
+      };
+      probe.remove();
+      return values;
+    });
+
+    expect(resolved.dark).toBe(true);
+
+    const computed = await popup.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { color: style.color, background: style.backgroundColor };
+    });
+
+    expect(computed.color).toBe(resolved.popoverForeground);
+    expect(computed.background).toBe(resolved.popover);
+    expect(computed.color).not.toBe(computed.background);
+  });
 });

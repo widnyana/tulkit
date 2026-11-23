@@ -24,8 +24,30 @@ type SwatchShape = "line" | "circle" | "square";
 
 const STYLE_URL_LIGHT = "https://tiles.openfreemap.org/styles/liberty";
 const STYLE_URL_DARK = "https://tiles.openfreemap.org/styles/dark";
-const START_COLOR = "#0072b2";
-const FINISH_COLOR = "#16181d";
+const TOKEN_FALLBACK = {
+  foreground: "#16181d",
+  background: "#ffffff",
+  ring: "#0072b2",
+} as const;
+const START_SWATCH = "var(--ring)";
+const FINISH_SWATCH = "var(--foreground)";
+
+interface ChartTokens {
+  foreground: string;
+  background: string;
+  ring: string;
+}
+
+export function readChartTokens(): ChartTokens {
+  const styles = getComputedStyle(document.documentElement);
+  const read = (name: keyof typeof TOKEN_FALLBACK) =>
+    styles.getPropertyValue(`--${name}`).trim() || TOKEN_FALLBACK[name];
+  return {
+    foreground: read("foreground"),
+    background: read("background"),
+    ring: read("ring"),
+  };
+}
 const ARROW_IMAGE_ID = "gpx-direction-arrow";
 const DIRECTION_SOURCE_ID = "gpx-direction-source";
 const DIRECTION_LAYER_ID = "gpx-direction-layer";
@@ -168,7 +190,11 @@ function addLineLayer(map: MapInstance, group: LineGroup) {
   });
 }
 
-function addDirectionLayer(map: MapInstance, groups: LineGroup[]) {
+function addDirectionLayer(
+  map: MapInstance,
+  groups: LineGroup[],
+  tokens: ChartTokens,
+) {
   if (groups.length === 0) return;
 
   if (!map.hasImage(ARROW_IMAGE_ID)) {
@@ -183,11 +209,11 @@ function addDirectionLayer(map: MapInstance, groups: LineGroup[]) {
     context.lineTo(26, 16);
     context.lineTo(6, 26);
     context.closePath();
-    context.strokeStyle = "#ffffff";
+    context.strokeStyle = tokens.background;
     context.lineWidth = 4;
     context.lineJoin = "round";
     context.stroke();
-    context.fillStyle = "#16181d";
+    context.fillStyle = tokens.foreground;
     context.fill();
     map.addImage(ARROW_IMAGE_ID, context.getImageData(0, 0, 32, 32));
   }
@@ -336,49 +362,62 @@ function addNamedPointLayer(
   });
 }
 
-function waypointPopupContent(
-  properties: Record<string, unknown>,
-): HTMLElement | null {
-  const name = typeof properties.name === "string" ? properties.name : "";
-  const sym = typeof properties.sym === "string" ? properties.sym : "";
-  const desc = typeof properties.desc === "string" ? properties.desc : "";
-  const hrefText =
-    typeof properties.hrefText === "string" ? properties.hrefText : "";
-  const href = safeExternalHref(
-    typeof properties.href === "string" ? properties.href : undefined,
-  );
-  if (!name && !sym && !desc && !href) return null;
-
+function popupContent(options: {
+  title: string;
+  lines?: string[];
+  link?: { href: string; text: string };
+}): HTMLDivElement {
   const container = document.createElement("div");
-  if (name) {
+  container.className = "flex max-w-[260px] flex-col gap-0.5 text-xs";
+
+  if (options.title) {
     const strong = document.createElement("strong");
-    strong.textContent = name;
+    strong.className = "font-semibold";
+    strong.textContent = options.title;
     container.append(strong);
   }
-  if (sym) {
+
+  for (const line of options.lines ?? []) {
+    if (!line) continue;
     const span = document.createElement("span");
-    span.textContent = sym;
-    span.className = name
-      ? "ml-2 text-muted-foreground"
-      : "text-muted-foreground";
+    span.className = "whitespace-pre-line text-muted-foreground";
+    span.textContent = line;
     container.append(span);
   }
-  if (desc) {
-    const paragraph = document.createElement("p");
-    paragraph.textContent = desc;
-    paragraph.className = "mt-1 whitespace-pre-line text-muted-foreground";
-    container.append(paragraph);
-  }
-  if (href) {
+
+  if (options.link) {
     const anchor = document.createElement("a");
-    anchor.href = href;
-    anchor.textContent = hrefText || href;
+    anchor.className = "text-ring underline underline-offset-2";
+    anchor.href = options.link.href;
+    anchor.textContent = options.link.text;
     anchor.target = "_blank";
     anchor.rel = "noopener noreferrer";
-    anchor.className = "mt-1 inline-block underline";
     container.append(anchor);
   }
+
   return container;
+}
+
+function decoratePopup(popup: MapLibrePopup): MapLibrePopup {
+  const apply = () => {
+    const element: HTMLElement | undefined = popup.getElement();
+    if (!element) return;
+    const content = element.querySelector<HTMLElement>(
+      ".maplibregl-popup-content",
+    );
+    if (content) {
+      content.style.background = "var(--popover)";
+      content.style.color = "var(--popover-foreground)";
+      content.style.border = "1px solid var(--border)";
+      content.style.borderRadius = "var(--radius-md)";
+      content.style.padding = "8px 10px";
+    }
+    const tip = element.querySelector<HTMLElement>(".maplibregl-popup-tip");
+    if (tip) tip.style.visibility = "hidden";
+  };
+  popup.on("open", apply);
+  apply();
+  return popup;
 }
 
 function addWaypointLayers(
@@ -387,6 +426,7 @@ function addWaypointLayers(
   PopupClass: typeof MapLibrePopup,
   labelPaint: LabelPaint,
   poiGroups: PoiGroup[],
+  tokens: ChartTokens,
 ) {
   if (parsed.waypoints.length === 0) return;
 
@@ -406,8 +446,14 @@ function addWaypointLayers(
             name: waypoint.name ?? "",
             desc: waypoint.desc ?? "",
             sym: waypoint.sym ?? "",
-            color: group?.color ?? "#ffffff",
-            ring: group?.ringColor ?? "#16181d",
+            color:
+              group?.color === TOKEN_FALLBACK.background
+                ? tokens.background
+                : (group?.color ?? tokens.background),
+            ring:
+              group?.ringColor === TOKEN_FALLBACK.foreground
+                ? tokens.foreground
+                : (group?.ringColor ?? tokens.foreground),
             href: waypoint.link?.href ?? "",
             hrefText: waypoint.link?.text ?? "",
           },
@@ -435,7 +481,7 @@ function addWaypointLayers(
     paint: {
       "circle-radius": 5,
       "circle-color": ["get", "color"],
-      "circle-stroke-color": ["coalesce", ["get", "ring"], "#16181d"],
+      "circle-stroke-color": ["coalesce", ["get", "ring"], tokens.foreground],
       "circle-stroke-width": 2,
     },
   });
@@ -461,10 +507,25 @@ function addWaypointLayers(
   }
 
   map.on("click", WAYPOINT_HIT_LAYER_ID, (event) => {
-    const feature = event.features?.[0];
-    const content = waypointPopupContent(feature?.properties ?? {});
-    if (!content) return;
-    new PopupClass().setLngLat(event.lngLat).setDOMContent(content).addTo(map);
+    const properties = event.features?.[0]?.properties ?? {};
+    const name = typeof properties.name === "string" ? properties.name : "";
+    const sym = typeof properties.sym === "string" ? properties.sym : "";
+    const desc = typeof properties.desc === "string" ? properties.desc : "";
+    const hrefText =
+      typeof properties.hrefText === "string" ? properties.hrefText : "";
+    const href = safeExternalHref(
+      typeof properties.href === "string" ? properties.href : undefined,
+    );
+    if (!name && !sym && !desc && !href) return;
+    decoratePopup(
+      new PopupClass().setLngLat(event.lngLat).setDOMContent(
+        popupContent({
+          title: name,
+          lines: [sym, desc],
+          link: href ? { href, text: hrefText || href } : undefined,
+        }),
+      ),
+    ).addTo(map);
   });
   map.on("mouseenter", WAYPOINT_HIT_LAYER_ID, () => {
     map.getCanvas().style.cursor = "pointer";
@@ -583,9 +644,17 @@ function MapLegend({ legend }: { legend: LegendModel }) {
       {legend.poiGroups.map((group) => (
         <LegendRow key={group.key}>
           <Swatch
-            color={group.color}
+            color={
+              group.color === TOKEN_FALLBACK.background
+                ? "var(--background)"
+                : group.color
+            }
             shape="circle"
-            ringColor={group.ringColor}
+            ringColor={
+              group.ringColor === TOKEN_FALLBACK.foreground
+                ? "var(--foreground)"
+                : group.ringColor
+            }
           />
           <span>
             {group.label} {group.count}
@@ -594,20 +663,20 @@ function MapLegend({ legend }: { legend: LegendModel }) {
       ))}
       {legend.loop ? (
         <LegendRow>
-          <Swatch color={START_COLOR} shape="circle" />
+          <Swatch color={START_SWATCH} shape="circle" />
           <span>Start - Finish</span>
         </LegendRow>
       ) : (
         <>
           {endpoints ? (
             <LegendRow>
-              <Swatch color={START_COLOR} shape="circle" />
+              <Swatch color={START_SWATCH} shape="circle" />
               <span>Start</span>
             </LegendRow>
           ) : null}
           {endpoints ? (
             <LegendRow>
-              <Swatch color={FINISH_COLOR} shape="square" />
+              <Swatch color={FINISH_SWATCH} shape="square" />
               <span>Finish</span>
             </LegendRow>
           ) : null}
@@ -645,10 +714,11 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
 
     setMapFailed(false);
 
-    const labelPaint: LabelPaint =
-      styleUrl === STYLE_URL_DARK
-        ? { text: "#e8ecf1", halo: "#0f1216" }
-        : { text: "#16181d", halo: "#ffffff" };
+    const tokens = readChartTokens();
+    const labelPaint: LabelPaint = {
+      text: tokens.foreground,
+      halo: tokens.background,
+    };
     const { markLabelsVisible, namedVisible } = legendVisibility(legend);
 
     let map: MapInstance | undefined;
@@ -712,9 +782,16 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
             shape,
             color,
           );
+          const [firstLine = "", ...restLines] = popupText.split("\n");
           const marker = new Marker({ element })
             .setLngLat(coordinates)
-            .setPopup(new Popup().setText(popupText))
+            .setPopup(
+              decoratePopup(
+                new Popup().setDOMContent(
+                  popupContent({ title: firstLine, lines: restLines }),
+                ),
+              ),
+            )
             .addTo(instance);
           element.addEventListener("keydown", (event) => {
             if (event.key !== "Enter" && event.key !== " ") return;
@@ -727,13 +804,14 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
           if (cancelled) return;
 
           for (const group of legend.lines) addLineLayer(instance, group);
-          addDirectionLayer(instance, legend.lines);
+          addDirectionLayer(instance, legend.lines, tokens);
           addWaypointLayers(
             instance,
             parsed,
             Popup,
             labelPaint,
             legend.poiGroups,
+            tokens,
           );
           if (markLabelsVisible && legend.marks) {
             addMarkLabelLayer(instance, legend.marks, labelPaint);
@@ -751,7 +829,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
                 "S",
                 "Start - Finish",
                 "circle",
-                START_COLOR,
+                tokens.ring,
                 `Start - Finish\n${formatCoordinate(endpoints.start)}\nLoop route`,
               );
             } else {
@@ -761,7 +839,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
                 "S",
                 "Start",
                 "circle",
-                START_COLOR,
+                tokens.ring,
                 `Start\n${formatCoordinate(endpoints.start)}`,
               );
               addEndpointMarker(
@@ -770,7 +848,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
                 "F",
                 "Finish",
                 "square",
-                FINISH_COLOR,
+                tokens.foreground,
                 `Finish\n${formatCoordinate(endpoints.end)}`,
               );
             }
@@ -782,7 +860,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
               "S",
               "Waypoint",
               "circle",
-              START_COLOR,
+              tokens.ring,
               `Waypoint\n${formatCoordinate(waypoint)}`,
             );
           }
