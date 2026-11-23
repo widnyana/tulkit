@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="broken-export" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lon="115.22000"><name>Missing latitude</name></wpt>
+  <wpt lat="-8.45000"><name>Missing longitude</name></wpt>
+  <wpt lat="not-a-number" lon="115.22000"><name>Bad latitude</name></wpt>
+</gpx>

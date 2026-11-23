@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="PoiEdit v5.2.0" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="-8.36141" lon="115.26510"><ele>120</ele><name>Ubud 1</name><desc>Camp stop 1 in Bali</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.36824" lon="115.21605"><ele>570</ele><name>Kintamani 2</name><desc>Camp stop 2 in Bali</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.39228" lon="115.13651"><ele>-74</ele><name>Bedugul 3</name><desc>Camp stop 3 in Bali</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.40157" lon="115.18475"><ele>-7</ele><name>Tegallalang 4</name><desc>Camp stop 4 in Bali</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.38615" lon="115.27743"><ele>71</ele><name>Sukawati 5</name><desc>Camp stop 5 in Bali</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.52436" lon="115.15825"><ele>-100</ele><name>Bangli 6</name><desc>Camp stop 6 in Bali</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.42814" lon="115.10280"><ele>693</ele><name>Payangan 7</name><desc>Drinking Water stop 7 in Bali</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.44577" lon="115.14589"><ele>93</ele><name>Tampaksiring 8</name><desc>Drinking Water stop 8 in Bali</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.52827" lon="115.27978"><ele>86</ele><name>Sanur 9</name><desc>Drinking Water stop 9 in Bali</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.44888" lon="115.17329"><ele>263</ele><name>Denpasar 10</name><desc>Drinking Water stop 10 in Bali</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.44932" lon="115.12829"><ele>463</ele><name>Ubud 11</name><desc>Drinking Water stop 11 in Bali</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.52488" lon="115.19781"><ele>512</ele><name>Kintamani 12</name><desc>Summit stop 12 in Bali</desc><sym>Summit</sym></wpt>
+  <wpt lat="-8.50589" lon="115.24164"><ele>103</ele><name>Bedugul 13</name><desc>Summit stop 13 in Bali</desc><sym>Summit</sym></wpt>
+  <wpt lat="-8.45753" lon="115.11643"><ele>673</ele><name>Tegallalang 14</name><desc>Summit stop 14 in Bali</desc><sym>Summit</sym></wpt>
+  <wpt lat="-8.50652" lon="115.33816"><ele>706</ele><name>Sukawati 15</name><desc>Viewpoint stop 15 in Bali</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.43939" lon="115.33729"><ele>249</ele><name>Bangli 16</name><desc>Viewpoint stop 16 in Bali</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.41976" lon="115.30590"><ele>-106</ele><name>Payangan 17</name><desc>Parking stop 17 in Bali</desc><sym>Parking</sym></wpt>
+  <wpt lat="-8.41435" lon="115.18819"><ele>140</ele><name>Tampaksiring 18</name><desc>Parking stop 18 in Bali</desc><sym>Parking</sym></wpt>
+  <wpt lat="-8.38310" lon="115.12472"><ele>285</ele><name>Sanur 19</name><desc>Food stop 19 in Bali</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.45410" lon="115.26630"><ele>674</ele><name>Denpasar 20</name><desc>Food stop 20 in Bali</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.39557" lon="115.11026"><ele>-104</ele><name>Ubud 21</name><desc>Bike Repair stop 21 in Bali</desc><sym>Bike Repair</sym></wpt>
+  <wpt lat="-8.52083" lon="115.24610"><ele>718</ele><name>Kintamani 22</name><desc>Danger Area stop 22 in Bali</desc><sym>Danger Area</sym></wpt>
+  <wpt lat="-8.45088" lon="115.29974"><ele>584</ele><name>Bedugul 23</name><desc>Bakso stop 23 in Bali</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.36994" lon="115.25349"><ele>99</ele><name>Tegallalang 24</name><desc>Bakso stop 24 in Bali</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.39872" lon="115.11895"><ele>568</ele><name>Sukawati 25</name><desc>Warteg stop 25 in Bali</desc><sym>Warteg</sym></wpt>
+</gpx>

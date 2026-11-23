@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="BaseCamp" xmlns="http://www.topografix.com/GPX/1/1">
+  <rte>
+    <name>Denpasar - Kintamani - Ubud</name>
+    <rtept lat="-8.45035" lon="115.24993"><name>Denpasar stop 1</name><sym>Viewpoint</sym></rtept>
+    <rtept lat="-8.44293" lon="115.25417"><name>Ubud stop 2</name></rtept>
+    <rtept lat="-8.43585" lon="115.25818"><name>Kintamani stop 3</name></rtept>
+    <rtept lat="-8.42820" lon="115.26145"><name>Bedugul stop 4</name></rtept>
+    <rtept lat="-8.42184" lon="115.26529"><name>Tegallalang stop 5</name></rtept>
+    <rtept lat="-8.41478" lon="115.26783"><name>Sukawati stop 6</name></rtept>
+    <rtept lat="-8.40785" lon="115.27156"><name>Bangli stop 7</name></rtept>
+    <rtept lat="-8.40049" lon="115.27417"><name>Payangan stop 8</name><sym>Drinking Water</sym></rtept>
+    <rtept lat="-8.39434" lon="115.27675"><name>Tampaksiring stop 9</name></rtept>
+    <rtept lat="-8.38764" lon="115.27947"><name>Sanur stop 10</name></rtept>
+    <rtept lat="-8.38096" lon="115.28169"><name>Denpasar stop 11</name></rtept>
+    <rtept lat="-8.37454" lon="115.28400"><name>Ubud stop 12</name></rtept>
+    <rtept lat="-8.36887" lon="115.28659"><name>Kintamani stop 13</name></rtept>
+    <rtept lat="-8.36294" lon="115.28906"><name>Bedugul stop 14</name></rtept>
+    <rtept lat="-8.35742" lon="115.29057"><name>Tegallalang stop 15</name><sym>Summit</sym></rtept>
+    <rtept lat="-8.35190" lon="115.29249"><name>Sukawati stop 16</name></rtept>
+    <rtept lat="-8.34681" lon="115.29482"><name>Bangli stop 17</name></rtept>
+    <rtept lat="-8.34214" lon="115.29665"><name>Payangan stop 18</name></rtept>
+    <rtept lat="-8.33729" lon="115.29815"><name>Tampaksiring stop 19</name></rtept>
+    <rtept lat="-8.33309" lon="115.30015"><name>Sanur stop 20</name></rtept>
+    <rtept lat="-8.32870" lon="115.30122"><name>Denpasar stop 21</name></rtept>
+    <rtept lat="-8.32500" lon="115.30318"><name>Ubud stop 22</name><sym>Viewpoint</sym></rtept>
+    <rtept lat="-8.32148" lon="115.30528"><name>Kintamani stop 23</name></rtept>
+    <rtept lat="-8.31806" lon="115.30699"><name>Bedugul stop 24</name></rtept>
+    <rtept lat="-8.31580" lon="115.30859"><name>Tegallalang stop 25</name></rtept>
+    <rtept lat="-8.31286" lon="115.31007"><name>Sukawati stop 26</name></rtept>
+    <rtept lat="-8.31063" lon="115.31244"><name>Bangli stop 27</name></rtept>
+    <rtept lat="-8.30844" lon="115.31437"><name>Payangan stop 28</name></rtept>
+    <rtept lat="-8.30714" lon="115.31649"><name>Tampaksiring stop 29</name><sym>Drinking Water</sym></rtept>
+    <rtept lat="-8.30527" lon="115.31914"><name>Sanur stop 30</name></rtept>
+    <rtept lat="-8.30487" lon="115.32095"><name>Denpasar stop 31</name></rtept>
+    <rtept lat="-8.30373" lon="115.32350"><name>Ubud stop 32</name></rtept>
+    <rtept lat="-8.30382" lon="115.32632"><name>Kintamani stop 33</name></rtept>
+    <rtept lat="-8.30314" lon="115.32932"><name>Bedugul stop 34</name></rtept>
+    <rtept lat="-8.30340" lon="115.33203"><name>Tegallalang stop 35</name></rtept>
+    <rtept lat="-8.30415" lon="115.33544"><name>Sukawati stop 36</name><sym>Summit</sym></rtept>
+    <rtept lat="-8.30500" lon="115.33888"><name>Bangli stop 37</name></rtept>
+    <rtept lat="-8.30601" lon="115.34226"><name>Payangan stop 38</name></rtept>
+    <rtept lat="-8.30724" lon="115.34593"><name>Tampaksiring stop 39</name></rtept>
+    <rtept lat="-8.30935" lon="115.34982"><name>Sanur stop 40</name></rtept>
+  </rte>
+</gpx>

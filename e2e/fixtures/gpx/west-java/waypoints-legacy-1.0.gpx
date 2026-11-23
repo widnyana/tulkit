@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.0" creator="MapSource 6.16.3" xmlns="http://www.topografix.com/GPX/1/0">
+  <name>Bandung Utara Loop</name>
+  <wpt lat="-6.78935" lon="107.58489"><ele>661</ele><name>Cikole municipal campsite 1</name><desc>Municipal campsite 1, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-1</url><urlname>Campsite 1</urlname></wpt>
+  <wpt lat="-6.89576" lon="107.70014"><ele>807</ele><name>Tangkuban Perahu municipal campsite 2</name><desc>Municipal campsite 2, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-2</url><urlname>Campsite 2</urlname></wpt>
+  <wpt lat="-6.92680" lon="107.61893"><ele>1050</ele><name>Ciater municipal campsite 3</name><desc>Municipal campsite 3, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-3</url><urlname>Campsite 3</urlname></wpt>
+  <wpt lat="-6.86044" lon="107.69409"><ele>1155</ele><name>Dago municipal campsite 4</name><desc>Municipal campsite 4, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-4</url><urlname>Campsite 4</urlname></wpt>
+  <wpt lat="-6.81935" lon="107.49402"><ele>688</ele><name>Pasteur municipal campsite 5</name><desc>Municipal campsite 5, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-5</url><urlname>Campsite 5</urlname></wpt>
+  <wpt lat="-6.91495" lon="107.66572"><ele>1215</ele><name>Ciumbuleuit municipal campsite 6</name><desc>Municipal campsite 6, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-6</url><urlname>Campsite 6</urlname></wpt>
+  <wpt lat="-6.84876" lon="107.71279"><ele>1100</ele><name>Maribaya municipal campsite 7</name><desc>Municipal campsite 7, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-7</url><urlname>Campsite 7</urlname></wpt>
+  <wpt lat="-6.81793" lon="107.64601"><ele>1053</ele><name>Cisarua municipal campsite 8</name><desc>Municipal campsite 8, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-8</url><urlname>Campsite 8</urlname></wpt>
+  <wpt lat="-6.87230" lon="107.53316"><ele>1012</ele><name>Cimahi municipal campsite 9</name><desc>Municipal campsite 9, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-9</url><urlname>Campsite 9</urlname></wpt>
+  <wpt lat="-6.89778" lon="107.56561"><ele>1144</ele><name>Lembang municipal campsite 10</name><desc>Municipal campsite 10, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-10</url><urlname>Campsite 10</urlname></wpt>
+  <wpt lat="-6.84991" lon="107.49395"><ele>1148</ele><name>Cikole municipal campsite 11</name><desc>Municipal campsite 11, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-11</url><urlname>Campsite 11</urlname></wpt>
+  <wpt lat="-6.81294" lon="107.68752"><ele>946</ele><name>Tangkuban Perahu municipal campsite 12</name><desc>Municipal campsite 12, West Java</desc><sym>Camp</sym><url>https://example.com/legacy/west-java-12</url><urlname>Campsite 12</urlname></wpt>
+</gpx>

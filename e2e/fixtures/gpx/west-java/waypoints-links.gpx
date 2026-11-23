@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="ViewRanger" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="-6.78622" lon="107.55858"><ele>1059</ele><name>Cikole 1</name><sym>Camp</sym><link href="https://example.com/poi/west-java-1"><text>Cikole campsite</text></link></wpt>
+  <wpt lat="-6.85433" lon="107.52235"><ele>904</ele><name>Tangkuban Perahu 2</name><sym>Camp</sym><link href="https://example.com/poi/west-java-2"><text>Tangkuban Perahu campsite</text></link></wpt>
+  <wpt lat="-6.79904" lon="107.52268"><ele>596</ele><name>Ciater 3</name><sym>Camp</sym><link href="https://example.com/poi/west-java-3"><text>Ciater campsite</text></link></wpt>
+  <wpt lat="-6.80499" lon="107.56952"><ele>1187</ele><name>Dago 4</name><sym>Camp</sym><link href="https://example.com/poi/west-java-4"><text>Dago campsite</text></link></wpt>
+  <wpt lat="-6.79887" lon="107.54933"><ele>736</ele><name>Pasteur 5</name><sym>Camp</sym><link href="https://example.com/poi/west-java-5"><text>Pasteur campsite</text></link></wpt>
+  <wpt lat="-6.79651" lon="107.54128"><ele>793</ele><name>Ciumbuleuit 6</name><sym>Camp</sym><link href="https://example.com/poi/west-java-6"><text>Ciumbuleuit campsite</text></link></wpt>
+  <wpt lat="-6.82325" lon="107.59264"><ele>1038</ele><name>Maribaya 7</name><sym>Camp</sym><link href="https://example.com/poi/west-java-7"><text>Maribaya campsite</text></link></wpt>
+  <wpt lat="-6.86694" lon="107.69951"><ele>928</ele><name>Cisarua 8</name><sym>Camp</sym><link href="https://example.com/poi/west-java-8"><text>Cisarua campsite</text></link></wpt>
+  <wpt lat="-6.84935" lon="107.58922"><ele>848</ele><name>Cimahi 9</name><sym>Camp</sym><link href="https://example.com/poi/west-java-9"><text>Cimahi campsite</text></link></wpt>
+  <wpt lat="-6.90937" lon="107.59368"><ele>954</ele><name>Lembang 10</name><sym>Camp</sym><link href="https://example.com/poi/west-java-10"><text>Lembang campsite</text></link></wpt>
+  <wpt lat="-6.88945" lon="107.64884"><ele>711</ele><name>Cikole 11</name><sym>Camp</sym><link href="https://example.com/poi/west-java-11"><text>Cikole campsite</text></link></wpt>
+  <wpt lat="-6.79153" lon="107.54870"><ele>910</ele><name>Tangkuban Perahu 12</name><sym>Camp</sym><link href="https://example.com/poi/west-java-12"><text>Tangkuban Perahu campsite</text></link></wpt>
+  <wpt lat="-6.82420" lon="107.69015"><ele>896</ele><name>Ciater 13</name><sym>Camp</sym><link href="https://example.com/poi/west-java-13"><text>Ciater campsite</text></link></wpt>
+  <wpt lat="-6.86384" lon="107.51315"><ele>645</ele><name>Dago 14</name><sym>Camp</sym><link href="https://example.com/poi/west-java-14"><text>Dago campsite</text></link></wpt>
+  <wpt lat="-6.92610" lon="107.63258"><ele>1051</ele><name>Pasteur 15</name><sym>Camp</sym><link href="https://example.com/poi/west-java-15"><text>Pasteur campsite</text></link></wpt>
+  <wpt lat="-6.81445" lon="107.68483"><ele>729</ele><name>Ciumbuleuit 16</name><sym>Camp</sym><link href="https://example.com/poi/west-java-16"><text>Ciumbuleuit campsite</text></link></wpt>
+  <wpt lat="-6.92066" lon="107.62166"><ele>965</ele><name>Maribaya 17</name><sym>Camp</sym><link href="https://example.com/poi/west-java-17"><text>Maribaya campsite</text></link></wpt>
+  <wpt lat="-6.92911" lon="107.48785"><ele>878</ele><name>Cisarua 18</name><sym>Camp</sym><link href="https://example.com/poi/west-java-18"><text>Cisarua campsite</text></link></wpt>
+  <wpt lat="-6.81526" lon="107.53106"><ele>1186</ele><name>Cimahi 19</name><sym>Camp</sym><link href="https://example.com/poi/west-java-19"><text>Cimahi campsite</text></link></wpt>
+  <wpt lat="-6.86994" lon="107.49561"><ele>913</ele><name>Lembang 20</name><sym>Camp</sym><link href="https://example.com/poi/west-java-20"><text>Lembang campsite</text></link></wpt>
+</gpx>

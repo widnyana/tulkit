@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.0" creator="MapSource 6.16.3" xmlns="http://www.topografix.com/GPX/1/0">
+  <name>Denpasar - Ubud Loop</name>
+  <wpt lat="-8.48184" lon="115.23990"><ele>-38</ele><name>Ubud municipal campsite 1</name><desc>Municipal campsite 1, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-1</url><urlname>Campsite 1</urlname></wpt>
+  <wpt lat="-8.39043" lon="115.30290"><ele>24</ele><name>Kintamani municipal campsite 2</name><desc>Municipal campsite 2, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-2</url><urlname>Campsite 2</urlname></wpt>
+  <wpt lat="-8.42696" lon="115.19965"><ele>296</ele><name>Bedugul municipal campsite 3</name><desc>Municipal campsite 3, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-3</url><urlname>Campsite 3</urlname></wpt>
+  <wpt lat="-8.40224" lon="115.26579"><ele>-65</ele><name>Tegallalang municipal campsite 4</name><desc>Municipal campsite 4, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-4</url><urlname>Campsite 4</urlname></wpt>
+  <wpt lat="-8.44876" lon="115.22607"><ele>-112</ele><name>Sukawati municipal campsite 5</name><desc>Municipal campsite 5, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-5</url><urlname>Campsite 5</urlname></wpt>
+  <wpt lat="-8.45926" lon="115.19682"><ele>556</ele><name>Bangli municipal campsite 6</name><desc>Municipal campsite 6, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-6</url><urlname>Campsite 6</urlname></wpt>
+  <wpt lat="-8.42022" lon="115.13619"><ele>234</ele><name>Payangan municipal campsite 7</name><desc>Municipal campsite 7, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-7</url><urlname>Campsite 7</urlname></wpt>
+  <wpt lat="-8.39839" lon="115.20612"><ele>492</ele><name>Tampaksiring municipal campsite 8</name><desc>Municipal campsite 8, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-8</url><urlname>Campsite 8</urlname></wpt>
+  <wpt lat="-8.38180" lon="115.19770"><ele>-16</ele><name>Sanur municipal campsite 9</name><desc>Municipal campsite 9, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-9</url><urlname>Campsite 9</urlname></wpt>
+  <wpt lat="-8.38596" lon="115.11144"><ele>390</ele><name>Denpasar municipal campsite 10</name><desc>Municipal campsite 10, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-10</url><urlname>Campsite 10</urlname></wpt>
+  <wpt lat="-8.49495" lon="115.31676"><ele>146</ele><name>Ubud municipal campsite 11</name><desc>Municipal campsite 11, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-11</url><urlname>Campsite 11</urlname></wpt>
+  <wpt lat="-8.38004" lon="115.20147"><ele>658</ele><name>Kintamani municipal campsite 12</name><desc>Municipal campsite 12, Bali</desc><sym>Camp</sym><url>https://example.com/legacy/bali-12</url><urlname>Campsite 12</urlname></wpt>
+</gpx>
