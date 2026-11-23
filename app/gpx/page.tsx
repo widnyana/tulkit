@@ -16,11 +16,12 @@ import {
 } from "react";
 import { LocateFixed, Search } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
-import { Effect } from "effect";
+import { Duration, Effect, Fiber } from "effect";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
+import type { GpxRequestError } from "@/lib/gpx/errors";
 import { fetchElevations } from "@/lib/gpx/elevation";
 import { type PlaceResult, searchPlace } from "@/lib/gpx/geocode";
-import { fetchRoadRoute, type RoadSnap, snapToRoad } from "@/lib/gpx/routing";
+import { fetchRoadRoute, snapToRoad } from "@/lib/gpx/routing";
 import { routeToGpx } from "@/lib/gpx/serialize";
 import {
   generateGpxId,
@@ -156,6 +157,17 @@ const PLAN_NOTICES = {
     description: "The road service did not answer. Try the click again.",
   },
 } as const satisfies Record<string, PlanNotice>;
+
+function planSnapFailureNotice(tag: GpxRequestError["_tag"]): PlanNotice {
+  switch (tag) {
+    case "ServiceUnavailable":
+    case "ServiceRejected":
+    case "TimeoutError":
+    case "InvalidPayload":
+    case "InvalidInput":
+      return PLAN_NOTICES.unavailable;
+  }
+}
 
 async function attachElevations(
   points: ReadonlyArray<LatLon>,
@@ -336,11 +348,11 @@ function GpxViewContent() {
   const [preparingPlanGpx, setPreparingPlanGpx] = useState(false);
   const [preparingMapsGpx, setPreparingMapsGpx] = useState(false);
   const planPoints = plan.points;
-  const snapRequestId = useRef(0);
+  const snapFiber = useRef<Fiber.Fiber<void, never> | null>(null);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
-  const placeSearchAbort = useRef<AbortController | null>(null);
+  const placeSearchFiber = useRef<Fiber.Fiber<void, never> | null>(null);
   const draftRestored = useRef(false);
   const resultsRef = useRef<HTMLDivElement | null>(null);
   const scrolledResult = useRef<ParsedGpx | null>(null);
@@ -614,8 +626,11 @@ function GpxViewContent() {
   }, []);
 
   useEffect(() => {
-    const requestId = snapRequestId.current + 1;
-    snapRequestId.current = requestId;
+    const previous = snapFiber.current;
+    if (previous !== null) {
+      Effect.runFork(Fiber.interrupt(previous));
+      snapFiber.current = null;
+    }
 
     if (planPoints.length < 2) {
       setSnappedPath(null);
@@ -626,23 +641,26 @@ function GpxViewContent() {
     setSnappedPath(null);
     setSnapStatus("loading");
 
-    const timer = setTimeout(() => {
-      void Effect.runPromise(
-        fetchRoadRoute(planPoints, planMode).pipe(
-          Effect.catch(() => Effect.succeed(null)),
-        ),
-      ).then((route) => {
-        if (snapRequestId.current !== requestId) return;
-        setSnappedPath(route);
-        setSnapStatus(route === null ? "failed" : "ok");
-      });
-    }, PLAN_SNAP_DEBOUNCE_MS);
+    const program = Effect.sleep(Duration.millis(PLAN_SNAP_DEBOUNCE_MS)).pipe(
+      Effect.andThen(fetchRoadRoute(planPoints, planMode)),
+      Effect.match({
+        onFailure: () => null,
+        onSuccess: (route) => route,
+      }),
+      Effect.flatMap((route) =>
+        Effect.sync(() => {
+          setSnappedPath(route);
+          setSnapStatus(route === null ? "failed" : "ok");
+        }),
+      ),
+    );
+
+    const fiber = Effect.runFork(program);
+    snapFiber.current = fiber;
 
     return () => {
-      clearTimeout(timer);
-      if (snapRequestId.current === requestId) {
-        snapRequestId.current = requestId + 1;
-      }
+      Effect.runFork(Fiber.interrupt(fiber));
+      if (snapFiber.current === fiber) snapFiber.current = null;
     };
   }, [planPoints, planMode]);
 
@@ -700,35 +718,36 @@ function GpxViewContent() {
         }
       }
 
-      const snap = await Effect.runPromise(
+      const outcome = await Effect.runPromise(
         snapToRoad(point, planMode).pipe(
-          Effect.catch(() =>
-            Effect.succeed<RoadSnap>({
-              point: null,
-              distance: null,
-              reason: "unavailable",
-            }),
-          ),
+          Effect.match({
+            onFailure: (error) => planSnapFailureNotice(error._tag),
+            onSuccess: (snap) => snap,
+          }),
         ),
       );
-      if (snap.reason === "no-road") {
+      if (!("reason" in outcome)) {
+        showPlanNotice(outcome);
+        return;
+      }
+      if (outcome.reason === "no-road") {
         showPlanNotice(PLAN_NOTICES.noRoad);
         return;
       }
       if (
-        snap.reason === "unavailable" ||
-        snap.point === null ||
-        snap.distance === null
+        outcome.reason === "unavailable" ||
+        outcome.point === null ||
+        outcome.distance === null
       ) {
         showPlanNotice(PLAN_NOTICES.unavailable);
         return;
       }
-      if (snap.distance > PLAN_MAX_SNAP_DISTANCE_METERS) {
+      if (outcome.distance > PLAN_MAX_SNAP_DISTANCE_METERS) {
         showPlanNotice(PLAN_NOTICES.noRoad);
         return;
       }
 
-      dispatchPlan({ type: "add", point: snap.point });
+      dispatchPlan({ type: "add", point: outcome.point });
     },
     [planPoints, planMode, showPlanNotice],
   );
@@ -765,24 +784,30 @@ function GpxViewContent() {
   }, [tab, locationStatus, requestPlanLocation]);
 
   const runPlaceSearch = useDebouncedCallback((query: string) => {
-    placeSearchAbort.current?.abort();
+    const previous = placeSearchFiber.current;
+    if (previous !== null) {
+      Effect.runFork(Fiber.interrupt(previous));
+      placeSearchFiber.current = null;
+    }
     if (query.trim() === "") {
       setPlaceResults([]);
       setPlaceSearching(false);
       return;
     }
-    const controller = new AbortController();
-    placeSearchAbort.current = controller;
     setPlaceSearching(true);
-    void Effect.runPromise(
-      searchPlace(query, controller.signal).pipe(
-        Effect.catch(() => Effect.succeed<PlaceResult[]>([])),
+    const program = searchPlace(query).pipe(
+      Effect.match({
+        onFailure: (): PlaceResult[] => [],
+        onSuccess: (results) => results,
+      }),
+      Effect.flatMap((results) =>
+        Effect.sync(() => {
+          setPlaceResults(results);
+          setPlaceSearching(false);
+        }),
       ),
-    ).then((results) => {
-      if (controller.signal.aborted) return;
-      setPlaceResults(results);
-      setPlaceSearching(false);
-    });
+    );
+    placeSearchFiber.current = Effect.runFork(program);
   }, PLAN_LOCATION_SEARCH_DEBOUNCE_MS);
 
   const handlePlaceQueryChange = useCallback(
@@ -801,7 +826,9 @@ function GpxViewContent() {
 
   useEffect(() => {
     return () => {
-      placeSearchAbort.current?.abort();
+      const fiber = placeSearchFiber.current;
+      placeSearchFiber.current = null;
+      if (fiber !== null) Effect.runFork(Fiber.interrupt(fiber));
     };
   }, []);
 
