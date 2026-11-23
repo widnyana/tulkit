@@ -35,6 +35,7 @@ import { EmptyPanel } from "./components/EmptyPanel";
 import { MissingEntryDialog } from "./components/MissingEntryDialog";
 import { MissingEntryPanel } from "./components/MissingEntryPanel";
 import { ResultPanel } from "./components/ResultPanel";
+import { RouteLibrary } from "./components/RouteLibrary";
 import { RoutePlannerMap } from "./components/RoutePlannerMap";
 import {
   importMapsLink,
@@ -64,6 +65,7 @@ import {
 
 const TAB_VALUES = [
   "view",
+  "library",
   "maps",
   "csv",
   "plan",
@@ -71,6 +73,7 @@ const TAB_VALUES = [
 
 const TAB_LABELS: Record<TabValue, string> = {
   view: "View",
+  library: "Library",
   maps: "From Maps",
   csv: "From CSV",
   plan: "Route",
@@ -78,6 +81,7 @@ const TAB_LABELS: Record<TabValue, string> = {
 
 const TAB_HINTS: Record<TabValue, string> = {
   view: "Paste GPX XML or upload a .gpx file to inspect it on a map.",
+  library: "Pick a ready-made route file and download it to your device.",
   maps: "Paste a Google Maps share link to pull its waypoints into a GPX file.",
   csv: "Paste latitude/longitude rows to generate a GPX file.",
   plan: "Click the map to build a route, snap it to roads, and export it as GPX.",
@@ -791,8 +795,8 @@ function GpxViewContent() {
             GPX Viewer & Route Planner
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Inspect a GPX file, plan a road route on the map, or turn waypoints
-            into a GPX file.
+            Inspect a GPX file, download a ready-made route, plan a road route
+            on the map, or turn waypoints into a GPX file.
           </p>
           <p className="sr-only">
             Inspect a GPX file, plan a route by clicking on the map, or turn a
@@ -801,8 +805,9 @@ function GpxViewContent() {
             metadata, waypoints, routes, and tracks. Paste a Google Maps share
             link or a CSV of latitude/longitude rows to build a file. Planned
             routes snap to roads for driving, cycling, or walking, and exports
-            carry elevation. Parsing, planning, and export happen in your
-            browser; files never leave your device.
+            carry elevation. Ready-made route files in the library also download
+            straight from this page. Parsing, planning, and export happen in
+            your browser; files never leave your device.
           </p>
         </header>
 
@@ -814,7 +819,7 @@ function GpxViewContent() {
           }}
           className="tool-enter mt-6"
         >
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             {TAB_VALUES.map((value) => (
               <TabsTrigger key={value} value={value}>
                 {TAB_LABELS[value]}
@@ -890,6 +895,10 @@ function GpxViewContent() {
                 <ResultPanel parsed={state.parsed} />
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="library" className="mt-4 space-y-4">
+            <RouteLibrary />
           </TabsContent>
 
           <TabsContent value="maps" className="mt-4 space-y-4">

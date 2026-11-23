@@ -7,10 +7,11 @@ export const CSV_INPUT_KEY = "tulkit:gpx:csv-input:v1";
 export const MAPS_RESULT_KEY = "tulkit:gpx:maps-result:v1";
 export const MAPS_RESULT_MAX_BYTES = 1_000_000;
 
-export type TabValue = "view" | "maps" | "csv" | "plan";
+export type TabValue = "view" | "library" | "maps" | "csv" | "plan";
 
 export const TAB_QUERY_PARAMS: Record<TabValue, readonly string[]> = {
   view: ["id"],
+  library: [],
   maps: [],
   csv: [],
   plan: [],
