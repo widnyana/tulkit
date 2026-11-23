@@ -1,5 +1,20 @@
 import { Button } from "@/components/ui/button";
 
+export function MissingEntryCopy({ id }: { id: string }) {
+  return (
+    <>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Saved GPX entries live in the browser that created them, and an ID opens
+        only there. To share a route, send the .gpx file and open it with the
+        upload control.
+      </p>
+      <p className="mt-2 font-mono text-xs break-all text-muted-foreground">
+        ID {id}
+      </p>
+    </>
+  );
+}
+
 export function MissingEntryPanel({
   id,
   onDismiss,
@@ -15,14 +30,7 @@ export function MissingEntryPanel({
       <h2 className="font-medium text-foreground">
         That saved GPX is not on this device
       </h2>
-      <p className="mt-1 text-muted-foreground">
-        Saved GPX entries live in the browser that created them, and an ID opens
-        only there. To share a route, send the .gpx file and open it with the
-        upload control above.
-      </p>
-      <p className="mt-2 font-mono text-xs break-all text-muted-foreground">
-        ID {id}
-      </p>
+      <MissingEntryCopy id={id} />
       <Button
         type="button"
         variant="ghost"

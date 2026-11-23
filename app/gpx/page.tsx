@@ -30,6 +30,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyPanel } from "./components/EmptyPanel";
+import { MissingEntryDialog } from "./components/MissingEntryDialog";
 import { MissingEntryPanel } from "./components/MissingEntryPanel";
 import { ResultPanel } from "./components/ResultPanel";
 import { RoutePlannerMap } from "./components/RoutePlannerMap";
@@ -281,6 +282,9 @@ function GpxViewContent() {
   const [rawInput, setRawInput] = useState("");
   const [state, setState] = useState<ViewState>({ kind: "empty" });
   const [missingId, setMissingId] = useState<string | null>(null);
+  const [announcedMissingId, setAnnouncedMissingId] = useState<string | null>(
+    null,
+  );
   const [mapsUrlInput, setMapsUrlInput] = useState("");
   const [mapsState, setMapsState] = useState<MapsImportState>({
     kind: "idle",
@@ -650,6 +654,12 @@ function GpxViewContent() {
 
   return (
     <div className="min-h-screen">
+      {missingId !== null && announcedMissingId !== missingId && (
+        <MissingEntryDialog
+          id={missingId}
+          onClose={() => setAnnouncedMissingId(missingId)}
+        />
+      )}
       <div className="mx-auto px-5 pb-28 pt-10 sm:px-6 sm:pt-14 lg:pb-12">
         <Link
           href="/"

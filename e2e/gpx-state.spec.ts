@@ -36,34 +36,48 @@ const MAPS_RESULT_VALUE = JSON.stringify(MAPS_RESULT);
 
 test.describe("GPX link opened on another browser", () => {
   const MISSING_ID = "6acee03b-6a72-4dd6-81a2-248531decc76";
+  const dialog = (page: import("@playwright/test").Page) =>
+    page.getByRole("dialog", { name: "That saved GPX is not on this device" });
+  const notice = (page: import("@playwright/test").Page) =>
+    page.getByRole("region", { name: "Saved GPX not found" });
 
-  test("explains that a foreign id lives only in its own browser", async ({
-    page,
-  }) => {
+  test("interrupts with a dialog that names the dead link", async ({ page }) => {
     await page.goto(`/gpx?id=${MISSING_ID}`);
 
-    const notice = page.getByRole("region", { name: "Saved GPX not found" });
-    await expect(notice).toBeVisible({ timeout: 30_000 });
-    await expect(notice).toContainText(MISSING_ID);
-    await expect(notice).toContainText("send the .gpx file");
-    await expect(notice).toContainText("browser that created them");
-    await expect(
-      page.getByRole("region", { name: "File metadata" }),
-    ).toHaveCount(0);
+    await expect(dialog(page)).toBeVisible({ timeout: 30_000 });
+    await expect(dialog(page)).toContainText(MISSING_ID);
+    await expect(dialog(page)).toContainText("browser that created them");
+    await expect(dialog(page)).toContainText("send the .gpx file");
+
+    await dialog(page).getByRole("button", { name: "Got it" }).click();
+
+    await expect(dialog(page)).toHaveCount(0);
+    await expect(notice(page)).toBeVisible();
     await expect(page).toHaveURL(new RegExp(`id=${MISSING_ID}`));
+  });
+
+  test("the dialog stays closed once acknowledged", async ({ page }) => {
+    await page.goto(`/gpx?id=${MISSING_ID}`);
+    await expect(dialog(page)).toBeVisible({ timeout: 30_000 });
+
+    await page.keyboard.press("Escape");
+    await expect(dialog(page)).toHaveCount(0);
+
+    await page.waitForTimeout(1000);
+    await expect(dialog(page)).toHaveCount(0);
+    await expect(notice(page)).toBeVisible();
   });
 
   test("dismissing the notice drops the dead id from the url", async ({
     page,
   }) => {
     await page.goto(`/gpx?id=${MISSING_ID}`);
+    await dialog(page).getByRole("button", { name: "Got it" }).click();
 
-    const notice = page.getByRole("region", { name: "Saved GPX not found" });
-    await expect(notice).toBeVisible({ timeout: 30_000 });
-    await notice.getByRole("button", { name: "Dismiss" }).click();
+    await notice(page).getByRole("button", { name: "Dismiss" }).click();
 
     await expect(page).toHaveURL(/\/gpx$/, { timeout: 15_000 });
-    await expect(notice).toHaveCount(0);
+    await expect(notice(page)).toHaveCount(0);
     await expect(
       page.getByText("Paste GPX XML above or upload a .gpx file"),
     ).toBeVisible();
@@ -73,12 +87,11 @@ test.describe("GPX link opened on another browser", () => {
     page,
   }) => {
     await page.goto(`/gpx?id=${MISSING_ID}`);
-    const notice = page.getByRole("region", { name: "Saved GPX not found" });
-    await expect(notice).toBeVisible({ timeout: 30_000 });
+    await dialog(page).getByRole("button", { name: "Got it" }).click();
 
     await page.locator("textarea").first().fill(SAMPLE_GPX);
 
-    await expect(notice).toHaveCount(0);
+    await expect(notice(page)).toHaveCount(0);
     await expect(page.getByText("Waypoints", { exact: true })).toBeVisible({
       timeout: 15_000,
     });
