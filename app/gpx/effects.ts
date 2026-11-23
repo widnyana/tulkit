@@ -1,4 +1,4 @@
-import { Data, Effect } from "effect";
+import { type Cause, Data, Effect } from "effect";
 import {
   isShortMapsLink,
   parseMapsTravelMode,
@@ -20,10 +20,32 @@ export class MapsLinkFailure extends Data.TaggedError("MapsLinkFailure")<{
   readonly message: string;
 }> {}
 
+export class ServiceUnavailable extends Data.TaggedError("ServiceUnavailable")<{
+  readonly message: string;
+}> {}
+
+export class ServiceRejected extends Data.TaggedError("ServiceRejected")<{
+  readonly status: number;
+  readonly message: string;
+}> {}
+
+export class InvalidPayload extends Data.TaggedError("InvalidPayload")<{
+  readonly message: string;
+}> {}
+
+export class InvalidInput extends Data.TaggedError("InvalidInput")<{
+  readonly message: string;
+}> {}
+
 export type GpxProgramError =
   | FileReadFailure
   | GpxParseFailure
-  | MapsLinkFailure;
+  | MapsLinkFailure
+  | ServiceUnavailable
+  | ServiceRejected
+  | InvalidPayload
+  | InvalidInput
+  | Cause.TimeoutError;
 
 export type ProgramResult<A> =
   | { readonly ok: true; readonly value: A }
@@ -107,13 +129,29 @@ export function importMapsLink(
   });
 }
 
-export async function runToResult<A, E extends { readonly message: string }>(
-  program: Effect.Effect<A, E>,
+export function messageOf(error: GpxProgramError): string {
+  switch (error._tag) {
+    case "TimeoutError":
+      return "The service took too long to answer.";
+    case "ServiceRejected":
+      return error.status >= 500
+        ? "The service is not available right now."
+        : "The service rejected the request.";
+    default:
+      return error.message;
+  }
+}
+
+export async function runToResult<A>(
+  program: Effect.Effect<A, GpxProgramError>,
 ): Promise<ProgramResult<A>> {
   return Effect.runPromise(
     program.pipe(
       Effect.match({
-        onFailure: (error) => ({ ok: false as const, message: error.message }),
+        onFailure: (error) => ({
+          ok: false as const,
+          message: messageOf(error),
+        }),
         onSuccess: (value) => ({ ok: true as const, value }),
       }),
       Effect.catchDefect(() =>

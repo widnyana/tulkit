@@ -2,14 +2,20 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { DOMParser as XmldomDOMParser } from "@xmldom/xmldom";
-import { Effect } from "effect";
+import { Duration, Effect } from "effect";
 import {
+  FileReadFailure,
   GpxParseFailure,
   importMapsLink,
+  InvalidInput,
+  InvalidPayload,
   MapsLinkFailure,
+  messageOf,
   parseGpxText,
   readGpxFile,
   runToResult,
+  ServiceRejected,
+  ServiceUnavailable,
 } from "./effects.ts";
 
 (globalThis as { DOMParser?: typeof DOMParser }).DOMParser =
@@ -177,5 +183,119 @@ describe("runToResult", () => {
     assert.ok(!result.ok);
     if (result.ok) return;
     assert.equal(typeof result.message, "string");
+  });
+});
+
+describe("runToResult errors", () => {
+  it("translates ServiceUnavailable to its message", async () => {
+    const result = await runToResult(
+      Effect.fail(new ServiceUnavailable({ message: "The API is offline." })),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "The API is offline.");
+  });
+
+  it("translates a 500 ServiceRejected to the server-down message", async () => {
+    const result = await runToResult(
+      Effect.fail(
+        new ServiceRejected({ status: 500, message: "Internal failure" }),
+      ),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "The service is not available right now.");
+  });
+
+  it("translates a 400 ServiceRejected to the rejection message", async () => {
+    const result = await runToResult(
+      Effect.fail(new ServiceRejected({ status: 400, message: "Bad request" })),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "The service rejected the request.");
+  });
+
+  it("translates InvalidPayload to its message", async () => {
+    const result = await runToResult(
+      Effect.fail(new InvalidPayload({ message: "Malformed payload." })),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "Malformed payload.");
+  });
+
+  it("translates InvalidInput to its message", async () => {
+    const result = await runToResult(
+      Effect.fail(new InvalidInput({ message: "That input is invalid." })),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "That input is invalid.");
+  });
+
+  it("translates FileReadFailure to its message", async () => {
+    const result = await runToResult(
+      Effect.fail(
+        new FileReadFailure({ message: "Could not read that file." }),
+      ),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "Could not read that file.");
+  });
+
+  it("translates GpxParseFailure to its message", async () => {
+    const result = await runToResult(
+      Effect.fail(new GpxParseFailure({ message: "Not a GPX file." })),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "Not a GPX file.");
+  });
+
+  it("translates MapsLinkFailure to its message", async () => {
+    const result = await runToResult(
+      Effect.fail(
+        new MapsLinkFailure({ message: "No coordinates in that link." }),
+      ),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "No coordinates in that link.");
+  });
+
+  it("translates a timeout to the timeout message", async () => {
+    const result = await runToResult(
+      Effect.timeout(Effect.sleep("50 millis"), Duration.millis(1)),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(result.message, "The service took too long to answer.");
+  });
+
+  it("falls back to the unexpected error message on a defect", async () => {
+    const result = await runToResult(
+      Effect.sync(() => {
+        throw new Error("boom");
+      }),
+    );
+    assert.equal(result.ok, false);
+    if (result.ok) return;
+    assert.equal(
+      result.message,
+      "Unexpected error. Check the browser console.",
+    );
+  });
+
+  it("exposes messageOf for the tagged errors", async () => {
+    assert.equal(
+      messageOf(new ServiceUnavailable({ message: "Offline." })),
+      "Offline.",
+    );
+    assert.equal(
+      messageOf(new ServiceRejected({ status: 503, message: "Unavailable" })),
+      "The service is not available right now.",
+    );
   });
 });
