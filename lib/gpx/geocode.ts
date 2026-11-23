@@ -1,3 +1,11 @@
+import { Effect } from "effect";
+import { type GpxRequestError, InvalidPayload } from "./errors.ts";
+import {
+  DEFAULT_REQUEST_POLICY,
+  type RequestPolicy,
+  requestJson,
+} from "./http.ts";
+
 const NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search";
 const RESULT_LIMIT = 5;
 
@@ -24,33 +32,36 @@ function toPlaceResult(entry: NominatimEntry): PlaceResult | null {
   return { lat, lon, label };
 }
 
-export async function searchPlace(
+export function searchPlace(
   query: string,
   signal?: AbortSignal,
-): Promise<PlaceResult[]> {
+  policy: RequestPolicy = DEFAULT_REQUEST_POLICY,
+): Effect.Effect<PlaceResult[], GpxRequestError> {
   const trimmed = query.trim();
-  if (trimmed === "") return [];
+  if (trimmed === "") return Effect.succeed([]);
 
   const url = new URL(NOMINATIM_ENDPOINT);
   url.searchParams.set("format", "jsonv2");
   url.searchParams.set("q", trimmed);
   url.searchParams.set("limit", String(RESULT_LIMIT));
 
-  try {
-    const response = await fetch(url, { signal });
-    if (!response.ok) return [];
+  return requestJson(url, { signal }, policy).pipe(
+    Effect.flatMap((data) => {
+      if (!Array.isArray(data)) {
+        return Effect.fail(
+          new InvalidPayload({
+            message: "The service returned an invalid place list.",
+          }),
+        );
+      }
 
-    const data: unknown = await response.json();
-    if (!Array.isArray(data)) return [];
-
-    const results: PlaceResult[] = [];
-    for (const entry of data) {
-      if (typeof entry !== "object" || entry === null) continue;
-      const result = toPlaceResult(entry as NominatimEntry);
-      if (result) results.push(result);
-    }
-    return results;
-  } catch {
-    return [];
-  }
+      const results: PlaceResult[] = [];
+      for (const entry of data) {
+        if (typeof entry !== "object" || entry === null) continue;
+        const result = toPlaceResult(entry as NominatimEntry);
+        if (result) results.push(result);
+      }
+      return Effect.succeed(results);
+    }),
+  );
 }

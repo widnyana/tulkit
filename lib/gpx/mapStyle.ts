@@ -1,8 +1,15 @@
 "use client";
 
+import { Effect } from "effect";
 import type { StyleSpecification } from "maplibre-gl";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import type { GpxRequestError } from "./errors.ts";
+import {
+  DEFAULT_REQUEST_POLICY,
+  type RequestPolicy,
+  requestJson,
+} from "./http.ts";
 
 export const MAP_STYLE_LIGHT = "https://tiles.openfreemap.org/styles/liberty";
 
@@ -187,15 +194,12 @@ function darkenStyle(style: StyleSpecification): StyleSpecification {
 
 let darkStyleRequest: Promise<StyleSpecification | null> | null = null;
 
-async function requestDarkStyle(): Promise<StyleSpecification | null> {
-  try {
-    const response = await fetch(MAP_STYLE_LIGHT);
-    if (!response.ok) return null;
-    const base = (await response.json()) as StyleSpecification;
-    return darkenStyle(base);
-  } catch {
-    return null;
-  }
+function requestDarkStyle(
+  policy: RequestPolicy = DEFAULT_REQUEST_POLICY,
+): Effect.Effect<StyleSpecification | null, GpxRequestError> {
+  return requestJson(MAP_STYLE_LIGHT, {}, policy).pipe(
+    Effect.map((data) => darkenStyle(data as StyleSpecification)),
+  );
 }
 
 export function useMapStyle(): string | StyleSpecification {
@@ -210,7 +214,9 @@ export function useMapStyle(): string | StyleSpecification {
       setStyle(MAP_STYLE_LIGHT);
       return;
     }
-    darkStyleRequest ??= requestDarkStyle();
+    darkStyleRequest ??= Effect.runPromise(
+      requestDarkStyle().pipe(Effect.catch(() => Effect.succeed(null))),
+    );
     void darkStyleRequest.then((next) => {
       if (!cancelled) setStyle(next ?? MAP_STYLE_LIGHT);
     });

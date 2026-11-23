@@ -16,10 +16,11 @@ import {
 } from "react";
 import { LocateFixed, Search } from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
+import { Effect } from "effect";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
 import { fetchElevations } from "@/lib/gpx/elevation";
 import { type PlaceResult, searchPlace } from "@/lib/gpx/geocode";
-import { fetchRoadRoute, snapToRoad } from "@/lib/gpx/routing";
+import { fetchRoadRoute, type RoadSnap, snapToRoad } from "@/lib/gpx/routing";
 import { routeToGpx } from "@/lib/gpx/serialize";
 import {
   generateGpxId,
@@ -159,7 +160,11 @@ const PLAN_NOTICES = {
 async function attachElevations(
   points: ReadonlyArray<LatLon>,
 ): Promise<LatLon[]> {
-  const elevations = await fetchElevations(points);
+  const elevations = await Effect.runPromise(
+    fetchElevations(points).pipe(
+      Effect.catch(() => Effect.succeed(points.map(() => null))),
+    ),
+  );
   return points.map((point, index) => {
     const ele = elevations[index];
     return typeof ele === "number" ? { ...point, ele } : point;
@@ -400,7 +405,6 @@ function GpxViewContent() {
   const appliedSrc = useRef<string | null>(null);
   useEffect(() => {
     if (srcParam === null || appliedSrc.current === srcParam) return;
-    appliedSrc.current = srcParam;
     const allowed =
       srcParam.startsWith("/") ||
       srcParam.startsWith("http://") ||
@@ -419,6 +423,7 @@ function GpxViewContent() {
         }
         const text = await response.text();
         if (cancelled) return;
+        appliedSrc.current = srcParam;
         setRawInput(text);
         parseInto(text);
       } catch {
@@ -622,7 +627,11 @@ function GpxViewContent() {
     setSnapStatus("loading");
 
     const timer = setTimeout(() => {
-      void fetchRoadRoute(planPoints, planMode).then((route) => {
+      void Effect.runPromise(
+        fetchRoadRoute(planPoints, planMode).pipe(
+          Effect.catch(() => Effect.succeed(null)),
+        ),
+      ).then((route) => {
         if (snapRequestId.current !== requestId) return;
         setSnappedPath(route);
         setSnapStatus(route === null ? "failed" : "ok");
@@ -691,7 +700,17 @@ function GpxViewContent() {
         }
       }
 
-      const snap = await snapToRoad(point, planMode);
+      const snap = await Effect.runPromise(
+        snapToRoad(point, planMode).pipe(
+          Effect.catch(() =>
+            Effect.succeed<RoadSnap>({
+              point: null,
+              distance: null,
+              reason: "unavailable",
+            }),
+          ),
+        ),
+      );
       if (snap.reason === "no-road") {
         showPlanNotice(PLAN_NOTICES.noRoad);
         return;
@@ -755,7 +774,11 @@ function GpxViewContent() {
     const controller = new AbortController();
     placeSearchAbort.current = controller;
     setPlaceSearching(true);
-    void searchPlace(query, controller.signal).then((results) => {
+    void Effect.runPromise(
+      searchPlace(query, controller.signal).pipe(
+        Effect.catch(() => Effect.succeed<PlaceResult[]>([])),
+      ),
+    ).then((results) => {
       if (controller.signal.aborted) return;
       setPlaceResults(results);
       setPlaceSearching(false);
@@ -1147,9 +1170,9 @@ function GpxViewContent() {
                   )}
                   {placeResults.length > 0 && (
                     <div className="space-y-1 rounded-md border border-border p-1">
-                      {placeResults.map((result, index) => (
+                      {placeResults.map((result) => (
                         <button
-                          key={`${index}-${result.lat}-${result.lon}`}
+                          key={`${result.lat}-${result.lon}-${result.label}`}
                           type="button"
                           onClick={() => handlePlaceSelect(result)}
                           className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-muted"
@@ -1227,7 +1250,7 @@ function GpxViewContent() {
                       <tbody>
                         {planPoints.map((point, index) => (
                           <tr
-                            key={`${index}-${point.lat}-${point.lon}`}
+                            key={`${point.lat}-${point.lon}`}
                             className={`border-t border-border ${index % 2 === 1 ? "bg-muted/30" : ""}`}
                           >
                             <td className="px-3 py-2">{index + 1}</td>

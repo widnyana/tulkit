@@ -1,4 +1,11 @@
+import { Effect } from "effect";
 import type { LatLon } from "../../app/gpx/types.ts";
+import { type GpxRequestError, InvalidPayload } from "./errors.ts";
+import {
+  DEFAULT_REQUEST_POLICY,
+  type RequestPolicy,
+  requestJson,
+} from "./http.ts";
 
 const ELEVATION_ENDPOINT = "/api/gpx/elevation";
 const MAX_ELEVATION_POINTS = 2000;
@@ -7,34 +14,43 @@ interface ElevationResponse {
   readonly elevations?: ReadonlyArray<number | null> | null;
 }
 
-export async function fetchElevations(
+export function fetchElevations(
   points: ReadonlyArray<LatLon>,
-): Promise<(number | null)[]> {
-  const unavailable = points.map(() => null);
-  if (points.length === 0 || points.length > MAX_ELEVATION_POINTS) {
-    return unavailable;
+  policy: RequestPolicy = DEFAULT_REQUEST_POLICY,
+): Effect.Effect<(number | null)[], GpxRequestError> {
+  if (points.length === 0) {
+    return Effect.succeed([]);
+  }
+  if (points.length > MAX_ELEVATION_POINTS) {
+    return Effect.succeed(points.map(() => null));
   }
 
-  try {
-    const response = await fetch(ELEVATION_ENDPOINT, {
+  return requestJson(
+    ELEVATION_ENDPOINT,
+    {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         points: points.map((point) => ({ lat: point.lat, lon: point.lon })),
       }),
-    });
-    if (!response.ok) return unavailable;
+    },
+    policy,
+  ).pipe(
+    Effect.flatMap((data) => {
+      const { elevations } = data as ElevationResponse;
+      if (!Array.isArray(elevations) || elevations.length !== points.length) {
+        return Effect.fail(
+          new InvalidPayload({
+            message: "The service returned misaligned elevations.",
+          }),
+        );
+      }
 
-    const data: ElevationResponse = await response.json();
-    const { elevations } = data;
-    if (!Array.isArray(elevations) || elevations.length !== points.length) {
-      return unavailable;
-    }
-
-    return elevations.map((value) =>
-      typeof value === "number" && Number.isFinite(value) ? value : null,
-    );
-  } catch {
-    return unavailable;
-  }
+      return Effect.succeed(
+        elevations.map((value) =>
+          typeof value === "number" && Number.isFinite(value) ? value : null,
+        ),
+      );
+    }),
+  );
 }

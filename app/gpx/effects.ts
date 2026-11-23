@@ -1,4 +1,5 @@
-import { type Cause, Data, Effect } from "effect";
+import { Data, Effect } from "effect";
+import type { GpxRequestError } from "../../lib/gpx/errors.ts";
 import {
   isShortMapsLink,
   parseMapsTravelMode,
@@ -7,6 +8,13 @@ import {
 import { isParseError, parseGpx } from "../../lib/gpx/parse.ts";
 import { fetchRoadRoute } from "../../lib/gpx/routing.ts";
 import type { LatLon, MapsWaypoint, ParsedGpx } from "./types";
+
+export {
+  InvalidInput,
+  InvalidPayload,
+  ServiceRejected,
+  ServiceUnavailable,
+} from "../../lib/gpx/errors.ts";
 
 export class FileReadFailure extends Data.TaggedError("FileReadFailure")<{
   readonly message: string;
@@ -20,32 +28,11 @@ export class MapsLinkFailure extends Data.TaggedError("MapsLinkFailure")<{
   readonly message: string;
 }> {}
 
-export class ServiceUnavailable extends Data.TaggedError("ServiceUnavailable")<{
-  readonly message: string;
-}> {}
-
-export class ServiceRejected extends Data.TaggedError("ServiceRejected")<{
-  readonly status: number;
-  readonly message: string;
-}> {}
-
-export class InvalidPayload extends Data.TaggedError("InvalidPayload")<{
-  readonly message: string;
-}> {}
-
-export class InvalidInput extends Data.TaggedError("InvalidInput")<{
-  readonly message: string;
-}> {}
-
 export type GpxProgramError =
   | FileReadFailure
   | GpxParseFailure
   | MapsLinkFailure
-  | ServiceUnavailable
-  | ServiceRejected
-  | InvalidPayload
-  | InvalidInput
-  | Cause.TimeoutError;
+  | GpxRequestError;
 
 export type ProgramResult<A> =
   | { readonly ok: true; readonly value: A }
@@ -123,7 +110,9 @@ export function importMapsLink(
     const travelMode = parseMapsTravelMode(targetUrl);
     const route =
       travelMode && parsed.length >= 2
-        ? yield* Effect.promise(() => fetchRoadRoute(parsed, travelMode))
+        ? yield* fetchRoadRoute(parsed, travelMode).pipe(
+            Effect.catch(() => Effect.succeed(null)),
+          )
         : null;
     return { waypoints: parsed, route };
   });
