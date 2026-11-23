@@ -36,3 +36,23 @@ export function computeBounds(
 export function trackSegmentCount(parsed: ParsedGpx): number {
   return parsed.tracks.reduce((n, t) => n + t.segments.length, 0);
 }
+
+export function pathEndpoints(
+  parsed: ParsedGpx,
+): { start: LatLon; end: LatLon } | null {
+  const segments = parsed.tracks.flatMap((track) =>
+    track.segments.filter((segment) => segment.length > 0),
+  );
+  const trackStart = segments[0]?.[0];
+  const trackEnd = segments[segments.length - 1]?.at(-1);
+  if (trackStart && trackEnd) return { start: trackStart, end: trackEnd };
+
+  const routePoints = parsed.routes.flatMap((route) => route.points);
+  const routeStart = routePoints[0];
+  const routeEnd = routePoints[routePoints.length - 1];
+  if (routePoints.length >= 2 && routeStart && routeEnd) {
+    return { start: routeStart, end: routeEnd };
+  }
+
+  return null;
+}

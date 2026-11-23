@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { allPoints, computeBounds, trackSegmentCount } from "./utils.ts";
+import {
+  allPoints,
+  computeBounds,
+  pathEndpoints,
+  trackSegmentCount,
+} from "./utils.ts";
 import type { ParsedGpx } from "./types.ts";
 
 const empty: ParsedGpx = { waypoints: [], routes: [], tracks: [], skipped: 0 };
@@ -67,5 +72,69 @@ describe("trackSegmentCount", () => {
 
   it("is zero when there are no tracks", () => {
     assert.equal(trackSegmentCount(empty), 0);
+  });
+});
+
+describe("pathEndpoints", () => {
+  it("uses the first point of the first segment and the last point of the last", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      tracks: [
+        {
+          segments: [
+            [
+              { lat: 1, lon: 1 },
+              { lat: 2, lon: 2 },
+            ],
+            [{ lat: 3, lon: 3 }],
+          ],
+        },
+        { segments: [[{ lat: 9, lon: 9 }]] },
+      ],
+    };
+    assert.deepEqual(pathEndpoints(parsed), {
+      start: { lat: 1, lon: 1 },
+      end: { lat: 9, lon: 9 },
+    });
+  });
+
+  it("skips empty segments before picking the endpoints", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      tracks: [{ segments: [[], [{ lat: 5, lon: 5 }], []] }],
+    };
+    assert.deepEqual(pathEndpoints(parsed), {
+      start: { lat: 5, lon: 5 },
+      end: { lat: 5, lon: 5 },
+    });
+  });
+
+  it("falls back to route points when there is no track", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [
+        {
+          points: [
+            { lat: 1, lon: 1 },
+            { lat: 2, lon: 2 },
+          ],
+        },
+      ],
+    };
+    assert.deepEqual(pathEndpoints(parsed), {
+      start: { lat: 1, lon: 1 },
+      end: { lat: 2, lon: 2 },
+    });
+  });
+
+  it("returns null when only waypoints or a single route point exist", () => {
+    assert.equal(
+      pathEndpoints({ ...empty, waypoints: [{ lat: 1, lon: 1 }] }),
+      null,
+    );
+    assert.equal(
+      pathEndpoints({ ...empty, routes: [{ points: [{ lat: 1, lon: 1 }] }] }),
+      null,
+    );
   });
 });
