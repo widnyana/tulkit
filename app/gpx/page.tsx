@@ -4,9 +4,23 @@ import "maplibre-gl/dist/maplibre-gl.css";
 
 import { saveAs } from "file-saver";
 import Link from "next/link";
-import { useId, useState } from "react";
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from "react";
+import { useDebouncedCallback } from "use-debounce";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
 import { waypointsToGpx } from "@/lib/gpx/serialize";
+import {
+  generateGpxId,
+  loadGpxEntry,
+  removeGpxEntry,
+  saveGpxEntry,
+} from "@/lib/gpx/storage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -19,6 +33,7 @@ import {
   runToResult,
 } from "./effects";
 import type { MapsWaypoint, ParsedGpx } from "./types";
+import { useGpxId } from "./useGpxId";
 import { trackSegmentCount } from "./utils";
 
 type ViewState =
@@ -38,6 +53,14 @@ type CsvImportState =
   | { kind: "success"; result: CsvParseResult };
 
 export default function GpxViewPage() {
+  return (
+    <Suspense fallback={null}>
+      <GpxViewContent />
+    </Suspense>
+  );
+}
+
+function GpxViewContent() {
   const [rawInput, setRawInput] = useState("");
   const [state, setState] = useState<ViewState>({ kind: "empty" });
   const [mapsUrlInput, setMapsUrlInput] = useState("");
@@ -49,26 +72,62 @@ export default function GpxViewPage() {
   const fileInputId = useId();
   const mapsUrlInputId = useId();
 
-  const parseInto = (text: string) => {
-    if (text.trim() === "") {
-      setState({ kind: "empty" });
+  const [urlId, setUrlId] = useGpxId();
+  const currentId = useRef<string | null>(null);
+  const appliedUrlId = useRef<string | null>(null);
+
+  const persist = useDebouncedCallback((text: string) => {
+    if (text.trim() === "") return;
+    if (currentId.current === null) {
+      const id = generateGpxId();
+      currentId.current = id;
+      appliedUrlId.current = id;
+      saveGpxEntry(id, text);
+      setUrlId(id);
       return;
     }
-    void runToResult(parseGpxText(text)).then((result) => {
-      setState(
-        result.ok
-          ? { kind: "success", parsed: result.value }
-          : { kind: "error", message: result.message },
-      );
-    });
-  };
+    saveGpxEntry(currentId.current, text);
+  }, 400);
+
+  const parseInto = useCallback(
+    (text: string, onParsed?: (text: string) => void) => {
+      if (text.trim() === "") {
+        setState({ kind: "empty" });
+        return;
+      }
+      void runToResult(parseGpxText(text)).then((result) => {
+        setState(
+          result.ok
+            ? { kind: "success", parsed: result.value }
+            : { kind: "error", message: result.message },
+        );
+        if (result.ok) onParsed?.(text);
+      });
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!urlId || appliedUrlId.current === urlId) return;
+    const text = loadGpxEntry(urlId);
+    if (text === null) {
+      setUrlId(null);
+      return;
+    }
+    appliedUrlId.current = urlId;
+    currentId.current = urlId;
+    setRawInput(text);
+    parseInto(text);
+  }, [urlId, setUrlId, parseInto]);
 
   const handleTextChange = (value: string) => {
     setRawInput(value);
-    parseInto(value);
+    parseInto(value, persist);
   };
 
   const handleFileChange = async (file: File) => {
+    currentId.current = null;
+    appliedUrlId.current = null;
     setState({ kind: "loading" });
     const result = await runToResult(readGpxFile(file));
     if (!result.ok) {
@@ -77,9 +136,15 @@ export default function GpxViewPage() {
     }
     setRawInput(result.value.text);
     setState({ kind: "success", parsed: result.value.parsed });
+    persist(result.value.text);
   };
 
   const handleClear = () => {
+    if (currentId.current !== null) removeGpxEntry(currentId.current);
+    currentId.current = null;
+    appliedUrlId.current = null;
+    persist.cancel();
+    setUrlId(null);
     setRawInput("");
     setState({ kind: "empty" });
   };
