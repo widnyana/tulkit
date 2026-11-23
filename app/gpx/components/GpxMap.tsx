@@ -418,6 +418,11 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
         });
         map = instance;
 
+        instance.on("styleimagemissing", (event) => {
+          if (instance.hasImage(event.id)) return;
+          instance.addImage(event.id, new ImageData(1, 1));
+        });
+
         instance.addControl(
           new NavigationControl({ showCompass: true, visualizePitch: false }),
           "top-right",
