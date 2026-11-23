@@ -1,15 +1,15 @@
 import { Effect, Result, Schema } from "effect";
 import { InvalidPayload } from "./errors.ts";
 
-export const RoutingResponseSchema = Schema.Struct({
+const RoutingResponseSchema = Schema.Struct({
   coordinates: Schema.optional(
     Schema.NullOr(Schema.Array(Schema.Tuple([Schema.Number, Schema.Number]))),
   ),
 });
 
-export type RoutingResponse = Schema.Schema.Type<typeof RoutingResponseSchema>;
+type RoutingResponse = Schema.Schema.Type<typeof RoutingResponseSchema>;
 
-export const SnapResponseSchema = Schema.Struct({
+const SnapResponseSchema = Schema.Struct({
   point: Schema.optional(
     Schema.NullOr(
       Schema.Struct({
@@ -22,23 +22,21 @@ export const SnapResponseSchema = Schema.Struct({
   reason: Schema.optional(Schema.Unknown),
 });
 
-export type SnapResponse = Schema.Schema.Type<typeof SnapResponseSchema>;
+type SnapResponse = Schema.Schema.Type<typeof SnapResponseSchema>;
 
-export const ElevationResponseSchema = Schema.Struct({
+const ElevationResponseSchema = Schema.Struct({
   elevations: Schema.optional(
     Schema.NullOr(Schema.Array(Schema.NullOr(Schema.Number))),
   ),
 });
 
-export type ElevationResponse = Schema.Schema.Type<
-  typeof ElevationResponseSchema
->;
+type ElevationResponse = Schema.Schema.Type<typeof ElevationResponseSchema>;
 
-export const PlaceListSchema = Schema.Array(Schema.Unknown);
+const PlaceListSchema = Schema.Array(Schema.Unknown);
 
-export type PlaceList = Schema.Schema.Type<typeof PlaceListSchema>;
+type PlaceList = Schema.Schema.Type<typeof PlaceListSchema>;
 
-export const PlaceEntrySchema = Schema.Struct({
+const PlaceEntrySchema = Schema.Struct({
   lat: Schema.optional(Schema.Unknown),
   lon: Schema.optional(Schema.Unknown),
   display_name: Schema.optional(Schema.Unknown),
@@ -46,7 +44,7 @@ export const PlaceEntrySchema = Schema.Struct({
 
 export type PlaceEntry = Schema.Schema.Type<typeof PlaceEntrySchema>;
 
-export const StoredEntrySchema = Schema.Struct({
+const StoredEntrySchema = Schema.Struct({
   rawText: Schema.String,
   savedAt: Schema.Number,
 });

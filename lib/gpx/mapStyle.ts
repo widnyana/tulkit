@@ -11,7 +11,7 @@ import {
   requestJson,
 } from "./http.ts";
 
-export const MAP_STYLE_LIGHT = "https://tiles.openfreemap.org/styles/liberty";
+const MAP_STYLE_LIGHT = "https://tiles.openfreemap.org/styles/liberty";
 
 type Rgba = { r: number; g: number; b: number; a: number };
 

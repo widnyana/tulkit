@@ -18,9 +18,9 @@ const SNAP_ENDPOINT = "/api/gpx/snap";
 const MIN_ROUTE_POINTS = 2;
 const MAX_ROUTE_POINTS = 100;
 
-export type SnapReason = "ok" | "no-road" | "unavailable";
+type SnapReason = "ok" | "no-road" | "unavailable";
 
-export interface RoadSnap {
+interface RoadSnap {
   point: LatLon | null;
   distance: number | null;
   reason: SnapReason;

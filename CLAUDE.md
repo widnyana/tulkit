@@ -69,6 +69,24 @@ Shared helpers: `lib/site.ts` (site metadata constants), `lib/utils.ts` (`cn()` 
 
 Tailwind v4 is configured CSS-first in `app/globals.css` (`@import "tailwindcss"` + `@theme`); there is no `tailwind.config.js`. Fonts: Geist Sans/Mono via `next/font`.
 
+## GPX I/O boundary
+
+`app/gpx` and `lib/gpx` are the only modules that import `effect`, and the boundary
+has four parts:
+
+- every network call goes through `lib/gpx/http.ts`; it returns an `Effect` with a typed
+  error from `lib/gpx/errors.ts`, retries transient failures with a bounded backoff, and
+  passes the effect's `AbortSignal` to `fetch`, so interrupting the fiber cancels the
+  request
+- untrusted payloads are decoded by `lib/gpx/schemas.ts`; a mismatch is `InvalidPayload`,
+  never a silent null
+- `runToResult` in `app/gpx/effects.ts` is the only place a typed failure becomes text
+  for the user
+- the page keeps one fiber per request and interrupts it before starting the next
+
+A new fetch without a typed error, a `catch { return null }` around network I/O, or an
+`effect` import inside `app/api` is a defect.
+
 ## Conventions
 
 **Adding a tool** = (1) new entry in `lib/tools.ts`, (2) `app/<href>/` folder with the file set above. Without the registry entry the tool won't appear on the homepage, sitemap, or metadata.
