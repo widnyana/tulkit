@@ -181,6 +181,7 @@ class ZoomToContentControl {
 
 function addLineLayer(map: MapInstance, group: LineGroup, tokens: ChartTokens) {
   const sourceId = `${group.id}-source`;
+  if (map.getSource(sourceId)) return;
   map.addSource(sourceId, {
     type: "geojson",
     data: {
@@ -230,6 +231,7 @@ function addDirectionLayer(
   tokens: ChartTokens,
 ) {
   if (groups.length === 0) return;
+  if (map.getSource(DIRECTION_SOURCE_ID)) return;
 
   if (!map.hasImage(ARROW_IMAGE_ID)) {
     const canvas = document.createElement("canvas");
@@ -317,6 +319,7 @@ function addMarkLabelLayer(
   marks: DistanceMarks,
   labelPaint: LabelPaint,
 ) {
+  if (map.getSource(MARK_SOURCE_ID)) return;
   map.addSource(MARK_SOURCE_ID, {
     type: "geojson",
     data: {
@@ -358,6 +361,7 @@ function addNamedPointLayer(
   named: NamedPointGroup,
   labelPaint: LabelPaint,
 ) {
+  if (map.getSource(NAMED_SOURCE_ID)) return;
   map.addSource(NAMED_SOURCE_ID, {
     type: "geojson",
     data: {
@@ -483,6 +487,7 @@ function addWaypointSourceAndLayers(
   tokens: ChartTokens,
 ) {
   if (parsed.waypoints.length === 0) return;
+  if (map.getSource(WAYPOINT_SOURCE_ID)) return;
 
   const groups = poiGroupIndex(poiGroups);
 
