@@ -835,28 +835,37 @@ export function GpxMap({
     beginStyleSwitch(map);
   }, [mapStyle]);
 
+  function finishStyleSwitch(map: MapInstance, target: typeof mapStyle) {
+    appliedStyleRef.current = target;
+    if (pendingStyleRef.current !== target) {
+      beginStyleSwitch(map);
+      return;
+    }
+    styleSwitchInFlightRef.current = false;
+    map.setMissingStyleImageResolver((id) => {
+      if (map.hasImage(id)) return;
+      map.addImage(id, new ImageData(1, 1));
+    });
+    const tokens = readChartTokens();
+    const labelPaint: LabelPaint = {
+      text: tokens.foreground,
+      halo: tokens.background,
+    };
+    applyMapContent(map, parsedRef.current, legendRef.current, tokens, labelPaint);
+  }
+
   function beginStyleSwitch(map: MapInstance) {
     const target = pendingStyleRef.current;
     styleSwitchInFlightRef.current = true;
     map.setStyle(target);
-    map.once("style.load", () => {
-      appliedStyleRef.current = target;
-      if (pendingStyleRef.current !== target) {
-        beginStyleSwitch(map);
-        return;
-      }
-      styleSwitchInFlightRef.current = false;
-      map.setMissingStyleImageResolver((id) => {
-        if (map.hasImage(id)) return;
-        map.addImage(id, new ImageData(1, 1));
-      });
-      const tokens = readChartTokens();
-      const labelPaint: LabelPaint = {
-        text: tokens.foreground,
-        halo: tokens.background,
-      };
-      applyMapContent(map, parsedRef.current, legendRef.current, tokens, labelPaint);
-    });
+    // A style close enough to apply as a diff (ours: same layers, different
+    // paint) patches in place and never fires style.load, so a full reload
+    // is the only case that needs the event.
+    if (map.isStyleLoaded()) {
+      finishStyleSwitch(map, target);
+    } else {
+      map.once("style.load", () => finishStyleSwitch(map, target));
+    }
   }
 
   useEffect(() => {
