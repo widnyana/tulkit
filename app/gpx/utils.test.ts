@@ -8,6 +8,7 @@ import {
   formatDistance,
   LINE_PALETTE,
   lineGroups,
+  pathDistanceMeters,
   pathEndpoints,
   safeExternalHref,
   totalDistanceMeters,
@@ -98,6 +99,23 @@ describe("distanceMeters", () => {
       distanceMeters({ lat: Number.NaN, lon: 0 }, { lat: 1, lon: 1 }),
       0,
     );
+  });
+});
+
+describe("pathDistanceMeters", () => {
+  it("sums every leg and is zero for fewer than two points", () => {
+    const points = [
+      { lat: 1, lon: 2 },
+      { lat: 3, lon: 4 },
+      { lat: 5, lon: 6 },
+    ];
+    const legs =
+      distanceMeters(points[0], points[1]) +
+      distanceMeters(points[1], points[2]);
+
+    assert.ok(Math.abs(pathDistanceMeters(points) - legs) < 1e-6);
+    assert.equal(pathDistanceMeters([]), 0);
+    assert.equal(pathDistanceMeters([points[0]]), 0);
   });
 });
 

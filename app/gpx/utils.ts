@@ -41,12 +41,16 @@ export function distanceMeters(a: LatLon, b: LatLon): number {
   return 2 * EARTH_RADIUS_METERS * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-function segmentDistanceMeters(segment: LatLon[]): number {
+export function pathDistanceMeters(points: ReadonlyArray<LatLon>): number {
   let total = 0;
-  for (let index = 1; index < segment.length; index++) {
-    total += distanceMeters(segment[index - 1], segment[index]);
+  for (let index = 1; index < points.length; index++) {
+    total += distanceMeters(points[index - 1], points[index]);
   }
   return total;
+}
+
+function segmentDistanceMeters(segment: LatLon[]): number {
+  return pathDistanceMeters(segment);
 }
 
 export function lineGroups(parsed: ParsedGpx): LineGroup[] {

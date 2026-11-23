@@ -7,6 +7,18 @@ interface SerializableWaypoint {
   desc?: string;
 }
 
+export interface RoutePlanPoint {
+  lat: number;
+  lon: number;
+  name?: string;
+}
+
+export interface RoutePlanExport {
+  name?: string;
+  controlPoints: ReadonlyArray<RoutePlanPoint>;
+  snappedPath?: ReadonlyArray<RoutePlanPoint> | null;
+}
+
 export function waypointsToGpx(points: SerializableWaypoint[]): string {
   const { Point } = BaseBuilder.MODELS;
   const builder = new BaseBuilder().setWayPoints(
@@ -18,6 +30,37 @@ export function waypointsToGpx(points: SerializableWaypoint[]): string {
         }),
     ),
   );
+  const data = builder.toObject();
+  data.attributes = { ...data.attributes, creator: "tulkit" };
+  return buildGPX(data);
+}
+
+export function routeToGpx(plan: RoutePlanExport): string {
+  const { Metadata, Point, Route, Segment, Track } = BaseBuilder.MODELS;
+  const trimmedName = plan.name?.trim() ?? "";
+  const toPoint = (point: RoutePlanPoint) =>
+    new Point(point.lat, point.lon, { name: point.name });
+
+  const builder = new BaseBuilder().setRoutes([
+    new Route({
+      name: trimmedName || "Route",
+      rtept: plan.controlPoints.map(toPoint),
+    }),
+  ]);
+
+  if (trimmedName) {
+    builder.setMetadata(new Metadata({ name: trimmedName }));
+  }
+
+  const snappedPath = plan.snappedPath;
+  if (snappedPath && snappedPath.length >= 2) {
+    builder.setTracks([
+      new Track([new Segment(snappedPath.map(toPoint))], {
+        name: trimmedName || "Route",
+      }),
+    ]);
+  }
+
   const data = builder.toObject();
   data.attributes = { ...data.attributes, creator: "tulkit" };
   return buildGPX(data);
