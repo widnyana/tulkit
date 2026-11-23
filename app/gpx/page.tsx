@@ -39,8 +39,9 @@ import {
   runToResult,
 } from "./effects";
 import type { LatLon, MapsWaypoint, ParsedGpx } from "./types";
+import type { TabValue } from "./tabState";
 import { useGpxId } from "./useGpxId";
-import { useQueryState } from "./useQueryState";
+import { useTabNavigation } from "./useTabNavigation";
 import {
   distanceMeters,
   formatDistance,
@@ -48,12 +49,12 @@ import {
   waypointsToParsedGpx,
 } from "./utils";
 
-const TAB_VALUES = ["view", "maps", "csv", "plan"] as const;
-type TabValue = (typeof TAB_VALUES)[number];
-
-function isTabValue(value: string): value is TabValue {
-  return (TAB_VALUES as readonly string[]).includes(value);
-}
+const TAB_VALUES = [
+  "view",
+  "maps",
+  "csv",
+  "plan",
+] as const satisfies readonly TabValue[];
 
 const TAB_LABELS: Record<TabValue, string> = {
   view: "View",
@@ -299,8 +300,7 @@ function GpxViewContent() {
   const planNameId = useId();
 
   const [urlId, setUrlId] = useGpxId();
-  const [rawTab, setTab] = useQueryState("tab", "view");
-  const tab: TabValue = isTabValue(rawTab) ? rawTab : "view";
+  const [tab, setTab] = useTabNavigation();
   const currentId = useRef<string | null>(null);
   const appliedUrlId = useRef<string | null>(null);
 
@@ -627,7 +627,14 @@ function GpxViewContent() {
           </p>
         </header>
 
-        <Tabs value={tab} onValueChange={setTab} className="tool-enter mt-6">
+        <Tabs
+          value={tab}
+          onValueChange={(value) => {
+            const next = TAB_VALUES.find((entry) => entry === value);
+            if (next) setTab(next);
+          }}
+          className="tool-enter mt-6"
+        >
           <TabsList className="grid w-full grid-cols-4">
             {TAB_VALUES.map((value) => (
               <TabsTrigger key={value} value={value}>
