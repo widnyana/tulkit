@@ -43,6 +43,9 @@ export function Footer() {
           >
             tip jar: github.com/sponsors/widnyana
           </a>
+          <p className="font-mono">
+            {`v${process.env.NEXT_PUBLIC_APP_VERSION} · ${process.env.NEXT_PUBLIC_COMMIT_SHA}`}
+          </p>
         </div>
       </div>
     </footer>
