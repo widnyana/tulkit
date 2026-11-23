@@ -475,10 +475,9 @@ function decoratePopup(popup: MapLibrePopup): MapLibrePopup {
   return popup;
 }
 
-function addWaypointLayers(
+function addWaypointSourceAndLayers(
   map: MapInstance,
   parsed: ParsedGpx,
-  PopupClass: typeof MapLibrePopup,
   labelPaint: LabelPaint,
   poiGroups: PoiGroup[],
   tokens: ChartTokens,
@@ -561,6 +560,14 @@ function addWaypointLayers(
       },
     });
   }
+}
+
+function attachWaypointInteractions(
+  map: MapInstance,
+  parsed: ParsedGpx,
+  PopupClass: typeof MapLibrePopup,
+) {
+  if (parsed.waypoints.length === 0) return;
 
   map.on("click", WAYPOINT_HIT_LAYER_ID, (event) => {
     const properties = event.features?.[0]?.properties ?? {};
@@ -585,6 +592,25 @@ function addWaypointLayers(
   map.on("mouseleave", WAYPOINT_HIT_LAYER_ID, () => {
     map.getCanvas().style.cursor = "";
   });
+}
+
+function applyMapContent(
+  map: MapInstance,
+  parsed: ParsedGpx,
+  legend: LegendModel,
+  tokens: ChartTokens,
+  labelPaint: LabelPaint,
+) {
+  const { markLabelsVisible, namedVisible } = legendVisibility(legend);
+  for (const group of legend.lines) addLineLayer(map, group, tokens);
+  addDirectionLayer(map, legend.lines, tokens);
+  addWaypointSourceAndLayers(map, parsed, labelPaint, legend.poiGroups, tokens);
+  if (markLabelsVisible && legend.marks) {
+    addMarkLabelLayer(map, legend.marks, labelPaint);
+  }
+  if (namedVisible && legend.namedPoints) {
+    addNamedPointLayer(map, legend.namedPoints, labelPaint);
+  }
 }
 
 function Swatch({
@@ -787,6 +813,44 @@ export function GpxMap({
   const popupClassRef = useRef<typeof MapLibrePopup | null>(null);
   const focusedPopupRef = useRef<MapLibrePopup | null>(null);
   const mapStyle = useMapStyle();
+  const mapStyleRef = useRef(mapStyle);
+  const skipStyleSwitchRef = useRef(true);
+  const parsedRef = useRef(parsed);
+  const legendRef = useRef(legend);
+
+  useEffect(() => {
+    mapStyleRef.current = mapStyle;
+  }, [mapStyle]);
+
+  useEffect(() => {
+    parsedRef.current = parsed;
+  }, [parsed]);
+
+  useEffect(() => {
+    legendRef.current = legend;
+  }, [legend]);
+
+  useEffect(() => {
+    if (skipStyleSwitchRef.current) {
+      skipStyleSwitchRef.current = false;
+      return;
+    }
+    const map = activeMapRef.current;
+    if (!map) return;
+    map.setStyle(mapStyle);
+    map.once("style.load", () => {
+      map.setMissingStyleImageResolver((id) => {
+        if (map.hasImage(id)) return;
+        map.addImage(id, new ImageData(1, 1));
+      });
+      const tokens = readChartTokens();
+      const labelPaint: LabelPaint = {
+        text: tokens.foreground,
+        halo: tokens.background,
+      };
+      applyMapContent(map, parsedRef.current, legendRef.current, tokens, labelPaint);
+    });
+  }, [mapStyle]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -800,7 +864,6 @@ export function GpxMap({
       text: tokens.foreground,
       halo: tokens.background,
     };
-    const { markLabelsVisible, namedVisible } = legendVisibility(legend);
 
     let map: MapInstance | undefined;
     let cancelled = false;
@@ -828,7 +891,7 @@ export function GpxMap({
         popupClassRef.current = Popup;
         const instance = new MapLibreMap({
           container,
-          style: mapStyle,
+          style: mapStyleRef.current,
           fadeDuration: 0,
         });
         map = instance;
@@ -901,23 +964,8 @@ export function GpxMap({
         instance.on("load", () => {
           if (cancelled) return;
 
-          for (const group of legend.lines)
-            addLineLayer(instance, group, tokens);
-          addDirectionLayer(instance, legend.lines, tokens);
-          addWaypointLayers(
-            instance,
-            parsed,
-            Popup,
-            labelPaint,
-            legend.poiGroups,
-            tokens,
-          );
-          if (markLabelsVisible && legend.marks) {
-            addMarkLabelLayer(instance, legend.marks, labelPaint);
-          }
-          if (namedVisible && legend.namedPoints) {
-            addNamedPointLayer(instance, legend.namedPoints, labelPaint);
-          }
+          applyMapContent(instance, parsed, legend, tokens, labelPaint);
+          attachWaypointInteractions(instance, parsed, Popup);
 
           const endpoints = legend.lines.length === 0 ? null : legend.endpoints;
           if (endpoints) {
@@ -928,7 +976,7 @@ export function GpxMap({
                 "S",
                 "Start - Finish",
                 "circle",
-                tokens.ring,
+                "var(--ring)",
                 `Start - Finish\n${formatCoordinate(endpoints.start)}\nLoop route`,
               );
             } else {
@@ -938,7 +986,7 @@ export function GpxMap({
                 "S",
                 "Start",
                 "circle",
-                tokens.ring,
+                "var(--ring)",
                 `Start\n${formatCoordinate(endpoints.start)}`,
               );
               addEndpointMarker(
@@ -947,7 +995,7 @@ export function GpxMap({
                 "F",
                 "Finish",
                 "square",
-                tokens.foreground,
+                "var(--foreground)",
                 `Finish\n${formatCoordinate(endpoints.end)}`,
               );
             }
@@ -1016,7 +1064,7 @@ export function GpxMap({
         delete testWindow.__gpxMap;
       }
     };
-  }, [parsed, mapStyle, legend]);
+  }, [parsed, legend]);
 
   useEffect(() => {
     const map = mapInstance;
