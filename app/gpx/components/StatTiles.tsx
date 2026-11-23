@@ -1,6 +1,6 @@
 import type { StatTile } from "../utils";
 
-/** Flat, bordered stat row — same tile idiom as the tire-pressure tool's Readout. */
+/** Flat, bordered stat row, same tile idiom as the tire-pressure tool's Readout. */
 export function StatTiles({ items }: { items: StatTile[] }) {
   if (items.length === 0) return null;
 

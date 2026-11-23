@@ -18,7 +18,7 @@ describe("public/maplibre-gl-worker.mjs", () => {
     assert.equal(
       stripSourcemap(vendored),
       stripSourcemap(installed),
-      "public/maplibre-gl-worker.mjs is stale — re-run: " +
+      "public/maplibre-gl-worker.mjs is stale, re-run: " +
         "cp node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs public/maplibre-gl-worker.mjs" +
         " then delete its trailing //# sourceMappingURL line.",
     );
