@@ -5,6 +5,8 @@ import { describe, it } from "node:test";
 
 describe("public/maplibre-gl-worker.mjs", () => {
   it("matches the worker bundle shipped by the installed maplibre-gl version", () => {
+    const stripSourcemap = (source: string) =>
+      source.replace(/\/\/# sourceMappingURL=.*$/m, "").trimEnd();
     const installedPath = createRequire(import.meta.url).resolve(
       "maplibre-gl/dist/maplibre-gl-worker.mjs",
     );
@@ -14,10 +16,11 @@ describe("public/maplibre-gl-worker.mjs", () => {
       "utf8",
     );
     assert.equal(
-      vendored,
-      installed,
+      stripSourcemap(vendored),
+      stripSourcemap(installed),
       "public/maplibre-gl-worker.mjs is stale — re-run: " +
-        "cp node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs public/maplibre-gl-worker.mjs",
+        "cp node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs public/maplibre-gl-worker.mjs" +
+        " then delete its trailing //# sourceMappingURL line.",
     );
   });
 });
