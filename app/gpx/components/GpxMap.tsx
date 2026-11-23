@@ -94,6 +94,50 @@ function endpointElement(
   return element;
 }
 
+function fitMapToContent(map: MapInstance, parsed: ParsedGpx): boolean {
+  const bounds = computeBounds(parsed);
+  if (!bounds) return false;
+  map.fitBounds(bounds, {
+    padding: { top: 48, bottom: 120, left: 48, right: 48 },
+    maxZoom: 14,
+    duration: 0,
+  });
+  return true;
+}
+
+class ZoomToContentControl {
+  private container: HTMLDivElement | undefined;
+
+  constructor(private readonly onZoom: () => void) {}
+
+  onAdd(): HTMLElement {
+    const container = document.createElement("div");
+    container.className = "maplibregl-ctrl maplibregl-ctrl-group";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute("aria-label", "Zoom to fit the route");
+    button.addEventListener("click", this.onZoom);
+
+    const icon = document.createElement("span");
+    icon.className = "maplibregl-ctrl-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.style.backgroundImage = `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="29" height="29" viewBox="0 0 29 29" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"><path d="M8 6H6a2 2 0 0 0-2 2v2"/><path d="M21 6h2a2 2 0 0 1 2 2v2"/><path d="M8 23H6a2 2 0 0 1-2-2v-2"/><path d="M21 23h2a2 2 0 0 0 2-2v-2"/></svg>',
+    )}")`;
+
+    button.appendChild(icon);
+    container.appendChild(button);
+    this.container = container;
+    return container;
+  }
+
+  onRemove(): void {
+    this.container?.remove();
+    this.container = undefined;
+  }
+}
+
 function addLineLayer(map: MapInstance, group: LineGroup) {
   const sourceId = `${group.id}-source`;
   map.addSource(sourceId, {
@@ -360,6 +404,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
           Marker,
           Popup,
           NavigationControl,
+          FullscreenControl,
           ScaleControl,
           config,
         } = await import("maplibre-gl");
@@ -377,6 +422,13 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
           new NavigationControl({ showCompass: true, visualizePitch: false }),
           "top-right",
         );
+        instance.addControl(new FullscreenControl(), "top-right");
+        if (computeBounds(parsed)) {
+          instance.addControl(
+            new ZoomToContentControl(() => fitMapToContent(instance, parsed)),
+            "top-right",
+          );
+        }
         instance.addControl(
           new ScaleControl({ unit: "metric", maxWidth: 100 }),
           "bottom-right",
@@ -456,14 +508,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
             );
           }
 
-          const bounds = computeBounds(parsed);
-          if (bounds) {
-            instance.fitBounds(bounds, {
-              padding: { top: 48, bottom: 120, left: 48, right: 48 },
-              maxZoom: 14,
-              duration: 0,
-            });
-          }
+          fitMapToContent(instance, parsed);
         });
       } catch {
         if (!cancelled) setMapFailed(true);
