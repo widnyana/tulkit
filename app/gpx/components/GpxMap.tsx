@@ -207,6 +207,7 @@ function addWaypointLayers(
     source: WAYPOINT_SOURCE_ID,
     layout: {
       "text-field": ["coalesce", ["get", "name"], ""],
+      "text-font": ["Noto Sans Regular"],
       "text-size": 12,
       "text-anchor": "top",
       "text-offset": [0, 0.9],
