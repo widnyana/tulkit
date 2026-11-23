@@ -11,6 +11,7 @@ import {
   requestJson,
 } from "./http.ts";
 import type { MapsTravelMode } from "./mapsLink.ts";
+import { decodeRouting, decodeSnap } from "./schemas.ts";
 
 const ROUTING_ENDPOINT = "/api/gpx/routing";
 const SNAP_ENDPOINT = "/api/gpx/snap";
@@ -23,16 +24,6 @@ export interface RoadSnap {
   point: LatLon | null;
   distance: number | null;
   reason: SnapReason;
-}
-
-interface RoutingResponse {
-  readonly coordinates?: ReadonlyArray<readonly [number, number]> | null;
-}
-
-interface SnapResponse {
-  readonly point?: { readonly lat?: number; readonly lon?: number } | null;
-  readonly distance?: number | null;
-  readonly reason?: unknown;
 }
 
 const isInRange = (value: number, min: number, max: number): boolean =>
@@ -63,11 +54,15 @@ export function fetchRoadRoute(
     },
     policy,
   ).pipe(
-    Effect.map((data) => {
-      const { coordinates } = data as RoutingResponse;
-      if (!Array.isArray(coordinates) || coordinates.length === 0) return null;
-      return coordinates.map(([lon, lat]) => ({ lat, lon }));
-    }),
+    Effect.flatMap((data) =>
+      decodeRouting(data).pipe(
+        Effect.map(({ coordinates }) =>
+          coordinates && coordinates.length > 0
+            ? coordinates.map(([lon, lat]) => ({ lat, lon }))
+            : null,
+        ),
+      ),
+    ),
   );
 }
 
@@ -98,40 +93,43 @@ export function snapToRoad(
     },
     policy,
   ).pipe(
-    Effect.flatMap((data) => {
-      const body = data as SnapResponse;
-      if (body.reason === "no-road") {
-        return Effect.succeed<RoadSnap>({
-          point: null,
-          distance: null,
-          reason: "no-road",
-        });
-      }
+    Effect.flatMap((data) =>
+      decodeSnap(data).pipe(
+        Effect.flatMap((body) => {
+          if (body.reason === "no-road") {
+            return Effect.succeed<RoadSnap>({
+              point: null,
+              distance: null,
+              reason: "no-road",
+            });
+          }
 
-      const snapped = body.point;
-      const { distance } = body;
-      if (
-        body.reason !== "ok" ||
-        !snapped ||
-        typeof snapped.lat !== "number" ||
-        typeof snapped.lon !== "number" ||
-        typeof distance !== "number" ||
-        !isInRange(snapped.lat, -90, 90) ||
-        !isInRange(snapped.lon, -180, 180) ||
-        !Number.isFinite(distance)
-      ) {
-        return Effect.fail(
-          new InvalidPayload({
-            message: "The service returned an invalid snap.",
-          }),
-        );
-      }
+          const snapped = body.point;
+          const distance = body.distance;
+          if (
+            body.reason !== "ok" ||
+            !snapped ||
+            typeof snapped.lat !== "number" ||
+            typeof snapped.lon !== "number" ||
+            typeof distance !== "number" ||
+            !isInRange(snapped.lat, -90, 90) ||
+            !isInRange(snapped.lon, -180, 180) ||
+            !Number.isFinite(distance)
+          ) {
+            return Effect.fail(
+              new InvalidPayload({
+                message: "The service returned an invalid snap.",
+              }),
+            );
+          }
 
-      return Effect.succeed<RoadSnap>({
-        point: { lat: snapped.lat, lon: snapped.lon },
-        distance,
-        reason: "ok",
-      });
-    }),
+          return Effect.succeed<RoadSnap>({
+            point: { lat: snapped.lat, lon: snapped.lon },
+            distance,
+            reason: "ok",
+          });
+        }),
+      ),
+    ),
   );
 }

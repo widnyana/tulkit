@@ -94,6 +94,22 @@ describe("loadGpxEntry: adversarial store state", () => {
     assert.equal(loadGpxEntry("shape"), null);
   });
 
+  it("returns null when a stored field has the wrong type", () => {
+    scope.localStorage?.setItem(
+      `${GPX_ENTRY_PREFIX}stamp`,
+      '{"rawText":"<gpx/>","savedAt":"now"}',
+    );
+    assert.equal(loadGpxEntry("stamp"), null);
+  });
+
+  it("ignores extra fields on an otherwise valid entry", () => {
+    scope.localStorage?.setItem(
+      `${GPX_ENTRY_PREFIX}extra`,
+      '{"rawText":"<gpx/>","savedAt":7,"note":"kept"}',
+    );
+    assert.equal(loadGpxEntry("extra"), "<gpx/>");
+  });
+
   it("returns null for an unknown id", () => {
     assert.equal(loadGpxEntry("never-saved"), null);
   });

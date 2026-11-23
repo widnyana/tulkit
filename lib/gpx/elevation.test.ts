@@ -80,6 +80,21 @@ test("fetchElevations fails with InvalidPayload when the array is empty", async 
     },
   );
 });
+test("fetchElevations fails with InvalidPayload for a wrong-typed body", async () => {
+  await withMockedFetch(
+    async () =>
+      new Response(JSON.stringify({ elevations: "not-elevations" }), {
+        status: 200,
+      }),
+    async () => {
+      const error = await Effect.runPromise(
+        Effect.flip(fetchElevations(POINTS)),
+      );
+      assert.ok(error instanceof InvalidPayload);
+    },
+  );
+});
+
 test("fetchElevations fails with ServiceRejected on an HTTP error", async () => {
   await withMockedFetch(
     async () => new Response("", { status: 503 }),

@@ -91,6 +91,21 @@ test("fetchRoadRoute returns null on an empty geometry", async () => {
   );
 });
 
+test("fetchRoadRoute fails with InvalidPayload for a wrong-typed geometry", async () => {
+  await withMockedFetch(
+    async () =>
+      new Response(JSON.stringify({ coordinates: "not-geometry" }), {
+        status: 200,
+      }),
+    async () => {
+      const error = await Effect.runPromise(
+        Effect.flip(fetchRoadRoute(POINTS, "driving")),
+      );
+      assert.ok(error instanceof InvalidPayload);
+    },
+  );
+});
+
 test("fetchRoadRoute fails with ServiceRejected on an HTTP error", async () => {
   await withMockedFetch(
     async () => new Response("", { status: 503 }),

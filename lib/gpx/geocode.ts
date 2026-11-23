@@ -1,10 +1,15 @@
 import { Effect } from "effect";
-import { type GpxRequestError, InvalidPayload } from "./errors.ts";
+import type { GpxRequestError } from "./errors.ts";
 import {
   DEFAULT_REQUEST_POLICY,
   type RequestPolicy,
   requestJson,
 } from "./http.ts";
+import {
+  decodePlaceEntry,
+  decodePlaceList,
+  type PlaceEntry,
+} from "./schemas.ts";
 
 const NOMINATIM_ENDPOINT = "https://nominatim.openstreetmap.org/search";
 const RESULT_LIMIT = 5;
@@ -15,13 +20,7 @@ export interface PlaceResult {
   label: string;
 }
 
-interface NominatimEntry {
-  readonly lat?: unknown;
-  readonly lon?: unknown;
-  readonly display_name?: unknown;
-}
-
-function toPlaceResult(entry: NominatimEntry): PlaceResult | null {
+function toPlaceResult(entry: PlaceEntry): PlaceResult | null {
   const lat = Number(entry.lat);
   const lon = Number(entry.lon);
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
@@ -46,22 +45,19 @@ export function searchPlace(
   url.searchParams.set("limit", String(RESULT_LIMIT));
 
   return requestJson(url, { signal }, policy).pipe(
-    Effect.flatMap((data) => {
-      if (!Array.isArray(data)) {
-        return Effect.fail(
-          new InvalidPayload({
-            message: "The service returned an invalid place list.",
-          }),
-        );
-      }
-
-      const results: PlaceResult[] = [];
-      for (const entry of data) {
-        if (typeof entry !== "object" || entry === null) continue;
-        const result = toPlaceResult(entry as NominatimEntry);
-        if (result) results.push(result);
-      }
-      return Effect.succeed(results);
-    }),
+    Effect.flatMap((data) =>
+      decodePlaceList(data).pipe(
+        Effect.map((entries) => {
+          const results: PlaceResult[] = [];
+          for (const entry of entries) {
+            const decoded = decodePlaceEntry(entry);
+            if (!decoded) continue;
+            const result = toPlaceResult(decoded);
+            if (result) results.push(result);
+          }
+          return results;
+        }),
+      ),
+    ),
   );
 }

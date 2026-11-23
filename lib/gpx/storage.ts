@@ -1,11 +1,8 @@
+import { decodeStoredEntry, type StoredEntry } from "./schemas.ts";
+
 export const GPX_INDEX_KEY = "tulkit:gpx:index";
 export const GPX_ENTRY_PREFIX = "tulkit:gpx:entry:";
 export const GPX_MAX_ENTRIES = 5;
-
-interface StoredEntry {
-  rawText: string;
-  savedAt: number;
-}
 
 function storage(): Storage | null {
   try {
@@ -64,11 +61,8 @@ export function loadGpxEntry(id: string): string | null {
   try {
     const raw = store.getItem(GPX_ENTRY_PREFIX + id);
     if (!raw) return null;
-    const parsed: unknown = JSON.parse(raw);
-    if (typeof parsed !== "object" || parsed === null) return null;
-    const { rawText, savedAt } = parsed as Partial<StoredEntry>;
-    if (typeof rawText !== "string" || typeof savedAt !== "number") return null;
-    return rawText;
+    const entry = decodeStoredEntry(JSON.parse(raw));
+    return entry ? entry.rawText : null;
   } catch {
     return null;
   }

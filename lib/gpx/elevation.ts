@@ -6,13 +6,10 @@ import {
   type RequestPolicy,
   requestJson,
 } from "./http.ts";
+import { decodeElevations } from "./schemas.ts";
 
 const ELEVATION_ENDPOINT = "/api/gpx/elevation";
 const MAX_ELEVATION_POINTS = 2000;
-
-interface ElevationResponse {
-  readonly elevations?: ReadonlyArray<number | null> | null;
-}
 
 export function fetchElevations(
   points: ReadonlyArray<LatLon>,
@@ -36,21 +33,24 @@ export function fetchElevations(
     },
     policy,
   ).pipe(
-    Effect.flatMap((data) => {
-      const { elevations } = data as ElevationResponse;
-      if (!Array.isArray(elevations) || elevations.length !== points.length) {
-        return Effect.fail(
-          new InvalidPayload({
-            message: "The service returned misaligned elevations.",
-          }),
-        );
-      }
+    Effect.flatMap((data) =>
+      decodeElevations(data).pipe(
+        Effect.flatMap(({ elevations }) => {
+          if (!elevations || elevations.length !== points.length) {
+            return Effect.fail(
+              new InvalidPayload({
+                message: "The service returned misaligned elevations.",
+              }),
+            );
+          }
 
-      return Effect.succeed(
-        elevations.map((value) =>
-          typeof value === "number" && Number.isFinite(value) ? value : null,
-        ),
-      );
-    }),
+          return Effect.succeed(
+            elevations.map((value) =>
+              value !== null && Number.isFinite(value) ? value : null,
+            ),
+          );
+        }),
+      ),
+    ),
   );
 }
