@@ -107,11 +107,35 @@ export function RoutePlannerMap({
   const onPointMoveRef = useRef(onPointMove);
   const [mapReady, setMapReady] = useState(false);
   const [mapFailed, setMapFailed] = useState(false);
+  const [styleGeneration, setStyleGeneration] = useState(0);
   const mapStyle = useMapStyle();
+  const mapStyleRef = useRef(mapStyle);
+  const skipStyleSwitchRef = useRef(true);
 
   useEffect(() => {
     controlPointsRef.current = controlPoints;
   }, [controlPoints]);
+
+  useEffect(() => {
+    mapStyleRef.current = mapStyle;
+  }, [mapStyle]);
+
+  useEffect(() => {
+    if (skipStyleSwitchRef.current) {
+      skipStyleSwitchRef.current = false;
+      return;
+    }
+    const map = mapRef.current;
+    if (!map) return;
+    map.setStyle(mapStyle);
+    map.once("style.load", () => {
+      map.setMissingStyleImageResolver((id) => {
+        if (map.hasImage(id)) return;
+        map.addImage(id, new ImageData(1, 1));
+      });
+      setStyleGeneration((generation) => generation + 1);
+    });
+  }, [mapStyle]);
 
   useEffect(() => {
     onMapClickRef.current = onMapClick;
@@ -143,7 +167,7 @@ export function RoutePlannerMap({
         config.WORKER_URL = "/maplibre-gl-worker.mjs";
         const instance = new MapLibreMapCtor({
           container,
-          style: mapStyle,
+          style: mapStyleRef.current,
           fadeDuration: 0,
         });
         map = instance;
@@ -199,7 +223,7 @@ export function RoutePlannerMap({
       markerClassRef.current = null;
       map?.remove();
     };
-  }, [mapStyle]);
+  }, []);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -267,7 +291,7 @@ export function RoutePlannerMap({
         isSnapped ? SOLID_PATTERN : DASHED_PATTERN,
       );
     }
-  }, [controlPoints, snappedPath, mapReady]);
+  }, [controlPoints, snappedPath, mapReady, styleGeneration]);
 
   useEffect(() => {
     const map = mapRef.current;
