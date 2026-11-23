@@ -1147,9 +1147,9 @@ function GpxViewContent() {
                   )}
                   {placeResults.length > 0 && (
                     <div className="space-y-1 rounded-md border border-border p-1">
-                      {placeResults.map((result) => (
+                      {placeResults.map((result, index) => (
                         <button
-                          key={`${result.lat},${result.lon}`}
+                          key={`${index}-${result.lat}-${result.lon}`}
                           type="button"
                           onClick={() => handlePlaceSelect(result)}
                           className="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-muted"
@@ -1227,7 +1227,7 @@ function GpxViewContent() {
                       <tbody>
                         {planPoints.map((point, index) => (
                           <tr
-                            key={`${point.lat}-${point.lon}`}
+                            key={`${index}-${point.lat}-${point.lon}`}
                             className={`border-t border-border ${index % 2 === 1 ? "bg-muted/30" : ""}`}
                           >
                             <td className="px-3 py-2">{index + 1}</td>
