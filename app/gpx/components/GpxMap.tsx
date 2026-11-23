@@ -47,7 +47,7 @@ export function GpxMap({ parsed }: { parsed: ParsedGpx }) {
       } = await import("maplibre-gl");
       if (cancelled) return;
 
-      config.WORKER_URL = "/api/maplibre-worker";
+      config.WORKER_URL = "/maplibre-gl-worker.mjs";
       const instance = new MapLibreMap({ container, style: STYLE_URL });
       map = instance;
 
