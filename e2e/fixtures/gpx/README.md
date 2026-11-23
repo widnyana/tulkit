@@ -21,6 +21,10 @@ same bytes. Every scenario exists once for West Java and once for Bali.
 | metadata-full | West Java | `west-java/metadata-full.gpx` | Full metadata block plus a track with no desc. Expect every provenance row, metadata desc rendered as metadata only, no brief. |
 | no-metadata-fallback | West Java | `west-java/no-metadata-fallback.gpx` | No version, no creator, no metadata element, track name only. Expect a title from the track, computed bounds, no creator row. |
 | invalid-points-only | West Java | `west-java/invalid-points-only.gpx` | Every point has a missing or non-numeric coordinate. Expect skipped counts, no markers, legend hidden, no error. |
+| brevet-controls | West Java | `west-java/brevet-controls.gpx` | Unsupported 200 km brevet: km-named marks, six Control waypoints with open and close windows, brevet desc with a link. Expect distance marks, an unrecognised Control group and a brief. |
+| sportive-supported | West Java | `west-java/sportive-supported.gpx` | Supported 100 km sportive: feed stations, water points and mechanics. Expect Food, Water and Repair groups plus a brief. |
+| bikepacking-unsupported | West Java | `west-java/bikepacking-unsupported.gpx` | Unsupported bikepacking track: water, camp, resupply and summit points. Expect four POI groups including an unrecognised Resupply group. |
+| mtb-technical | West Java | `west-java/mtb-technical.gpx` | Technical MTB loop with hazard, viewpoint and summit points. Expect three POI groups and a track brief. |
 | track-only | Bali | `bali/track-only.gpx` | Single-segment track with elevation. Expect one line group, distance and elevation gain, no brief. |
 | track-multiseg | Bali | `bali/track-multiseg.gpx` | Track split into three segments with a track desc. Expect segment boundaries kept and a brief from the track. |
 | track-extensions | Bali | `bali/track-extensions.gpx` | Vendor extensions and no desc. Expect extensions ignored and no brief. |
@@ -37,6 +41,10 @@ same bytes. Every scenario exists once for West Java and once for Bali.
 | metadata-full | Bali | `bali/metadata-full.gpx` | Full metadata block plus a track with no desc. Expect every provenance row, metadata desc rendered as metadata only, no brief. |
 | no-metadata-fallback | Bali | `bali/no-metadata-fallback.gpx` | No version, no creator, no metadata element, track name only. Expect a title from the track, computed bounds, no creator row. |
 | invalid-points-only | Bali | `bali/invalid-points-only.gpx` | Every point has a missing or non-numeric coordinate. Expect skipped counts, no markers, legend hidden, no error. |
+| brevet-controls | Bali | `bali/brevet-controls.gpx` | Unsupported 200 km brevet: km-named marks, six Control waypoints with open and close windows, brevet desc with a link. Expect distance marks, an unrecognised Control group and a brief. |
+| sportive-supported | Bali | `bali/sportive-supported.gpx` | Supported 100 km sportive: feed stations, water points and mechanics. Expect Food, Water and Repair groups plus a brief. |
+| bikepacking-unsupported | Bali | `bali/bikepacking-unsupported.gpx` | Unsupported bikepacking track: water, camp, resupply and summit points. Expect four POI groups including an unrecognised Resupply group. |
+| mtb-technical | Bali | `bali/mtb-technical.gpx` | Technical MTB loop with hazard, viewpoint and summit points. Expect three POI groups and a track brief. |
 
 Regenerate: `node scripts/generate-gpx-fixtures.mjs`
 Verify: `node --experimental-strip-types scripts/verify-gpx-fixtures.mjs`

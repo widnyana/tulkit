@@ -77,6 +77,31 @@ const CHECKS = {
     parsed.metadata === undefined &&
     parsed.tracks.length === 1 &&
     typeof parsed.tracks[0].name === "string",
+  "brevet-controls": (parsed) =>
+    parsed.routes.length === 1 &&
+    parsed.routes[0].points.length === 201 &&
+    typeof parsed.routes[0].desc === "string" &&
+    parsed.waypoints.length === 6 &&
+    parsed.waypoints.every((point) => point.sym === "Control"),
+  "sportive-supported": (parsed) =>
+    parsed.routes.length === 1 &&
+    parsed.routes[0].points.length === 101 &&
+    typeof parsed.routes[0].desc === "string" &&
+    parsed.waypoints.filter((point) => point.sym === "Food").length === 3 &&
+    parsed.waypoints.filter((point) => point.sym === "Drinking Water").length === 3 &&
+    parsed.waypoints.filter((point) => point.sym === "Bike Repair").length === 2,
+  "bikepacking-unsupported": (parsed) =>
+    parsed.tracks.length === 1 &&
+    totalPoints(parsed.tracks[0]) === 600 &&
+    typeof parsed.tracks[0].desc === "string" &&
+    parsed.waypoints.length === 11 &&
+    parsed.waypoints.filter((point) => point.sym === "Resupply").length === 2,
+  "mtb-technical": (parsed) =>
+    parsed.tracks.length === 1 &&
+    totalPoints(parsed.tracks[0]) === 400 &&
+    typeof parsed.tracks[0].desc === "string" &&
+    parsed.waypoints.length === 6 &&
+    parsed.waypoints.filter((point) => point.sym === "Danger Area").length === 3,
   "invalid-points-only": (parsed) =>
     parsed.waypoints.length === 0 &&
     parsed.routes.length === 0 &&

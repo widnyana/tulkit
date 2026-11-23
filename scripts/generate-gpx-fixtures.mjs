@@ -517,6 +517,136 @@ const SCENARIOS = [
       return documentXml({ version: "1.1", creator: "broken-export", body });
     },
   },
+  {
+    id: "brevet-controls",
+    note: "Unsupported 200 km brevet: km-named marks, six Control waypoints with open and close windows, brevet desc with a link. Expect distance marks, an unrecognised Control group and a brief.",
+    build(region, rng) {
+      const points = routePoints(region, rng, 201);
+      const body = points
+        .map((point, index) =>
+          index % 10 === 0
+            ? rtept(point, `<name>${index.toFixed(2)}km</name>`)
+            : rtept(point),
+        )
+        .join("\n");
+      const controls = [];
+      for (let index = 0; index < 6; index += 1) {
+        controls.push(
+          poiPoint(
+            region,
+            rng,
+            `Control ${index + 1} - ${region.places[index]}`,
+            "Control",
+            `Open 0${index + 4}:00 Close 0${index + 5}:30`,
+          ),
+        );
+      }
+      const desc = `<![CDATA[<p>200 km brevet, unsupported. Expect controls with open and close times.</p><p>Route: <a href="https://example.com/brevet/${region.slug}">brevet page</a></p>]]>`;
+      return documentXml({
+        version: "1.1",
+        creator: "gps-touring",
+        body: `${controls
+          .map((point) => wpt(point))
+          .join("\n")}\n  <rte>\n    <name>${escapeXml(
+          region.routeName,
+        )}</name>\n    <desc>${desc}</desc>\n${body}\n  </rte>`,
+      });
+    },
+  },
+  {
+    id: "sportive-supported",
+    note: "Supported 100 km sportive: feed stations, water points and mechanics. Expect Food, Water and Repair groups plus a brief.",
+    build(region, rng) {
+      const points = routePoints(region, rng, 101);
+      const body = points
+        .map((point, index) =>
+          index % 10 === 0
+            ? rtept(point, `<name>${index.toFixed(2)}km</name>`)
+            : rtept(point),
+        )
+        .join("\n");
+      const stops = [];
+      for (let index = 0; index < 3; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `Feed station ${index + 1}`, "Food", `Feed station ${index + 1}`),
+        );
+      }
+      for (let index = 0; index < 3; index += 1) {
+        stops.push(poiPoint(region, rng, `Water ${index + 1}`, "Drinking Water"));
+      }
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(poiPoint(region, rng, `Mechanic ${index + 1}`, "Bike Repair"));
+      }
+      return documentXml({
+        version: "1.1",
+        creator: "RideWithGPS",
+        body: `${stops
+          .map((point) => wpt(point))
+          .join("\n")}\n  <rte>\n    <name>${escapeXml(
+          region.routeName,
+        )}</name>\n    <desc>Supported ride across ${escapeXml(
+          region.label,
+        )}: feed stations, water and mechanical support.</desc>\n${body}\n  </rte>`,
+      });
+    },
+  },
+  {
+    id: "bikepacking-unsupported",
+    note: "Unsupported bikepacking track: water, camp, resupply and summit points. Expect four POI groups including an unrecognised Resupply group.",
+    build(region, rng) {
+      const stops = [];
+      for (let index = 0; index < 4; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `${region.places[index]} water`, "Drinking Water"),
+        );
+      }
+      for (let index = 0; index < 3; index += 1) {
+        stops.push(poiPoint(region, rng, `${region.places[index + 3]} camp`, "Camp"));
+      }
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `${region.places[index + 5]} resupply`, "Resupply"),
+        );
+      }
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `${region.places[index + 7]} summit`, "Summit"),
+        );
+      }
+      return documentXml({
+        version: "1.1",
+        creator: "bikepacking.com",
+        body: `${stops.map((point) => wpt(point)).join("\n")}\n${trk(region, {
+          segments: [trackPoints(region, rng, 600)],
+          desc: `Unsupported ride. No outside help. Resupply at warungs in ${region.label}.`,
+        })}`,
+      });
+    },
+  },
+  {
+    id: "mtb-technical",
+    note: "Technical MTB loop with hazard, viewpoint and summit points. Expect three POI groups and a track brief.",
+    build(region, rng) {
+      const stops = [];
+      for (let index = 0; index < 3; index += 1) {
+        stops.push(poiPoint(region, rng, `Hazard ${index + 1}`, "Danger Area"));
+      }
+      for (let index = 0; index < 2; index += 1) {
+        stops.push(
+          poiPoint(region, rng, `${region.places[index]} viewpoint`, "Viewpoint"),
+        );
+      }
+      stops.push(poiPoint(region, rng, `${region.places[2]} summit`, "Summit"));
+      return documentXml({
+        version: "1.1",
+        creator: "Trailforks",
+        body: `${stops.map((point) => wpt(point)).join("\n")}\n${trk(region, {
+          segments: [trackPoints(region, rng, 400)],
+          desc: `Technical singletrack loop in ${region.label}.`,
+        })}`,
+      });
+    },
+  },
 ];
 
 rmSync(OUT_ROOT, { recursive: true, force: true });
