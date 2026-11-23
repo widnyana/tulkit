@@ -1,24 +1,8 @@
+import { corsHeaders } from "@/lib/net/cors";
+import { pinnedUrl, validateOutbound } from "@/lib/net/outbound";
 import { SITE_URL } from "@/lib/site";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-
-const getAllowedOrigin = (): string => {
-  if (process.env.NODE_ENV === "production") {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
-      SITE_URL,
-    ];
-    return allowedOrigins[0];
-  }
-
-  return "*";
-};
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": getAllowedOrigin(),
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Max-Age": "86400",
-};
 
 const ALLOWED_MAPS_HOSTS = [
   "maps.app.goo.gl",
@@ -28,33 +12,7 @@ const ALLOWED_MAPS_HOSTS = [
   "maps.google.com",
 ];
 
-const checkUrl = (u: URL): string | null => {
-  if (!["http:", "https:"].includes(u.protocol)) {
-    return "Only HTTP and HTTPS URLs are allowed";
-  }
-
-  const hostname = u.hostname.toLowerCase();
-
-  if (!ALLOWED_MAPS_HOSTS.includes(hostname)) {
-    return "Host is not an allowed Google Maps host";
-  }
-
-  const isPrivateNetwork =
-    hostname === "localhost" ||
-    hostname.startsWith("127.") ||
-    hostname.startsWith("10.") ||
-    hostname.startsWith("192.168.") ||
-    /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) ||
-    hostname.startsWith("169.254.") ||
-    hostname.endsWith(".local") ||
-    hostname.endsWith(".localhost");
-
-  if (isPrivateNetwork) {
-    return "Access to private/internal networks is not allowed";
-  }
-
-  return null;
-};
+const HOST_ERROR = "Host is not an allowed Google Maps host";
 
 export async function OPTIONS() {
   return new NextResponse(null, { headers: corsHeaders });
@@ -71,26 +29,26 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  let currentUrl: URL;
-  try {
-    currentUrl = new URL(mapsUrl);
-  } catch {
+  const validation = validateOutbound(mapsUrl, ALLOWED_MAPS_HOSTS, HOST_ERROR);
+  if ("error" in validation) {
     return NextResponse.json(
-      { error: "Invalid URL format" },
+      { error: validation.error },
       { status: 400, headers: corsHeaders },
     );
   }
 
-  const initialError = checkUrl(currentUrl);
-  if (initialError) {
-    return NextResponse.json(
-      { error: initialError },
-      { status: 400, headers: corsHeaders },
-    );
-  }
+  let currentUrl = validation.url;
 
   try {
-    let response = await fetch(currentUrl.toString(), {
+    const initialFetchUrl = pinnedUrl(currentUrl, ALLOWED_MAPS_HOSTS);
+    if (!initialFetchUrl) {
+      return NextResponse.json(
+        { error: HOST_ERROR },
+        { status: 400, headers: corsHeaders },
+      );
+    }
+
+    let response = await fetch(initialFetchUrl.toString(), {
       headers: { "User-Agent": `Tulkit/1.0 ${SITE_URL}` },
       signal: AbortSignal.timeout(10000),
       redirect: "manual",
@@ -107,15 +65,28 @@ export async function GET(request: NextRequest) {
       }
 
       currentUrl = new URL(location, currentUrl);
-      const redirectError = checkUrl(currentUrl);
-      if (redirectError) {
+      const redirectValidation = validateOutbound(
+        currentUrl.toString(),
+        ALLOWED_MAPS_HOSTS,
+        HOST_ERROR,
+      );
+      if ("error" in redirectValidation) {
         return NextResponse.json(
-          { error: redirectError },
+          { error: redirectValidation.error },
+          { status: 400, headers: corsHeaders },
+        );
+      }
+      currentUrl = redirectValidation.url;
+
+      const fetchUrl = pinnedUrl(currentUrl, ALLOWED_MAPS_HOSTS);
+      if (!fetchUrl) {
+        return NextResponse.json(
+          { error: HOST_ERROR },
           { status: 400, headers: corsHeaders },
         );
       }
 
-      response = await fetch(currentUrl.toString(), {
+      response = await fetch(fetchUrl.toString(), {
         headers: { "User-Agent": `Tulkit/1.0 ${SITE_URL}` },
         signal: AbortSignal.timeout(10000),
         redirect: "manual",

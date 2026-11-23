@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-const ROUTING_BASE = "https://routing.openstreetmap.de";
 const ROUTE_TIMEOUT_MS = 8000;
 const USER_AGENT = "tulkit-gpx/1.0 (+https://tulkit.widnyana.web.id)";
 const SNAP_RADIUS_METERS = 2000;
@@ -13,16 +12,14 @@ const MAX_POINTS = 100;
 const ROAD_MODES = ["driving", "bicycling", "walking"] as const;
 type RoadMode = (typeof ROAD_MODES)[number];
 
-const OSRM_INSTANCE: Record<RoadMode, string> = {
-  driving: "routed-bike",
-  bicycling: "routed-bike",
-  walking: "routed-foot",
-};
-
-const OSRM_PROFILE: Record<RoadMode, string> = {
-  driving: "bike",
-  bicycling: "bike",
-  walking: "walking",
+const osrmRouteBase = (mode: RoadMode): string => {
+  switch (mode) {
+    case "driving":
+    case "bicycling":
+      return "https://routing.openstreetmap.de/routed-bike/route/v1/bike";
+    case "walking":
+      return "https://routing.openstreetmap.de/routed-foot/route/v1/walking";
+  }
 };
 
 interface Coordinate {
@@ -104,10 +101,13 @@ export async function POST(request: NextRequest) {
   }
 
   const coordinates = parsedPoints
-    .map((point) => `${point.lon},${point.lat}`)
+    .map((point) => `${point.lon.toFixed(6)},${point.lat.toFixed(6)}`)
     .join(";");
   const radiuses = parsedPoints.map(() => SNAP_RADIUS_METERS).join(";");
-  const url = `${ROUTING_BASE}/${OSRM_INSTANCE[mode]}/route/v1/${OSRM_PROFILE[mode]}/${coordinates}?geometries=geojson&radiuses=${radiuses}`;
+  const url = new URL(
+    `${coordinates}?geometries=geojson&radiuses=${radiuses}`,
+    `${osrmRouteBase(mode)}/`,
+  );
 
   try {
     const response = await fetch(url, {

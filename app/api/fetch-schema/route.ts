@@ -1,27 +1,8 @@
+import { corsHeaders } from "@/lib/net/cors";
+import { pinnedUrl, validateOutbound } from "@/lib/net/outbound";
 import { SITE_URL } from "@/lib/site";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-
-// CORS configuration - more secure for production
-const getAllowedOrigin = (): string => {
-  // In production, restrict to specific origins
-  if (process.env.NODE_ENV === "production") {
-    const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [
-      SITE_URL,
-    ];
-    return allowedOrigins[0]; // Return the first allowed origin
-  }
-
-  // In development, allow all origins
-  return "*";
-};
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": getAllowedOrigin(),
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-  "Access-Control-Max-Age": "86400",
-};
 
 // Restrict outbound schema fetches to trusted hosts only (server-controlled)
 const ALLOWED_SCHEMA_HOSTS = (
@@ -36,36 +17,7 @@ const ALLOWED_SCHEMA_HOSTS = (
   .map((host) => host.trim().toLowerCase())
   .filter(Boolean);
 
-// Only allow HTTP/HTTPS, trusted hosts, and block private/internal networks
-const checkUrl = (u: URL): string | null => {
-  if (!["http:", "https:"].includes(u.protocol)) {
-    return "Only HTTP and HTTPS URLs are allowed";
-  }
-
-  const hostname = u.hostname.toLowerCase();
-
-  // Allow outbound requests only to trusted hostnames
-  if (!ALLOWED_SCHEMA_HOSTS.includes(hostname)) {
-    return "Host is not in the allowed schema host list";
-  }
-
-  // Block private/internal network ranges (defense in depth)
-  const isPrivateNetwork =
-    hostname === "localhost" ||
-    hostname.startsWith("127.") ||
-    hostname.startsWith("10.") ||
-    hostname.startsWith("192.168.") ||
-    /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname) || // 172.16-31.x.x
-    hostname.startsWith("169.254.") ||
-    hostname.endsWith(".local") ||
-    hostname.endsWith(".localhost");
-
-  if (isPrivateNetwork) {
-    return "Access to private/internal networks is not allowed";
-  }
-
-  return null;
-};
+const HOST_ERROR = "Host is not in the allowed schema host list";
 
 // Handle CORS preflight requests
 export async function OPTIONS() {
@@ -84,21 +36,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Validate URL format and prevent dangerous URLs
-    let urlObj: URL | undefined;
-    try {
-      urlObj = new URL(schemaUrl);
-    } catch {
+    const validation = validateOutbound(
+      schemaUrl,
+      ALLOWED_SCHEMA_HOSTS,
+      HOST_ERROR,
+    );
+    if ("error" in validation) {
       return NextResponse.json(
-        { error: "Invalid URL format" },
-        { status: 400, headers: corsHeaders },
-      );
-    }
-
-    const validationError = checkUrl(urlObj);
-    if (validationError) {
-      return NextResponse.json(
-        { error: validationError },
+        { error: validation.error },
         { status: 400, headers: corsHeaders },
       );
     }
@@ -107,8 +52,16 @@ export async function GET(request: NextRequest) {
     const MAX_RESPONSE_SIZE = 10 * 1024 * 1024; // 10MB
 
     // Follow redirects manually so each hop is re-validated
-    let currentUrl = urlObj;
-    let response = await fetch(currentUrl.toString(), {
+    let currentUrl = validation.url;
+    const initialFetchUrl = pinnedUrl(currentUrl, ALLOWED_SCHEMA_HOSTS);
+    if (!initialFetchUrl) {
+      return NextResponse.json(
+        { error: HOST_ERROR },
+        { status: 400, headers: corsHeaders },
+      );
+    }
+
+    let response = await fetch(initialFetchUrl.toString(), {
       headers: {
         "User-Agent": `Tulkit/1.0 ${SITE_URL}`,
         Accept: "application/json, application/schema+json, */*",
@@ -129,15 +82,28 @@ export async function GET(request: NextRequest) {
       }
 
       currentUrl = new URL(location, currentUrl);
-      const redirectError = checkUrl(currentUrl);
-      if (redirectError) {
+      const redirectValidation = validateOutbound(
+        currentUrl.toString(),
+        ALLOWED_SCHEMA_HOSTS,
+        HOST_ERROR,
+      );
+      if ("error" in redirectValidation) {
         return NextResponse.json(
-          { error: redirectError },
+          { error: redirectValidation.error },
+          { status: 400, headers: corsHeaders },
+        );
+      }
+      currentUrl = redirectValidation.url;
+
+      const fetchUrl = pinnedUrl(currentUrl, ALLOWED_SCHEMA_HOSTS);
+      if (!fetchUrl) {
+        return NextResponse.json(
+          { error: HOST_ERROR },
           { status: 400, headers: corsHeaders },
         );
       }
 
-      response = await fetch(currentUrl.toString(), {
+      response = await fetch(fetchUrl.toString(), {
         headers: {
           "User-Agent": `Tulkit/1.0 ${SITE_URL}`,
           Accept: "application/json, application/schema+json, */*",
