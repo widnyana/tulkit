@@ -24,8 +24,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { GpxMap } from "./components/GpxMap";
+import { ResultPanel } from "./components/ResultPanel";
 import {
   importMapsLink,
   parseGpxText,
@@ -69,8 +70,10 @@ function GpxViewContent() {
   });
   const [csvInput, setCsvInput] = useState("");
   const [csvState, setCsvState] = useState<CsvImportState>({ kind: "idle" });
+  const rawInputId = useId();
   const fileInputId = useId();
   const mapsUrlInputId = useId();
+  const csvInputId = useId();
 
   const [urlId, setUrlId] = useGpxId();
   const currentId = useRef<string | null>(null);
@@ -225,121 +228,132 @@ function GpxViewContent() {
           </p>
         </header>
 
-        <div className="tool-enter space-y-4">
-          <Textarea
-            value={rawInput}
-            onChange={(e) => handleTextChange(e.target.value)}
-            placeholder="Paste GPX XML here..."
-            className="min-h-[160px] font-mono text-xs"
-          />
+        <Tabs defaultValue="view" className="tool-enter mt-6">
+          <TabsList className="h-auto flex-wrap">
+            <TabsTrigger value="view">View a GPX</TabsTrigger>
+            <TabsTrigger value="maps">Import from Google Maps link</TabsTrigger>
+            <TabsTrigger value="csv">Create from CSV</TabsTrigger>
+          </TabsList>
 
-          <div className="flex items-center gap-3">
-            <label
-              htmlFor={fileInputId}
-              className="inline-flex h-9 cursor-pointer items-center rounded-md border bg-background px-4 text-sm shadow-xs hover:bg-accent hover:text-accent-foreground"
-            >
-              Upload .gpx file
+          <TabsContent value="view" className="space-y-4">
+            <label htmlFor={rawInputId} className="sr-only">
+              GPX XML
             </label>
-            <input
-              id={fileInputId}
-              type="file"
-              accept=".gpx,.xml"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleFileChange(file);
-                e.target.value = "";
-              }}
+            <Textarea
+              id={rawInputId}
+              value={rawInput}
+              onChange={(e) => handleTextChange(e.target.value)}
+              placeholder="Paste GPX XML here..."
+              className="min-h-[160px] font-mono text-xs"
             />
-            {rawInput !== "" && (
-              <Button type="button" variant="secondary" onClick={handleClear}>
-                Clear
-              </Button>
-            )}
-          </div>
 
-          {state.kind === "empty" && (
-            <p className="text-sm text-muted-foreground">
-              Paste GPX XML above or upload a .gpx file to see it on the map.
-            </p>
-          )}
-
-          {state.kind === "loading" && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Spinner /> Reading file...
-            </div>
-          )}
-
-          {state.kind === "error" && (
-            <p className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              {state.message}
-            </p>
-          )}
-
-          {state.kind === "success" && (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                {state.parsed.waypoints.length} waypoints,{" "}
-                {state.parsed.routes.length} routes,{" "}
-                {trackSegmentCount(state.parsed)} track segments
-                {state.parsed.skipped > 0 &&
-                  `, ${state.parsed.skipped} points skipped`}
-              </p>
-              <GpxMap parsed={state.parsed} />
-            </div>
-          )}
-        </div>
-
-        <div className="tool-enter mt-10 space-y-4 border-t border-border pt-8">
-          <h2 className="text-lg font-semibold text-foreground">
-            Import from Google Maps link
-          </h2>
-          <div className="flex items-center gap-3">
-            <label htmlFor={mapsUrlInputId} className="sr-only">
-              Google Maps link
-            </label>
-            <Input
-              id={mapsUrlInputId}
-              value={mapsUrlInput}
-              onChange={(e) => setMapsUrlInput(e.target.value)}
-              placeholder="https://maps.app.goo.gl/... or a maps.google.com link"
-              className="font-mono text-xs"
-            />
-            <Button
-              type="button"
-              onClick={handleMapsImport}
-              disabled={
-                mapsState.kind === "loading" || mapsUrlInput.trim() === ""
-              }
-            >
-              Import
-            </Button>
-          </div>
-
-          {mapsState.kind === "loading" && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Spinner /> Resolving Maps link...
-            </div>
-          )}
-
-          {mapsState.kind === "error" && (
-            <p className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-              {mapsState.message}
-            </p>
-          )}
-
-          {mapsState.kind === "success" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm text-muted-foreground">
-                  {mapsState.waypoints.length} waypoint
-                  {mapsState.waypoints.length === 1 ? "" : "s"} found
-                </p>
-                <Button type="button" onClick={handleDownloadGpx}>
-                  Download GPX
+            <div className="flex items-center gap-3">
+              <label
+                htmlFor={fileInputId}
+                className="relative inline-flex h-9 cursor-pointer items-center rounded-md border bg-background px-4 text-sm shadow-xs hover:bg-accent hover:text-accent-foreground has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-ring/60 has-[:focus-visible]:outline-offset-2"
+              >
+                Upload .gpx file
+                <input
+                  id={fileInputId}
+                  type="file"
+                  accept=".gpx,.xml"
+                  className="absolute inset-0 cursor-pointer opacity-0"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleFileChange(file);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              {rawInput !== "" && (
+                <Button type="button" variant="secondary" onClick={handleClear}>
+                  Clear
                 </Button>
+              )}
+            </div>
+
+            {state.kind === "empty" && (
+              <p className="text-sm text-muted-foreground">
+                Paste GPX XML above or upload a .gpx file to see it on the map.
+              </p>
+            )}
+
+            {state.kind === "loading" && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Spinner /> Reading file...
               </div>
-              <GpxMap
+            )}
+
+            {state.kind === "error" && (
+              <p className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                {state.message}
+              </p>
+            )}
+
+            {state.kind === "success" && (
+              <ResultPanel
+                summary={
+                  <>
+                    {state.parsed.waypoints.length} waypoints,{" "}
+                    {state.parsed.routes.length} routes,{" "}
+                    {trackSegmentCount(state.parsed)} track segments
+                    {state.parsed.skipped > 0 &&
+                      `, ${state.parsed.skipped} points skipped`}
+                  </>
+                }
+                parsed={state.parsed}
+              />
+            )}
+          </TabsContent>
+
+          <TabsContent value="maps" className="space-y-4">
+            <div className="flex items-center gap-3">
+              <label htmlFor={mapsUrlInputId} className="sr-only">
+                Google Maps link
+              </label>
+              <Input
+                id={mapsUrlInputId}
+                value={mapsUrlInput}
+                onChange={(e) => setMapsUrlInput(e.target.value)}
+                placeholder="https://maps.app.goo.gl/... or a maps.google.com link"
+                className="font-mono text-xs"
+              />
+              <Button
+                type="button"
+                onClick={handleMapsImport}
+                disabled={
+                  mapsState.kind === "loading" || mapsUrlInput.trim() === ""
+                }
+              >
+                Import
+              </Button>
+            </div>
+
+            {mapsState.kind === "loading" && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Spinner /> Resolving Maps link...
+              </div>
+            )}
+
+            {mapsState.kind === "error" && (
+              <p className="rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                {mapsState.message}
+              </p>
+            )}
+
+            {mapsState.kind === "success" && (
+              <ResultPanel
+                summary={
+                  <>
+                    {mapsState.waypoints.length} waypoint
+                    {mapsState.waypoints.length === 1 ? "" : "s"} found
+                  </>
+                }
+                actions={
+                  <Button type="button" onClick={handleDownloadGpx}>
+                    Download GPX
+                  </Button>
+                }
                 parsed={{
                   waypoints: mapsState.waypoints,
                   routes: [],
@@ -347,89 +361,102 @@ function GpxViewContent() {
                   skipped: 0,
                 }}
               />
-            </div>
-          )}
-        </div>
+            )}
+          </TabsContent>
 
-        <div className="tool-enter mt-10 space-y-4 border-t border-border pt-8">
-          <h2 className="text-lg font-semibold text-foreground">
-            Create GPX from a pasted CSV waypoint list
-          </h2>
-          <Textarea
-            value={csvInput}
-            onChange={(e) => handleCsvChange(e.target.value)}
-            placeholder={
-              "Latitude,Longitude,Name,Description\n10.000000,20.000000,Start Point,Trailhead"
-            }
-            className="min-h-[160px] font-mono text-xs"
-          />
+          <TabsContent value="csv" className="space-y-4">
+            <label htmlFor={csvInputId} className="sr-only">
+              Waypoint CSV
+            </label>
+            <Textarea
+              id={csvInputId}
+              value={csvInput}
+              onChange={(e) => handleCsvChange(e.target.value)}
+              placeholder={
+                "Latitude,Longitude,Name,Description\n10.000000,20.000000,Start Point,Trailhead"
+              }
+              className="min-h-[160px] font-mono text-xs"
+            />
 
-          {csvState.kind === "success" && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm text-muted-foreground">
-                  {csvState.result.waypoints.length} waypoint
-                  {csvState.result.waypoints.length === 1 ? "" : "s"} parsed
-                  {csvState.result.errors.length > 0 &&
-                    `, ${csvState.result.errors.length} row${csvState.result.errors.length === 1 ? "" : "s"} failed`}
-                </p>
-                <Button
-                  type="button"
-                  onClick={handleDownloadCsvGpx}
-                  disabled={csvState.result.waypoints.length === 0}
-                >
-                  Download GPX
-                </Button>
-              </div>
-
-              {csvState.result.errors.length > 0 && (
-                <ul className="space-y-1 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                  {csvState.result.errors.map((error) => (
-                    <li key={error.row}>{error.message}</li>
-                  ))}
-                </ul>
-              )}
-
-              {csvState.result.waypoints.length > 0 && (
-                <div className="overflow-x-auto rounded-md border border-border">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-muted/50 text-muted-foreground">
-                      <tr>
-                        <th className="px-3 py-2 font-medium">Row</th>
-                        <th className="px-3 py-2 font-medium">Latitude</th>
-                        <th className="px-3 py-2 font-medium">Longitude</th>
-                        <th className="px-3 py-2 font-medium">Name</th>
-                        <th className="px-3 py-2 font-medium">Description</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {csvState.result.waypoints.map(({ row, waypoint }) => (
-                        <tr key={row} className="border-t border-border">
-                          <td className="px-3 py-2">{row}</td>
-                          <td className="px-3 py-2">{waypoint.lat}</td>
-                          <td className="px-3 py-2">{waypoint.lon}</td>
-                          <td className="px-3 py-2">{waypoint.name}</td>
-                          <td className="px-3 py-2">{waypoint.desc ?? ""}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {csvState.result.waypoints.length > 0 && (
-                <GpxMap
+            {csvState.kind === "success" &&
+              (csvState.result.waypoints.length > 0 ? (
+                <ResultPanel
+                  summary={
+                    <>
+                      {csvState.result.waypoints.length} waypoint
+                      {csvState.result.waypoints.length === 1 ? "" : "s"} parsed
+                      {csvState.result.errors.length > 0 &&
+                        `, ${csvState.result.errors.length} row${csvState.result.errors.length === 1 ? "" : "s"} failed`}
+                    </>
+                  }
+                  actions={
+                    <Button type="button" onClick={handleDownloadCsvGpx}>
+                      Download GPX
+                    </Button>
+                  }
                   parsed={{
                     waypoints: csvState.result.waypoints.map((w) => w.waypoint),
                     routes: [],
                     tracks: [],
                     skipped: 0,
                   }}
-                />
-              )}
-            </div>
-          )}
-        </div>
+                >
+                  {csvState.result.errors.length > 0 && (
+                    <ul className="space-y-1 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                      {csvState.result.errors.map((error) => (
+                        <li key={error.row}>{error.message}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <div className="overflow-x-auto rounded-md border border-border">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-muted/50 text-muted-foreground">
+                        <tr>
+                          <th className="px-3 py-2 font-medium">Row</th>
+                          <th className="px-3 py-2 font-medium">Latitude</th>
+                          <th className="px-3 py-2 font-medium">Longitude</th>
+                          <th className="px-3 py-2 font-medium">Name</th>
+                          <th className="px-3 py-2 font-medium">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {csvState.result.waypoints.map(({ row, waypoint }) => (
+                          <tr key={row} className="border-t border-border">
+                            <td className="px-3 py-2">{row}</td>
+                            <td className="px-3 py-2">{waypoint.lat}</td>
+                            <td className="px-3 py-2">{waypoint.lon}</td>
+                            <td className="px-3 py-2">{waypoint.name}</td>
+                            <td className="px-3 py-2">{waypoint.desc ?? ""}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </ResultPanel>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-sm text-muted-foreground">
+                      0 waypoints parsed
+                      {csvState.result.errors.length > 0 &&
+                        `, ${csvState.result.errors.length} row${csvState.result.errors.length === 1 ? "" : "s"} failed`}
+                    </p>
+                    <Button type="button" disabled>
+                      Download GPX
+                    </Button>
+                  </div>
+                  {csvState.result.errors.length > 0 && (
+                    <ul className="space-y-1 rounded-md border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                      {csvState.result.errors.map((error) => (
+                        <li key={error.row}>{error.message}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
