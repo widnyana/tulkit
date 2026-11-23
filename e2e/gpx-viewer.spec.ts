@@ -1,0 +1,41 @@
+import { expect, test } from "@playwright/test";
+
+const SAMPLE_GPX = `<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="tulkit" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="0" lon="0">
+    <name>Alpha</name>
+  </wpt>
+  <wpt lat="0.01" lon="0.01">
+    <name>Omega</name>
+  </wpt>
+  <trk>
+    <name>Test ride</name>
+    <trkseg>
+      <trkpt lat="0" lon="0"><ele>10</ele></trkpt>
+      <trkpt lat="0.005" lon="0.005"><ele>40</ele></trkpt>
+      <trkpt lat="0.01" lon="0.011"><ele>10</ele></trkpt>
+    </trkseg>
+  </trk>
+</gpx>`;
+
+test.describe("GPX viewer map", () => {
+  test("renders the legend and the summary from parsed geometry", async ({
+    page,
+  }) => {
+    await page.goto("/gpx");
+    await page.locator("textarea").first().fill(SAMPLE_GPX);
+
+    const legend = page.getByRole("group", { name: "Map legend" });
+    await expect(legend).toBeVisible({ timeout: 15_000 });
+    await expect(legend.getByText("Start", { exact: true })).toBeVisible();
+    await expect(legend.getByText("Finish", { exact: true })).toBeVisible();
+    await expect(
+      legend.getByText("Direction of travel", { exact: true }),
+    ).toBeVisible();
+    await expect(legend.getByText("Test ride", { exact: true })).toBeVisible();
+
+    const caption = page.locator("figcaption");
+    await expect(caption).toContainText(/km/);
+    await expect(caption).toContainText(/Start 0\.00000, 0\.00000/);
+  });
+});
