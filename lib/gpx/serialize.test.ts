@@ -13,8 +13,8 @@ test("waypointsToGpx round-trips through parseGpx", () => {
     {
       lat: 15.75,
       lon: 30.25,
-      name: "Soto & Kudus",
-      desc: "Mas <Kliwon>",
+      name: "Test & Co",
+      desc: "A <Place>",
     },
   ];
 

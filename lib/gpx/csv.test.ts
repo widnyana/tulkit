@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { parseWaypointCsv } from "./csv.ts";
 
 const SAMPLE = `Latitude,Longitude,Name,Description
-10.000000,20.000000,Start Point,Test Point Campus
+10.000000,20.000000,Start Point,Test Campus
 11.000000,21.000000,Checkpoint 1,Test Pavement Connection`;
 
 test("parses the design doc's sample CSV block", () => {
@@ -13,10 +13,10 @@ test("parses the design doc's sample CSV block", () => {
   assert.deepEqual(result.waypoints[0], {
     row: 2,
     waypoint: {
-      lat: -7.68765,
+      lat: 10,
       lon: 20.000000,
       name: "Start Point",
-      desc: "Test Point Campus",
+      desc: "Test Campus",
     },
   });
   assert.deepEqual(result.waypoints[1], {

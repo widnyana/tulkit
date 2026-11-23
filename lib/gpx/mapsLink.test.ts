@@ -14,11 +14,11 @@ test("parseMapsUrl extracts both stops from a real directions link", () => {
 
   assert.equal(result[0].lon, 20.5);
   assert.equal(result[0].lat, 10.5);
-  assert.ok(result[0].name?.includes("Test Point"));
+  assert.ok(result[0].name?.includes("Test Stop One"));
 
   assert.equal(result[1].lon, 30.25);
   assert.equal(result[1].lat, 15.75);
-  assert.ok(result[1].name?.includes("Test Stop"));
+  assert.ok(result[1].name?.includes("Test Stop Two"));
 });
 
 test("parseMapsUrl extracts a single stop from a place link", () => {

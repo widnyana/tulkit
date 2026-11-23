@@ -294,7 +294,7 @@ export default function GpxViewPage() {
             value={csvInput}
             onChange={(e) => handleCsvChange(e.target.value)}
             placeholder={
-              "Latitude,Longitude,Name,Description\n10.000000,20.000000,Start Point,Test Point Campus"
+              "Latitude,Longitude,Name,Description\n10.000000,20.000000,Start Point,Trailhead"
             }
             className="min-h-[160px] font-mono text-xs"
           />
