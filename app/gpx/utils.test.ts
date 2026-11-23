@@ -5,6 +5,7 @@ import { DOMParser as XmldomDOMParser } from "@xmldom/xmldom";
 import { isParseError, parseGpx } from "../../lib/gpx/parse.ts";
 import {
   allPoints,
+  buildLegend,
   computeBounds,
   distanceMeters,
   elevationGain,
@@ -696,5 +697,148 @@ describe("routeBrief: corpus", () => {
       ),
       undefined,
     );
+  });
+});
+
+describe("buildLegend", () => {
+  it("returns an empty model without throwing", () => {
+    assert.deepEqual(buildLegend(empty), {
+      lines: [],
+      marks: null,
+      namedPoints: null,
+      poiGroups: [],
+      endpoints: null,
+      loop: false,
+    });
+  });
+
+  it("detects a step from flagged km markers", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [
+        {
+          points: Array.from({ length: 40 }, (_, index) => ({
+            lat: index,
+            lon: index,
+            ...(index % 10 === 0
+              ? { name: `${index.toFixed(2)}km`, sym: "flag" }
+              : {}),
+          })),
+        },
+      ],
+    };
+    const marks = buildLegend(parsed).marks;
+    assert.equal(marks?.count, 4);
+    assert.equal(marks?.stepKm, 10);
+    assert.deepEqual(marks?.labels, [
+      "0.00km",
+      "10.00km",
+      "20.00km",
+      "30.00km",
+    ]);
+  });
+
+  it("falls back to named points when no km names exist", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      routes: [
+        {
+          points: [
+            { lat: 0, lon: 0, name: "A" },
+            { lat: 1, lon: 1, name: "B", sym: "camp" },
+            { lat: 2, lon: 2, name: "C" },
+          ],
+        },
+      ],
+    };
+    const legend = buildLegend(parsed);
+    assert.equal(legend.marks, null);
+    assert.equal(legend.namedPoints?.label, "A");
+    assert.equal(legend.namedPoints?.count, 3);
+  });
+
+  it("groups waypoints by symbol with distinct stable colours", () => {
+    const parsed: ParsedGpx = {
+      ...empty,
+      waypoints: [
+        { lat: 0, lon: 0, sym: "Water" },
+        { lat: 1, lon: 1, sym: "Camp" },
+        { lat: 2, lon: 2 },
+      ],
+    };
+    const groups = buildLegend(parsed).poiGroups;
+    assert.equal(groups.length, 3);
+    assert.deepEqual(groups.map((group) => group.label).sort(), [
+      "Camp",
+      "Points",
+      "Water",
+    ]);
+    assert.equal(
+      groups.reduce((total, group) => total + group.count, 0),
+      3,
+    );
+    assert.equal(new Set(groups.map((group) => group.color)).size, 3);
+    assert.deepEqual(buildLegend(parsed).poiGroups, groups);
+  });
+
+  it("merges groups beyond the limit into Other", () => {
+    const syms = [
+      "alpha",
+      "bravo",
+      "charlie",
+      "delta",
+      "echo",
+      "foxtrot",
+      "golf",
+      "hotel",
+    ];
+    const parsed: ParsedGpx = {
+      ...empty,
+      waypoints: syms.map((sym, index) => ({
+        lat: index,
+        lon: index,
+        sym,
+      })),
+    };
+    const groups = buildLegend(parsed).poiGroups;
+    assert.equal(groups.length, 7);
+    assert.equal(groups.filter((group) => group.key !== "other").length, 6);
+    const other = groups.find((group) => group.key === "other");
+    assert.equal(other?.label, "Other");
+    assert.equal(other?.count, 2);
+  });
+
+  it("reads the Jura corpus km step", () => {
+    const legend = buildLegend(
+      parsedFixture("BrittanyJura/SimplifiedGpx/JuraRoute72011.gpx_0.gpx"),
+    );
+    assert.equal(legend.marks?.count, 29);
+    assert.equal(legend.marks?.stepKm, 10);
+    assert.equal(legend.poiGroups.length, 0);
+    assert.ok(legend.lines.length > 0);
+  });
+
+  it("groups the campsite corpus", () => {
+    const legend = buildLegend(
+      parsedFixture("Campsites/CampingMunicipal/camping-municipal-france.gpx"),
+    );
+    assert.equal(legend.poiGroups.length, 1);
+    assert.equal(legend.poiGroups[0].label, "Camp");
+    assert.equal(legend.poiGroups[0].count, 1649);
+  });
+
+  it("leaves the Roscoff POI export without marks", () => {
+    const parsed = parsedFixture("RoscoffCoastal/poi/archies_fr.filtered.gpx");
+    assert.equal(parsed.waypoints.length, 62);
+    assert.equal(buildLegend(parsed).marks, null);
+  });
+
+  it("leaves the audax track without marks or POI groups", () => {
+    const legend = buildLegend(
+      parsedFixture("audax-yogyakarta-yucc-2025-100-km.gpx"),
+    );
+    assert.equal(legend.marks, null);
+    assert.equal(legend.poiGroups.length, 0);
+    assert.ok(legend.lines.length > 0);
   });
 });

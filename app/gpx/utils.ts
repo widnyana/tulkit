@@ -430,6 +430,278 @@ export function buildGpxStats(parsed: ParsedGpx): StatTile[] {
   return stats;
 }
 
+export interface PoiGroup {
+  key: string;
+  label: string;
+  count: number;
+  color: string;
+}
+
+export interface DistanceMarks {
+  count: number;
+  stepKm: number;
+  labels: string[];
+}
+
+export interface NamedPointGroup {
+  label: string;
+  count: number;
+}
+
+export interface LegendModel {
+  lines: LineGroup[];
+  marks: DistanceMarks | null;
+  namedPoints: NamedPointGroup | null;
+  poiGroups: PoiGroup[];
+  endpoints: { start: LatLon; end: LatLon } | null;
+  loop: boolean;
+}
+
+const KM_NAME = /^(\d+(?:[.,]\d+)?)\s*km$/i;
+const KM_TOLERANCE = 0.05;
+const LOOP_DISTANCE_METERS = 25;
+const POI_GROUP_LIMIT = 6;
+const MARK_LABEL_LIMIT = 8;
+
+const POI_SEMANTICS = [
+  { pattern: /camp|camping|tent/i, label: "Camp", color: "#009e73" },
+  { pattern: /water|drinking/i, label: "Water", color: "#0072b2" },
+  { pattern: /summit|peak/i, label: "Summit", color: "#8c510a" },
+  { pattern: /viewpoint/i, label: "Viewpoint", color: "#d55e00" },
+  { pattern: /parking/i, label: "Parking", color: "#4d4d4d" },
+  { pattern: /food|restaurant|cafe/i, label: "Food", color: "#d55e00" },
+  { pattern: /repair|bike/i, label: "Repair", color: "#e69f00" },
+  { pattern: /danger|hazard|warning/i, label: "Hazard", color: "#b2182b" },
+] as const;
+
+interface KmMatch {
+  value: number;
+  sym?: string;
+}
+
+interface PoiBucket {
+  key: string;
+  label: string;
+  count: number;
+  sym?: string;
+}
+
+function kmValue(name: string | undefined): number | null {
+  if (!name) return null;
+  const match = KM_NAME.exec(name.trim());
+  if (!match) return null;
+  const value = Number.parseFloat(match[1].replace(",", "."));
+  return Number.isFinite(value) ? value : null;
+}
+
+function kmMatches(parsed: ParsedGpx): KmMatch[] {
+  const matches: KmMatch[] = [];
+  for (const route of parsed.routes) {
+    for (const point of route.points) {
+      const name = point.name?.trim();
+      const value = kmValue(name);
+      if (!name || value === null) continue;
+      const sym = point.sym?.trim() || undefined;
+      matches.push({ value, ...(sym ? { sym } : {}) });
+    }
+  }
+  return matches;
+}
+
+function commonStep(values: number[]): number | null {
+  const counts = new Map<number, number>();
+  let deltas = 0;
+  for (let index = 1; index < values.length; index++) {
+    const delta = values[index] - values[index - 1];
+    if (!(delta > 0) || !Number.isFinite(delta)) continue;
+    const rounded = Math.round(delta * 100) / 100;
+    if (!(rounded > 0)) continue;
+    counts.set(rounded, (counts.get(rounded) ?? 0) + 1);
+    deltas += 1;
+  }
+  if (deltas < 2) return null;
+
+  let step: number | null = null;
+  let bestCount = 0;
+  for (const [candidate, count] of counts) {
+    if (count < 2) continue;
+    if (
+      step === null ||
+      count > bestCount ||
+      (count === bestCount && candidate < step)
+    ) {
+      step = candidate;
+      bestCount = count;
+    }
+  }
+  return step;
+}
+
+function distanceMarks(parsed: ParsedGpx): DistanceMarks | null {
+  const matches = kmMatches(parsed);
+  if (matches.length < 3) return null;
+
+  const flagged = matches.filter((match) => match.sym !== undefined);
+  const usesFlags = flagged.length >= 3;
+  const stepKm = commonStep(
+    (usesFlags ? flagged : matches).map((match) => match.value),
+  );
+  if (stepKm === null) return null;
+
+  let count = 0;
+  const labels: string[] = [];
+  for (const route of parsed.routes) {
+    for (const point of route.points) {
+      const sym = point.sym?.trim() || undefined;
+      const name = point.name?.trim();
+      const value = kmValue(name);
+      const nearStep =
+        value !== null &&
+        Math.abs(value - Math.round(value / stepKm) * stepKm) <= KM_TOLERANCE;
+      const marked = usesFlags
+        ? sym !== undefined
+        : nearStep || sym !== undefined;
+      if (!marked) continue;
+      count += 1;
+      const label = name || (value !== null ? `${value} km` : sym);
+      if (label && labels.length < MARK_LABEL_LIMIT) labels.push(label);
+    }
+  }
+  return count >= 2 ? { count, stepKm, labels } : null;
+}
+
+function namedPoints(parsed: ParsedGpx): NamedPointGroup | null {
+  const count = parsed.routes.reduce(
+    (total, route) => total + route.points.length,
+    0,
+  );
+  if (count === 0) return null;
+
+  let label: string | undefined;
+  for (const route of parsed.routes) {
+    for (const point of route.points) {
+      const name = point.name?.trim();
+      if (name) {
+        label = name;
+        break;
+      }
+    }
+    if (label) break;
+  }
+  if (!label) {
+    for (const route of parsed.routes) {
+      for (const point of route.points) {
+        const sym = point.sym?.trim();
+        if (sym) {
+          label = sym;
+          break;
+        }
+      }
+      if (label) break;
+    }
+  }
+
+  return label ? { label, count } : null;
+}
+
+function semanticPoi(
+  sym: string | undefined,
+): { label: string; color: string } | null {
+  if (!sym) return null;
+  for (const entry of POI_SEMANTICS) {
+    if (entry.pattern.test(sym)) {
+      return { label: entry.label, color: entry.color };
+    }
+  }
+  return null;
+}
+
+function poiGroups(parsed: ParsedGpx): PoiGroup[] {
+  const buckets = new Map<string, PoiBucket>();
+  for (const waypoint of parsed.waypoints) {
+    const sym = waypoint.sym?.trim() || undefined;
+    const key = sym?.toLowerCase() ?? "";
+    const existing = buckets.get(key);
+    if (existing) {
+      existing.count += 1;
+      continue;
+    }
+    buckets.set(key, {
+      key,
+      label: sym ?? "Points",
+      count: 1,
+      ...(sym ? { sym } : {}),
+    });
+  }
+
+  const sorted = [...buckets.values()].sort(
+    (a, b) => b.count - a.count || a.key.localeCompare(b.key),
+  );
+  const kept = sorted.slice(0, POI_GROUP_LIMIT);
+  const rest = sorted.slice(POI_GROUP_LIMIT);
+  if (rest.length > 0) {
+    kept.push({
+      key: "other",
+      label: "Other",
+      count: rest.reduce((total, bucket) => total + bucket.count, 0),
+    });
+  }
+
+  const resolved = kept.map((bucket) => {
+    const semantic = semanticPoi(bucket.sym);
+    return {
+      key: bucket.key,
+      label: semantic?.label ?? bucket.label,
+      count: bucket.count,
+      color: semantic?.color ?? "",
+    };
+  });
+
+  const used = new Set(
+    resolved.map((group) => group.color).filter((color) => color !== ""),
+  );
+  const pending = resolved
+    .filter((group) => group.color === "" && group.key !== "")
+    .sort((a, b) => a.key.localeCompare(b.key));
+
+  let paletteIndex = 0;
+  for (const group of pending) {
+    while (
+      paletteIndex < LINE_PALETTE.length &&
+      used.has(LINE_PALETTE[paletteIndex])
+    ) {
+      paletteIndex += 1;
+    }
+    const color =
+      paletteIndex < LINE_PALETTE.length
+        ? LINE_PALETTE[paletteIndex]
+        : LINE_PALETTE[paletteIndex % LINE_PALETTE.length];
+    group.color = color;
+    used.add(color);
+    paletteIndex += 1;
+  }
+
+  return resolved.map((group) => ({
+    ...group,
+    color: group.color || "#16181d",
+  }));
+}
+
+export function buildLegend(parsed: ParsedGpx): LegendModel {
+  const marks = distanceMarks(parsed);
+  const endpoints = pathEndpoints(parsed);
+  return {
+    lines: lineGroups(parsed),
+    marks,
+    namedPoints: marks === null ? namedPoints(parsed) : null,
+    poiGroups: poiGroups(parsed),
+    endpoints,
+    loop:
+      endpoints !== null &&
+      distanceMeters(endpoints.start, endpoints.end) < LOOP_DISTANCE_METERS,
+  };
+}
+
 export function pathEndpoints(
   parsed: ParsedGpx,
 ): { start: LatLon; end: LatLon } | null {
