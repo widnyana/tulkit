@@ -183,6 +183,24 @@ function configureIdentity() {
   ]);
 }
 
+function versionCommit() {
+  const { version } = readPackage();
+  const found = git(
+    [
+      "log",
+      "-S",
+      `"version": "${version}"`,
+      "--format=%H",
+      "--reverse",
+      "--",
+      "package.json",
+    ],
+    { allowFailure: true },
+  ).trim();
+  const first = found.split("\n").filter(Boolean)[0];
+  return first ?? null;
+}
+
 function main() {
   const headSubject = git(["log", "-1", "--format=%s"]).trim();
   if (RELEASE_SUBJECT.test(headSubject)) {
@@ -193,26 +211,16 @@ function main() {
   configureIdentity();
 
   const tag = lastTag();
+  const base =
+    tag ??
+    versionCommit() ??
+    git(["rev-list", "--max-parents=0", "HEAD"])
+      .trim()
+      .split("\n")
+      .pop();
 
-  if (!tag) {
-    const { version } = readPackage();
-    const tagName = `v${version}`;
-
-    if (dryRun) {
-      console.log(`no v* tag found — baseline release path for v${version}`);
-      console.log(`would tag ${tagName} on HEAD, push it, and release with notes "Initial release"`);
-      console.log(summary({ version, commitCount: 0, tagName, dry: true }));
-      return;
-    }
-
-    git(["tag", "-a", tagName, "-m", tagName]);
-    git(["push", "origin", tagName]);
-    createRelease(tagName, { notes: "Initial release" });
-    console.log(summary({ version, commitCount: 0, tagName, dry: false }));
-    return;
-  }
-
-  const commits = collectCommits(`${tag}..HEAD`);
+  const baseLabel = tag ?? `v${readPackage().version} (version commit)`;
+  const commits = collectCommits(`${base}..HEAD`);
   if (commits.length === 0) {
     console.log("nothing to release");
     return;
@@ -226,7 +234,7 @@ function main() {
 
   if (dryRun) {
     console.log(
-      `base ${tag} · ${commits.length} ${commitNoun(commits.length)} · bump ${current} -> ${version} (${level})`,
+      `base ${baseLabel} · ${commits.length} ${commitNoun(commits.length)} · bump ${current} -> ${version} (${level})`,
     );
     process.stdout.write(section);
     console.log(summary({ version, commitCount: commits.length, tagName, dry: true }));
