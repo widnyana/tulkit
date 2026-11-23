@@ -4,6 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 
 import { saveAs } from "file-saver";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   Suspense,
   useCallback,
@@ -353,6 +354,8 @@ function GpxViewContent() {
     if (fromUrl === null) return;
     if (loadGpxEntry(fromUrl) === null) setMissingId(fromUrl);
   }, []);
+  const searchParams = useSearchParams();
+  const srcParam = searchParams.get("src");
   const [tab, setTab] = useTabNavigation();
   const currentId = useRef<string | null>(null);
   const appliedUrlId = useRef<string | null>(null);
@@ -395,7 +398,46 @@ function GpxViewContent() {
     resultsRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [state]);
 
+  const appliedSrc = useRef<string | null>(null);
   useEffect(() => {
+    if (srcParam === null || appliedSrc.current === srcParam) return;
+    appliedSrc.current = srcParam;
+    const allowed =
+      srcParam.startsWith("/") ||
+      srcParam.startsWith("http://") ||
+      srcParam.startsWith("https://");
+    if (!allowed) {
+      setState({ kind: "error", message: "That link is not a GPX address." });
+      return;
+    }
+    let cancelled = false;
+    setState({ kind: "loading" });
+    void (async () => {
+      try {
+        const response = await fetch(srcParam);
+        if (!response.ok) {
+          throw new Error(`Route file request failed: ${response.status}`);
+        }
+        const text = await response.text();
+        if (cancelled) return;
+        setRawInput(text);
+        parseInto(text);
+      } catch {
+        if (!cancelled) {
+          setState({
+            kind: "error",
+            message: "Could not load a GPX file from that link.",
+          });
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [srcParam, parseInto]);
+
+  useEffect(() => {
+    if (srcParam !== null) return;
     if (!urlId || appliedUrlId.current === urlId) return;
     const text = loadGpxEntry(urlId);
     if (text === null) {
@@ -407,7 +449,7 @@ function GpxViewContent() {
     currentId.current = urlId;
     setRawInput(text);
     parseInto(text);
-  }, [urlId, parseInto]);
+  }, [urlId, srcParam, parseInto]);
 
   const handleDismissMissing = () => {
     setMissingId(null);

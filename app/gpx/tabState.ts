@@ -10,7 +10,7 @@ export const MAPS_RESULT_MAX_BYTES = 1_000_000;
 export type TabValue = "view" | "library" | "maps" | "csv" | "plan";
 
 export const TAB_QUERY_PARAMS: Record<TabValue, readonly string[]> = {
-  view: ["id"],
+  view: ["id", "src"],
   library: [],
   maps: [],
   csv: [],
@@ -59,7 +59,7 @@ export function buildTabQuery(
   const sanitized = sanitizeTabQuery(tab, tabParams);
   if (tab !== "view") return sanitized;
   const params = new URLSearchParams(sanitized);
-  if (params.has("id")) return sanitized;
+  if (params.has("id") || params.has("src")) return sanitized;
   const storedId = new URLSearchParams(stored.view ?? "").get("id");
   if (!storedId) return sanitized;
   params.set("id", storedId);

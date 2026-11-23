@@ -1,6 +1,7 @@
 "use client";
 
-import { Download, Search } from "lucide-react";
+import { Download, Eye, Search } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,10 @@ function locationOf(
 ): string | null {
   if (city && province) return `${city}, ${province}`;
   return city ?? province;
+}
+
+function viewerHref(file: string): string {
+  return `/gpx?src=${encodeURIComponent(`${libraryBasePath}/${file}`)}`;
 }
 
 export function RouteLibrary() {
@@ -69,11 +74,10 @@ export function RouteLibrary() {
               formatDistance(route.distanceKm),
               formatElevation(route.elevationM),
             ].filter((fact): fact is string => fact !== null);
-
             return (
               <li
                 key={route.slug}
-                className="flex items-center justify-between gap-3 rounded-lg border border-border/70 bg-muted/40 p-3"
+                className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 bg-muted/40 p-3"
               >
                 <div className="min-w-0">
                   <p className="truncate font-medium text-foreground">
@@ -85,21 +89,32 @@ export function RouteLibrary() {
                     </p>
                   )}
                 </div>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="shrink-0"
-                >
-                  <a
-                    href={`${libraryBasePath}/${route.file}`}
-                    download={route.file}
-                    aria-label={`Download ${route.name}`}
+                <div className="flex shrink-0 items-center gap-2">
+                  <Button asChild variant="secondary" size="sm">
+                    <Link
+                      href={viewerHref(route.file)}
+                      aria-label={`View ${route.name} on the map`}
+                    >
+                      <Eye aria-hidden="true" />
+                      View
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0"
                   >
-                    <Download aria-hidden="true" />
-                    GPX
-                  </a>
-                </Button>
+                    <a
+                      href={`${libraryBasePath}/${route.file}`}
+                      download={route.file}
+                      aria-label={`Download ${route.name}`}
+                    >
+                      <Download aria-hidden="true" />
+                      GPX
+                    </a>
+                  </Button>
+                </div>
               </li>
             );
           })}

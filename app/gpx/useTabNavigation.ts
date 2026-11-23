@@ -52,7 +52,13 @@ export function useTabNavigation(): [TabValue, (next: TabValue) => void] {
   const pathname = usePathname();
   const explicitTab = searchParams.get("tab");
   const explicitId = searchParams.get("id");
-  const tab: TabValue = isTabValue(explicitTab) ? explicitTab : "view";
+  const explicitSrc = searchParams.get("src");
+  const tab: TabValue =
+    explicitSrc !== null
+      ? "view"
+      : isTabValue(explicitTab)
+        ? explicitTab
+        : "view";
 
   const setTab = useCallback(
     (next: TabValue) => {
@@ -83,6 +89,7 @@ export function useTabNavigation(): [TabValue, (next: TabValue) => void] {
     const remembered = store === null ? null : readActiveTab(store);
     if (
       explicitTab === null &&
+      explicitSrc === null &&
       (explicitId === null || explicitId === "") &&
       remembered !== null &&
       remembered !== "view"
@@ -111,7 +118,15 @@ export function useTabNavigation(): [TabValue, (next: TabValue) => void] {
     }
     if (sanitized === current) return;
     router.replace(queryUrl(pathname, sanitized), { scroll: false });
-  }, [explicitId, explicitTab, pathname, router, searchParams, tab]);
+  }, [
+    explicitId,
+    explicitSrc,
+    explicitTab,
+    pathname,
+    router,
+    searchParams,
+    tab,
+  ]);
 
   return [tab, setTab];
 }
