@@ -315,6 +315,12 @@ function GpxViewContent() {
   const planNameId = useId();
 
   const [urlId, setUrlId] = useGpxId();
+  const urlIdOnLoad = useRef<string | null>(urlId);
+  useEffect(() => {
+    const fromUrl = urlIdOnLoad.current;
+    if (fromUrl === null) return;
+    if (loadGpxEntry(fromUrl) === null) setMissingId(fromUrl);
+  }, []);
   const [tab, setTab] = useTabNavigation();
   const currentId = useRef<string | null>(null);
   const appliedUrlId = useRef<string | null>(null);
@@ -718,13 +724,16 @@ function GpxViewContent() {
           </TabsList>
           <p className="mt-3 text-sm text-muted-foreground">{TAB_HINTS[tab]}</p>
 
-          <TabsContent value="view" className="mt-4 space-y-4">
-            {missingId !== null && (
+          {missingId !== null && (
+            <div className="mt-4">
               <MissingEntryPanel
                 id={missingId}
                 onDismiss={handleDismissMissing}
               />
-            )}
+            </div>
+          )}
+
+          <TabsContent value="view" className="mt-4 space-y-4">
             <label htmlFor={rawInputId} className="sr-only">
               GPX XML
             </label>

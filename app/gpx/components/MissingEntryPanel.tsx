@@ -5,8 +5,8 @@ export function MissingEntryCopy({ id }: { id: string }) {
     <>
       <p className="mt-2 text-sm text-muted-foreground">
         Saved GPX entries live in the browser that created them, and an ID opens
-        only there. To share a route, send the .gpx file and open it with the
-        upload control.
+        only there. To share a route, send the .gpx file and open it in the View
+        tab.
       </p>
       <p className="mt-2 font-mono text-xs break-all text-muted-foreground">
         ID {id}

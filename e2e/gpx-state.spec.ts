@@ -83,6 +83,27 @@ test.describe("GPX link opened on another browser", () => {
     ).toBeVisible();
   });
 
+  test("warns on every tab and keeps the notice there", async ({ page }) => {
+    for (const [tab, label] of [
+      ["plan", "Route"],
+      ["maps", "From Maps"],
+      ["csv", "From CSV"],
+    ] as const) {
+      await page.goto(`/gpx?tab=${tab}&id=${MISSING_ID}`);
+
+      await expect(dialog(page)).toBeVisible({ timeout: 30_000 });
+      await expect(
+        page.getByRole("tab", { name: label }),
+      ).toHaveAttribute("aria-selected", "true");
+
+      await dialog(page).getByRole("button", { name: "Got it" }).click();
+
+      await expect(notice(page)).toBeVisible();
+      await expect(notice(page)).toContainText(MISSING_ID);
+      await expect(page).toHaveURL(new RegExp(`tab=${tab}$`));
+    }
+  });
+
   test("pasting a file replaces the foreign id with a local entry", async ({
     page,
   }) => {
