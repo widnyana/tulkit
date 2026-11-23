@@ -42,12 +42,7 @@ export function routeToGpx(plan: RoutePlanExport): string {
   const toPoint = (point: RoutePlanPoint) =>
     new Point(point.lat, point.lon, { name: point.name });
 
-  const builder = new BaseBuilder().setRoutes([
-    new Route({
-      name: trimmedName || "Route",
-      rtept: plan.controlPoints.map(toPoint),
-    }),
-  ]);
+  const builder = new BaseBuilder();
 
   if (trimmedName) {
     builder.setMetadata(new Metadata({ name: trimmedName }));
@@ -71,6 +66,13 @@ export function routeToGpx(plan: RoutePlanExport): string {
     builder.setTracks([
       new Track([new Segment(snappedPath.map(toPoint))], {
         name: trimmedName || "Route",
+      }),
+    ]);
+  } else {
+    builder.setRoutes([
+      new Route({
+        name: trimmedName || "Route",
+        rtept: plan.controlPoints.map(toPoint),
       }),
     ]);
   }

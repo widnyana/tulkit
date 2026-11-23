@@ -349,6 +349,7 @@ function GpxViewContent() {
   const handleDownloadGpx = () => {
     if (mapsState.kind !== "success") return;
     const gpx = routeToGpx({
+      waypoints: mapsState.waypoints,
       controlPoints: mapsState.waypoints,
       snappedPath: mapsState.route,
     });

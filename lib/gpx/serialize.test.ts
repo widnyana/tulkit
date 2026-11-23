@@ -83,11 +83,48 @@ test("routeToGpx writes a snapped path as a single track segment", () => {
   assert.ok(!isParseError(parsed));
   if (isParseError(parsed)) return;
 
-  assert.equal(parsed.routes.length, 1);
-  assert.equal(parsed.routes[0].points.length, controlPoints.length);
-  for (let i = 0; i < controlPoints.length; i++) {
-    assert.equal(parsed.routes[0].points[i].lat, controlPoints[i].lat);
-    assert.equal(parsed.routes[0].points[i].lon, controlPoints[i].lon);
+  assert.equal(parsed.waypoints.length, 0);
+  assert.equal(parsed.routes.length, 0);
+
+  assert.equal(parsed.tracks.length, 1);
+  assert.equal(parsed.tracks[0].segments.length, 1);
+  const segment = parsed.tracks[0].segments[0];
+  assert.equal(segment.length, snappedPath.length);
+  for (let i = 0; i < snappedPath.length; i++) {
+    assert.equal(segment[i].lat, snappedPath[i].lat);
+    assert.equal(segment[i].lon, snappedPath[i].lon);
+  }
+});
+
+test("routeToGpx writes waypoints alongside a snapped path without a route", () => {
+  const waypoints = [
+    { lat: 40.1, lon: -73.9, name: "Start" },
+    { lat: 40.2, lon: -73.8, name: "Finish", desc: "Last stop" },
+  ];
+  const snappedPath = [
+    { lat: 40.1, lon: -73.9 },
+    { lat: 40.15, lon: -73.855 },
+    { lat: 40.17, lon: -73.83 },
+    { lat: 40.2, lon: -73.8 },
+  ];
+
+  const gpx = routeToGpx({
+    name: "Snapped With Pins",
+    waypoints,
+    controlPoints: waypoints,
+    snappedPath,
+  });
+  const parsed = parseGpx(gpx);
+
+  assert.ok(!isParseError(parsed));
+  if (isParseError(parsed)) return;
+
+  assert.equal(parsed.routes.length, 0);
+
+  assert.equal(parsed.waypoints.length, waypoints.length);
+  for (let i = 0; i < waypoints.length; i++) {
+    assert.equal(parsed.waypoints[i].name, waypoints[i].name);
+    assert.equal(parsed.waypoints[i].desc, waypoints[i].desc);
   }
 
   assert.equal(parsed.tracks.length, 1);
