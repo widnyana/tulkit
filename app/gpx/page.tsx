@@ -15,7 +15,8 @@ import {
 } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
-import { fetchRoadRoute } from "@/lib/gpx/routing";
+import { fetchElevations } from "@/lib/gpx/elevation";
+import { fetchRoadRoute, snapToRoad } from "@/lib/gpx/routing";
 import { routeToGpx } from "@/lib/gpx/serialize";
 import {
   generateGpxId,
@@ -41,6 +42,7 @@ import type { LatLon, MapsWaypoint, ParsedGpx } from "./types";
 import { useGpxId } from "./useGpxId";
 import { useQueryState } from "./useQueryState";
 import {
+  distanceMeters,
   formatDistance,
   pathDistanceMeters,
   waypointsToParsedGpx,
@@ -71,6 +73,10 @@ const PLAN_DRAFT_KEY = "tulkit:gpx:route-draft:v1";
 const PLAN_DRAFT_DEBOUNCE_MS = 400;
 const PLAN_SNAP_DEBOUNCE_MS = 600;
 const PLAN_HISTORY_LIMIT = 50;
+const PLAN_NOTICE_TIMEOUT_MS = 3000;
+const PLAN_MIN_POINT_GAP_METERS = 10;
+const PLAN_MAX_LEG_METERS = 1000 * 1000;
+const PLAN_MAX_SNAP_DISTANCE_METERS = 1000;
 
 const PLAN_MODES = ["driving", "bicycling", "walking"] as const;
 type PlanMode = (typeof PLAN_MODES)[number];
@@ -89,6 +95,41 @@ const SNAP_STATUS_LABELS: Record<SnapStatus, string> = {
   ok: "Snapped to roads.",
   failed: "A point is not on a road; move it closer to a road to export.",
 };
+
+interface PlanNotice {
+  title: string;
+  description: string;
+}
+
+const PLAN_NOTICES = {
+  duplicate: {
+    title: "Point already placed there.",
+    description: "Click somewhere else on the map.",
+  },
+  tooFar: {
+    title: "That point is too far away.",
+    description: "Each leg must stay under 1000 km from the previous point.",
+  },
+  noRoad: {
+    title: "No road there.",
+    description:
+      "The click is more than 1 km from a road. Water and off-road clicks are blocked.",
+  },
+  unavailable: {
+    title: "Could not check that spot.",
+    description: "The road service did not answer. Try the click again.",
+  },
+} as const satisfies Record<string, PlanNotice>;
+
+async function attachElevations(
+  points: ReadonlyArray<LatLon>,
+): Promise<LatLon[]> {
+  const elevations = await fetchElevations(points);
+  return points.map((point, index) => {
+    const ele = elevations[index];
+    return typeof ele === "number" ? { ...point, ele } : point;
+  });
+}
 
 interface PlanDraft {
   name: string;
@@ -242,8 +283,14 @@ function GpxViewContent() {
   const [planMode, setPlanMode] = useState<PlanMode>("driving");
   const [snappedPath, setSnappedPath] = useState<LatLon[] | null>(null);
   const [snapStatus, setSnapStatus] = useState<SnapStatus>("idle");
+  const [planNotice, setPlanNotice] = useState<PlanNotice | null>(null);
+  const [preparingPlanGpx, setPreparingPlanGpx] = useState(false);
+  const [preparingMapsGpx, setPreparingMapsGpx] = useState(false);
   const planPoints = plan.points;
   const snapRequestId = useRef(0);
+  const noticeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const draftRestored = useRef(false);
   const rawInputId = useId();
   const fileInputId = useId();
@@ -346,14 +393,23 @@ function GpxViewContent() {
     );
   };
 
-  const handleDownloadGpx = () => {
-    if (mapsState.kind !== "success") return;
-    const gpx = routeToGpx({
-      waypoints: mapsState.waypoints,
-      controlPoints: mapsState.waypoints,
-      snappedPath: mapsState.route,
-    });
-    saveAs(new Blob([gpx], { type: "application/gpx+xml" }), "maps-import.gpx");
+  const handleDownloadGpx = async () => {
+    if (mapsState.kind !== "success" || preparingMapsGpx) return;
+    setPreparingMapsGpx(true);
+    try {
+      const route = mapsState.route;
+      const gpx = routeToGpx({
+        waypoints: mapsState.waypoints,
+        controlPoints: mapsState.waypoints,
+        snappedPath: route === null ? null : await attachElevations(route),
+      });
+      saveAs(
+        new Blob([gpx], { type: "application/gpx+xml" }),
+        "maps-import.gpx",
+      );
+    } finally {
+      setPreparingMapsGpx(false);
+    }
   };
 
   const handleCsvChange = (value: string) => {
@@ -447,30 +503,92 @@ function GpxViewContent() {
     });
   }, [planName, planMode, planPoints, snappedPath, persistPlanDraft]);
 
-  const handlePlanMapClick = useCallback((point: LatLon) => {
-    dispatchPlan({ type: "add", point });
+  const dismissPlanNotice = useCallback(() => {
+    clearTimeout(noticeTimer.current);
+    noticeTimer.current = undefined;
+    setPlanNotice(null);
   }, []);
+
+  const showPlanNotice = useCallback((notice: PlanNotice) => {
+    clearTimeout(noticeTimer.current);
+    setPlanNotice(notice);
+    noticeTimer.current = setTimeout(() => {
+      noticeTimer.current = undefined;
+      setPlanNotice(null);
+    }, PLAN_NOTICE_TIMEOUT_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(noticeTimer.current);
+    };
+  }, []);
+
+  const handlePlanMapClick = useCallback(
+    async (point: LatLon) => {
+      const previous = planPoints.at(-1);
+      if (previous) {
+        const legDistance = distanceMeters(previous, point);
+        if (legDistance <= PLAN_MIN_POINT_GAP_METERS) {
+          showPlanNotice(PLAN_NOTICES.duplicate);
+          return;
+        }
+        if (legDistance > PLAN_MAX_LEG_METERS) {
+          showPlanNotice(PLAN_NOTICES.tooFar);
+          return;
+        }
+      }
+
+      const snap = await snapToRoad(point, planMode);
+      if (snap.reason === "no-road") {
+        showPlanNotice(PLAN_NOTICES.noRoad);
+        return;
+      }
+      if (
+        snap.reason === "unavailable" ||
+        snap.point === null ||
+        snap.distance === null
+      ) {
+        showPlanNotice(PLAN_NOTICES.unavailable);
+        return;
+      }
+      if (snap.distance > PLAN_MAX_SNAP_DISTANCE_METERS) {
+        showPlanNotice(PLAN_NOTICES.noRoad);
+        return;
+      }
+
+      dispatchPlan({ type: "add", point: snap.point });
+    },
+    [planPoints, planMode, showPlanNotice],
+  );
 
   const handlePlanPointMove = useCallback((index: number, point: LatLon) => {
     dispatchPlan({ type: "move", index, point });
   }, []);
 
-  const handleDownloadRouteGpx = () => {
-    if (planPoints.length < 2) return;
-    const gpx = routeToGpx({
-      name: planName,
-      controlPoints: planPoints,
-      snappedPath,
-    });
-    saveAs(
-      new Blob([gpx], { type: "application/gpx+xml" }),
-      `${slugifyName(planName) || "route"}.gpx`,
-    );
+  const handleDownloadRouteGpx = async () => {
+    if (planPoints.length < 2 || snappedPath === null || preparingPlanGpx) {
+      return;
+    }
+    setPreparingPlanGpx(true);
+    try {
+      const gpx = routeToGpx({
+        name: planName,
+        controlPoints: planPoints,
+        snappedPath: await attachElevations(snappedPath),
+      });
+      saveAs(
+        new Blob([gpx], { type: "application/gpx+xml" }),
+        `${slugifyName(planName) || "route"}.gpx`,
+      );
+    } finally {
+      setPreparingPlanGpx(false);
+    }
   };
 
   return (
     <div className="min-h-screen">
-      <div className="mx-auto max-w-6xl px-5 pb-28 pt-10 sm:px-6 sm:pt-14 lg:pb-12">
+      <div className="mx-auto px-5 pb-28 pt-10 sm:px-6 sm:pt-14 lg:pb-12">
         <Link
           href="/"
           className="inline-flex items-center gap-2 rounded-lg text-sm text-muted-foreground transition-colors duration-200 ease-soft hover:text-foreground"
@@ -617,8 +735,12 @@ function GpxViewContent() {
             {mapsState.kind === "success" && (
               <ResultPanel
                 actions={
-                  <Button type="button" onClick={handleDownloadGpx}>
-                    Download GPX
+                  <Button
+                    type="button"
+                    onClick={handleDownloadGpx}
+                    disabled={preparingMapsGpx}
+                  >
+                    {preparingMapsGpx ? "Preparing..." : "Download GPX"}
                   </Button>
                 }
                 parsed={waypointsToParsedGpx(
@@ -866,9 +988,13 @@ function GpxViewContent() {
                     type="button"
                     className="ml-auto"
                     onClick={handleDownloadRouteGpx}
-                    disabled={planPoints.length < 2 || snappedPath === null}
+                    disabled={
+                      planPoints.length < 2 ||
+                      snappedPath === null ||
+                      preparingPlanGpx
+                    }
                   >
-                    Download GPX
+                    {preparingPlanGpx ? "Preparing..." : "Download GPX"}
                   </Button>
                 </div>
               </div>
@@ -876,6 +1002,33 @@ function GpxViewContent() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {planNotice !== null && (
+        <div className="fixed inset-0 z-50 grid place-items-center p-6">
+          <button
+            type="button"
+            aria-label="Dismiss notice"
+            className="absolute inset-0 bg-background/50"
+            onClick={dismissPlanNotice}
+          />
+          <div
+            role="alert"
+            aria-live="assertive"
+            className="relative max-w-xl w-full rounded-lg border-2 border-destructive bg-destructive px-8 py-6 text-center text-destructive-foreground shadow-2xl"
+          >
+            <p className="text-2xl font-bold">{planNotice.title}</p>
+            <p className="mt-2 text-lg">{planNotice.description}</p>
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-5"
+              onClick={dismissPlanNotice}
+            >
+              Dismiss
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
