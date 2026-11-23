@@ -4,124 +4,124 @@
     <name>Ubud Water and Camp Points</name>
     <time>2026-06-18T05:30:00Z</time>
   </metadata>
-  <wpt lat="-8.450087" lon="115.220883"><ele>28</ele><name>Bumi Perkemahan Ubud</name><desc>Bumi perkemahan dengan sumber air di Ubud</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.450201" lon="115.221746"><ele>32</ele><name>Mata Air Tegallalang</name><desc>Mata air, aman untuk isi ulang di Tegallalang</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.450245" lon="115.222742"><ele>28</ele><name>Mata Air Tampaksiring</name><desc>Mata air, aman untuk isi ulang di Tampaksiring</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.450327" lon="115.223705"><ele>30</ele><name>Mata Air Kedewatan</name><desc>Mata air, aman untuk isi ulang di Kedewatan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.450491" lon="115.225021"><ele>29</ele><name>Bumi Perkemahan Sayan</name><desc>Bumi perkemahan dengan sumber air di Sayan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.450535" lon="115.226158"><ele>32</ele><name>Mata Air Pengosekan</name><desc>Mata air, aman untuk isi ulang di Pengosekan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.450639" lon="115.227323"><ele>28</ele><name>Bumi Perkemahan Nyuh Kuning</name><desc>Bumi perkemahan dengan sumber air di Nyuh Kuning</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.450647" lon="115.228605"><ele>31</ele><name>Warung Nasi Mas</name><desc>Warung makan setempat di Mas</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.450466" lon="115.229890"><ele>30</ele><name>Bumi Perkemahan Peliatan</name><desc>Bumi perkemahan dengan sumber air di Peliatan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.450399" lon="115.230954"><ele>32</ele><name>Bakso Lodtunduh</name><desc>Bakso dan mie ayam setempat di Lodtunduh</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.450245" lon="115.231870"><ele>30</ele><name>Titik Pandang Ubud</name><desc>Titik pandang tepi jalan di Ubud</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.450174" lon="115.232741"><ele>28</ele><name>Sumur Tegallalang</name><desc>Mata air, aman untuk isi ulang di Tegallalang</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.450102" lon="115.233747"><ele>30</ele><name>Kedai Kopi Tampaksiring</name><desc>Warung makan setempat di Tampaksiring</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.449954" lon="115.234854"><ele>30</ele><name>Titik Pandang Kedewatan</name><desc>Titik pandang tepi jalan di Kedewatan</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.449883" lon="115.235933"><ele>29</ele><name>Sumur Sayan</name><desc>Mata air, aman untuk isi ulang di Sayan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.449686" lon="115.237077"><ele>31</ele><name>Sumur Pengosekan</name><desc>Mata air, aman untuk isi ulang di Pengosekan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.449611" lon="115.238271"><ele>29</ele><name>Bakso Nyuh Kuning</name><desc>Bakso dan mie ayam setempat di Nyuh Kuning</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.449459" lon="115.239292"><ele>28</ele><name>Bumi Perkemahan Mas</name><desc>Bumi perkemahan dengan sumber air di Mas</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.449387" lon="115.240208"><ele>30</ele><name>Sumur Peliatan</name><desc>Mata air, aman untuk isi ulang di Peliatan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.449253" lon="115.241502"><ele>30</ele><name>Kedai Kopi Lodtunduh</name><desc>Warung makan setempat di Lodtunduh</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.449153" lon="115.242135"><ele>31</ele><name>Saung Makan Ubud</name><desc>Warung makan setempat di Ubud</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.449078" lon="115.243156"><ele>29</ele><name>Bumi Perkemahan Tegallalang</name><desc>Bumi perkemahan dengan sumber air di Tegallalang</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.449010" lon="115.244408"><ele>30</ele><name>Pancuran Umum Tampaksiring</name><desc>Mata air, aman untuk isi ulang di Tampaksiring</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.448939" lon="115.245527"><ele>31</ele><name>Warteg Kedewatan</name><desc>Warteg dengan nasi dan sayur di Kedewatan</desc><sym>Warteg</sym></wpt>
-  <wpt lat="-8.448822" lon="115.246480"><ele>30</ele><name>Bumi Perkemahan Sayan</name><desc>Bumi perkemahan dengan sumber air di Sayan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.448804" lon="115.247419"><ele>30</ele><name>Pancuran Umum Pengosekan</name><desc>Mata air, aman untuk isi ulang di Pengosekan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.448697" lon="115.248689"><ele>31</ele><name>Warteg Nyuh Kuning</name><desc>Warteg dengan nasi dan sayur di Nyuh Kuning</desc><sym>Warteg</sym></wpt>
-  <wpt lat="-8.448583" lon="115.249891"><ele>30</ele><name>Pancuran Umum Mas</name><desc>Mata air, aman untuk isi ulang di Mas</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.448569" lon="115.250810"><ele>31</ele><name>Titik Pandang Peliatan</name><desc>Titik pandang tepi jalan di Peliatan</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.448426" lon="115.251971"><ele>28</ele><name>Pancuran Umum Lodtunduh</name><desc>Mata air, aman untuk isi ulang di Lodtunduh</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.448422" lon="115.253066"><ele>28</ele><name>Mata Air Ubud</name><desc>Mata air, aman untuk isi ulang di Ubud</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.448269" lon="115.254273"><ele>31</ele><name>Warung Nasi Tegallalang</name><desc>Warung makan setempat di Tegallalang</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.448223" lon="115.255374"><ele>29</ele><name>Bakso Tampaksiring</name><desc>Bakso dan mie ayam setempat di Tampaksiring</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.448160" lon="115.256379"><ele>31</ele><name>Mata Air Kedewatan</name><desc>Mata air, aman untuk isi ulang di Kedewatan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.448082" lon="115.257177"><ele>29</ele><name>Warung Nasi Sayan</name><desc>Warung makan setempat di Sayan</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.448026" lon="115.258191"><ele>32</ele><name>Mata Air Pengosekan</name><desc>Mata air, aman untuk isi ulang di Pengosekan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.447902" lon="115.259307"><ele>30</ele><name>Bumi Perkemahan Nyuh Kuning</name><desc>Bumi perkemahan dengan sumber air di Nyuh Kuning</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.447472" lon="115.260512"><ele>33</ele><name>Bumi Perkemahan Mas</name><desc>Bumi perkemahan dengan sumber air di Mas</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.447090" lon="115.261451"><ele>33</ele><name>Mata Air Peliatan</name><desc>Mata air, aman untuk isi ulang di Peliatan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.446736" lon="115.262294"><ele>30</ele><name>Titik Pandang Lodtunduh</name><desc>Titik pandang tepi jalan di Lodtunduh</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.446349" lon="115.263346"><ele>31</ele><name>Titik Pandang Ubud</name><desc>Titik pandang tepi jalan di Ubud</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.446031" lon="115.264203"><ele>31</ele><name>Titik Pandang Tegallalang</name><desc>Titik pandang tepi jalan di Tegallalang</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.445635" lon="115.265132"><ele>31</ele><name>Sumur Tampaksiring</name><desc>Mata air, aman untuk isi ulang di Tampaksiring</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.445263" lon="115.266207"><ele>29</ele><name>Bakso Kedewatan</name><desc>Bakso dan mie ayam setempat di Kedewatan</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.444752" lon="115.267373"><ele>31</ele><name>Sumur Sayan</name><desc>Mata air, aman untuk isi ulang di Sayan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.444294" lon="115.268528"><ele>31</ele><name>Sumur Pengosekan</name><desc>Mata air, aman untuk isi ulang di Pengosekan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.443915" lon="115.269581"><ele>30</ele><name>Sumur Nyuh Kuning</name><desc>Mata air, aman untuk isi ulang di Nyuh Kuning</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.443436" lon="115.270743"><ele>28</ele><name>Titik Pandang Mas</name><desc>Titik pandang tepi jalan di Mas</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.443074" lon="115.271645"><ele>28</ele><name>Bumi Perkemahan Peliatan</name><desc>Bumi perkemahan dengan sumber air di Peliatan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.442756" lon="115.272488"><ele>28</ele><name>Bumi Perkemahan Lodtunduh</name><desc>Bumi perkemahan dengan sumber air di Lodtunduh</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.442332" lon="115.273586"><ele>30</ele><name>Bumi Perkemahan Ubud</name><desc>Bumi perkemahan dengan sumber air di Ubud</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.441888" lon="115.274583"><ele>29</ele><name>Warteg Tegallalang</name><desc>Warteg dengan nasi dan sayur di Tegallalang</desc><sym>Warteg</sym></wpt>
-  <wpt lat="-8.441500" lon="115.275560"><ele>29</ele><name>Bakso Tampaksiring</name><desc>Bakso dan mie ayam setempat di Tampaksiring</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.440968" lon="115.276888"><ele>26</ele><name>Pancuran Umum Kedewatan</name><desc>Mata air, aman untuk isi ulang di Kedewatan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.440605" lon="115.277874"><ele>29</ele><name>Bumi Perkemahan Sayan</name><desc>Bumi perkemahan dengan sumber air di Sayan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.440171" lon="115.278982"><ele>28</ele><name>Titik Pandang Pengosekan</name><desc>Titik pandang tepi jalan di Pengosekan</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.439717" lon="115.280034"><ele>30</ele><name>Bumi Perkemahan Nyuh Kuning</name><desc>Bumi perkemahan dengan sumber air di Nyuh Kuning</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.439375" lon="115.280907"><ele>29</ele><name>Bumi Perkemahan Mas</name><desc>Bumi perkemahan dengan sumber air di Mas</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.439036" lon="115.281801"><ele>29</ele><name>Saung Makan Peliatan</name><desc>Warung makan setempat di Peliatan</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.438780" lon="115.282561"><ele>28</ele><name>Bumi Perkemahan Lodtunduh</name><desc>Bumi perkemahan dengan sumber air di Lodtunduh</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.438603" lon="115.281953"><ele>43</ele><name>Mata Air Ubud</name><desc>Mata air, aman untuk isi ulang di Ubud</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.438311" lon="115.280854"><ele>67</ele><name>Mata Air Tegallalang</name><desc>Mata air, aman untuk isi ulang di Tegallalang</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.438036" lon="115.279754"><ele>91</ele><name>Warung Nasi Tampaksiring</name><desc>Warung makan setempat di Tampaksiring</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.437780" lon="115.279485"><ele>117</ele><name>Titik Pandang Kedewatan</name><desc>Titik pandang tepi jalan di Kedewatan</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.437404" lon="115.280628"><ele>142</ele><name>Bumi Perkemahan Sayan</name><desc>Bumi perkemahan dengan sumber air di Sayan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.437176" lon="115.280510"><ele>164</ele><name>Bumi Perkemahan Pengosekan</name><desc>Bumi perkemahan dengan sumber air di Pengosekan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.436876" lon="115.279611"><ele>190</ele><name>Titik Pandang Nyuh Kuning</name><desc>Titik pandang tepi jalan di Nyuh Kuning</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.436653" lon="115.278829"><ele>213</ele><name>Mata Air Mas</name><desc>Mata air, aman untuk isi ulang di Mas</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.436420" lon="115.277721"><ele>239</ele><name>Mata Air Peliatan</name><desc>Mata air, aman untuk isi ulang di Peliatan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.436121" lon="115.276693"><ele>262</ele><name>Warung Nasi Lodtunduh</name><desc>Warung makan setempat di Lodtunduh</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.435896" lon="115.277592"><ele>288</ele><name>Bakso Ubud</name><desc>Bakso dan mie ayam setempat di Ubud</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.435521" lon="115.278965"><ele>313</ele><name>Titik Pandang Tegallalang</name><desc>Titik pandang tepi jalan di Tegallalang</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.435313" lon="115.279826"><ele>335</ele><name>Kedai Kopi Tampaksiring</name><desc>Warung makan setempat di Tampaksiring</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.435018" lon="115.280995"><ele>360</ele><name>Kedai Kopi Kedewatan</name><desc>Warung makan setempat di Kedewatan</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.434757" lon="115.281133"><ele>385</ele><name>Titik Pandang Sayan</name><desc>Titik pandang tepi jalan di Sayan</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.434468" lon="115.279978"><ele>410</ele><name>Sumur Pengosekan</name><desc>Mata air, aman untuk isi ulang di Pengosekan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.434209" lon="115.279069"><ele>436</ele><name>Bakso Nyuh Kuning</name><desc>Bakso dan mie ayam setempat di Nyuh Kuning</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.433893" lon="115.277875"><ele>458</ele><name>Bumi Perkemahan Mas</name><desc>Bumi perkemahan dengan sumber air di Mas</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.433582" lon="115.276689"><ele>485</ele><name>Kedai Kopi Peliatan</name><desc>Warung makan setempat di Peliatan</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.433299" lon="115.277592"><ele>509</ele><name>Sumur Lodtunduh</name><desc>Mata air, aman untuk isi ulang di Lodtunduh</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.433028" lon="115.278567"><ele>533</ele><name>Bumi Perkemahan Ubud</name><desc>Bumi perkemahan dengan sumber air di Ubud</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.432772" lon="115.279676"><ele>557</ele><name>Bumi Perkemahan Tegallalang</name><desc>Bumi perkemahan dengan sumber air di Tegallalang</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.432510" lon="115.280570"><ele>582</ele><name>Bumi Perkemahan Tampaksiring</name><desc>Bumi perkemahan dengan sumber air di Tampaksiring</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.432293" lon="115.279716"><ele>606</ele><name>Warteg Kedewatan</name><desc>Warteg dengan nasi dan sayur di Kedewatan</desc><sym>Warteg</sym></wpt>
-  <wpt lat="-8.432085" lon="115.278779"><ele>629</ele><name>Bumi Perkemahan Sayan</name><desc>Bumi perkemahan dengan sumber air di Sayan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.431771" lon="115.277586"><ele>654</ele><name>Pancuran Umum Pengosekan</name><desc>Mata air, aman untuk isi ulang di Pengosekan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.431480" lon="115.277606"><ele>678</ele><name>Pancuran Umum Nyuh Kuning</name><desc>Mata air, aman untuk isi ulang di Nyuh Kuning</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.431245" lon="115.278570"><ele>703</ele><name>Saung Makan Mas</name><desc>Warung makan setempat di Mas</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.430954" lon="115.279594"><ele>729</ele><name>Bumi Perkemahan Peliatan</name><desc>Bumi perkemahan dengan sumber air di Peliatan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.430614" lon="115.280850"><ele>751</ele><name>Pancuran Umum Lodtunduh</name><desc>Mata air, aman untuk isi ulang di Lodtunduh</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.430313" lon="115.282059"><ele>779</ele><name>Mata Air Ubud</name><desc>Mata air, aman untuk isi ulang di Ubud</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.430055" lon="115.280973"><ele>802</ele><name>Warung Nasi Tegallalang</name><desc>Warung makan setempat di Tegallalang</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.429703" lon="115.279775"><ele>828</ele><name>Warung Nasi Tampaksiring</name><desc>Warung makan setempat di Tampaksiring</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.429400" lon="115.280716"><ele>852</ele><name>Warung Nasi Kedewatan</name><desc>Warung makan setempat di Kedewatan</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.429150" lon="115.281871"><ele>874</ele><name>Bumi Perkemahan Sayan</name><desc>Bumi perkemahan dengan sumber air di Sayan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.428841" lon="115.281601"><ele>900</ele><name>Titik Pandang Pengosekan</name><desc>Titik pandang tepi jalan di Pengosekan</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.428577" lon="115.280562"><ele>925</ele><name>Mata Air Nyuh Kuning</name><desc>Mata air, aman untuk isi ulang di Nyuh Kuning</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.428421" lon="115.279667"><ele>948</ele><name>Bakso Mas</name><desc>Bakso dan mie ayam setempat di Mas</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.428058" lon="115.278442"><ele>974</ele><name>Bakso Peliatan</name><desc>Bakso dan mie ayam setempat di Peliatan</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.427866" lon="115.279449"><ele>998</ele><name>Mata Air Lodtunduh</name><desc>Mata air, aman untuk isi ulang di Lodtunduh</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.427734" lon="115.279911"><ele>1011</ele><name>Sumur Ubud</name><desc>Mata air, aman untuk isi ulang di Ubud</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.427392" lon="115.281117"><ele>1035</ele><name>Bumi Perkemahan Tegallalang</name><desc>Bumi perkemahan dengan sumber air di Tegallalang</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.427079" lon="115.282266"><ele>1059</ele><name>Bakso Tampaksiring</name><desc>Bakso dan mie ayam setempat di Tampaksiring</desc><sym>Bakso</sym></wpt>
-  <wpt lat="-8.426851" lon="115.282254"><ele>1084</ele><name>Kedai Kopi Kedewatan</name><desc>Warung makan setempat di Kedewatan</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.426511" lon="115.281017"><ele>1108</ele><name>Sumur Sayan</name><desc>Mata air, aman untuk isi ulang di Sayan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.426203" lon="115.279935"><ele>1133</ele><name>Bumi Perkemahan Pengosekan</name><desc>Bumi perkemahan dengan sumber air di Pengosekan</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.425893" lon="115.279882"><ele>1157</ele><name>Sumur Nyuh Kuning</name><desc>Mata air, aman untuk isi ulang di Nyuh Kuning</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.425590" lon="115.280861"><ele>1183</ele><name>Bumi Perkemahan Mas</name><desc>Bumi perkemahan dengan sumber air di Mas</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.425360" lon="115.281855"><ele>1206</ele><name>Sumur Peliatan</name><desc>Mata air, aman untuk isi ulang di Peliatan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.425121" lon="115.281887"><ele>1229</ele><name>Warteg Lodtunduh</name><desc>Warteg dengan nasi dan sayur di Lodtunduh</desc><sym>Warteg</sym></wpt>
-  <wpt lat="-8.424841" lon="115.281002"><ele>1255</ele><name>Bumi Perkemahan Ubud</name><desc>Bumi perkemahan dengan sumber air di Ubud</desc><sym>Camp</sym></wpt>
-  <wpt lat="-8.424625" lon="115.280006"><ele>1279</ele><name>Saung Makan Tegallalang</name><desc>Warung makan setempat di Tegallalang</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.424294" lon="115.279058"><ele>1304</ele><name>Titik Pandang Tampaksiring</name><desc>Titik pandang tepi jalan di Tampaksiring</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.424058" lon="115.277799"><ele>1330</ele><name>Titik Pandang Kedewatan</name><desc>Titik pandang tepi jalan di Kedewatan</desc><sym>Viewpoint</sym></wpt>
-  <wpt lat="-8.423718" lon="115.276612"><ele>1352</ele><name>Saung Makan Sayan</name><desc>Warung makan setempat di Sayan</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.423416" lon="115.275438"><ele>1377</ele><name>Pancuran Umum Pengosekan</name><desc>Mata air, aman untuk isi ulang di Pengosekan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.423076" lon="115.274397"><ele>1403</ele><name>Saung Makan Nyuh Kuning</name><desc>Warung makan setempat di Nyuh Kuning</desc><sym>Food</sym></wpt>
-  <wpt lat="-8.422826" lon="115.273312"><ele>1428</ele><name>Pancuran Umum Mas</name><desc>Mata air, aman untuk isi ulang di Mas</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.422511" lon="115.272146"><ele>1451</ele><name>Pancuran Umum Peliatan</name><desc>Mata air, aman untuk isi ulang di Peliatan</desc><sym>Drinking Water</sym></wpt>
-  <wpt lat="-8.422237" lon="115.271240"><ele>1474</ele><name>Bumi Perkemahan Lodtunduh</name><desc>Bumi perkemahan dengan sumber air di Lodtunduh</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.507469" lon="115.263807"><ele>213</ele><name>Bumi Perkemahan Ubud</name><desc>Bumi perkemahan dengan sumber air di Ubud</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.508053" lon="115.265107"><ele>214</ele><name>Mata Air Ubud</name><desc>Mata air, aman untuk isi ulang di Ubud</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.508572" lon="115.266435"><ele>213</ele><name>Sumur Peliatan</name><desc>Mata air, aman untuk isi ulang di Peliatan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.508847" lon="115.267835"><ele>213</ele><name>Pancuran Umum Nyuh Kuning</name><desc>Mata air, aman untuk isi ulang di Nyuh Kuning</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.509044" lon="115.269249"><ele>217</ele><name>Bumi Perkemahan Peliatan</name><desc>Bumi perkemahan dengan sumber air di Peliatan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.509061" lon="115.270677"><ele>216</ele><name>Mata Air Sayan</name><desc>Mata air, aman untuk isi ulang di Sayan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.510015" lon="115.271178"><ele>214</ele><name>Bumi Perkemahan Nyuh Kuning</name><desc>Bumi perkemahan dengan sumber air di Nyuh Kuning</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.511413" lon="115.270973"><ele>211</ele><name>Warung Nasi Ubud</name><desc>Warung makan setempat di Ubud</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.512758" lon="115.270563"><ele>208</ele><name>Bumi Perkemahan Sayan</name><desc>Bumi perkemahan dengan sumber air di Sayan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.514069" lon="115.270031"><ele>206</ele><name>Bakso Ubud</name><desc>Bakso dan mie ayam setempat di Ubud</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.515426" lon="115.269637"><ele>201</ele><name>Titik Pandang Ubud</name><desc>Titik pandang tepi jalan di Ubud</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.516798" lon="115.269299"><ele>198</ele><name>Sumur Penestanan</name><desc>Mata air, aman untuk isi ulang di Penestanan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.518174" lon="115.268975"><ele>196</ele><name>Kedai Kopi Peliatan</name><desc>Warung makan setempat di Peliatan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.519559" lon="115.268695"><ele>193</ele><name>Titik Pandang Peliatan</name><desc>Titik pandang tepi jalan di Peliatan</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.520950" lon="115.268450"><ele>190</ele><name>Pancuran Umum Kedewatan</name><desc>Mata air, aman untuk isi ulang di Kedewatan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.522358" lon="115.268344"><ele>187</ele><name>Mata Air Mas</name><desc>Mata air, aman untuk isi ulang di Mas</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.523769" lon="115.268291"><ele>182</ele><name>Bakso Peliatan</name><desc>Bakso dan mie ayam setempat di Peliatan</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.523872" lon="115.269680"><ele>181</ele><name>Bumi Perkemahan Penestanan</name><desc>Bumi perkemahan dengan sumber air di Penestanan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.523967" lon="115.271105"><ele>180</ele><name>Sumur Pejeng</name><desc>Mata air, aman untuk isi ulang di Pejeng</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.523897" lon="115.272530"><ele>181</ele><name>Saung Makan Nyuh Kuning</name><desc>Warung makan setempat di Nyuh Kuning</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.523790" lon="115.273952"><ele>183</ele><name>Warung Nasi Sayan</name><desc>Warung makan setempat di Sayan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.523480" lon="115.275345"><ele>183</ele><name>Bumi Perkemahan Kedewatan</name><desc>Bumi perkemahan dengan sumber air di Kedewatan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.523189" lon="115.276743"><ele>183</ele><name>Pancuran Umum Pejeng Kaja</name><desc>Mata air, aman untuk isi ulang di Pejeng Kaja</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.522944" lon="115.278149"><ele>184</ele><name>Warteg Ubud</name><desc>Warteg dengan nasi dan sayur di Ubud</desc><sym>Warteg</sym></wpt>
+  <wpt lat="-8.522797" lon="115.279570"><ele>183</ele><name>Bumi Perkemahan Mas</name><desc>Bumi perkemahan dengan sumber air di Mas</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.522778" lon="115.280997"><ele>181</ele><name>Mata Air Sanding</name><desc>Mata air, aman untuk isi ulang di Sanding</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.522656" lon="115.282419"><ele>177</ele><name>Warteg Peliatan</name><desc>Warteg dengan nasi dan sayur di Peliatan</desc><sym>Warteg</sym></wpt>
+  <wpt lat="-8.522539" lon="115.283843"><ele>162</ele><name>Sumur Tampaksiring</name><desc>Mata air, aman untuk isi ulang di Tampaksiring</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.522930" lon="115.285180"><ele>156</ele><name>Titik Pandang Nyuh Kuning</name><desc>Titik pandang tepi jalan di Nyuh Kuning</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.522663" lon="115.286538"><ele>161</ele><name>Pancuran Umum Manukaya</name><desc>Mata air, aman untuk isi ulang di Manukaya</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.522698" lon="115.287946"><ele>170</ele><name>Mata Air Sukawati</name><desc>Mata air, aman untuk isi ulang di Sukawati</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.523270" lon="115.289211"><ele>174</ele><name>Kedai Kopi Penestanan</name><desc>Warung makan setempat di Penestanan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.523493" lon="115.290584"><ele>174</ele><name>Bakso Nyuh Kuning</name><desc>Bakso dan mie ayam setempat di Nyuh Kuning</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.523694" lon="115.291991"><ele>172</ele><name>Sumur Batubulan</name><desc>Mata air, aman untuk isi ulang di Batubulan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.522391" lon="115.292345"><ele>175</ele><name>Saung Makan Kedewatan</name><desc>Warung makan setempat di Kedewatan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.520990" lon="115.292524"><ele>180</ele><name>Pancuran Umum Ubud</name><desc>Mata air, aman untuk isi ulang di Ubud</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.519594" lon="115.292741"><ele>185</ele><name>Bumi Perkemahan Pejeng</name><desc>Bumi perkemahan dengan sumber air di Pejeng</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.518192" lon="115.292908"><ele>192</ele><name>Bumi Perkemahan Pejeng Kaja</name><desc>Bumi perkemahan dengan sumber air di Pejeng Kaja</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.516783" lon="115.293010"><ele>199</ele><name>Mata Air Peliatan</name><desc>Mata air, aman untuk isi ulang di Peliatan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.515372" lon="115.293059"><ele>204</ele><name>Titik Pandang Sayan</name><desc>Titik pandang tepi jalan di Sayan</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.513959" lon="115.293063"><ele>207</ele><name>Titik Pandang Penestanan</name><desc>Titik pandang tepi jalan di Penestanan</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.512547" lon="115.293066"><ele>209</ele><name>Titik Pandang Kedewatan</name><desc>Titik pandang tepi jalan di Kedewatan</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.511143" lon="115.293087"><ele>210</ele><name>Sumur Nyuh Kuning</name><desc>Mata air, aman untuk isi ulang di Nyuh Kuning</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.509737" lon="115.293016"><ele>217</ele><name>Bakso Sayan</name><desc>Bakso dan mie ayam setempat di Sayan</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.508326" lon="115.292969"><ele>221</ele><name>Pancuran Umum Sayan</name><desc>Mata air, aman untuk isi ulang di Sayan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.506914" lon="115.292934"><ele>225</ele><name>Mata Air Penestanan</name><desc>Mata air, aman untuk isi ulang di Penestanan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.505502" lon="115.292930"><ele>230</ele><name>Sumur Kedewatan</name><desc>Mata air, aman untuk isi ulang di Kedewatan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.504089" lon="115.292909"><ele>236</ele><name>Titik Pandang Mas</name><desc>Titik pandang tepi jalan di Mas</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.502677" lon="115.292870"><ele>242</ele><name>Bumi Perkemahan Sanding</name><desc>Bumi perkemahan dengan sumber air di Sanding</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.501265" lon="115.292844"><ele>245</ele><name>Bumi Perkemahan Tampaksiring</name><desc>Bumi perkemahan dengan sumber air di Tampaksiring</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.499852" lon="115.292818"><ele>249</ele><name>Bumi Perkemahan Manukaya</name><desc>Bumi perkemahan dengan sumber air di Manukaya</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.498813" lon="115.291971"><ele>255</ele><name>Warteg Nyuh Kuning</name><desc>Warteg dengan nasi dan sayur di Nyuh Kuning</desc><sym>Warteg</sym></wpt>
+  <wpt lat="-8.497767" lon="115.291209"><ele>263</ele><name>Bakso Penestanan</name><desc>Bakso dan mie ayam setempat di Penestanan</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.496354" lon="115.291236"><ele>268</ele><name>Pancuran Umum Mas</name><desc>Mata air, aman untuk isi ulang di Mas</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.494942" lon="115.291248"><ele>270</ele><name>Bumi Perkemahan Sukawati</name><desc>Bumi perkemahan dengan sumber air di Sukawati</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.493532" lon="115.291316"><ele>275</ele><name>Titik Pandang Pejeng</name><desc>Titik pandang tepi jalan di Pejeng</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.492190" lon="115.291753"><ele>280</ele><name>Bumi Perkemahan Batubulan</name><desc>Bumi perkemahan dengan sumber air di Batubulan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.490858" lon="115.292228"><ele>283</ele><name>Bumi Perkemahan Ubud</name><desc>Bumi perkemahan dengan sumber air di Ubud</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.489495" lon="115.292596"><ele>287</ele><name>Warung Nasi Mas</name><desc>Warung makan setempat di Mas</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.488111" lon="115.292878"><ele>291</ele><name>Bumi Perkemahan Peliatan</name><desc>Bumi perkemahan dengan sumber air di Peliatan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.486775" lon="115.293341"><ele>294</ele><name>Mata Air Pejeng</name><desc>Mata air, aman untuk isi ulang di Pejeng</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.485453" lon="115.293845"><ele>297</ele><name>Sumur Pejeng Kaja</name><desc>Mata air, aman untuk isi ulang di Pejeng Kaja</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.484111" lon="115.293985"><ele>300</ele><name>Kedai Kopi Pejeng</name><desc>Warung makan setempat di Pejeng</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.482854" lon="115.293338"><ele>305</ele><name>Titik Pandang Pejeng Kaja</name><desc>Titik pandang tepi jalan di Pejeng Kaja</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.481602" lon="115.292722"><ele>305</ele><name>Bumi Perkemahan Nyuh Kuning</name><desc>Bumi perkemahan dengan sumber air di Nyuh Kuning</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.481293" lon="115.291514"><ele>306</ele><name>Bumi Perkemahan Sayan</name><desc>Bumi perkemahan dengan sumber air di Sayan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.479956" lon="115.291937"><ele>313</ele><name>Titik Pandang Sanding</name><desc>Titik pandang tepi jalan di Sanding</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.478611" lon="115.292366"><ele>319</ele><name>Pancuran Umum Sanding</name><desc>Mata air, aman untuk isi ulang di Sanding</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.477239" lon="115.292353"><ele>322</ele><name>Mata Air Tampaksiring</name><desc>Mata air, aman untuk isi ulang di Tampaksiring</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.475857" lon="115.292641"><ele>325</ele><name>Saung Makan Pejeng Kaja</name><desc>Warung makan setempat di Pejeng Kaja</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.474489" lon="115.292998"><ele>330</ele><name>Bakso Kedewatan</name><desc>Bakso dan mie ayam setempat di Kedewatan</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.473123" lon="115.293362"><ele>335</ele><name>Titik Pandang Tampaksiring</name><desc>Titik pandang tepi jalan di Tampaksiring</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.471761" lon="115.293721"><ele>338</ele><name>Warung Nasi Sanding</name><desc>Warung makan setempat di Sanding</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.470360" lon="115.293837"><ele>341</ele><name>Kedai Kopi Tampaksiring</name><desc>Warung makan setempat di Tampaksiring</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.468965" lon="115.294063"><ele>343</ele><name>Titik Pandang Manukaya</name><desc>Titik pandang tepi jalan di Manukaya</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.467660" lon="115.294576"><ele>351</ele><name>Sumur Manukaya</name><desc>Mata air, aman untuk isi ulang di Manukaya</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.466501" lon="115.295391"><ele>356</ele><name>Bakso Mas</name><desc>Bakso dan mie ayam setempat di Mas</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.465315" lon="115.296167"><ele>360</ele><name>Bumi Perkemahan Penestanan</name><desc>Bumi perkemahan dengan sumber air di Penestanan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.464127" lon="115.296939"><ele>364</ele><name>Saung Makan Manukaya</name><desc>Warung makan setempat di Manukaya</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.462929" lon="115.297697"><ele>368</ele><name>Pancuran Umum Sukawati</name><desc>Mata air, aman untuk isi ulang di Sukawati</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.461729" lon="115.298450"><ele>376</ele><name>Bumi Perkemahan Kedewatan</name><desc>Bumi perkemahan dengan sumber air di Kedewatan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.460542" lon="115.299223"><ele>385</ele><name>Bumi Perkemahan Mas</name><desc>Bumi perkemahan dengan sumber air di Mas</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.459403" lon="115.300065"><ele>391</ele><name>Bumi Perkemahan Pejeng</name><desc>Bumi perkemahan dengan sumber air di Pejeng</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.458311" lon="115.300969"><ele>395</ele><name>Warteg Sayan</name><desc>Warteg dengan nasi dan sayur di Sayan</desc><sym>Warteg</sym></wpt>
+  <wpt lat="-8.457089" lon="115.301684"><ele>399</ele><name>Bumi Perkemahan Pejeng Kaja</name><desc>Bumi perkemahan dengan sumber air di Pejeng Kaja</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.456132" lon="115.302710"><ele>406</ele><name>Mata Air Batubulan</name><desc>Mata air, aman untuk isi ulang di Batubulan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.455719" lon="115.304059"><ele>409</ele><name>Sumur Ubud</name><desc>Mata air, aman untuk isi ulang di Ubud</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.454617" lon="115.304941"><ele>415</ele><name>Warung Nasi Sukawati</name><desc>Warung makan setempat di Sukawati</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.453507" lon="115.305821"><ele>421</ele><name>Bumi Perkemahan Sanding</name><desc>Bumi perkemahan dengan sumber air di Sanding</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.452551" lon="115.306866"><ele>426</ele><name>Pancuran Umum Peliatan</name><desc>Mata air, aman untuk isi ulang di Peliatan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.451444" lon="115.307728"><ele>429</ele><name>Mata Air Nyuh Kuning</name><desc>Mata air, aman untuk isi ulang di Nyuh Kuning</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.450250" lon="115.308490"><ele>429</ele><name>Kedai Kopi Batubulan</name><desc>Warung makan setempat di Batubulan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.448945" lon="115.309031"><ele>429</ele><name>Saung Makan Ubud</name><desc>Warung makan setempat di Ubud</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.447585" lon="115.309415"><ele>432</ele><name>Warung Nasi Peliatan</name><desc>Warung makan setempat di Peliatan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.446276" lon="115.309892"><ele>438</ele><name>Bumi Perkemahan Tampaksiring</name><desc>Bumi perkemahan dengan sumber air di Tampaksiring</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.445302" lon="115.310588"><ele>446</ele><name>Titik Pandang Sukawati</name><desc>Titik pandang tepi jalan di Sukawati</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.444329" lon="115.309560"><ele>458</ele><name>Sumur Sayan</name><desc>Mata air, aman untuk isi ulang di Sayan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.443089" lon="115.308893"><ele>474</ele><name>Bakso Pejeng</name><desc>Bakso dan mie ayam setempat di Pejeng</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.441695" lon="115.308680"><ele>478</ele><name>Bakso Pejeng Kaja</name><desc>Bakso dan mie ayam setempat di Pejeng Kaja</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.440303" lon="115.308451"><ele>480</ele><name>Pancuran Umum Penestanan</name><desc>Mata air, aman untuk isi ulang di Penestanan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.438956" lon="115.308022"><ele>480</ele><name>Mata Air Kedewatan</name><desc>Mata air, aman untuk isi ulang di Kedewatan</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.437610" lon="115.307588"><ele>480</ele><name>Bumi Perkemahan Manukaya</name><desc>Bumi perkemahan dengan sumber air di Manukaya</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.436276" lon="115.307118"><ele>484</ele><name>Bakso Sanding</name><desc>Bakso dan mie ayam setempat di Sanding</desc><sym>Bakso</sym></wpt>
+  <wpt lat="-8.434912" lon="115.306874"><ele>488</ele><name>Kedai Kopi Nyuh Kuning</name><desc>Warung makan setempat di Nyuh Kuning</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.433513" lon="115.307073"><ele>492</ele><name>Sumur Mas</name><desc>Mata air, aman untuk isi ulang di Mas</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.432114" lon="115.307268"><ele>497</ele><name>Bumi Perkemahan Sukawati</name><desc>Bumi perkemahan dengan sumber air di Sukawati</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.430713" lon="115.307452"><ele>503</ele><name>Pancuran Umum Pejeng</name><desc>Mata air, aman untuk isi ulang di Pejeng</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.429314" lon="115.307644"><ele>507</ele><name>Bumi Perkemahan Batubulan</name><desc>Bumi perkemahan dengan sumber air di Batubulan</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.427915" lon="115.307844"><ele>511</ele><name>Mata Air Pejeng Kaja</name><desc>Mata air, aman untuk isi ulang di Pejeng Kaja</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.426517" lon="115.308050"><ele>515</ele><name>Warteg Penestanan</name><desc>Warteg dengan nasi dan sayur di Penestanan</desc><sym>Warteg</sym></wpt>
+  <wpt lat="-8.425118" lon="115.308246"><ele>519</ele><name>Bumi Perkemahan Ubud</name><desc>Bumi perkemahan dengan sumber air di Ubud</desc><sym>Camp</sym></wpt>
+  <wpt lat="-8.423718" lon="115.308435"><ele>522</ele><name>Saung Makan Sayan</name><desc>Warung makan setempat di Sayan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.422320" lon="115.308642"><ele>524</ele><name>Titik Pandang Batubulan</name><desc>Titik pandang tepi jalan di Batubulan</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.420920" lon="115.308835"><ele>523</ele><name>Titik Pandang Ubud</name><desc>Titik pandang tepi jalan di Ubud</desc><sym>Viewpoint</sym></wpt>
+  <wpt lat="-8.419525" lon="115.309055"><ele>524</ele><name>Warung Nasi Penestanan</name><desc>Warung makan setempat di Penestanan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.419267" lon="115.310274"><ele>521</ele><name>Sumur Sanding</name><desc>Mata air, aman untuk isi ulang di Sanding</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.418788" lon="115.311517"><ele>518</ele><name>Kedai Kopi Kedewatan</name><desc>Warung makan setempat di Kedewatan</desc><sym>Food</sym></wpt>
+  <wpt lat="-8.417793" lon="115.312429"><ele>517</ele><name>Pancuran Umum Tampaksiring</name><desc>Mata air, aman untuk isi ulang di Tampaksiring</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.417485" lon="115.313745"><ele>515</ele><name>Mata Air Manukaya</name><desc>Mata air, aman untuk isi ulang di Manukaya</desc><sym>Drinking Water</sym></wpt>
+  <wpt lat="-8.417425" lon="115.315099"><ele>516</ele><name>Bumi Perkemahan Peliatan</name><desc>Bumi perkemahan dengan sumber air di Peliatan</desc><sym>Camp</sym></wpt>
 </gpx>

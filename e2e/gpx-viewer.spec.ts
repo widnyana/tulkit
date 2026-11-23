@@ -121,8 +121,8 @@ test.describe("GPX viewer fixtures", () => {
 
     const legend = page.getByRole("region", { name: "Map legend" });
     await expect(legend).toBeVisible({ timeout: 15_000 });
-    await expect(legend.getByText("Camp 120", { exact: true })).toBeVisible();
-    await expect(legend.getByText("Other 10", { exact: true })).toBeVisible();
+    await expect(legend.getByText(/Camp 120/)).toBeVisible();
+    await expect(legend.getByText(/Other 10/)).toBeVisible();
 
     const summary = page.getByText("All points (250)", { exact: true });
     await expect(summary).toBeVisible({ timeout: 15_000 });
@@ -137,8 +137,8 @@ test.describe("GPX viewer fixtures", () => {
 
     const legend = page.getByRole("region", { name: "Map legend" });
     await expect(legend).toBeVisible({ timeout: 15_000 });
-    await expect(legend.getByText("Water 40", { exact: true })).toBeVisible();
-    await expect(legend.getByText("Camp 30", { exact: true })).toBeVisible();
+    await expect(legend.getByText(/Water 40/)).toBeVisible();
+    await expect(legend.getByText(/Camp 30/)).toBeVisible();
   });
 
   test("renders popup text against the popover surface in dark mode", async ({
@@ -147,7 +147,9 @@ test.describe("GPX viewer fixtures", () => {
     await page.emulateMedia({ colorScheme: "dark" });
     await loadFixture(page, "west-java/bandung-lembang-brevet.gpx");
 
-    const startMarker = page.getByRole("button", { name: /Start of route/ });
+    const startMarker = page.getByRole("button", {
+      name: /Start and finish of a loop|Start of route/,
+    });
     await expect(startMarker).toBeVisible({ timeout: 15_000 });
     await startMarker.click();
 

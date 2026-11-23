@@ -4,44 +4,650 @@
     <name>Cikarang Commute Links</name>
     <author><name>Komunitas Gowes Cikarang</name><email id="gowes" domain="example.com"/></author>
   </metadata>
-  <wpt lat="-6.868906" lon="107.601052"><ele>700</ele><name>Mata Air Cikarang</name><desc>Mata air, aman untuk isi ulang di Cikarang</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/1"><text>Mata Air Cikarang</text></link></wpt>
-  <wpt lat="-6.869395" lon="107.600539"><ele>700</ele><name>Bumi Perkemahan Jababeka</name><desc>Bumi perkemahan dengan sumber air di Jababeka</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/2"><text>Bumi Perkemahan Jababeka</text></link></wpt>
-  <wpt lat="-6.869121" lon="107.600718"><ele>700</ele><name>Titik Pandang Lippo Cikarang</name><desc>Titik pandang tepi jalan di Lippo Cikarang</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/3"><text>Titik Pandang Lippo Cikarang</text></link></wpt>
-  <wpt lat="-6.869665" lon="107.600141"><ele>701</ele><name>Bakso Cibatu</name><desc>Bakso dan mie ayam setempat di Cibatu</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/4"><text>Bakso Cibatu</text></link></wpt>
-  <wpt lat="-6.868670" lon="107.599623"><ele>700</ele><name>Mata Air Serang Baru</name><desc>Mata air, aman untuk isi ulang di Serang Baru</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/5"><text>Mata Air Serang Baru</text></link></wpt>
-  <wpt lat="-6.869104" lon="107.598216"><ele>700</ele><name>Bumi Perkemahan Lemahabang</name><desc>Bumi perkemahan dengan sumber air di Lemahabang</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/6"><text>Bumi Perkemahan Lemahabang</text></link></wpt>
-  <wpt lat="-6.868337" lon="107.597464"><ele>699</ele><name>Titik Pandang Pasirsari</name><desc>Titik pandang tepi jalan di Pasirsari</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/7"><text>Titik Pandang Pasirsari</text></link></wpt>
-  <wpt lat="-6.867418" lon="107.596643"><ele>700</ele><name>Bakso Sukamahi</name><desc>Bakso dan mie ayam setempat di Sukamahi</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/8"><text>Bakso Sukamahi</text></link></wpt>
-  <wpt lat="-6.867878" lon="107.597148"><ele>700</ele><name>Mata Air Cikarang Utara</name><desc>Mata air, aman untuk isi ulang di Cikarang Utara</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/9"><text>Mata Air Cikarang Utara</text></link></wpt>
-  <wpt lat="-6.868247" lon="107.596811"><ele>701</ele><name>Bumi Perkemahan Karang Asih</name><desc>Bumi perkemahan dengan sumber air di Karang Asih</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/10"><text>Bumi Perkemahan Karang Asih</text></link></wpt>
-  <wpt lat="-6.867350" lon="107.596935"><ele>701</ele><name>Titik Pandang Cikarang</name><desc>Titik pandang tepi jalan di Cikarang</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/11"><text>Titik Pandang Cikarang</text></link></wpt>
-  <wpt lat="-6.866013" lon="107.596445"><ele>699</ele><name>Bakso Jababeka</name><desc>Bakso dan mie ayam setempat di Jababeka</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/12"><text>Bakso Jababeka</text></link></wpt>
-  <wpt lat="-6.866562" lon="107.597351"><ele>699</ele><name>Sumur Lippo Cikarang</name><desc>Mata air, aman untuk isi ulang di Lippo Cikarang</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/13"><text>Sumur Lippo Cikarang</text></link></wpt>
-  <wpt lat="-6.866578" lon="107.598449"><ele>701</ele><name>Bumi Perkemahan Cibatu</name><desc>Bumi perkemahan dengan sumber air di Cibatu</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/14"><text>Bumi Perkemahan Cibatu</text></link></wpt>
-  <wpt lat="-6.866423" lon="107.599290"><ele>700</ele><name>Titik Pandang Serang Baru</name><desc>Titik pandang tepi jalan di Serang Baru</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/15"><text>Titik Pandang Serang Baru</text></link></wpt>
-  <wpt lat="-6.866320" lon="107.598310"><ele>700</ele><name>Bakso Lemahabang</name><desc>Bakso dan mie ayam setempat di Lemahabang</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/16"><text>Bakso Lemahabang</text></link></wpt>
-  <wpt lat="-6.866678" lon="107.597006"><ele>701</ele><name>Sumur Pasirsari</name><desc>Mata air, aman untuk isi ulang di Pasirsari</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/17"><text>Sumur Pasirsari</text></link></wpt>
-  <wpt lat="-6.867958" lon="107.596494"><ele>700</ele><name>Bumi Perkemahan Sukamahi</name><desc>Bumi perkemahan dengan sumber air di Sukamahi</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/18"><text>Bumi Perkemahan Sukamahi</text></link></wpt>
-  <wpt lat="-6.867398" lon="107.595126"><ele>701</ele><name>Titik Pandang Cikarang Utara</name><desc>Titik pandang tepi jalan di Cikarang Utara</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/19"><text>Titik Pandang Cikarang Utara</text></link></wpt>
-  <wpt lat="-6.867245" lon="107.596021"><ele>701</ele><name>Bakso Karang Asih</name><desc>Bakso dan mie ayam setempat di Karang Asih</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/20"><text>Bakso Karang Asih</text></link></wpt>
-  <wpt lat="-6.867210" lon="107.596612"><ele>700</ele><name>Pancuran Umum Cikarang</name><desc>Mata air, aman untuk isi ulang di Cikarang</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/21"><text>Pancuran Umum Cikarang</text></link></wpt>
-  <wpt lat="-6.867304" lon="107.595609"><ele>699</ele><name>Bumi Perkemahan Jababeka</name><desc>Bumi perkemahan dengan sumber air di Jababeka</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/22"><text>Bumi Perkemahan Jababeka</text></link></wpt>
-  <wpt lat="-6.866190" lon="107.595123"><ele>719</ele><name>Titik Pandang Lippo Cikarang</name><desc>Titik pandang tepi jalan di Lippo Cikarang</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/23"><text>Titik Pandang Lippo Cikarang</text></link></wpt>
-  <wpt lat="-6.864353" lon="107.595199"><ele>753</ele><name>Bakso Cibatu</name><desc>Bakso dan mie ayam setempat di Cibatu</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/24"><text>Bakso Cibatu</text></link></wpt>
-  <wpt lat="-6.862619" lon="107.595281"><ele>789</ele><name>Pancuran Umum Serang Baru</name><desc>Mata air, aman untuk isi ulang di Serang Baru</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/25"><text>Pancuran Umum Serang Baru</text></link></wpt>
-  <wpt lat="-6.860930" lon="107.595318"><ele>825</ele><name>Bumi Perkemahan Lemahabang</name><desc>Bumi perkemahan dengan sumber air di Lemahabang</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/26"><text>Bumi Perkemahan Lemahabang</text></link></wpt>
-  <wpt lat="-6.859090" lon="107.595406"><ele>863</ele><name>Titik Pandang Pasirsari</name><desc>Titik pandang tepi jalan di Pasirsari</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/27"><text>Titik Pandang Pasirsari</text></link></wpt>
-  <wpt lat="-6.857364" lon="107.595437"><ele>898</ele><name>Bakso Sukamahi</name><desc>Bakso dan mie ayam setempat di Sukamahi</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/28"><text>Bakso Sukamahi</text></link></wpt>
-  <wpt lat="-6.856027" lon="107.595453"><ele>925</ele><name>Pancuran Umum Cikarang Utara</name><desc>Mata air, aman untuk isi ulang di Cikarang Utara</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/29"><text>Pancuran Umum Cikarang Utara</text></link></wpt>
-  <wpt lat="-6.853946" lon="107.595513"><ele>963</ele><name>Bumi Perkemahan Karang Asih</name><desc>Bumi perkemahan dengan sumber air di Karang Asih</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/30"><text>Bumi Perkemahan Karang Asih</text></link></wpt>
-  <wpt lat="-6.852326" lon="107.595458"><ele>998</ele><name>Titik Pandang Cikarang</name><desc>Titik pandang tepi jalan di Cikarang</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/31"><text>Titik Pandang Cikarang</text></link></wpt>
-  <wpt lat="-6.850738" lon="107.595580"><ele>1034</ele><name>Bakso Jababeka</name><desc>Bakso dan mie ayam setempat di Jababeka</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/32"><text>Bakso Jababeka</text></link></wpt>
-  <wpt lat="-6.849255" lon="107.596216"><ele>1071</ele><name>Mata Air Lippo Cikarang</name><desc>Mata air, aman untuk isi ulang di Lippo Cikarang</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/33"><text>Mata Air Lippo Cikarang</text></link></wpt>
-  <wpt lat="-6.847655" lon="107.596601"><ele>1107</ele><name>Bumi Perkemahan Cibatu</name><desc>Bumi perkemahan dengan sumber air di Cibatu</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/34"><text>Bumi Perkemahan Cibatu</text></link></wpt>
-  <wpt lat="-6.845760" lon="107.596965"><ele>1143</ele><name>Titik Pandang Serang Baru</name><desc>Titik pandang tepi jalan di Serang Baru</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/35"><text>Titik Pandang Serang Baru</text></link></wpt>
-  <wpt lat="-6.844084" lon="107.597523"><ele>1177</ele><name>Bakso Lemahabang</name><desc>Bakso dan mie ayam setempat di Lemahabang</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/36"><text>Bakso Lemahabang</text></link></wpt>
-  <wpt lat="-6.842695" lon="107.597891"><ele>1206</ele><name>Mata Air Pasirsari</name><desc>Mata air, aman untuk isi ulang di Pasirsari</desc><sym>Drinking Water</sym><link href="https://example.com/commute/cikarang/37"><text>Mata Air Pasirsari</text></link></wpt>
-  <wpt lat="-6.840864" lon="107.598230"><ele>1240</ele><name>Bumi Perkemahan Sukamahi</name><desc>Bumi perkemahan dengan sumber air di Sukamahi</desc><sym>Camp</sym><link href="https://example.com/commute/cikarang/38"><text>Bumi Perkemahan Sukamahi</text></link></wpt>
-  <wpt lat="-6.838903" lon="107.598578"><ele>1279</ele><name>Titik Pandang Cikarang Utara</name><desc>Titik pandang tepi jalan di Cikarang Utara</desc><sym>Viewpoint</sym><link href="https://example.com/commute/cikarang/39"><text>Titik Pandang Cikarang Utara</text></link></wpt>
-  <wpt lat="-6.837003" lon="107.598803"><ele>1314</ele><name>Bakso Karang Asih</name><desc>Bakso dan mie ayam setempat di Karang Asih</desc><sym>Bakso</sym><link href="https://example.com/commute/cikarang/40"><text>Bakso Karang Asih</text></link></wpt>
+  <wpt lat="-6.280871" lon="107.153614"><ele>18</ele><name>Mata Air Cikarang</name><desc>Mata air, aman untuk isi ulang di Cikarang</desc><sym>Drinking Water</sym><link href="https://example.com/poi/1"><text>Mata Air Cikarang</text></link></wpt>
+  <wpt lat="-6.275745" lon="107.150987"><ele>20</ele><name>Bumi Perkemahan Cikarang</name><desc>Bumi perkemahan dengan sumber air di Cikarang</desc><sym>Camp</sym><link href="https://example.com/poi/2"><text>Bumi Perkemahan Cikarang</text></link></wpt>
+  <wpt lat="-6.270408" lon="107.148562"><ele>19</ele><name>Titik Pandang Cikarang</name><desc>Titik pandang tepi jalan di Cikarang</desc><sym>Viewpoint</sym><link href="https://example.com/poi/3"><text>Titik Pandang Cikarang</text></link></wpt>
+  <wpt lat="-6.264702" lon="107.147382"><ele>19</ele><name>Bakso Cikarang</name><desc>Bakso dan mie ayam setempat di Cikarang</desc><sym>Bakso</sym><link href="https://example.com/poi/4"><text>Bakso Cikarang</text></link></wpt>
+  <wpt lat="-6.261697" lon="107.143449"><ele>18</ele><name>Sumur Pasirgombong</name><desc>Mata air, aman untuk isi ulang di Pasirgombong</desc><sym>Drinking Water</sym><link href="https://example.com/poi/5"><text>Sumur Pasirgombong</text></link></wpt>
+  <wpt lat="-6.262149" lon="107.138129"><ele>18</ele><name>Bumi Perkemahan Pasirgombong</name><desc>Bumi perkemahan dengan sumber air di Pasirgombong</desc><sym>Camp</sym><link href="https://example.com/poi/6"><text>Bumi Perkemahan Pasirgombong</text></link></wpt>
+  <wpt lat="-6.266265" lon="107.134420"><ele>20</ele><name>Titik Pandang Pasirgombong</name><desc>Titik pandang tepi jalan di Pasirgombong</desc><sym>Viewpoint</sym><link href="https://example.com/poi/7"><text>Titik Pandang Pasirgombong</text></link></wpt>
+  <wpt lat="-6.267512" lon="107.128663"><ele>22</ele><name>Bakso Pasirgombong</name><desc>Bakso dan mie ayam setempat di Pasirgombong</desc><sym>Bakso</sym><link href="https://example.com/poi/8"><text>Bakso Pasirgombong</text></link></wpt>
+  <wpt lat="-6.268763" lon="107.122905"><ele>24</ele><name>Pancuran Umum Harjamekar</name><desc>Mata air, aman untuk isi ulang di Harjamekar</desc><sym>Drinking Water</sym><link href="https://example.com/poi/9"><text>Pancuran Umum Harjamekar</text></link></wpt>
+  <wpt lat="-6.270074" lon="107.117161"><ele>24</ele><name>Bumi Perkemahan Harjamekar</name><desc>Bumi perkemahan dengan sumber air di Harjamekar</desc><sym>Camp</sym><link href="https://example.com/poi/10"><text>Bumi Perkemahan Harjamekar</text></link></wpt>
+  <wpt lat="-6.271406" lon="107.111425"><ele>20</ele><name>Titik Pandang Harjamekar</name><desc>Titik pandang tepi jalan di Harjamekar</desc><sym>Viewpoint</sym><link href="https://example.com/poi/11"><text>Titik Pandang Harjamekar</text></link></wpt>
+  <wpt lat="-6.273273" lon="107.105851"><ele>22</ele><name>Bakso Harjamekar</name><desc>Bakso dan mie ayam setempat di Harjamekar</desc><sym>Bakso</sym><link href="https://example.com/poi/12"><text>Bakso Harjamekar</text></link></wpt>
+  <wpt lat="-6.274146" lon="107.100026"><ele>23</ele><name>Mata Air Sukadanau</name><desc>Mata air, aman untuk isi ulang di Sukadanau</desc><sym>Drinking Water</sym><link href="https://example.com/poi/13"><text>Mata Air Sukadanau</text></link></wpt>
+  <wpt lat="-6.272267" lon="107.094460"><ele>22</ele><name>Bumi Perkemahan Sukadanau</name><desc>Bumi perkemahan dengan sumber air di Sukadanau</desc><sym>Camp</sym><link href="https://example.com/poi/14"><text>Bumi Perkemahan Sukadanau</text></link></wpt>
+  <wpt lat="-6.270359" lon="107.088893"><ele>24</ele><name>Titik Pandang Sukadanau</name><desc>Titik pandang tepi jalan di Sukadanau</desc><sym>Viewpoint</sym><link href="https://example.com/poi/15"><text>Titik Pandang Sukadanau</text></link></wpt>
+  <wpt lat="-6.268467" lon="107.083324"><ele>23</ele><name>Bakso Sukadanau</name><desc>Bakso dan mie ayam setempat di Sukadanau</desc><sym>Bakso</sym><link href="https://example.com/poi/16"><text>Bakso Sukadanau</text></link></wpt>
+  <wpt lat="-6.267005" lon="107.077631"><ele>19</ele><name>Sumur Tambun</name><desc>Mata air, aman untuk isi ulang di Tambun</desc><sym>Drinking Water</sym><link href="https://example.com/poi/17"><text>Sumur Tambun</text></link></wpt>
+  <wpt lat="-6.264963" lon="107.072252"><ele>21</ele><name>Bumi Perkemahan Tambun</name><desc>Bumi perkemahan dengan sumber air di Tambun</desc><sym>Camp</sym><link href="https://example.com/poi/18"><text>Bumi Perkemahan Tambun</text></link></wpt>
+  <wpt lat="-6.263743" lon="107.066489"><ele>22</ele><name>Titik Pandang Tambun</name><desc>Titik pandang tepi jalan di Tambun</desc><sym>Viewpoint</sym><link href="https://example.com/poi/19"><text>Titik Pandang Tambun</text></link></wpt>
+  <wpt lat="-6.260370" lon="107.065974"><ele>23</ele><name>Bakso Tambun</name><desc>Bakso dan mie ayam setempat di Tambun</desc><sym>Bakso</sym><link href="https://example.com/poi/20"><text>Bakso Tambun</text></link></wpt>
+  <wpt lat="-6.256745" lon="107.063476"><ele>24</ele><name>Pancuran Umum Mekarsari</name><desc>Mata air, aman untuk isi ulang di Mekarsari</desc><sym>Drinking Water</sym><link href="https://example.com/poi/21"><text>Pancuran Umum Mekarsari</text></link></wpt>
+  <wpt lat="-6.259322" lon="107.059239"><ele>22</ele><name>Bumi Perkemahan Mekarsari</name><desc>Bumi perkemahan dengan sumber air di Mekarsari</desc><sym>Camp</sym><link href="https://example.com/poi/22"><text>Bumi Perkemahan Mekarsari</text></link></wpt>
+  <wpt lat="-6.259089" lon="107.056599"><ele>24</ele><name>Titik Pandang Mekarsari</name><desc>Titik pandang tepi jalan di Mekarsari</desc><sym>Viewpoint</sym><link href="https://example.com/poi/23"><text>Titik Pandang Mekarsari</text></link></wpt>
+  <wpt lat="-6.260212" lon="107.054851"><ele>23</ele><name>Bakso Mekarsari</name><desc>Bakso dan mie ayam setempat di Mekarsari</desc><sym>Bakso</sym><link href="https://example.com/poi/24"><text>Bakso Mekarsari</text></link></wpt>
+  <wpt lat="-6.258835" lon="107.049145"><ele>22</ele><name>Mata Air Bekasi</name><desc>Mata air, aman untuk isi ulang di Bekasi</desc><sym>Drinking Water</sym><link href="https://example.com/poi/25"><text>Mata Air Bekasi</text></link></wpt>
+  <wpt lat="-6.258089" lon="107.043298"><ele>24</ele><name>Bumi Perkemahan Bekasi</name><desc>Bumi perkemahan dengan sumber air di Bekasi</desc><sym>Camp</sym><link href="https://example.com/poi/26"><text>Bumi Perkemahan Bekasi</text></link></wpt>
+  <wpt lat="-6.256922" lon="107.037581"><ele>21</ele><name>Titik Pandang Bekasi</name><desc>Titik pandang tepi jalan di Bekasi</desc><sym>Viewpoint</sym><link href="https://example.com/poi/27"><text>Titik Pandang Bekasi</text></link></wpt>
+  <wpt lat="-6.253321" lon="107.032944"><ele>19</ele><name>Bakso Bekasi</name><desc>Bakso dan mie ayam setempat di Bekasi</desc><sym>Bakso</sym><link href="https://example.com/poi/28"><text>Bakso Bekasi</text></link></wpt>
+  <wpt lat="-6.250836" lon="107.027632"><ele>21</ele><name>Sumur Margahayu</name><desc>Mata air, aman untuk isi ulang di Margahayu</desc><sym>Drinking Water</sym><link href="https://example.com/poi/29"><text>Sumur Margahayu</text></link></wpt>
+  <wpt lat="-6.248699" lon="107.022148"><ele>21</ele><name>Bumi Perkemahan Margahayu</name><desc>Bumi perkemahan dengan sumber air di Margahayu</desc><sym>Camp</sym><link href="https://example.com/poi/30"><text>Bumi Perkemahan Margahayu</text></link></wpt>
+  <wpt lat="-6.249109" lon="107.016680"><ele>24</ele><name>Titik Pandang Margahayu</name><desc>Titik pandang tepi jalan di Margahayu</desc><sym>Viewpoint</sym><link href="https://example.com/poi/31"><text>Titik Pandang Margahayu</text></link></wpt>
+  <wpt lat="-6.249044" lon="107.013305"><ele>24</ele><name>Bakso Margahayu</name><desc>Bakso dan mie ayam setempat di Margahayu</desc><sym>Bakso</sym><link href="https://example.com/poi/32"><text>Bakso Margahayu</text></link></wpt>
+  <wpt lat="-6.245859" lon="107.008377"><ele>21</ele><name>Pancuran Umum Bekasi Kaum</name><desc>Mata air, aman untuk isi ulang di Bekasi Kaum</desc><sym>Drinking Water</sym><link href="https://example.com/poi/33"><text>Pancuran Umum Bekasi Kaum</text></link></wpt>
+  <wpt lat="-6.241779" lon="107.004194"><ele>21</ele><name>Bumi Perkemahan Bekasi Kaum</name><desc>Bumi perkemahan dengan sumber air di Bekasi Kaum</desc><sym>Camp</sym><link href="https://example.com/poi/34"><text>Bumi Perkemahan Bekasi Kaum</text></link></wpt>
+  <wpt lat="-6.237734" lon="107.000241"><ele>20</ele><name>Titik Pandang Bekasi Kaum</name><desc>Titik pandang tepi jalan di Bekasi Kaum</desc><sym>Viewpoint</sym><link href="https://example.com/poi/35"><text>Titik Pandang Bekasi Kaum</text></link></wpt>
+  <wpt lat="-6.234452" lon="106.995438"><ele>19</ele><name>Bakso Bekasi Kaum</name><desc>Bakso dan mie ayam setempat di Bekasi Kaum</desc><sym>Bakso</sym><link href="https://example.com/poi/36"><text>Bakso Bekasi Kaum</text></link></wpt>
+  <wpt lat="-6.233007" lon="106.989757"><ele>22</ele><name>Mata Air Jakasampurna</name><desc>Mata air, aman untuk isi ulang di Jakasampurna</desc><sym>Drinking Water</sym><link href="https://example.com/poi/37"><text>Mata Air Jakasampurna</text></link></wpt>
+  <wpt lat="-6.229703" lon="106.984986"><ele>20</ele><name>Bumi Perkemahan Jakasampurna</name><desc>Bumi perkemahan dengan sumber air di Jakasampurna</desc><sym>Camp</sym><link href="https://example.com/poi/38"><text>Bumi Perkemahan Jakasampurna</text></link></wpt>
+  <wpt lat="-6.233393" lon="106.981686"><ele>18</ele><name>Titik Pandang Jakasampurna</name><desc>Titik pandang tepi jalan di Jakasampurna</desc><sym>Viewpoint</sym><link href="https://example.com/poi/39"><text>Titik Pandang Jakasampurna</text></link></wpt>
+  <wpt lat="-6.235867" lon="106.978169"><ele>19</ele><name>Bakso Jakasampurna</name><desc>Bakso dan mie ayam setempat di Jakasampurna</desc><sym>Bakso</sym><link href="https://example.com/poi/40"><text>Bakso Jakasampurna</text></link></wpt>
+  <trk>
+    <name>Cikarang - Tambun - Bekasi Commute</name>
+    <desc>Rute komuter dari Cikarang ke Bekasi lewat Tambun.</desc>
+    <trkseg>
+      <trkpt lat="-6.283107" lon="107.150298"><ele>20</ele></trkpt>
+      <trkpt lat="-6.283137" lon="107.150620"><ele>20</ele></trkpt>
+      <trkpt lat="-6.283283" lon="107.150996"><ele>20</ele></trkpt>
+      <trkpt lat="-6.283409" lon="107.151379"><ele>19</ele></trkpt>
+      <trkpt lat="-6.283437" lon="107.151775"><ele>19</ele></trkpt>
+      <trkpt lat="-6.283353" lon="107.152167"><ele>19</ele></trkpt>
+      <trkpt lat="-6.283416" lon="107.152564"><ele>19</ele></trkpt>
+      <trkpt lat="-6.283517" lon="107.152954"><ele>19</ele></trkpt>
+      <trkpt lat="-6.283496" lon="107.153269"><ele>19</ele></trkpt>
+      <trkpt lat="-6.283101" lon="107.153337"><ele>19</ele></trkpt>
+      <trkpt lat="-6.282705" lon="107.153405"><ele>19</ele></trkpt>
+      <trkpt lat="-6.282310" lon="107.153473"><ele>19</ele></trkpt>
+      <trkpt lat="-6.281914" lon="107.153536"><ele>19</ele></trkpt>
+      <trkpt lat="-6.281515" lon="107.153582"><ele>19</ele></trkpt>
+      <trkpt lat="-6.281115" lon="107.153608"><ele>18</ele></trkpt>
+      <trkpt lat="-6.280714" lon="107.153612"><ele>18</ele></trkpt>
+      <trkpt lat="-6.280314" lon="107.153584"><ele>18</ele></trkpt>
+      <trkpt lat="-6.279921" lon="107.153509"><ele>18</ele></trkpt>
+      <trkpt lat="-6.279553" lon="107.153351"><ele>18</ele></trkpt>
+      <trkpt lat="-6.279224" lon="107.153120"><ele>18</ele></trkpt>
+      <trkpt lat="-6.278909" lon="107.152871"><ele>18</ele></trkpt>
+      <trkpt lat="-6.278594" lon="107.152621"><ele>19</ele></trkpt>
+      <trkpt lat="-6.278279" lon="107.152372"><ele>19</ele></trkpt>
+      <trkpt lat="-6.277962" lon="107.152125"><ele>19</ele></trkpt>
+      <trkpt lat="-6.277631" lon="107.151896"><ele>19</ele></trkpt>
+      <trkpt lat="-6.277284" lon="107.151695"><ele>19</ele></trkpt>
+      <trkpt lat="-6.276924" lon="107.151518"><ele>19</ele></trkpt>
+      <trkpt lat="-6.276559" lon="107.151350"><ele>20</ele></trkpt>
+      <trkpt lat="-6.276192" lon="107.151187"><ele>20</ele></trkpt>
+      <trkpt lat="-6.275826" lon="107.151023"><ele>20</ele></trkpt>
+      <trkpt lat="-6.275461" lon="107.150855"><ele>20</ele></trkpt>
+      <trkpt lat="-6.275097" lon="107.150686"><ele>20</ele></trkpt>
+      <trkpt lat="-6.274732" lon="107.150519"><ele>20</ele></trkpt>
+      <trkpt lat="-6.274365" lon="107.150356"><ele>19</ele></trkpt>
+      <trkpt lat="-6.273996" lon="107.150197"><ele>19</ele></trkpt>
+      <trkpt lat="-6.273627" lon="107.150040"><ele>19</ele></trkpt>
+      <trkpt lat="-6.273258" lon="107.149883"><ele>19</ele></trkpt>
+      <trkpt lat="-6.272889" lon="107.149724"><ele>19</ele></trkpt>
+      <trkpt lat="-6.272519" lon="107.149567"><ele>19</ele></trkpt>
+      <trkpt lat="-6.272149" lon="107.149412"><ele>19</ele></trkpt>
+      <trkpt lat="-6.271779" lon="107.149257"><ele>19</ele></trkpt>
+      <trkpt lat="-6.271417" lon="107.149084"><ele>19</ele></trkpt>
+      <trkpt lat="-6.271060" lon="107.148900"><ele>19</ele></trkpt>
+      <trkpt lat="-6.270703" lon="107.148715"><ele>19</ele></trkpt>
+      <trkpt lat="-6.270347" lon="107.148530"><ele>19</ele></trkpt>
+      <trkpt lat="-6.269989" lon="107.148347"><ele>19</ele></trkpt>
+      <trkpt lat="-6.269616" lon="107.148203"><ele>20</ele></trkpt>
+      <trkpt lat="-6.269228" lon="107.148103"><ele>20</ele></trkpt>
+      <trkpt lat="-6.268837" lon="107.148011"><ele>20</ele></trkpt>
+      <trkpt lat="-6.268444" lon="107.147930"><ele>20</ele></trkpt>
+      <trkpt lat="-6.268051" lon="107.147849"><ele>20</ele></trkpt>
+      <trkpt lat="-6.267658" lon="107.147768"><ele>19</ele></trkpt>
+      <trkpt lat="-6.267263" lon="107.147698"><ele>19</ele></trkpt>
+      <trkpt lat="-6.266868" lon="107.147631"><ele>19</ele></trkpt>
+      <trkpt lat="-6.266472" lon="107.147564"><ele>18</ele></trkpt>
+      <trkpt lat="-6.266076" lon="107.147507"><ele>18</ele></trkpt>
+      <trkpt lat="-6.265676" lon="107.147469"><ele>18</ele></trkpt>
+      <trkpt lat="-6.265277" lon="107.147433"><ele>18</ele></trkpt>
+      <trkpt lat="-6.264877" lon="107.147397"><ele>18</ele></trkpt>
+      <trkpt lat="-6.264478" lon="107.147362"><ele>19</ele></trkpt>
+      <trkpt lat="-6.264079" lon="107.147323"><ele>19</ele></trkpt>
+      <trkpt lat="-6.263680" lon="107.147284"><ele>19</ele></trkpt>
+      <trkpt lat="-6.263280" lon="107.147246"><ele>19</ele></trkpt>
+      <trkpt lat="-6.262881" lon="107.147206"><ele>20</ele></trkpt>
+      <trkpt lat="-6.262765" lon="107.146891"><ele>20</ele></trkpt>
+      <trkpt lat="-6.262704" lon="107.146493"><ele>20</ele></trkpt>
+      <trkpt lat="-6.262633" lon="107.146096"><ele>21</ele></trkpt>
+      <trkpt lat="-6.262562" lon="107.145699"><ele>21</ele></trkpt>
+      <trkpt lat="-6.262490" lon="107.145302"><ele>20</ele></trkpt>
+      <trkpt lat="-6.262421" lon="107.144904"><ele>20</ele></trkpt>
+      <trkpt lat="-6.262280" lon="107.144530"><ele>19</ele></trkpt>
+      <trkpt lat="-6.262095" lon="107.144172"><ele>19</ele></trkpt>
+      <trkpt lat="-6.261901" lon="107.143819"><ele>18</ele></trkpt>
+      <trkpt lat="-6.261706" lon="107.143467"><ele>18</ele></trkpt>
+      <trkpt lat="-6.261514" lon="107.143113"><ele>18</ele></trkpt>
+      <trkpt lat="-6.261437" lon="107.142765"><ele>18</ele></trkpt>
+      <trkpt lat="-6.261661" lon="107.142430"><ele>19</ele></trkpt>
+      <trkpt lat="-6.261885" lon="107.142095"><ele>19</ele></trkpt>
+      <trkpt lat="-6.262091" lon="107.141750"><ele>19</ele></trkpt>
+      <trkpt lat="-6.262248" lon="107.141379"><ele>19</ele></trkpt>
+      <trkpt lat="-6.262350" lon="107.140990"><ele>18</ele></trkpt>
+      <trkpt lat="-6.262349" lon="107.140588"><ele>18</ele></trkpt>
+      <trkpt lat="-6.262299" lon="107.140188"><ele>18</ele></trkpt>
+      <trkpt lat="-6.262151" lon="107.139813"><ele>17</ele></trkpt>
+      <trkpt lat="-6.261970" lon="107.139454"><ele>17</ele></trkpt>
+      <trkpt lat="-6.261811" lon="107.139084"><ele>17</ele></trkpt>
+      <trkpt lat="-6.261796" lon="107.138688"><ele>17</ele></trkpt>
+      <trkpt lat="-6.261974" lon="107.138328"><ele>18</ele></trkpt>
+      <trkpt lat="-6.262257" lon="107.138047"><ele>18</ele></trkpt>
+      <trkpt lat="-6.262634" lon="107.137911"><ele>18</ele></trkpt>
+      <trkpt lat="-6.263016" lon="107.137789"><ele>18</ele></trkpt>
+      <trkpt lat="-6.263394" lon="107.137653"><ele>18</ele></trkpt>
+      <trkpt lat="-6.263768" lon="107.137508"><ele>18</ele></trkpt>
+      <trkpt lat="-6.264142" lon="107.137360"><ele>19</ele></trkpt>
+      <trkpt lat="-6.264498" lon="107.137179"><ele>19</ele></trkpt>
+      <trkpt lat="-6.264793" lon="107.136907"><ele>19</ele></trkpt>
+      <trkpt lat="-6.265059" lon="107.136606"><ele>19</ele></trkpt>
+      <trkpt lat="-6.265322" lon="107.136301"><ele>19</ele></trkpt>
+      <trkpt lat="-6.265571" lon="107.135984"><ele>19</ele></trkpt>
+      <trkpt lat="-6.265792" lon="107.135649"><ele>20</ele></trkpt>
+      <trkpt lat="-6.265952" lon="107.135279"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266093" lon="107.134901"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266233" lon="107.134523"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266352" lon="107.134138"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266450" lon="107.133747"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266539" lon="107.133354"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266627" lon="107.132960"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266708" lon="107.132565"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266786" lon="107.132169"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266871" lon="107.131775"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266958" lon="107.131381"><ele>20</ele></trkpt>
+      <trkpt lat="-6.267042" lon="107.130986"><ele>21</ele></trkpt>
+      <trkpt lat="-6.267130" lon="107.130593"><ele>21</ele></trkpt>
+      <trkpt lat="-6.267207" lon="107.130197"><ele>21</ele></trkpt>
+      <trkpt lat="-6.267274" lon="107.129799"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267350" lon="107.129403"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267434" lon="107.129009"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267523" lon="107.128615"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267615" lon="107.128222"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267698" lon="107.127828"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267788" lon="107.127434"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267873" lon="107.127040"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267957" lon="107.126646"><ele>22</ele></trkpt>
+      <trkpt lat="-6.268042" lon="107.126251"><ele>22</ele></trkpt>
+      <trkpt lat="-6.268130" lon="107.125858"><ele>22</ele></trkpt>
+      <trkpt lat="-6.268216" lon="107.125464"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268297" lon="107.125069"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268378" lon="107.124673"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268459" lon="107.124278"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268542" lon="107.123884"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268630" lon="107.123490"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268719" lon="107.123096"><ele>24</ele></trkpt>
+      <trkpt lat="-6.268809" lon="107.122703"><ele>24</ele></trkpt>
+      <trkpt lat="-6.268896" lon="107.122310"><ele>24</ele></trkpt>
+      <trkpt lat="-6.268983" lon="107.121916"><ele>24</ele></trkpt>
+      <trkpt lat="-6.269069" lon="107.121522"><ele>23</ele></trkpt>
+      <trkpt lat="-6.269156" lon="107.121128"><ele>23</ele></trkpt>
+      <trkpt lat="-6.269260" lon="107.120738"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269364" lon="107.120348"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269462" lon="107.119958"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269549" lon="107.119564"><ele>21</ele></trkpt>
+      <trkpt lat="-6.269635" lon="107.119170"><ele>21</ele></trkpt>
+      <trkpt lat="-6.269722" lon="107.118776"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269806" lon="107.118381"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269891" lon="107.117987"><ele>23</ele></trkpt>
+      <trkpt lat="-6.269977" lon="107.117593"><ele>23</ele></trkpt>
+      <trkpt lat="-6.270065" lon="107.117199"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270157" lon="107.116807"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270248" lon="107.116414"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270340" lon="107.116021"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270431" lon="107.115628"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270519" lon="107.115235"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270598" lon="107.114839"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270674" lon="107.114443"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270753" lon="107.114047"><ele>23</ele></trkpt>
+      <trkpt lat="-6.270839" lon="107.113653"><ele>22</ele></trkpt>
+      <trkpt lat="-6.270925" lon="107.113259"><ele>22</ele></trkpt>
+      <trkpt lat="-6.270994" lon="107.112862"><ele>21</ele></trkpt>
+      <trkpt lat="-6.271092" lon="107.112470"><ele>20</ele></trkpt>
+      <trkpt lat="-6.271203" lon="107.112083"><ele>19</ele></trkpt>
+      <trkpt lat="-6.271318" lon="107.111696"><ele>19</ele></trkpt>
+      <trkpt lat="-6.271444" lon="107.111313"><ele>20</ele></trkpt>
+      <trkpt lat="-6.271575" lon="107.110932"><ele>20</ele></trkpt>
+      <trkpt lat="-6.271709" lon="107.110552"><ele>21</ele></trkpt>
+      <trkpt lat="-6.271863" lon="107.110179"><ele>21</ele></trkpt>
+      <trkpt lat="-6.271995" lon="107.109798"><ele>22</ele></trkpt>
+      <trkpt lat="-6.272137" lon="107.109421"><ele>22</ele></trkpt>
+      <trkpt lat="-6.272288" lon="107.109048"><ele>22</ele></trkpt>
+      <trkpt lat="-6.272436" lon="107.108673"><ele>21</ele></trkpt>
+      <trkpt lat="-6.272573" lon="107.108294"><ele>21</ele></trkpt>
+      <trkpt lat="-6.272708" lon="107.107914"><ele>21</ele></trkpt>
+      <trkpt lat="-6.272844" lon="107.107535"><ele>20</ele></trkpt>
+      <trkpt lat="-6.272973" lon="107.107153"><ele>20</ele></trkpt>
+      <trkpt lat="-6.273082" lon="107.106764"><ele>21</ele></trkpt>
+      <trkpt lat="-6.273187" lon="107.106375"><ele>21</ele></trkpt>
+      <trkpt lat="-6.273258" lon="107.105978"><ele>21</ele></trkpt>
+      <trkpt lat="-6.273307" lon="107.105578"><ele>22</ele></trkpt>
+      <trkpt lat="-6.273378" lon="107.105181"><ele>22</ele></trkpt>
+      <trkpt lat="-6.273441" lon="107.104782"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273501" lon="107.104384"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273559" lon="107.103985"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273616" lon="107.103586"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273676" lon="107.103187"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273738" lon="107.102788"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273812" lon="107.102392"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273875" lon="107.101993"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273937" lon="107.101595"><ele>23</ele></trkpt>
+      <trkpt lat="-6.274004" lon="107.101197"><ele>23</ele></trkpt>
+      <trkpt lat="-6.274061" lon="107.100798"><ele>23</ele></trkpt>
+      <trkpt lat="-6.274108" lon="107.100397"><ele>23</ele></trkpt>
+      <trkpt lat="-6.274147" lon="107.099996"><ele>23</ele></trkpt>
+      <trkpt lat="-6.274095" lon="107.099598"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273978" lon="107.099212"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273848" lon="107.098830"><ele>23</ele></trkpt>
+      <trkpt lat="-6.273716" lon="107.098449"><ele>22</ele></trkpt>
+      <trkpt lat="-6.273580" lon="107.098070"><ele>22</ele></trkpt>
+      <trkpt lat="-6.273451" lon="107.097688"><ele>22</ele></trkpt>
+      <trkpt lat="-6.273322" lon="107.097306"><ele>22</ele></trkpt>
+      <trkpt lat="-6.273187" lon="107.096926"><ele>22</ele></trkpt>
+      <trkpt lat="-6.273059" lon="107.096543"><ele>22</ele></trkpt>
+      <trkpt lat="-6.272932" lon="107.096161"><ele>22</ele></trkpt>
+      <trkpt lat="-6.272805" lon="107.095778"><ele>23</ele></trkpt>
+      <trkpt lat="-6.272677" lon="107.095396"><ele>23</ele></trkpt>
+      <trkpt lat="-6.272525" lon="107.095023"><ele>23</ele></trkpt>
+      <trkpt lat="-6.272357" lon="107.094656"><ele>23</ele></trkpt>
+      <trkpt lat="-6.272187" lon="107.094291"><ele>22</ele></trkpt>
+      <trkpt lat="-6.272025" lon="107.093922"><ele>21</ele></trkpt>
+      <trkpt lat="-6.271902" lon="107.093538"><ele>21</ele></trkpt>
+      <trkpt lat="-6.271786" lon="107.093152"><ele>20</ele></trkpt>
+      <trkpt lat="-6.271659" lon="107.092769"><ele>19</ele></trkpt>
+      <trkpt lat="-6.271546" lon="107.092382"><ele>19</ele></trkpt>
+      <trkpt lat="-6.271427" lon="107.091997"><ele>20</ele></trkpt>
+      <trkpt lat="-6.271307" lon="107.091612"><ele>21</ele></trkpt>
+      <trkpt lat="-6.271172" lon="107.091232"><ele>22</ele></trkpt>
+      <trkpt lat="-6.271044" lon="107.090850"><ele>22</ele></trkpt>
+      <trkpt lat="-6.270905" lon="107.090471"><ele>23</ele></trkpt>
+      <trkpt lat="-6.270761" lon="107.090095"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270616" lon="107.089719"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270486" lon="107.089337"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270374" lon="107.088950"><ele>24</ele></trkpt>
+      <trkpt lat="-6.270280" lon="107.088558"><ele>23</ele></trkpt>
+      <trkpt lat="-6.270186" lon="107.088166"><ele>23</ele></trkpt>
+      <trkpt lat="-6.270060" lon="107.087783"><ele>23</ele></trkpt>
+      <trkpt lat="-6.269939" lon="107.087398"><ele>23</ele></trkpt>
+      <trkpt lat="-6.269784" lon="107.087026"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269618" lon="107.086660"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269464" lon="107.086287"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269325" lon="107.085909"><ele>22</ele></trkpt>
+      <trkpt lat="-6.269195" lon="107.085527"><ele>21</ele></trkpt>
+      <trkpt lat="-6.269057" lon="107.085148"><ele>21</ele></trkpt>
+      <trkpt lat="-6.268930" lon="107.084766"><ele>22</ele></trkpt>
+      <trkpt lat="-6.268804" lon="107.084383"><ele>22</ele></trkpt>
+      <trkpt lat="-6.268679" lon="107.083999"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268557" lon="107.083615"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268437" lon="107.083230"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268309" lon="107.082848"><ele>24</ele></trkpt>
+      <trkpt lat="-6.268180" lon="107.082466"><ele>23</ele></trkpt>
+      <trkpt lat="-6.268055" lon="107.082082"><ele>23</ele></trkpt>
+      <trkpt lat="-6.267930" lon="107.081699"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267805" lon="107.081316"><ele>22</ele></trkpt>
+      <trkpt lat="-6.267683" lon="107.080931"><ele>21</ele></trkpt>
+      <trkpt lat="-6.267570" lon="107.080544"><ele>20</ele></trkpt>
+      <trkpt lat="-6.267465" lon="107.080155"><ele>20</ele></trkpt>
+      <trkpt lat="-6.267362" lon="107.079765"><ele>20</ele></trkpt>
+      <trkpt lat="-6.267276" lon="107.079371"><ele>20</ele></trkpt>
+      <trkpt lat="-6.267210" lon="107.078973"><ele>19</ele></trkpt>
+      <trkpt lat="-6.267147" lon="107.078575"><ele>19</ele></trkpt>
+      <trkpt lat="-6.267083" lon="107.078176"><ele>19</ele></trkpt>
+      <trkpt lat="-6.267026" lon="107.077777"><ele>19</ele></trkpt>
+      <trkpt lat="-6.266968" lon="107.077378"><ele>19</ele></trkpt>
+      <trkpt lat="-6.266906" lon="107.076979"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266840" lon="107.076581"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266777" lon="107.076183"><ele>20</ele></trkpt>
+      <trkpt lat="-6.266713" lon="107.075784"><ele>21</ele></trkpt>
+      <trkpt lat="-6.266647" lon="107.075387"><ele>21</ele></trkpt>
+      <trkpt lat="-6.266547" lon="107.074997"><ele>21</ele></trkpt>
+      <trkpt lat="-6.266329" lon="107.074659"><ele>21</ele></trkpt>
+      <trkpt lat="-6.266073" lon="107.074349"><ele>21</ele></trkpt>
+      <trkpt lat="-6.265812" lon="107.074043"><ele>22</ele></trkpt>
+      <trkpt lat="-6.265558" lon="107.073731"><ele>22</ele></trkpt>
+      <trkpt lat="-6.265359" lon="107.073383"><ele>22</ele></trkpt>
+      <trkpt lat="-6.265209" lon="107.073008"><ele>22</ele></trkpt>
+      <trkpt lat="-6.265069" lon="107.072631"><ele>21</ele></trkpt>
+      <trkpt lat="-6.264960" lon="107.072242"><ele>21</ele></trkpt>
+      <trkpt lat="-6.264873" lon="107.071849"><ele>20</ele></trkpt>
+      <trkpt lat="-6.264802" lon="107.071452"><ele>20</ele></trkpt>
+      <trkpt lat="-6.264722" lon="107.071057"><ele>19</ele></trkpt>
+      <trkpt lat="-6.264637" lon="107.070662"><ele>19</ele></trkpt>
+      <trkpt lat="-6.264558" lon="107.070267"><ele>19</ele></trkpt>
+      <trkpt lat="-6.264477" lon="107.069872"><ele>20</ele></trkpt>
+      <trkpt lat="-6.264397" lon="107.069476"><ele>20</ele></trkpt>
+      <trkpt lat="-6.264321" lon="107.069080"><ele>20</ele></trkpt>
+      <trkpt lat="-6.264243" lon="107.068684"><ele>21</ele></trkpt>
+      <trkpt lat="-6.264166" lon="107.068289"><ele>21</ele></trkpt>
+      <trkpt lat="-6.264088" lon="107.067893"><ele>21</ele></trkpt>
+      <trkpt lat="-6.263988" lon="107.067502"><ele>22</ele></trkpt>
+      <trkpt lat="-6.263893" lon="107.067110"><ele>22</ele></trkpt>
+      <trkpt lat="-6.263799" lon="107.066718"><ele>22</ele></trkpt>
+      <trkpt lat="-6.263701" lon="107.066327"><ele>23</ele></trkpt>
+      <trkpt lat="-6.263601" lon="107.065936"><ele>23</ele></trkpt>
+      <trkpt lat="-6.263499" lon="107.065546"><ele>23</ele></trkpt>
+      <trkpt lat="-6.263413" lon="107.065488"><ele>23</ele></trkpt>
+      <trkpt lat="-6.263082" lon="107.065644"><ele>23</ele></trkpt>
+      <trkpt lat="-6.262711" lon="107.065794"><ele>22</ele></trkpt>
+      <trkpt lat="-6.262348" lon="107.065966"><ele>22</ele></trkpt>
+      <trkpt lat="-6.261986" lon="107.066140"><ele>22</ele></trkpt>
+      <trkpt lat="-6.261624" lon="107.066314"><ele>22</ele></trkpt>
+      <trkpt lat="-6.261423" lon="107.066116"><ele>22</ele></trkpt>
+      <trkpt lat="-6.261303" lon="107.065731"><ele>22</ele></trkpt>
+      <trkpt lat="-6.261182" lon="107.065346"><ele>22</ele></trkpt>
+      <trkpt lat="-6.260968" lon="107.065325"><ele>22</ele></trkpt>
+      <trkpt lat="-6.260689" lon="107.065614"><ele>23</ele></trkpt>
+      <trkpt lat="-6.260426" lon="107.065919"><ele>23</ele></trkpt>
+      <trkpt lat="-6.260121" lon="107.066179"><ele>24</ele></trkpt>
+      <trkpt lat="-6.259772" lon="107.066376"><ele>24</ele></trkpt>
+      <trkpt lat="-6.259444" lon="107.066608"><ele>23</ele></trkpt>
+      <trkpt lat="-6.259149" lon="107.066682"><ele>23</ele></trkpt>
+      <trkpt lat="-6.258898" lon="107.066368"><ele>22</ele></trkpt>
+      <trkpt lat="-6.258581" lon="107.066123"><ele>22</ele></trkpt>
+      <trkpt lat="-6.258265" lon="107.065892"><ele>21</ele></trkpt>
+      <trkpt lat="-6.257890" lon="107.065752"><ele>22</ele></trkpt>
+      <trkpt lat="-6.257508" lon="107.065688"><ele>22</ele></trkpt>
+      <trkpt lat="-6.257370" lon="107.065309"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257232" lon="107.064930"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257102" lon="107.064549"><ele>24</ele></trkpt>
+      <trkpt lat="-6.256980" lon="107.064164"><ele>24</ele></trkpt>
+      <trkpt lat="-6.256860" lon="107.063779"><ele>24</ele></trkpt>
+      <trkpt lat="-6.256716" lon="107.063403"><ele>24</ele></trkpt>
+      <trkpt lat="-6.256567" lon="107.063028"><ele>23</ele></trkpt>
+      <trkpt lat="-6.256855" lon="107.062843"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257227" lon="107.062693"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257597" lon="107.062537"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257961" lon="107.062367"><ele>23</ele></trkpt>
+      <trkpt lat="-6.258315" lon="107.062178"><ele>23</ele></trkpt>
+      <trkpt lat="-6.258646" lon="107.061952"><ele>22</ele></trkpt>
+      <trkpt lat="-6.258967" lon="107.061710"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259096" lon="107.061332"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259097" lon="107.060947"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259133" lon="107.060545"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259169" lon="107.060143"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259208" lon="107.059741"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259299" lon="107.059381"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259265" lon="107.059010"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259155" lon="107.058622"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259036" lon="107.058237"><ele>22</ele></trkpt>
+      <trkpt lat="-6.258930" lon="107.057848"><ele>23</ele></trkpt>
+      <trkpt lat="-6.258826" lon="107.057458"><ele>23</ele></trkpt>
+      <trkpt lat="-6.258722" lon="107.057069"><ele>23</ele></trkpt>
+      <trkpt lat="-6.258472" lon="107.057034"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258123" lon="107.057232"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257759" lon="107.057399"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257380" lon="107.057524"><ele>25</ele></trkpt>
+      <trkpt lat="-6.257678" lon="107.057365"><ele>25</ele></trkpt>
+      <trkpt lat="-6.258040" lon="107.057192"><ele>25</ele></trkpt>
+      <trkpt lat="-6.258392" lon="107.056999"><ele>25</ele></trkpt>
+      <trkpt lat="-6.258710" lon="107.056759"><ele>24</ele></trkpt>
+      <trkpt lat="-6.259080" lon="107.056604"><ele>24</ele></trkpt>
+      <trkpt lat="-6.259444" lon="107.056433"><ele>24</ele></trkpt>
+      <trkpt lat="-6.259791" lon="107.056233"><ele>24</ele></trkpt>
+      <trkpt lat="-6.260132" lon="107.056020"><ele>25</ele></trkpt>
+      <trkpt lat="-6.260473" lon="107.055808"><ele>25</ele></trkpt>
+      <trkpt lat="-6.260592" lon="107.056191"><ele>26</ele></trkpt>
+      <trkpt lat="-6.260711" lon="107.056577"><ele>26</ele></trkpt>
+      <trkpt lat="-6.260831" lon="107.056962"><ele>26</ele></trkpt>
+      <trkpt lat="-6.260958" lon="107.057330"><ele>26</ele></trkpt>
+      <trkpt lat="-6.260951" lon="107.056998"><ele>25</ele></trkpt>
+      <trkpt lat="-6.260811" lon="107.056620"><ele>25</ele></trkpt>
+      <trkpt lat="-6.260672" lon="107.056242"><ele>25</ele></trkpt>
+      <trkpt lat="-6.260549" lon="107.055858"><ele>25</ele></trkpt>
+      <trkpt lat="-6.260421" lon="107.055476"><ele>24</ele></trkpt>
+      <trkpt lat="-6.260287" lon="107.055096"><ele>23</ele></trkpt>
+      <trkpt lat="-6.260171" lon="107.054710"><ele>23</ele></trkpt>
+      <trkpt lat="-6.260059" lon="107.054322"><ele>22</ele></trkpt>
+      <trkpt lat="-6.259949" lon="107.053934"><ele>21</ele></trkpt>
+      <trkpt lat="-6.259840" lon="107.053546"><ele>21</ele></trkpt>
+      <trkpt lat="-6.259727" lon="107.053159"><ele>20</ele></trkpt>
+      <trkpt lat="-6.259615" lon="107.052772"><ele>20</ele></trkpt>
+      <trkpt lat="-6.259487" lon="107.052389"><ele>19</ele></trkpt>
+      <trkpt lat="-6.259356" lon="107.052008"><ele>19</ele></trkpt>
+      <trkpt lat="-6.259235" lon="107.051623"><ele>19</ele></trkpt>
+      <trkpt lat="-6.259127" lon="107.051235"><ele>18</ele></trkpt>
+      <trkpt lat="-6.259058" lon="107.050838"><ele>19</ele></trkpt>
+      <trkpt lat="-6.258993" lon="107.050442"><ele>20</ele></trkpt>
+      <trkpt lat="-6.258953" lon="107.050042"><ele>20</ele></trkpt>
+      <trkpt lat="-6.258905" lon="107.049641"><ele>21</ele></trkpt>
+      <trkpt lat="-6.258849" lon="107.049242"><ele>22</ele></trkpt>
+      <trkpt lat="-6.258796" lon="107.048842"><ele>23</ele></trkpt>
+      <trkpt lat="-6.258745" lon="107.048442"><ele>23</ele></trkpt>
+      <trkpt lat="-6.258700" lon="107.048041"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258649" lon="107.047641"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258598" lon="107.047241"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258548" lon="107.046840"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258493" lon="107.046441"><ele>25</ele></trkpt>
+      <trkpt lat="-6.258444" lon="107.046040"><ele>25</ele></trkpt>
+      <trkpt lat="-6.258393" lon="107.045640"><ele>25</ele></trkpt>
+      <trkpt lat="-6.258342" lon="107.045240"><ele>25</ele></trkpt>
+      <trkpt lat="-6.258291" lon="107.044840"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258233" lon="107.044441"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258180" lon="107.044041"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258129" lon="107.043640"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258083" lon="107.043240"><ele>24</ele></trkpt>
+      <trkpt lat="-6.258034" lon="107.042839"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257988" lon="107.042439"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257938" lon="107.042038"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257886" lon="107.041638"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257843" lon="107.041237"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257801" lon="107.040837"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257756" lon="107.040436"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257672" lon="107.040042"><ele>24</ele></trkpt>
+      <trkpt lat="-6.257606" lon="107.039644"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257542" lon="107.039246"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257478" lon="107.038848"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257387" lon="107.038455"><ele>23</ele></trkpt>
+      <trkpt lat="-6.257223" lon="107.038088"><ele>22</ele></trkpt>
+      <trkpt lat="-6.257018" lon="107.037741"><ele>21</ele></trkpt>
+      <trkpt lat="-6.256812" lon="107.037395"><ele>20</ele></trkpt>
+      <trkpt lat="-6.256592" lon="107.037058"><ele>20</ele></trkpt>
+      <trkpt lat="-6.256368" lon="107.036723"><ele>19</ele></trkpt>
+      <trkpt lat="-6.256140" lon="107.036391"><ele>18</ele></trkpt>
+      <trkpt lat="-6.255898" lon="107.036069"><ele>18</ele></trkpt>
+      <trkpt lat="-6.255655" lon="107.035748"><ele>18</ele></trkpt>
+      <trkpt lat="-6.255408" lon="107.035431"><ele>18</ele></trkpt>
+      <trkpt lat="-6.255158" lon="107.035115"><ele>18</ele></trkpt>
+      <trkpt lat="-6.254914" lon="107.034795"><ele>18</ele></trkpt>
+      <trkpt lat="-6.254668" lon="107.034476"><ele>18</ele></trkpt>
+      <trkpt lat="-6.254416" lon="107.034162"><ele>18</ele></trkpt>
+      <trkpt lat="-6.254155" lon="107.033856"><ele>18</ele></trkpt>
+      <trkpt lat="-6.253888" lon="107.033555"><ele>18</ele></trkpt>
+      <trkpt lat="-6.253605" lon="107.033270"><ele>19</ele></trkpt>
+      <trkpt lat="-6.253339" lon="107.032968"><ele>19</ele></trkpt>
+      <trkpt lat="-6.253116" lon="107.032633"><ele>19</ele></trkpt>
+      <trkpt lat="-6.252919" lon="107.032282"><ele>19</ele></trkpt>
+      <trkpt lat="-6.252722" lon="107.031931"><ele>19</ele></trkpt>
+      <trkpt lat="-6.252530" lon="107.031576"><ele>19</ele></trkpt>
+      <trkpt lat="-6.252336" lon="107.031223"><ele>19</ele></trkpt>
+      <trkpt lat="-6.252121" lon="107.030883"><ele>19</ele></trkpt>
+      <trkpt lat="-6.251943" lon="107.030521"><ele>19</ele></trkpt>
+      <trkpt lat="-6.251775" lon="107.030155"><ele>19</ele></trkpt>
+      <trkpt lat="-6.251617" lon="107.029784"><ele>19</ele></trkpt>
+      <trkpt lat="-6.251463" lon="107.029412"><ele>20</ele></trkpt>
+      <trkpt lat="-6.251344" lon="107.029027"><ele>20</ele></trkpt>
+      <trkpt lat="-6.251199" lon="107.028651"><ele>20</ele></trkpt>
+      <trkpt lat="-6.251061" lon="107.028272"><ele>21</ele></trkpt>
+      <trkpt lat="-6.250925" lon="107.027893"><ele>21</ele></trkpt>
+      <trkpt lat="-6.250795" lon="107.027511"><ele>21</ele></trkpt>
+      <trkpt lat="-6.250645" lon="107.027137"><ele>21</ele></trkpt>
+      <trkpt lat="-6.250508" lon="107.026758"><ele>21</ele></trkpt>
+      <trkpt lat="-6.250371" lon="107.026379"><ele>20</ele></trkpt>
+      <trkpt lat="-6.250233" lon="107.026000"><ele>20</ele></trkpt>
+      <trkpt lat="-6.250096" lon="107.025621"><ele>20</ele></trkpt>
+      <trkpt lat="-6.249959" lon="107.025242"><ele>20</ele></trkpt>
+      <trkpt lat="-6.249822" lon="107.024863"><ele>20</ele></trkpt>
+      <trkpt lat="-6.249684" lon="107.024484"><ele>20</ele></trkpt>
+      <trkpt lat="-6.249546" lon="107.024105"><ele>19</ele></trkpt>
+      <trkpt lat="-6.249404" lon="107.023728"><ele>19</ele></trkpt>
+      <trkpt lat="-6.249239" lon="107.023360"><ele>19</ele></trkpt>
+      <trkpt lat="-6.249075" lon="107.022992"><ele>19</ele></trkpt>
+      <trkpt lat="-6.248910" lon="107.022624"><ele>20</ele></trkpt>
+      <trkpt lat="-6.248748" lon="107.022255"><ele>21</ele></trkpt>
+      <trkpt lat="-6.248581" lon="107.021889"><ele>22</ele></trkpt>
+      <trkpt lat="-6.248457" lon="107.021505"><ele>23</ele></trkpt>
+      <trkpt lat="-6.248335" lon="107.021121"><ele>24</ele></trkpt>
+      <trkpt lat="-6.248209" lon="107.020737"><ele>25</ele></trkpt>
+      <trkpt lat="-6.248095" lon="107.020351"><ele>25</ele></trkpt>
+      <trkpt lat="-6.248006" lon="107.019958"><ele>24</ele></trkpt>
+      <trkpt lat="-6.247957" lon="107.019557"><ele>24</ele></trkpt>
+      <trkpt lat="-6.247937" lon="107.019155"><ele>24</ele></trkpt>
+      <trkpt lat="-6.247974" lon="107.018754"><ele>24</ele></trkpt>
+      <trkpt lat="-6.248097" lon="107.018371"><ele>23</ele></trkpt>
+      <trkpt lat="-6.248288" lon="107.018017"><ele>23</ele></trkpt>
+      <trkpt lat="-6.248482" lon="107.017664"><ele>23</ele></trkpt>
+      <trkpt lat="-6.248679" lon="107.017312"><ele>23</ele></trkpt>
+      <trkpt lat="-6.248893" lon="107.016972"><ele>24</ele></trkpt>
+      <trkpt lat="-6.249134" lon="107.016650"><ele>24</ele></trkpt>
+      <trkpt lat="-6.249382" lon="107.016333"><ele>24</ele></trkpt>
+      <trkpt lat="-6.249617" lon="107.016006"><ele>24</ele></trkpt>
+      <trkpt lat="-6.249852" lon="107.015678"><ele>25</ele></trkpt>
+      <trkpt lat="-6.250087" lon="107.015352"><ele>25</ele></trkpt>
+      <trkpt lat="-6.250324" lon="107.015026"><ele>25</ele></trkpt>
+      <trkpt lat="-6.250560" lon="107.014700"><ele>26</ele></trkpt>
+      <trkpt lat="-6.250803" lon="107.014379"><ele>26</ele></trkpt>
+      <trkpt lat="-6.250930" lon="107.014065"><ele>27</ele></trkpt>
+      <trkpt lat="-6.250707" lon="107.013751"><ele>26</ele></trkpt>
+      <trkpt lat="-6.250407" lon="107.013484"><ele>26</ele></trkpt>
+      <trkpt lat="-6.250013" lon="107.013542"><ele>25</ele></trkpt>
+      <trkpt lat="-6.249643" lon="107.013698"><ele>24</ele></trkpt>
+      <trkpt lat="-6.249268" lon="107.013839"><ele>24</ele></trkpt>
+      <trkpt lat="-6.249132" lon="107.013491"><ele>24</ele></trkpt>
+      <trkpt lat="-6.248965" lon="107.013125"><ele>24</ele></trkpt>
+      <trkpt lat="-6.248781" lon="107.012766"><ele>23</ele></trkpt>
+      <trkpt lat="-6.248577" lon="107.012419"><ele>23</ele></trkpt>
+      <trkpt lat="-6.248367" lon="107.012075"><ele>23</ele></trkpt>
+      <trkpt lat="-6.248157" lon="107.011732"><ele>23</ele></trkpt>
+      <trkpt lat="-6.247948" lon="107.011387"><ele>22</ele></trkpt>
+      <trkpt lat="-6.247738" lon="107.011044"><ele>22</ele></trkpt>
+      <trkpt lat="-6.247529" lon="107.010700"><ele>21</ele></trkpt>
+      <trkpt lat="-6.247317" lon="107.010357"><ele>21</ele></trkpt>
+      <trkpt lat="-6.247094" lon="107.010022"><ele>20</ele></trkpt>
+      <trkpt lat="-6.246881" lon="107.009681"><ele>20</ele></trkpt>
+      <trkpt lat="-6.246656" lon="107.009347"><ele>20</ele></trkpt>
+      <trkpt lat="-6.246410" lon="107.009029"><ele>21</ele></trkpt>
+      <trkpt lat="-6.246151" lon="107.008721"><ele>21</ele></trkpt>
+      <trkpt lat="-6.245891" lon="107.008414"><ele>21</ele></trkpt>
+      <trkpt lat="-6.245630" lon="107.008108"><ele>22</ele></trkpt>
+      <trkpt lat="-6.245377" lon="107.007795"><ele>22</ele></trkpt>
+      <trkpt lat="-6.245111" lon="107.007493"><ele>22</ele></trkpt>
+      <trkpt lat="-6.244845" lon="107.007191"><ele>22</ele></trkpt>
+      <trkpt lat="-6.244573" lon="107.006894"><ele>22</ele></trkpt>
+      <trkpt lat="-6.244304" lon="107.006596"><ele>22</ele></trkpt>
+      <trkpt lat="-6.244032" lon="107.006299"><ele>22</ele></trkpt>
+      <trkpt lat="-6.243760" lon="107.006002"><ele>22</ele></trkpt>
+      <trkpt lat="-6.243485" lon="107.005709"><ele>22</ele></trkpt>
+      <trkpt lat="-6.243215" lon="107.005411"><ele>22</ele></trkpt>
+      <trkpt lat="-6.242932" lon="107.005125"><ele>22</ele></trkpt>
+      <trkpt lat="-6.242648" lon="107.004840"><ele>21</ele></trkpt>
+      <trkpt lat="-6.242369" lon="107.004551"><ele>21</ele></trkpt>
+      <trkpt lat="-6.242035" lon="107.004332"><ele>21</ele></trkpt>
+      <trkpt lat="-6.241708" lon="107.004113"><ele>21</ele></trkpt>
+      <trkpt lat="-6.241381" lon="107.003884"><ele>21</ele></trkpt>
+      <trkpt lat="-6.241034" lon="107.003688"><ele>21</ele></trkpt>
+      <trkpt lat="-6.240687" lon="107.003510"><ele>21</ele></trkpt>
+      <trkpt lat="-6.240369" lon="107.003264"><ele>21</ele></trkpt>
+      <trkpt lat="-6.240057" lon="107.003010"><ele>21</ele></trkpt>
+      <trkpt lat="-6.239745" lon="107.002756"><ele>21</ele></trkpt>
+      <trkpt lat="-6.239435" lon="107.002501"><ele>21</ele></trkpt>
+      <trkpt lat="-6.239124" lon="107.002246"><ele>21</ele></trkpt>
+      <trkpt lat="-6.238811" lon="107.001994"><ele>21</ele></trkpt>
+      <trkpt lat="-6.238493" lon="107.001748"><ele>20</ele></trkpt>
+      <trkpt lat="-6.238195" lon="107.001479"><ele>20</ele></trkpt>
+      <trkpt lat="-6.237956" lon="107.001156"><ele>20</ele></trkpt>
+      <trkpt lat="-6.237851" lon="107.000769"><ele>20</ele></trkpt>
+      <trkpt lat="-6.237764" lon="107.000376"><ele>20</ele></trkpt>
+      <trkpt lat="-6.237674" lon="107.000021"><ele>20</ele></trkpt>
+      <trkpt lat="-6.237458" lon="106.999684"><ele>21</ele></trkpt>
+      <trkpt lat="-6.237170" lon="106.999406"><ele>21</ele></trkpt>
+      <trkpt lat="-6.236923" lon="106.999088"><ele>21</ele></trkpt>
+      <trkpt lat="-6.236684" lon="106.998765"><ele>21</ele></trkpt>
+      <trkpt lat="-6.236446" lon="106.998440"><ele>21</ele></trkpt>
+      <trkpt lat="-6.236214" lon="106.998110"><ele>21</ele></trkpt>
+      <trkpt lat="-6.235986" lon="106.997779"><ele>20</ele></trkpt>
+      <trkpt lat="-6.235760" lon="106.997445"><ele>20</ele></trkpt>
+      <trkpt lat="-6.235534" lon="106.997112"><ele>20</ele></trkpt>
+      <trkpt lat="-6.235305" lon="106.996781"><ele>20</ele></trkpt>
+      <trkpt lat="-6.235081" lon="106.996446"><ele>20</ele></trkpt>
+      <trkpt lat="-6.234868" lon="106.996105"><ele>20</ele></trkpt>
+      <trkpt lat="-6.234655" lon="106.995763"><ele>20</ele></trkpt>
+      <trkpt lat="-6.234443" lon="106.995421"><ele>19</ele></trkpt>
+      <trkpt lat="-6.234263" lon="106.995060"><ele>19</ele></trkpt>
+      <trkpt lat="-6.234100" lon="106.994692"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233983" lon="106.994307"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233898" lon="106.993913"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233821" lon="106.993517"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233743" lon="106.993121"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233665" lon="106.992726"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233604" lon="106.992327"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233539" lon="106.991929"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233474" lon="106.991531"><ele>20</ele></trkpt>
+      <trkpt lat="-6.233409" lon="106.991133"><ele>20</ele></trkpt>
+      <trkpt lat="-6.233323" lon="106.990739"><ele>21</ele></trkpt>
+      <trkpt lat="-6.233215" lon="106.990350"><ele>21</ele></trkpt>
+      <trkpt lat="-6.233086" lon="106.989969"><ele>22</ele></trkpt>
+      <trkpt lat="-6.232942" lon="106.989592"><ele>22</ele></trkpt>
+      <trkpt lat="-6.232786" lon="106.989220"><ele>21</ele></trkpt>
+      <trkpt lat="-6.232593" lon="106.988867"><ele>21</ele></trkpt>
+      <trkpt lat="-6.232358" lon="106.988541"><ele>20</ele></trkpt>
+      <trkpt lat="-6.232066" lon="106.988265"><ele>20</ele></trkpt>
+      <trkpt lat="-6.231754" lon="106.988013"><ele>20</ele></trkpt>
+      <trkpt lat="-6.231446" lon="106.987754"><ele>19</ele></trkpt>
+      <trkpt lat="-6.231149" lon="106.987483"><ele>19</ele></trkpt>
+      <trkpt lat="-6.230919" lon="106.987154"><ele>19</ele></trkpt>
+      <trkpt lat="-6.230725" lon="106.986801"><ele>19</ele></trkpt>
+      <trkpt lat="-6.230526" lon="106.986450"><ele>20</ele></trkpt>
+      <trkpt lat="-6.230328" lon="106.986100"><ele>20</ele></trkpt>
+      <trkpt lat="-6.230129" lon="106.985749"><ele>20</ele></trkpt>
+      <trkpt lat="-6.229933" lon="106.985397"><ele>20</ele></trkpt>
+      <trkpt lat="-6.229737" lon="106.985045"><ele>20</ele></trkpt>
+      <trkpt lat="-6.229536" lon="106.984696"><ele>20</ele></trkpt>
+      <trkpt lat="-6.229335" lon="106.984347"><ele>21</ele></trkpt>
+      <trkpt lat="-6.229297" lon="106.984038"><ele>21</ele></trkpt>
+      <trkpt lat="-6.229642" lon="106.983831"><ele>21</ele></trkpt>
+      <trkpt lat="-6.229992" lon="106.983635"><ele>21</ele></trkpt>
+      <trkpt lat="-6.230342" lon="106.983438"><ele>20</ele></trkpt>
+      <trkpt lat="-6.230692" lon="106.983241"><ele>19</ele></trkpt>
+      <trkpt lat="-6.231039" lon="106.983040"><ele>19</ele></trkpt>
+      <trkpt lat="-6.231389" lon="106.982842"><ele>18</ele></trkpt>
+      <trkpt lat="-6.231741" lon="106.982648"><ele>17</ele></trkpt>
+      <trkpt lat="-6.232092" lon="106.982454"><ele>17</ele></trkpt>
+      <trkpt lat="-6.232441" lon="106.982255"><ele>17</ele></trkpt>
+      <trkpt lat="-6.232789" lon="106.982055"><ele>17</ele></trkpt>
+      <trkpt lat="-6.233119" lon="106.981838"><ele>18</ele></trkpt>
+      <trkpt lat="-6.233457" lon="106.981639"><ele>18</ele></trkpt>
+      <trkpt lat="-6.233376" lon="106.981246"><ele>18</ele></trkpt>
+      <trkpt lat="-6.233312" lon="106.980848"><ele>18</ele></trkpt>
+      <trkpt lat="-6.233244" lon="106.980450"><ele>18</ele></trkpt>
+      <trkpt lat="-6.233173" lon="106.980053"><ele>18</ele></trkpt>
+      <trkpt lat="-6.233103" lon="106.979656"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233028" lon="106.979259"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233153" lon="106.978902"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233388" lon="106.978575"><ele>19</ele></trkpt>
+      <trkpt lat="-6.233742" lon="106.978430"><ele>19</ele></trkpt>
+      <trkpt lat="-6.234137" lon="106.978361"><ele>19</ele></trkpt>
+      <trkpt lat="-6.234534" lon="106.978304"><ele>19</ele></trkpt>
+      <trkpt lat="-6.234931" lon="106.978247"><ele>19</ele></trkpt>
+      <trkpt lat="-6.235328" lon="106.978194"><ele>19</ele></trkpt>
+      <trkpt lat="-6.235726" lon="106.978139"><ele>19</ele></trkpt>
+      <trkpt lat="-6.236063" lon="106.978316"><ele>19</ele></trkpt>
+      <trkpt lat="-6.236426" lon="106.978439"><ele>19</ele></trkpt>
+      <trkpt lat="-6.236822" lon="106.978377"><ele>19</ele></trkpt>
+      <trkpt lat="-6.237218" lon="106.978315"><ele>19</ele></trkpt>
+      <trkpt lat="-6.237614" lon="106.978251"><ele>19</ele></trkpt>
+      <trkpt lat="-6.238011" lon="106.978193"><ele>20</ele></trkpt>
+      <trkpt lat="-6.238408" lon="106.978134"><ele>20</ele></trkpt>
+      <trkpt lat="-6.238789" lon="106.978062"><ele>20</ele></trkpt>
+      <trkpt lat="-6.238723" lon="106.977665"><ele>21</ele></trkpt>
+      <trkpt lat="-6.238680" lon="106.977263"><ele>21</ele></trkpt>
+      <trkpt lat="-6.238560" lon="106.976886"><ele>20</ele></trkpt>
+      <trkpt lat="-6.238375" lon="106.976529"><ele>20</ele></trkpt>
+      <trkpt lat="-6.238391" lon="106.976236"><ele>20</ele></trkpt>
+      <trkpt lat="-6.238473" lon="106.975965"><ele>19</ele></trkpt>
+      <trkpt lat="-6.238288" lon="106.975607"><ele>19</ele></trkpt>
+    </trkseg>
+  </trk>
 </gpx>
