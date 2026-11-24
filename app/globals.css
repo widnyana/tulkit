@@ -188,3 +188,22 @@
   width: 44px;
   height: 44px;
 }
+
+@keyframes gpx-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.gpx-sheet {
+  animation: gpx-sheet-in 280ms var(--ease-swift) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gpx-sheet {
+    animation: fade-in 240ms ease both;
+  }
+}
