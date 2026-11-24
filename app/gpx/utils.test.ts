@@ -4,6 +4,7 @@ import { describe, it } from "node:test";
 import { DOMParser as XmldomDOMParser } from "@xmldom/xmldom";
 import { isParseError, parseGpx } from "../../lib/gpx/parse.ts";
 import {
+  accumulateGain,
   allPoints,
   buildLegend,
   computeBounds,
@@ -242,6 +243,44 @@ describe("lineGroups", () => {
       totalDistanceMeters(parsed),
       groups.reduce((total, group) => total + group.distanceMeters, 0),
     );
+  });
+});
+
+describe("accumulateGain", () => {
+  it("returns zero gain and zero samples for an empty list", () => {
+    assert.deepEqual(accumulateGain([]), { gain: 0, samples: 0 });
+  });
+
+  it("counts one sample with no gain for a single point", () => {
+    assert.deepEqual(accumulateGain([{ ele: 10 }]), { gain: 0, samples: 1 });
+  });
+
+  it("ignores movement below the noise threshold", () => {
+    const result = accumulateGain([
+      { ele: 100 },
+      { ele: 101.5 },
+      { ele: 100.2 },
+    ]);
+    assert.equal(result.gain, 0);
+    assert.equal(result.samples, 3);
+  });
+
+  it("counts a real climb above the noise threshold", () => {
+    const result = accumulateGain([{ ele: 0 }, { ele: 10 }]);
+    assert.equal(result.gain, 10);
+    assert.equal(result.samples, 2);
+  });
+
+  it("resets the base after a point with no ele", () => {
+    const result = accumulateGain([
+      { ele: 10 },
+      { ele: 20 },
+      {},
+      { ele: 5 },
+      { ele: 15 },
+    ]);
+    assert.equal(result.gain, 20);
+    assert.equal(result.samples, 4);
   });
 });
 

@@ -132,37 +132,53 @@ export function safeExternalHref(href: string | undefined): string | undefined {
 // overstate ascent. Count a point after 3 m of movement from the last accepted elevation.
 const ELEVATION_NOISE_THRESHOLD_METERS = 3;
 
-export function elevationGain(parsed: ParsedGpx): number | null {
+export interface GainAccumulation {
+  readonly gain: number;
+  readonly samples: number;
+}
+
+export function accumulateGain(
+  points: ReadonlyArray<{ ele?: number }>,
+): GainAccumulation {
   let samples = 0;
   let gain = 0;
+  let base: number | undefined;
+  for (const point of points) {
+    const ele = point.ele;
+    if (ele === undefined || !Number.isFinite(ele)) {
+      base = undefined;
+      continue;
+    }
+    samples += 1;
+    if (base === undefined) {
+      base = ele;
+      continue;
+    }
+    const delta = ele - base;
+    if (delta > ELEVATION_NOISE_THRESHOLD_METERS) {
+      gain += delta;
+      base = ele;
+    } else if (delta < -ELEVATION_NOISE_THRESHOLD_METERS) {
+      base = ele;
+    }
+  }
+  return { gain, samples };
+}
+
+export function elevationGain(parsed: ParsedGpx): number | null {
+  let totalSamples = 0;
+  let totalGain = 0;
 
   for (const group of lineGroups(parsed)) {
     for (const segment of group.segments) {
-      let base: number | undefined;
-      for (const point of segment) {
-        const ele = point.ele;
-        if (ele === undefined || !Number.isFinite(ele)) {
-          base = undefined;
-          continue;
-        }
-        samples += 1;
-        if (base === undefined) {
-          base = ele;
-          continue;
-        }
-        const delta = ele - base;
-        if (delta > ELEVATION_NOISE_THRESHOLD_METERS) {
-          gain += delta;
-          base = ele;
-        } else if (delta < -ELEVATION_NOISE_THRESHOLD_METERS) {
-          base = ele;
-        }
-      }
+      const { gain, samples } = accumulateGain(segment);
+      totalGain += gain;
+      totalSamples += samples;
     }
   }
 
-  if (samples < 2) return null;
-  return Math.round(gain);
+  if (totalSamples < 2) return null;
+  return Math.round(totalGain);
 }
 
 export function allPoints(parsed: ParsedGpx): LatLon[] {
