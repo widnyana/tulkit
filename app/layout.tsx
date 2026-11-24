@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Suspense } from "react";
 import Link from "next/link";
 import "./globals.css";
+import { NavigationProgress } from "@/components/navigation-progress";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ToolsPalette } from "@/components/tools-palette";
@@ -87,6 +89,9 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
+          <Suspense fallback={null}>
+            <NavigationProgress />
+          </Suspense>
           <div className="site-shell flex min-h-screen flex-col">
             <a
               href="#main"

@@ -207,3 +207,65 @@
     animation: fade-in 240ms ease both;
   }
 }
+
+.nav-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: 2px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms linear;
+}
+
+.nav-progress[data-state="loading"],
+.nav-progress[data-state="complete"] {
+  opacity: 1;
+}
+
+.nav-progress-bar {
+  height: 100%;
+  background-color: var(--ring);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 200ms var(--ease-soft);
+}
+
+.nav-progress[data-state="loading"] .nav-progress-bar {
+  animation: nav-progress-trickle 6s cubic-bezier(0.1, 0.75, 0.2, 1) forwards;
+}
+
+.nav-progress[data-state="complete"] .nav-progress-bar {
+  animation: none;
+  transform: scaleX(1);
+}
+
+@keyframes nav-progress-trickle {
+  from {
+    transform: scaleX(0.04);
+  }
+  to {
+    transform: scaleX(0.86);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-progress,
+  .nav-progress-bar {
+    transition: none;
+  }
+  .nav-progress[data-state="loading"] .nav-progress-bar {
+    animation: none;
+    transform: scaleX(0.7);
+  }
+}
+
+.route-enter {
+  animation: fade-in 160ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-enter {
+    animation: none;
+  }
+}

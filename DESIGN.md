@@ -1,7 +1,8 @@
 # Design guidelines — "directory + palette"
 
 The design language for tulkit's homepage and site chrome. Read before touching
-`app/globals.css`, `app/layout.tsx`, `app/page.tsx`, `components/tools-palette.tsx`,
+`app/globals.css`, `app/layout.tsx`, `app/template.tsx`, `components/navigation-progress.tsx`,
+`app/page.tsx`, `components/tools-palette.tsx`,
 `components/tools-directory.tsx`, `components/tools-ui.tsx`, `components/Footer.tsx`,
 or `lib/tool-search.ts`.
 
@@ -17,8 +18,8 @@ or `lib/tool-search.ts`.
 4. **AA everywhere, colour-blind safe by construction.** The single accent is Okabe-Ito
    blue — never a red/green pair, never hue as the only difference. Ratios below were
    measured with the WCAG relative-luminance formula against the shipped hex values.
-5. **Motion only explains state** and never runs on load. Keyboard-initiated actions
-   (opening the palette) do not animate at all.
+5. **Motion only explains state.** Keyboard-initiated actions (opening the palette) do
+   not animate at all; route changes and press feedback carry the only motion.
 
 ## Palette
 
@@ -120,7 +121,18 @@ quiet meta links in Geist Sans (source, `agents: /llms.txt`, tip jar).
   hovered.
 - Chips indicator: `transition-[transform,width,height] duration-300 ease-soft`,
   `motion-reduce:transition-none` (reduced motion snaps instead of sliding).
-- `prefers-reduced-motion` also disables nothing else — there is nothing else.
+- Route change: `app/template.tsx` fades the route in with `opacity` only, 160ms
+  `ease-out`. No transform on that wrapper: the gpx sheet and tab fan are
+  `position: fixed`, and an animated ancestor transform would become their containing
+  block.
+- Navigation bar: a 2px `--ring` bar appears on same-origin link press, trickles with
+  `transform: scaleX()` for up to 6s, completes on the route key change, and hides
+  after 240ms. This is the acknowledgement that the click registered.
+- Slow connection notice: `navigator.connection` reporting `saveData`, `slow-2g`, `2g`
+  or `3g` shows the screen-reader status immediately; every other link shows it only
+  after 1.2s. A navigation that never completes settles at 9s.
+- `prefers-reduced-motion` removes the route fade, disables both bar transitions and
+  holds the bar at a static 70% while loading.
 
 ## Interaction contract
 

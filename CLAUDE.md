@@ -67,7 +67,7 @@ Plain `grep`/`rg`/`Read` are a last resort for things none of the above can expr
 
 **Client-side by default.** No database, no auth, no server state. The only API route is `app/api/fetch-schema/route.ts` — a hardened SSRF/CORS proxy used solely by the json-schema tool to resolve remote `$ref`s. It is an exception, not a pattern to copy; add a server route only to escape CORS/SSRF constraints.
 
-Shared helpers: `lib/site.ts` (site metadata constants), `lib/utils.ts` (`cn()` = `twMerge(clsx(...))`), `components/ui/*` (shadcn primitives), `components/ToolJsonLd.tsx` (`ToolJsonLd` per route + `SiteJsonLd` for homepage), `lib/og.tsx` (OG card renderer). Path alias `@/*` → repo root.
+Shared helpers: `lib/site.ts` (site metadata constants), `lib/utils.ts` (`cn()` = `twMerge(clsx(...))`), `components/ui/*` (shadcn primitives), `components/ToolJsonLd.tsx` (`ToolJsonLd` per route + `SiteJsonLd` for homepage), `lib/og.tsx` (OG card renderer), `components/navigation-progress.tsx` (top bar acknowledging client-side navigation), `app/template.tsx` (opacity route fade), `app/loading.tsx` (route skeleton). Path alias `@/*` → repo root.
 
 Tailwind v4 is configured CSS-first in `app/globals.css` (`@import "tailwindcss"` + `@theme`); there is no `tailwind.config.js`. Fonts: Geist Sans/Mono via `next/font`.
 
