@@ -207,3 +207,46 @@
     animation: fade-in 240ms ease both;
   }
 }
+
+.gpx-fan-rib {
+  transform: translate(calc(-50% + var(--fan-x)), calc(-50% + var(--fan-y)));
+}
+
+@keyframes gpx-fan-rib-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--fan-x)), calc(-50% + var(--fan-y)))
+      scale(1);
+  }
+}
+
+.gpx-fan-rib-enter {
+  animation: gpx-fan-rib-in 260ms var(--ease-soft) both;
+}
+
+@keyframes gpx-fan-leaf-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-16deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.gpx-fan-leaf-enter {
+  transform-origin: 50% 50%;
+  animation: gpx-fan-leaf-in 240ms var(--ease-soft) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gpx-fan-rib-enter,
+  .gpx-fan-leaf-enter {
+    animation: none;
+  }
+}

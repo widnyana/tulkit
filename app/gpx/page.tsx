@@ -14,7 +14,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { LocateFixed, Search } from "lucide-react";
+import {
+  Library as LibraryIcon,
+  LocateFixed,
+  Map as MapIcon,
+  MapPin,
+  Route as RouteIcon,
+  Search,
+  Table as TableIcon,
+  type LucideIcon,
+} from "lucide-react";
 import { useDebouncedCallback } from "use-debounce";
 import { Duration, Effect, Fiber } from "effect";
 import { type CsvParseResult, parseWaypointCsv } from "@/lib/gpx/csv";
@@ -41,6 +50,7 @@ import { MissingEntryPanel } from "./components/MissingEntryPanel";
 import { ResultPanel } from "./components/ResultPanel";
 import { RouteLibrary } from "./components/RouteLibrary";
 import { RoutePlannerMap } from "./components/RoutePlannerMap";
+import { TabFanMenu } from "./components/TabFanMenu";
 import {
   importMapsLink,
   parseGpxText,
@@ -90,6 +100,20 @@ const TAB_SHORT_LABELS: Record<TabValue, string> = {
   csv: "CSV",
   plan: "Plan",
 };
+
+const TAB_FAN_ICONS: Record<TabValue, LucideIcon> = {
+  view: MapIcon,
+  maps: MapPin,
+  csv: TableIcon,
+  plan: RouteIcon,
+  library: LibraryIcon,
+};
+
+const TAB_FAN_ITEMS = TAB_VALUES.map((value) => ({
+  value,
+  label: TAB_SHORT_LABELS[value],
+  icon: TAB_FAN_ICONS[value],
+}));
 
 const TAB_HINTS: Record<TabValue, string> = {
   view: "Paste GPX XML or upload a .gpx file to inspect it on a map.",
@@ -919,18 +943,15 @@ function GpxViewContent() {
           }}
           className="tool-enter mt-6"
         >
-          <TabsList className="grid w-full grid-cols-5">
-            {TAB_VALUES.map((value) => (
-              <TabsTrigger
-                key={value}
-                value={value}
-                className="px-1 text-xs sm:px-3 sm:text-sm"
-              >
-                <span className="sm:hidden">{TAB_SHORT_LABELS[value]}</span>
-                <span className="hidden sm:inline">{TAB_LABELS[value]}</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="hidden sm:block">
+            <TabsList className="grid w-full grid-cols-5">
+              {TAB_VALUES.map((value) => (
+                <TabsTrigger key={value} value={value}>
+                  {TAB_LABELS[value]}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </div>
           <p className="mt-3 text-sm text-muted-foreground">{TAB_HINTS[tab]}</p>
 
           {missingId !== null && (
@@ -1416,6 +1437,8 @@ function GpxViewContent() {
             </div>
           </TabsContent>
         </Tabs>
+
+        <TabFanMenu items={TAB_FAN_ITEMS} value={tab} onSelect={setTab} />
       </div>
 
       {planNotice !== null && (
