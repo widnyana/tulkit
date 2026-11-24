@@ -38,14 +38,6 @@ export function ResultPanel({
 
   return (
     <div className="space-y-4">
-      <MetadataPanel parsed={parsed} />
-      <RouteBrief parsed={parsed} />
-      <StatTiles items={buildGpxStats(parsed)} />
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">{note}</p>
-        {actions}
-      </div>
-      {children}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
         <div
           className={`min-w-0 ${hasPoints ? "lg:col-span-10" : "lg:col-span-12"}`}
@@ -58,6 +50,14 @@ export function ResultPanel({
           </div>
         ) : null}
       </div>
+      <MetadataPanel parsed={parsed} />
+      <RouteBrief parsed={parsed} />
+      <StatTiles items={buildGpxStats(parsed)} />
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">{note}</p>
+        {actions}
+      </div>
+      {children}
     </div>
   );
 }
