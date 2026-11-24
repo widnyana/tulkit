@@ -9,6 +9,7 @@ import type {
 } from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 import { useMapStyle } from "@/lib/gpx/mapStyle";
+import { MapGate } from "./MapGate";
 import type { LatLon } from "../types";
 
 type MapInstance = MapLibreMap;
@@ -146,6 +147,7 @@ export function RoutePlannerMap({
   const onPointMoveRef = useRef(onPointMove);
   const [mapReady, setMapReady] = useState(false);
   const [mapFailed, setMapFailed] = useState(false);
+  const [mapInteractive, setMapInteractive] = useState(false);
   const mapStyle = useMapStyle();
   const mapStyleRef = useRef(mapStyle);
 
@@ -328,7 +330,9 @@ export function RoutePlannerMap({
           The map could not be drawn in this browser. You can still edit the
           route points in the table.
         </p>
-      ) : null}
+      ) : (
+        <MapGate active={mapInteractive} onChange={setMapInteractive} />
+      )}
     </div>
   );
 }

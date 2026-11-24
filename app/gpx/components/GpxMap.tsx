@@ -11,6 +11,7 @@ import type {
   PoiGroup,
 } from "../utils";
 import { useMapStyle } from "@/lib/gpx/mapStyle";
+import { MapGate } from "./MapGate";
 import {
   buildLegend,
   computeBounds,
@@ -241,16 +242,17 @@ function addDirectionLayer(
     if (!context) return;
     context.clearRect(0, 0, 32, 32);
     context.beginPath();
-    context.moveTo(6, 6);
-    context.lineTo(26, 16);
-    context.lineTo(6, 26);
-    context.closePath();
-    context.strokeStyle = tokens.background;
-    context.lineWidth = 4;
+    context.moveTo(9, 5);
+    context.lineTo(25, 16);
+    context.lineTo(9, 27);
+    context.lineCap = "round";
     context.lineJoin = "round";
+    context.strokeStyle = tokens.background;
+    context.lineWidth = 9;
     context.stroke();
-    context.fillStyle = tokens.foreground;
-    context.fill();
+    context.strokeStyle = tokens.foreground;
+    context.lineWidth = 5;
+    context.stroke();
     map.addImage(ARROW_IMAGE_ID, context.getImageData(0, 0, 32, 32));
   }
 
@@ -790,9 +792,13 @@ function MapLegend({
             width={12}
             height={12}
             viewBox="0 0 12 12"
-            fill="currentColor"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
           >
-            <path d="M6 1 11 11 6 8 1 11Z" />
+            <path d="M2 3.5 6 8.5 10 3.5" />
           </svg>
           <span>Direction of travel</span>
         </LegendRow>
@@ -814,6 +820,7 @@ export function GpxMap({
   const [mapFailed, setMapFailed] = useState(false);
   const [visible, setVisible] = useState<VisibleFeatures>(EMPTY_VISIBLE);
   const [mapInstance, setMapInstance] = useState<MapInstance | null>(null);
+  const [mapInteractive, setMapInteractive] = useState(false);
   const activeMapRef = useRef<MapInstance | null>(null);
   const popupClassRef = useRef<typeof MapLibrePopup | null>(null);
   const focusedPopupRef = useRef<MapLibrePopup | null>(null);
@@ -1124,7 +1131,9 @@ export function GpxMap({
             The map could not be drawn in this browser. The stats above still
             reflect the parsed file.
           </p>
-        ) : null}
+        ) : (
+          <MapGate active={mapInteractive} onChange={setMapInteractive} />
+        )}
       </div>
       {endpoints && (
         <figcaption className="text-sm text-muted-foreground">
