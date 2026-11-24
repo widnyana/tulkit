@@ -5,6 +5,7 @@ export const TAB_ACTIVE_KEY = "tulkit:gpx:active-tab:v1";
 export const MAPS_INPUT_KEY = "tulkit:gpx:maps-input:v1";
 export const CSV_INPUT_KEY = "tulkit:gpx:csv-input:v1";
 export const MAPS_RESULT_KEY = "tulkit:gpx:maps-result:v1";
+export const LAST_VIEWED_ROUTE_KEY = "tulkit:gpx:last-viewed-route:v1";
 export const MAPS_RESULT_MAX_BYTES = 1_000_000;
 
 export type TabValue = "view" | "library" | "maps" | "csv" | "plan";
