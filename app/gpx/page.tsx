@@ -911,9 +911,13 @@ function GpxViewContent() {
           }}
           className="tool-enter mt-6"
         >
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="flex w-full gap-1 overflow-x-auto no-scrollbar sm:grid sm:grid-cols-5 sm:gap-0 sm:overflow-visible">
             {TAB_VALUES.map((value) => (
-              <TabsTrigger key={value} value={value}>
+              <TabsTrigger
+                key={value}
+                value={value}
+                className="shrink-0 min-w-[88px] px-4 sm:min-w-0 sm:shrink sm:px-3"
+              >
                 {TAB_LABELS[value]}
               </TabsTrigger>
             ))}
