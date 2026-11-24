@@ -207,22 +207,3 @@
     animation: fade-in 240ms ease both;
   }
 }
-
-@keyframes gpx-fan-stick-open {
-  from {
-    transform: rotate(var(--fan-closed));
-  }
-  to {
-    transform: rotate(var(--fan-angle));
-  }
-}
-
-.gpx-fan-stick-open {
-  animation: gpx-fan-stick-open 320ms var(--ease-soft) both;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .gpx-fan-stick-open {
-    animation: none;
-  }
-}

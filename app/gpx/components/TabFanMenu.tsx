@@ -16,7 +16,6 @@ const ARC_CENTER_DEG = -135;
 const MAX_SPREAD_DEG = 90;
 const MIN_ACTIONS = 2;
 const MAX_ACTIONS = 6;
-const STICK_STAGGER_MS = 26;
 const SPREAD_BY_COUNT: Record<number, number> = {
   2: 80,
   3: 90,
@@ -48,7 +47,7 @@ export function TabFanMenu<T extends string>({
   onSelect,
 }: TabFanMenuProps<T>) {
   const [open, setOpen] = useState(false);
-  const [animated, setAnimated] = useState(true);
+  const [instant, setInstant] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const itemRefs = useRef(new Map<T, HTMLButtonElement>());
@@ -59,7 +58,6 @@ export function TabFanMenu<T extends string>({
     const step = items.length > 1 ? spread / (items.length - 1) : 0;
     return {
       start,
-      step,
       sticks: items.map((item, index) => ({
         item,
         angle: start + step * index,
@@ -108,68 +106,66 @@ export function TabFanMenu<T extends string>({
       className="pointer-events-none fixed inset-0 z-40 overflow-hidden sm:hidden"
     >
       <div className="absolute right-5 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] size-14">
-        {open && (
-          <div
-            role="group"
-            aria-label="GPX sections"
-            className="absolute inset-0"
-          >
-            {arc.sticks.map(({ item, angle }, index) => {
-              const isActive = item.value === value;
-              const Icon = item.icon;
-              return (
-                <div
-                  key={item.value}
+        <div
+          role="group"
+          aria-label="GPX sections"
+          inert={!open}
+          style={instant ? { transitionDuration: "0ms" } : undefined}
+          className={[
+            "absolute inset-0 transition-opacity duration-200",
+            open ? "opacity-100" : "pointer-events-none opacity-0",
+          ].join(" ")}
+        >
+          {arc.sticks.map(({ item, angle }) => {
+            const isActive = item.value === value;
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.value}
+                style={
+                  {
+                    transform: `rotate(${open ? angle : arc.start}deg)`,
+                    transitionDuration: instant ? "0ms" : undefined,
+                    zIndex: isActive ? 2 : 1,
+                  } as CSSProperties
+                }
+                className="absolute top-1/2 left-1/2 size-0 transition-transform duration-300 ease-soft motion-reduce:transition-none"
+              >
+                <button
+                  type="button"
+                  ref={(node) => {
+                    if (node) itemRefs.current.set(item.value, node);
+                    else itemRefs.current.delete(item.value);
+                  }}
+                  aria-current={isActive ? "true" : undefined}
+                  aria-label={item.label}
+                  onClick={() => {
+                    onSelect(item.value);
+                    closeMenu(true);
+                  }}
+                  style={{
+                    left: STICK_START,
+                    width: STICK_LENGTH - STICK_START,
+                  }}
                   className={[
-                    "absolute top-1/2 left-1/2 size-0",
-                    animated ? "gpx-fan-stick-open" : "",
+                    "pointer-events-auto absolute top-1/2 flex h-11 -translate-y-1/2 items-center justify-center rounded-full border shadow-md transition-colors duration-150",
+                    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                    isActive
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-foreground",
                   ].join(" ")}
-                  style={
-                    {
-                      "--fan-angle": `${angle}deg`,
-                      "--fan-closed": `${arc.start}deg`,
-                      transform: `rotate(${angle}deg)`,
-                      animationDelay: `${index * STICK_STAGGER_MS}ms`,
-                      zIndex: isActive ? 2 : 1,
-                    } as CSSProperties
-                  }
                 >
-                  <button
-                    type="button"
-                    ref={(node) => {
-                      if (node) itemRefs.current.set(item.value, node);
-                      else itemRefs.current.delete(item.value);
-                    }}
-                    aria-current={isActive ? "true" : undefined}
-                    aria-label={item.label}
-                    onClick={() => {
-                      onSelect(item.value);
-                      closeMenu(true);
-                    }}
-                    style={{
-                      left: STICK_START,
-                      width: STICK_LENGTH - STICK_START,
-                    }}
-                    className={[
-                      "pointer-events-auto absolute top-1/2 flex h-11 -translate-y-1/2 items-center rounded-md border shadow-md transition-colors duration-150",
-                      "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                      isActive
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-[#c9b48f] bg-[#e8d8bf] text-foreground dark:border-[#4d3f2e] dark:bg-[#332a20]",
-                    ].join(" ")}
-                  >
-                    <span className="absolute top-1/2 right-3 flex -translate-y-1/2 rotate-180 items-center gap-1.5">
-                      <Icon aria-hidden="true" className="size-4 shrink-0" />
-                      <span className="text-xs font-medium whitespace-nowrap">
-                        {item.label}
-                      </span>
+                  <span className="flex rotate-180 items-center gap-1.5 px-3">
+                    <Icon aria-hidden="true" className="size-4 shrink-0" />
+                    <span className="text-xs font-medium whitespace-nowrap">
+                      {item.label}
                     </span>
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        )}
+                  </span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
 
         <button
           ref={triggerRef}
@@ -181,10 +177,10 @@ export function TabFanMenu<T extends string>({
               : `Open section menu: ${activeLabel ?? "sections"}`
           }
           onClick={(event) => {
-            setAnimated(event.detail !== 0);
+            setInstant(event.detail === 0);
             setOpen((current) => !current);
           }}
-          className="pointer-events-auto absolute inset-0 flex size-14 items-center justify-center rounded-full border border-border bg-primary text-primary-foreground transition-transform duration-150 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="pointer-events-auto absolute inset-0 flex size-14 items-center justify-center rounded-full border border-border bg-primary text-primary-foreground shadow-lg transition-transform duration-150 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           {open ? (
             <X aria-hidden="true" className="size-5" />
