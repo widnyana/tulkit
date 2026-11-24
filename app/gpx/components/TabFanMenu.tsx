@@ -10,19 +10,20 @@ import {
   useState,
 } from "react";
 
-const ITEM_PITCH = 50;
-const ITEM_BASE_X = 140;
-const ITEM_BASE_Y = 46;
-const ITEM_X_STEP = 11;
-const LEAF_OUTER_X = 200;
-const LEAF_OUTER_Y = 292;
-const LEAF_INNER_X = 52;
-const LEAF_INNER_Y = 76;
-const LEAF_SIZE_X = LEAF_OUTER_X * 2;
-const LEAF_SIZE_Y = LEAF_OUTER_Y * 2;
-const LEAF_CENTER_X = LEAF_OUTER_X;
-const LEAF_CENTER_Y = LEAF_OUTER_Y;
-const RIB_STAGGER_MS = 24;
+const STICK_START = 30;
+const STICK_LENGTH = 188;
+const ARC_CENTER_DEG = -135;
+const MAX_SPREAD_DEG = 90;
+const MIN_ACTIONS = 2;
+const MAX_ACTIONS = 6;
+const STICK_STAGGER_MS = 26;
+const SPREAD_BY_COUNT: Record<number, number> = {
+  2: 80,
+  3: 90,
+  4: 100,
+  5: 120,
+  6: 120,
+};
 
 export interface TabFanItem<T extends string> {
   value: T;
@@ -30,42 +31,10 @@ export interface TabFanItem<T extends string> {
   icon: LucideIcon;
 }
 
-function ellipsePoint(
-  radiusX: number,
-  radiusY: number,
-  degrees: number,
-): [number, number] {
-  const radians = (degrees * Math.PI) / 180;
-  return [-radiusX * Math.cos(radians), -radiusY * Math.sin(radians)];
+function requestedSpread(count: number): number {
+  if (count <= MIN_ACTIONS) return SPREAD_BY_COUNT[MIN_ACTIONS];
+  return SPREAD_BY_COUNT[Math.min(count, MAX_ACTIONS)];
 }
-
-function itemOffset(index: number, count: number): [number, number] {
-  const spread = count > 1 ? 4 / (count - 1) : 0;
-  return [
-    -(ITEM_BASE_X - ITEM_X_STEP * index * spread),
-    -(ITEM_BASE_Y + ITEM_PITCH * index * spread),
-  ];
-}
-
-function itemAngle(offsetX: number, offsetY: number): number {
-  return (Math.atan2(-offsetY, -offsetX) * 180) / Math.PI;
-}
-
-function leafPath(): string {
-  const steps = 28;
-  const outer: string[] = [];
-  const inner: string[] = [];
-  for (let step = 0; step <= steps; step += 1) {
-    const degrees = 6 + (78 * step) / steps;
-    const [outerX, outerY] = ellipsePoint(LEAF_OUTER_X, LEAF_OUTER_Y, degrees);
-    outer.push(`${LEAF_CENTER_X + outerX},${LEAF_CENTER_Y + outerY}`);
-    const [innerX, innerY] = ellipsePoint(LEAF_INNER_X, LEAF_INNER_Y, degrees);
-    inner.push(`${LEAF_CENTER_X + innerX},${LEAF_CENTER_Y + innerY}`);
-  }
-  return `M ${outer.join(" L ")} L ${inner.reverse().join(" L ")} Z`;
-}
-
-const LEAF_PATH = leafPath();
 
 interface TabFanMenuProps<T extends string> {
   items: readonly TabFanItem<T>[];
@@ -84,30 +53,19 @@ export function TabFanMenu<T extends string>({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const itemRefs = useRef(new Map<T, HTMLButtonElement>());
 
-  const layout = useMemo(
-    () =>
-      items.map((item, index) => {
-        const [offsetX, offsetY] = itemOffset(index, items.length);
-        const angle = itemAngle(offsetX, offsetY);
-        const [ribStartX, ribStartY] = ellipsePoint(
-          LEAF_INNER_X * 0.9,
-          LEAF_INNER_Y * 0.9,
-          angle,
-        );
-        const [ribEndX, ribEndY] = ellipsePoint(
-          LEAF_OUTER_X - 8,
-          LEAF_OUTER_Y - 8,
-          angle,
-        );
-        return {
-          item,
-          offsetX,
-          offsetY,
-          rib: [ribStartX, ribStartY, ribEndX, ribEndY] as const,
-        };
-      }),
-    [items],
-  );
+  const arc = useMemo(() => {
+    const spread = Math.min(requestedSpread(items.length), MAX_SPREAD_DEG);
+    const start = ARC_CENTER_DEG - spread / 2;
+    const step = items.length > 1 ? spread / (items.length - 1) : 0;
+    return {
+      start,
+      step,
+      sticks: items.map((item, index) => ({
+        item,
+        angle: start + step * index,
+      })),
+    };
+  }, [items]);
 
   const closeMenu = useCallback((restoreFocus: boolean) => {
     setOpen(false);
@@ -142,6 +100,8 @@ export function TabFanMenu<T extends string>({
 
   const activeLabel = items.find((item) => item.value === value)?.label;
 
+  if (items.length < MIN_ACTIONS) return null;
+
   return (
     <div
       ref={rootRef}
@@ -149,49 +109,32 @@ export function TabFanMenu<T extends string>({
     >
       <div className="absolute right-5 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] size-14">
         {open && (
-          <>
-            <div
-              className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-              style={{ width: LEAF_SIZE_X, height: LEAF_SIZE_Y }}
-            >
-              <svg
-                aria-hidden="true"
-                width={LEAF_SIZE_X}
-                height={LEAF_SIZE_Y}
-                viewBox={`0 0 ${LEAF_SIZE_X} ${LEAF_SIZE_Y}`}
-                className={animated ? "gpx-fan-leaf-enter" : undefined}
-              >
-                <path
-                  d={LEAF_PATH}
-                  className="fill-background stroke-border"
-                  strokeWidth={1}
-                />
-                {layout.map(({ item, rib }) => (
-                  <line
-                    key={item.value}
-                    x1={LEAF_CENTER_X + rib[0]}
-                    y1={LEAF_CENTER_Y + rib[1]}
-                    x2={LEAF_CENTER_X + rib[2]}
-                    y2={LEAF_CENTER_Y + rib[3]}
-                    className="stroke-border"
-                    strokeWidth={1}
-                    opacity={0.7}
-                  />
-                ))}
-              </svg>
-            </div>
-
-            <div
-              role="group"
-              aria-label="GPX sections"
-              className="absolute inset-0"
-            >
-              {layout.map(({ item, offsetX, offsetY }, index) => {
-                const isActive = item.value === value;
-                const Icon = item.icon;
-                return (
+          <div
+            role="group"
+            aria-label="GPX sections"
+            className="absolute inset-0"
+          >
+            {arc.sticks.map(({ item, angle }, index) => {
+              const isActive = item.value === value;
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.value}
+                  className={[
+                    "absolute top-1/2 left-1/2 size-0",
+                    animated ? "gpx-fan-stick-open" : "",
+                  ].join(" ")}
+                  style={
+                    {
+                      "--fan-angle": `${angle}deg`,
+                      "--fan-closed": `${arc.start}deg`,
+                      transform: `rotate(${angle}deg)`,
+                      animationDelay: `${index * STICK_STAGGER_MS}ms`,
+                      zIndex: isActive ? 2 : 1,
+                    } as CSSProperties
+                  }
+                >
                   <button
-                    key={item.value}
                     type="button"
                     ref={(node) => {
                       if (node) itemRefs.current.set(item.value, node);
@@ -203,29 +146,29 @@ export function TabFanMenu<T extends string>({
                       onSelect(item.value);
                       closeMenu(true);
                     }}
-                    style={
-                      {
-                        "--fan-x": `${offsetX}px`,
-                        "--fan-y": `${offsetY}px`,
-                        animationDelay: `${index * RIB_STAGGER_MS}ms`,
-                      } as CSSProperties
-                    }
+                    style={{
+                      left: STICK_START,
+                      width: STICK_LENGTH - STICK_START,
+                    }}
                     className={[
-                      "gpx-fan-rib pointer-events-auto absolute top-1/2 left-1/2 flex h-11 w-[7.25rem] items-center gap-2 rounded-lg border px-3 text-xs transition-colors duration-150",
+                      "pointer-events-auto absolute top-1/2 flex h-11 -translate-y-1/2 items-center rounded-md border shadow-md transition-colors duration-150",
                       "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                      animated ? "gpx-fan-rib-enter" : "",
                       isActive
-                        ? "border-primary bg-primary font-semibold text-primary-foreground"
-                        : "border-border bg-background font-medium text-foreground",
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-[#c9b48f] bg-[#e8d8bf] text-foreground dark:border-[#4d3f2e] dark:bg-[#332a20]",
                     ].join(" ")}
                   >
-                    <Icon aria-hidden="true" className="size-4 shrink-0" />
-                    <span className="truncate">{item.label}</span>
+                    <span className="absolute top-1/2 right-3 flex -translate-y-1/2 rotate-180 items-center gap-1.5">
+                      <Icon aria-hidden="true" className="size-4 shrink-0" />
+                      <span className="text-xs font-medium whitespace-nowrap">
+                        {item.label}
+                      </span>
+                    </span>
                   </button>
-                );
-              })}
-            </div>
-          </>
+                </div>
+              );
+            })}
+          </div>
         )}
 
         <button
