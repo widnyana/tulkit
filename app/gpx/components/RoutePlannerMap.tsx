@@ -321,7 +321,7 @@ export function RoutePlannerMap({
   }, [flyToCenter, mapReady]);
 
   return (
-    <div className="relative h-[420px] w-full overflow-hidden rounded-lg border border-border">
+    <div className="gpx-map-shell relative h-[60dvh] max-h-[420px] min-h-[280px] w-full overflow-hidden rounded-lg border border-border sm:h-[420px] sm:max-h-none">
       <div ref={containerRef} className="h-full w-full" />
       {mapFailed ? (
         <p className="absolute inset-0 bg-background/80 p-4 text-sm text-muted-foreground">

@@ -1115,7 +1115,7 @@ export function GpxMap({
     <figure className="space-y-2">
       <div
         ref={frameRef}
-        className="relative h-[500px] w-full overflow-hidden rounded-lg border border-border [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:rounded-none"
+        className="gpx-map-shell relative h-[65dvh] max-h-[500px] min-h-[320px] w-full overflow-hidden rounded-lg border border-border sm:h-[500px] sm:max-h-none [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:rounded-none"
       >
         <div ref={containerRef} className="h-full w-full" />
         <MapLegend legend={legend} visible={visible} />

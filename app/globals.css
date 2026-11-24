@@ -183,3 +183,8 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.gpx-map-shell .maplibregl-ctrl-group button {
+  width: 44px;
+  height: 44px;
+}
