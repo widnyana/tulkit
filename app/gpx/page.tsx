@@ -83,6 +83,14 @@ const TAB_LABELS: Record<TabValue, string> = {
   plan: "Create Route",
 };
 
+const TAB_SHORT_LABELS: Record<TabValue, string> = {
+  view: "View",
+  library: "Library",
+  maps: "Maps",
+  csv: "CSV",
+  plan: "Plan",
+};
+
 const TAB_HINTS: Record<TabValue, string> = {
   view: "Paste GPX XML or upload a .gpx file to inspect it on a map.",
   library: "Pick a ready-made route file and download it to your device.",
@@ -911,14 +919,15 @@ function GpxViewContent() {
           }}
           className="tool-enter mt-6"
         >
-          <TabsList className="flex w-full gap-1 overflow-x-auto no-scrollbar sm:grid sm:grid-cols-5 sm:gap-0 sm:overflow-visible">
+          <TabsList className="grid w-full grid-cols-5">
             {TAB_VALUES.map((value) => (
               <TabsTrigger
                 key={value}
                 value={value}
-                className="shrink-0 min-w-[88px] px-4 sm:min-w-0 sm:shrink sm:px-3"
+                className="px-1 text-xs sm:px-3 sm:text-sm"
               >
-                {TAB_LABELS[value]}
+                <span className="sm:hidden">{TAB_SHORT_LABELS[value]}</span>
+                <span className="hidden sm:inline">{TAB_LABELS[value]}</span>
               </TabsTrigger>
             ))}
           </TabsList>
