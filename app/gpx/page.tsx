@@ -1325,11 +1325,12 @@ function GpxViewContent() {
                               {point.lon.toFixed(5)}
                             </td>
                             <td className="px-3 py-2">
-                              <div className="flex items-center justify-end gap-1">
+                              <div className="flex items-center justify-end gap-2 sm:gap-1">
                                 <Button
                                   type="button"
                                   variant="ghost"
                                   size="icon-sm"
+                                  className="size-11 sm:size-8"
                                   aria-label={`Move point ${index + 1} up`}
                                   disabled={index === 0}
                                   onClick={() =>
@@ -1342,6 +1343,7 @@ function GpxViewContent() {
                                   type="button"
                                   variant="ghost"
                                   size="icon-sm"
+                                  className="size-11 sm:size-8"
                                   aria-label={`Move point ${index + 1} down`}
                                   disabled={index === planPoints.length - 1}
                                   onClick={() =>
@@ -1354,6 +1356,7 @@ function GpxViewContent() {
                                   type="button"
                                   variant="ghost"
                                   size="icon-sm"
+                                  className="size-11 sm:size-8"
                                   aria-label={`Delete point ${index + 1}`}
                                   onClick={() =>
                                     dispatchPlan({ type: "remove", index })
