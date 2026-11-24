@@ -893,7 +893,10 @@ function GpxViewContent() {
           onClose={() => setAnnouncedMissingId(missingId)}
         />
       )}
-      <div className="mx-auto px-5 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-10 sm:px-6 sm:pt-14 lg:pb-12">
+      <div
+        suppressHydrationWarning
+        className="mx-auto px-5 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-10 sm:px-6 sm:pt-14 lg:pb-12"
+      >
         <Link
           href="/"
           className="inline-flex items-center gap-2 rounded-lg text-sm text-muted-foreground transition-colors duration-200 ease-soft hover:text-foreground"
