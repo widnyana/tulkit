@@ -38,7 +38,7 @@
     "gpx-builder": "6.0.0",
     "lucide-react": "^1.33.0",
     "lz-string": "^1.5.0",
-    "maplibre-gl": "6.18.0",
+    "maplibre-gl": "6.19.0",
     "mermaid": "^12.2.0",
     "next": "^16.4.6",
     "next-intl": "^4.14.9",
